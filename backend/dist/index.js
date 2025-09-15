@@ -1,7 +1,6 @@
 import express, { urlencoded } from "express";
 const app = express();
 import dbConnect from "./config/dbConfig.js";
-// import patientRegister from "./controllers/patient.controller.js";
 import patientRoutes from "./routes/patient.routes.js";
 dbConnect();
 const PORT = 3000;

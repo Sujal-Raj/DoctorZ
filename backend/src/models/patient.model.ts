@@ -4,6 +4,8 @@ export interface IPatient extends Document {
   fullName: string;
   gender:string;
   dob:Date;
+  email:string;
+  password:string;
   mobileNumber:number;
   Aadhar:number;
   address: {
@@ -29,6 +31,14 @@ const patientSchema = new mongoose.Schema<IPatient>({
     },
     dob:{
         type:Date,
+        required:true
+    },
+    email:{
+        type:String,
+        required:true
+    },
+    password:{
+        type:String,
         required:true
     },
     mobileNumber:{

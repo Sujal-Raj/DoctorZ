@@ -12,6 +12,14 @@ const patientSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    email: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
     mobileNumber: {
         type: Number,
         required: true,

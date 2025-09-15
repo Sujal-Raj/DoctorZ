@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import type { Request, Response } from "express";
 import { json } from "stream/consumers";
 import patientModel from "../models/patient.model.js";
+import bcrypt from "bcryptjs";
 
 const patientRegister = async (req:Request,res:Response)=>{
     try {
         const body = req.body;
         // console.log(body);
-        const {fullName,gender,dob,mobileNumber,Aadhar,abhaId} = body;
+        const {fullName,gender,dob,email,password,mobileNumber,Aadhar,abhaId} = body;
         const {city,pincode} = body.address;
         const {name,number}= body.emergencyContact;
 
@@ -17,10 +18,14 @@ const patientRegister = async (req:Request,res:Response)=>{
             )
         }
 
+        const hashedPassword = await bcrypt.hash(password,10)
+
         const patient = new patientModel({
             fullName,
             gender,
             dob,
+            email,
+            password:hashedPassword,
             mobileNumber,
             Aadhar,
             abhaId,

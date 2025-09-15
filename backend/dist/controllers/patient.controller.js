@@ -1,20 +1,24 @@
 import mongoose from "mongoose";
 import { json } from "stream/consumers";
 import patientModel from "../models/patient.model.js";
+import bcrypt from "bcryptjs";
 const patientRegister = async (req, res) => {
     try {
         const body = req.body;
         // console.log(body);
-        const { fullName, gender, dob, mobileNumber, Aadhar, abhaId } = body;
+        const { fullName, gender, dob, email, password, mobileNumber, Aadhar, abhaId } = body;
         const { city, pincode } = body.address;
         const { name, number } = body.emergencyContact;
         if (!fullName || !gender || !dob || !mobileNumber || !Aadhar) {
             return res.status(400).json(console.log("All required fields must be filled."));
         }
+        const hashedPassword = await bcrypt.hash(password, 10);
         const patient = new patientModel({
             fullName,
             gender,
             dob,
+            email,
+            password: hashedPassword,
             mobileNumber,
             Aadhar,
             abhaId,
@@ -42,7 +46,7 @@ const patientRegister = async (req, res) => {
 const getPatientById = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(id);
+        // console.log(id)
         const user = await patientModel.findById(id);
         if (!user) {
             return res.status(404).json({
@@ -60,5 +64,25 @@ const getPatientById = async (req, res) => {
         });
     }
 };
-export default { patientRegister, getPatientById };
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleteUser = patientModel.findByIdAndDelete(id);
+        if (!deleteUser) {
+            return res.status(400).json({
+                message: "User Not Found."
+            });
+        }
+        return res.status(200).json({
+            message: "User Deleted."
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong."
+        });
+    }
+};
+export default { patientRegister, getPatientById, deleteUser };
 //# sourceMappingURL=patient.controller.js.map

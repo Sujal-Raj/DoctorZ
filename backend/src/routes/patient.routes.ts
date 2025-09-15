@@ -7,6 +7,6 @@ const router = Router();
 
 router.post("/register",patientController.patientRegister);
 router.get("/:id",patientController.getPatientById);
-router.delete(":/id",patientController.deleteUser)
+router.delete("/:id",patientController.deleteUser)
 
 export default router;

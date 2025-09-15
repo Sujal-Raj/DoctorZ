@@ -3,6 +3,8 @@ export interface IPatient extends Document {
     fullName: string;
     gender: string;
     dob: Date;
+    email: string;
+    password: string;
     mobileNumber: number;
     Aadhar: number;
     address: {
