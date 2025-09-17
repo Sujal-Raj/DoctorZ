@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* @import "tailwindcss";
 
 
 :root {
@@ -68,4 +68,14 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+} */
+
+@import "tailwindcss";
+
+/* Optional: global overrides */
+body {
+  background-color: #f9fafb; /* gray-50 */
+  color: #111827;           /* gray-900 */
+  font-family: sans-serif;
 }
+
