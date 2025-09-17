@@ -10,3 +10,5 @@ router.get("/:id",patientController.getPatientById);
 router.delete("/:id",patientController.deleteUser)
 
 export default router;
+
+
