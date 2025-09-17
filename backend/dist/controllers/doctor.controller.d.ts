@@ -1,0 +1,9 @@
+import type { Request, Response } from 'express';
+declare const _default: {
+    doctorRegister: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    getDoctorById: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    deleteDoctor: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    updateDoctor: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+};
+export default _default;
+//# sourceMappingURL=doctor.controller.d.ts.map
