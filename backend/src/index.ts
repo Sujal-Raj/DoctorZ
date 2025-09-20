@@ -1,4 +1,9 @@
+import path, { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+import cors from "cors";
 import type { Express } from "express";
 import express, { urlencoded } from "express";
 const app :Express = express();
@@ -9,7 +14,15 @@ import clinicRoutes from "./routes/clinic.routes.js";
 dbConnect();
 const PORT = 3000;
 
-app.use(express.json())
+app.use(cors());
+
+// Body parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+
 
 app.use("/api/patient",patientRoutes)
 app.use("/api/clinic",clinicRoutes)

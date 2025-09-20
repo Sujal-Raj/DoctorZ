@@ -44,7 +44,7 @@ const getDoctorById = async (req, res) => {
         console.log(id);
         const doctor = await doctorModel.findById(id);
         if (!doctor) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: 'doctor not found'
             });
         }
@@ -64,7 +64,7 @@ const deleteDoctor = async (req, res) => {
         const { id } = req.params;
         const deltedoctor = await doctorModel.findByIdAndDelete(id);
         if (!deleteDoctor) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: "Doctor not found"
             });
         }
@@ -82,13 +82,13 @@ const deleteDoctor = async (req, res) => {
 const updateDoctor = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateDoctor = await doctorModel.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+        const updateDoctor = await doctorModel.findByIdAndUpdate(id, req.body, { new: true, runValidators: true }); // new:true => updated document return hoga
         if (!updateDoctor) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: "doctor not found"
             });
         }
-        return res.status(202).json({
+        return res.status(201).json({
             message: "doctor updated successfully", updateDoctor
         });
     }

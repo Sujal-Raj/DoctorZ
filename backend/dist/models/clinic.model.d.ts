@@ -1,37 +1,25 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 export interface IClinic extends Document {
     clinicName: string;
-    clinicType: "Hospital" | "Polyclinic" | "Individual Practice" | "Diagnostic Center";
-    specialties: string[];
-    address: {
-        state: string;
-        district: string;
-        pincode: number;
-    };
-    contact: {
-        phone: string;
-        email: string;
-    };
+    clinicType: "Private" | "Government";
+    specialities: string[];
+    address: string;
+    state: string;
+    district: string;
+    pincode: number;
+    phone: string;
+    email: string;
     doctors: mongoose.Types.ObjectId[];
     operatingHours: string;
-    clinicLicenseNumber: number;
+    clinicLicenseNumber: string;
+    registrationCertificate?: string;
     aadharNumber: number;
-    staffName: string;
-    staffEmail: string;
-    staffPassword: string;
+    panNumber: string;
 }
-declare const clinicModel: mongoose.Model<IClinic, {}, {}, {}, mongoose.Document<unknown, {}, IClinic, {}, mongoose.DefaultSchemaOptions> & IClinic & {
-    _id: mongoose.Types.ObjectId;
-} & {
+declare const clinicModel: mongoose.Model<IClinic, {}, {}, {}, mongoose.Document<unknown, {}, IClinic, {}, {}> & IClinic & Required<{
+    _id: unknown;
+}> & {
     __v: number;
-}, mongoose.Schema<IClinic, mongoose.Model<IClinic, any, any, any, mongoose.Document<unknown, any, IClinic, any, {}> & IClinic & {
-    _id: mongoose.Types.ObjectId;
-} & {
-    __v: number;
-}, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, IClinic, mongoose.Document<unknown, {}, mongoose.FlatRecord<IClinic>, {}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & mongoose.FlatRecord<IClinic> & {
-    _id: mongoose.Types.ObjectId;
-} & {
-    __v: number;
-}>>;
+}, any>;
 export default clinicModel;
 //# sourceMappingURL=clinic.model.d.ts.map
