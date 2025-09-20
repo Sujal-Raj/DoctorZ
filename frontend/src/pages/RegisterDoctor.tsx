@@ -59,10 +59,10 @@ const RegisterDoctor: React.FC = () => {
       });
 
       const result = await res.json();
-      console.log("✅ Doctor Registered:", result);
+      console.log(" Doctor Registered:", result);
       alert("Doctor registered successfully!");
     } catch (err) {
-      console.error("❌ Error:", err);
+      console.error(" Error:", err);
       alert("Something went wrong!");
     }
   };
