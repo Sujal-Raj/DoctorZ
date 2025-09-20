@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import RegisterPatient from "./pages/RegisterPatient";
 import RegisterDoctor from "./pages/RegisterDoctor";
 import RegisterClinic from "./pages/RegisterClinic";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import Login from "./pages/Login";
 
@@ -20,6 +21,7 @@ const App: React.FC = () => {
           <Route path="/doctor-register" element={<RegisterDoctor />} />
           <Route path="/clinic-register" element={<RegisterClinic />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </div>
     </Router>

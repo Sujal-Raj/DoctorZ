@@ -47,10 +47,10 @@ const RegisterClinic: React.FC = () => {
       });
 
       const result = await res.json();
-      console.log("✅ Clinic Registered:", result);
+      console.log(" Clinic Registered:", result);
       alert("Clinic registered successfully!");
     } catch (err) {
-      console.error("❌ Error:", err);
+      console.error(" Error:", err);
       alert("Something went wrong!");
     }
   };
