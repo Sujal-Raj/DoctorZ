@@ -4,13 +4,14 @@ import { useForm } from "react-hook-form";
 type ClinicFormInputs = {
   clinicName: string;
   clinicType: string;
-  speciality: string;
+  specialities: string;
   address: string;
   state: string;
   district: string;
+  pincode:string;
   contact: string;
   email: string;
-  hours: string;
+ operatingHours: string;
   licenseNo: string;
   ownerAadhar: string;
   ownerPan: string;
@@ -20,28 +21,40 @@ type ClinicFormInputs = {
 const RegisterClinic: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<ClinicFormInputs>();
   const [certName, setCertName] = useState<string>("No file selected");
+const [registrationFile, setRegistrationFile] = useState<File | null>(null);
+
+
 
   const onSubmit = async (data: ClinicFormInputs) => {
     const formData = new FormData();
     formData.append("clinicName", data.clinicName || "");
     formData.append("clinicType", data.clinicType || "");
-    formData.append("speciality", data.speciality || "");
+     formData.append("specialities", JSON.stringify(data.specialities.split(",").map(s => s.trim())));
     formData.append("address", data.address || "");
     formData.append("state", data.state || "");
     formData.append("district", data.district || "");
+     formData.append("pincode", data.pincode || "");
     formData.append("contact", data.contact || "");
     formData.append("email", data.email || "");
-    formData.append("hours", data.hours || "");
+    formData.append("operatingHours", data.operatingHours || "");
     formData.append("licenseNo", data.licenseNo || "");
     formData.append("ownerAadhar", data.ownerAadhar || "");
     formData.append("ownerPan", data.ownerPan || "");
 
-    if (data.registrationCert && data.registrationCert.length > 0) {
-      formData.append("registrationCert", data.registrationCert[0]);
-    }
+    // if (data.registrationCert && data.registrationCert.length > 0) {
+    //   formData.append("registrationCert", data.registrationCert[0]);
+    // }
+     if (registrationFile) {
+  formData.append("registrationCert", registrationFile);
+}
 
     try {
-      const res = await fetch("http://localhost:5000/api/clinics/register", {
+    console.log("📦 FormData contents:");
+for (const [key, value] of formData.entries()) {
+  console.log(key, value);
+}
+
+      const res = await fetch("http://localhost:3000/api/clinic/register", {
         method: "POST",
         body: formData,
       });
@@ -86,7 +99,7 @@ const RegisterClinic: React.FC = () => {
           <div>
             <label className="block text-gray-700 font-medium">Speciality</label>
             <input
-              {...register("speciality")}
+              {...register("specialities")}
               className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-purple-400"
               placeholder="Cardiology"
             />
@@ -114,6 +127,11 @@ const RegisterClinic: React.FC = () => {
             <input {...register("district")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="New Delhi" />
           </div>
 
+            <div>
+            <label className="block text-gray-700 font-medium">Pincode</label>
+            <input {...register("pincode")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="New Delhi" />
+          </div>
+
           {/* Contact */}
           <div>
             <label className="block text-gray-700 font-medium">Contact Number</label>
@@ -129,7 +147,7 @@ const RegisterClinic: React.FC = () => {
           {/* Hours */}
           <div>
             <label className="block text-gray-700 font-medium">Opening Hours</label>
-            <input {...register("hours")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="9 AM - 6 PM" />
+            <input {...register("operatingHours")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="9 AM - 6 PM" />
           </div>
 
           {/* License No */}
@@ -156,11 +174,15 @@ const RegisterClinic: React.FC = () => {
             <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-purple-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-purple-700 transition-all">
               Upload File
               <input
+             
                 type="file"
+               
                 accept="image/*,application/pdf"
-                {...register("registrationCert")}
+                // {...register("registrationCert")}
                 className="hidden"
-                onChange={(e) => setCertName(e.target.files?.[0]?.name || "No file selected")}
+                onChange={(e) => {setCertName(e.target.files?.[0]?.name || "No file selected");
+                  setRegistrationFile(e.target.files?.[0] || null);}
+                }
               />
             </label>
             <p className="mt-2 text-sm text-gray-500">{certName}</p>
