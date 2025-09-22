@@ -15,6 +15,10 @@ app.use(cors());
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+    console.log('Incoming request:', req.method, req.url);
+    next();
+});
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/patient", patientRoutes);
 app.use("/api/clinic", clinicRoutes);

@@ -29,6 +29,18 @@ const Navbar: React.FC = () => {
           >
             Home
           </Link>
+           <Link
+            to="/all-clinics"
+            className="text-gray-700 font-medium hover:text-blue-600 transition"
+          >
+            Clinic
+          </Link>
+           <Link
+            to="/all-doctors"
+            className="text-gray-700 font-medium hover:text-blue-600 transition"
+          >
+            Doctor
+          </Link>
 
           {/* Registration Dropdown (Patient + Doctor + Clinic) */}
           <DropdownMenu.Root>

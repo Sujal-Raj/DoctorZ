@@ -6,15 +6,14 @@ type DoctorFormInputs = {
   gender: string;
   dob: string;
   regNumber: string;
+  mobileNo: string;
   qualification: string;
   experience: string;
   fees: string;
   languages: string;
   aadhar: string;
   pan: string;
-  degreeCert?: FileList;
-  photo?: FileList;
-  signature?: FileList;
+  specialization: string;
 };
 
 const RegisterDoctor: React.FC = () => {
@@ -24,45 +23,46 @@ const RegisterDoctor: React.FC = () => {
     formState: { errors },
   } = useForm<DoctorFormInputs>();
 
-  // local state for showing filenames
-  const [degreeName, setDegreeName] = useState<string>("No file selected");
-  const [photoName, setPhotoName] = useState<string>("No file selected");
-  const [sigName, setSigName] = useState<string>("No file selected");
+  // Files in state
+  const [degreeFile, setDegreeFile] = useState<File | null>(null);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [signatureFile, setSignatureFile] = useState<File | null>(null);
+
+  // filenames for display
+  const [degreeName, setDegreeName] = useState("No file selected");
+  const [photoName, setPhotoName] = useState("No file selected");
+  const [sigName, setSigName] = useState("No file selected");
 
   const onSubmit = async (data: DoctorFormInputs) => {
     const formData = new FormData();
-    formData.append("fullName", data.fullName || "");
-    formData.append("gender", data.gender || "");
-    formData.append("dob", data.dob || "");
-    formData.append("regNumber", data.regNumber || "");
-    formData.append("qualification", data.qualification || "");
-    formData.append("experience", data.experience || "");
-    formData.append("fees", data.fees || "");
-    formData.append("languages", data.languages || "");
-    formData.append("aadhar", data.aadhar || "");
-    formData.append("pan", data.pan || "");
+    formData.append("fullName", data.fullName);
+    formData.append("gender", data.gender);
+    formData.append("dob", data.dob);
+    formData.append("regNumber", data.regNumber);
+    formData.append("qualification", data.qualification);
+    formData.append("experience", data.experience);
+    formData.append("fees", data.fees);
+    formData.append("languages", data.languages);
+    formData.append("aadhar", data.aadhar);
+    formData.append("pan", data.pan);
+    formData.append("specialization", data.specialization);
+    formData.append("mobileNo", data.mobileNo);
 
-    if (data.degreeCert && data.degreeCert.length > 0) {
-      formData.append("degreeCert", data.degreeCert[0]);
-    }
-    if (data.photo && data.photo.length > 0) {
-      formData.append("photo", data.photo[0]);
-    }
-    if (data.signature && data.signature.length > 0) {
-      formData.append("signature", data.signature[0]);
-    }
+    if (degreeFile) formData.append("degreeCert", degreeFile);
+    if (photoFile) formData.append("photo", photoFile);
+    if (signatureFile) formData.append("signature", signatureFile);
 
     try {
-      const res = await fetch("http://localhost:5000/api/doctors/register", {
+      const res = await fetch("http://localhost:3000/api/doctor/register", {
         method: "POST",
         body: formData,
       });
 
       const result = await res.json();
-      console.log(" Doctor Registered:", result);
+      console.log("Doctor Registered:", result);
       alert("Doctor registered successfully!");
     } catch (err) {
-      console.error(" Error:", err);
+      console.error("Error:", err);
       alert("Something went wrong!");
     }
   };
@@ -134,6 +134,28 @@ const RegisterDoctor: React.FC = () => {
             {errors.qualification && <p className="text-red-500 text-sm mt-1">{errors.qualification.message}</p>}
           </div>
 
+          {/* Specialization */}
+          <div>
+            <label className="block text-gray-700 font-medium">Specialization</label>
+            <input
+              {...register("specialization", { required: "Specialization is required" })}
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
+              placeholder="Dermatology"
+            />
+            {errors.specialization && <p className="text-red-500 text-sm mt-1">{errors.specialization.message}</p>}
+          </div>
+
+          {/* Mobile Number */}
+          <div>
+            <label className="block text-gray-700 font-medium">Mobile Number</label>
+            <input
+              {...register("mobileNo", { required: "Mobile number is required" })}
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
+              placeholder="9876543210"
+            />
+            {errors.mobileNo && <p className="text-red-500 text-sm mt-1">{errors.mobileNo.message}</p>}
+          </div>
+
           {/* Experience */}
           <div>
             <label className="block text-gray-700 font-medium">Experience (Years)</label>
@@ -188,7 +210,7 @@ const RegisterDoctor: React.FC = () => {
             />
           </div>
 
-          {/* Degree Certificate (styled upload) */}
+          {/* Degree Certificate */}
           <div>
             <label className="block text-gray-700 font-medium">Degree Certificate</label>
             <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all">
@@ -196,15 +218,17 @@ const RegisterDoctor: React.FC = () => {
               <input
                 type="file"
                 accept="image/*,application/pdf"
-                {...register("degreeCert")}
                 className="hidden"
-                onChange={(e) => setDegreeName(e.target.files?.[0]?.name || "No file selected")}
+                onChange={(e) => {
+                  setDegreeFile(e.target.files?.[0] || null);
+                  setDegreeName(e.target.files?.[0]?.name || "No file selected");
+                }}
               />
             </label>
             <p className="mt-2 text-sm text-gray-500">{degreeName}</p>
           </div>
 
-          {/* Photo (styled upload) */}
+          {/* Photo */}
           <div>
             <label className="block text-gray-700 font-medium">Recent Photo</label>
             <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all">
@@ -212,15 +236,17 @@ const RegisterDoctor: React.FC = () => {
               <input
                 type="file"
                 accept="image/*"
-                {...register("photo")}
                 className="hidden"
-                onChange={(e) => setPhotoName(e.target.files?.[0]?.name || "No file selected")}
+                onChange={(e) => {
+                  setPhotoFile(e.target.files?.[0] || null);
+                  setPhotoName(e.target.files?.[0]?.name || "No file selected");
+                }}
               />
             </label>
             <p className="mt-2 text-sm text-gray-500">{photoName}</p>
           </div>
 
-          {/* Signature (styled upload) */}
+          {/* Signature */}
           <div>
             <label className="block text-gray-700 font-medium">Signature</label>
             <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all">
@@ -228,9 +254,11 @@ const RegisterDoctor: React.FC = () => {
               <input
                 type="file"
                 accept="image/*"
-                {...register("signature")}
                 className="hidden"
-                onChange={(e) => setSigName(e.target.files?.[0]?.name || "No file selected")}
+                onChange={(e) => {
+                  setSignatureFile(e.target.files?.[0] || null);
+                  setSigName(e.target.files?.[0]?.name || "No file selected");
+                }}
               />
             </label>
             <p className="mt-2 text-sm text-gray-500">{sigName}</p>
@@ -238,7 +266,10 @@ const RegisterDoctor: React.FC = () => {
 
           {/* Submit Button */}
           <div className="col-span-2 mt-6 text-center">
-            <button type="submit" className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-lg hover:bg-green-700 transition-all">
+            <button
+              type="submit"
+              className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-lg hover:bg-green-700 transition-all"
+            >
               Register Doctor
             </button>
           </div>

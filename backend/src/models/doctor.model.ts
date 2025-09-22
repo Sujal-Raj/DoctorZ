@@ -7,8 +7,8 @@ export interface IDoctor extends Document{
     password:string,
     gender:string,
     dob:Date,
-    MobileNo:number,
-    MedicalRegistrationNumber:number,
+    MobileNo:string,
+    MedicalRegistrationNumber:string,
     specialization:string,
     qualification:string,
     DegreeCertificate:string,
@@ -40,11 +40,11 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
         required:true,
     },
     MobileNo:{
-        type:Number,
+        type:String,
         required:true,
     },
     MedicalRegistrationNumber:{
-        type:Number,
+        type:String,
         required:true,
     },
     specialization:{

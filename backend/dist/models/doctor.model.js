@@ -18,11 +18,11 @@ const doctorSchema = new mongoose.Schema({
         required: true,
     },
     MobileNo: {
-        type: Number,
+        type: String,
         required: true,
     },
     MedicalRegistrationNumber: {
-        type: Number,
+        type: String,
         required: true,
     },
     specialization: {
