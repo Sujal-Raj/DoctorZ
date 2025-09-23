@@ -21,6 +21,9 @@ export const clinicRegister = async (req: Request, res: Response) => {
       pincode,
       contact,
       email,
+      staffEmail,
+      staffName,
+      staffPassword,
     } = req.body;
 
     if (!clinicName || !clinicType || !specialities || !licenseNo || !ownerAadhar) {
@@ -46,6 +49,9 @@ export const clinicRegister = async (req: Request, res: Response) => {
       pincode: Number(pincode),
       phone: contact,
       email,
+      staffEmail,
+      staffName,
+      staffPassword: await bcrypt.hash(staffPassword, 10), // Hash the password before saving
       registrationCertificate: registrationCertPath, 
     });
 

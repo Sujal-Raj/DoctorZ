@@ -2,45 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { json } from "stream/consumers";
 import doctorModel from '../models/doctor.model.js';
-// const doctorRegister = async (req:Request,res:Response)=>{
-//     try{
-//         console.log("Request Body:", req.body);
-//         const{fullName,password,gender,dob,MobileNo,MedicalRegistrationNumber,specialization,qualification,DegreeCertificate,experience,consultationFee,language,Aadhar,signature,photo} = req.body;
-//         if(!fullName ||!password||!gender ||!dob|| !MobileNo ){
-//              return res.status(400).json(
-//                 console.log("All required fields must be filled.")
-//          )
-//         }
-//          const hashedPassword = await bcrypt.hash(password,10);
-//          const doctor = new doctorModel({
-//             fullName,
-//             password:hashedPassword,
-//             gender,
-//             dob,
-//             MobileNo,
-//             MedicalRegistrationNumber,
-//             specialization,
-//             qualification,
-//             experience,
-//             DegreeCertificate,
-//             consultationFee,
-//             language,
-//             Aadhar,
-//             signature,
-//             photo,
-//          })
-//          await doctor.save();
-//          return res.status(201).json({
-//            message:"Doctor registered"
-//          })
-//     }
-//     catch(error){
-//         console.log("error",error);
-//         return res.status(500).json({
-//            message:"Registration failed"
-//     })
-//  }
-// }
 const doctorRegister = async (req, res) => {
     try {
         console.log('Text fields:', req.body);
@@ -57,12 +18,8 @@ const doctorRegister = async (req, res) => {
         const degreeCert = files?.['degreeCert']?.[0]?.filename || '';
         const photo = files?.['photo']?.[0]?.filename || '';
         const signature = files?.['signature']?.[0]?.filename || '';
-        // Optional: generate temporary password if not in form
-        const password = req.body.password || 'Temp@123';
-        const hashedPassword = await bcrypt.hash(password, 10);
         const doctor = new doctorModel({
             fullName: req.body.fullName,
-            password: hashedPassword,
             gender: req.body.gender,
             dob,
             MobileNo,
@@ -85,16 +42,6 @@ const doctorRegister = async (req, res) => {
         return res.status(500).json({ message: 'Registration failed', error });
     }
 };
-// const doctorRegister = async (req: Request, res: Response) => {
-//   try {
-//     console.log('req.body:', req.body);
-//     console.log('req.files:', req.files);
-//     return res.status(200).json({ message: 'Reached controller', body: req.body, files: req.files });
-//   } catch (error) {
-//     console.error('Error:', error);
-//     return res.status(500).json({ message: 'Registration failed', error });
-//   }
-// };
 const getDoctorById = async (req, res) => {
     try {
         const { id } = req.params;

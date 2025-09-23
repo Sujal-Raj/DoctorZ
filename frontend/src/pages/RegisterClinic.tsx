@@ -15,6 +15,9 @@ type ClinicFormInputs = {
   licenseNo: string;
   ownerAadhar: string;
   ownerPan: string;
+  staffName: string;
+  staffEmail: string;
+  staffPassword: string;
   registrationCert?: FileList;
 };
 
@@ -40,10 +43,11 @@ const [registrationFile, setRegistrationFile] = useState<File | null>(null);
     formData.append("licenseNo", data.licenseNo || "");
     formData.append("ownerAadhar", data.ownerAadhar || "");
     formData.append("ownerPan", data.ownerPan || "");
+    formData.append("staffName", data.staffName || "");
+    formData.append("staffEmail", data.staffEmail || "");
+    formData.append("staffPassword", data.staffPassword || "");
 
-    // if (data.registrationCert && data.registrationCert.length > 0) {
-    //   formData.append("registrationCert", data.registrationCert[0]);
-    // }
+  
      if (registrationFile) {
   formData.append("registrationCert", registrationFile);
 }
@@ -167,7 +171,25 @@ for (const [key, value] of formData.entries()) {
             <label className="block text-gray-700 font-medium">Owner PAN</label>
             <input {...register("ownerPan")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="ABCDE1234F" />
           </div>
+             
+          {/* Staff Name */}
+              <div>
+            <label className="block text-gray-700 font-medium">Staff Name</label>
+            <input {...register("staffName")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="Staff Name" />
+          </div>
+          {/* Staff Email*/}
+             <div>
+            <label className="block text-gray-700 font-medium">Staff Email</label>
+            <input {...register("staffEmail")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="Staff Name" />
+          </div>
 
+
+          {/* Staff Password */}
+          <div>
+            <label className="block text-gray-700 font-medium">Staff Password</label>
+            <input type="password" {...register("staffPassword")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="********" />
+          </div>
+          
           {/* Registration Certificate (styled upload) */}
           <div>
             <label className="block text-gray-700 font-medium">Registration Certificate</label>

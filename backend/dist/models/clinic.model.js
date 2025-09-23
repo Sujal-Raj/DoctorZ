@@ -28,18 +28,18 @@ const clinicSchema = new mongoose.Schema({
     registrationCertificate: { type: String },
     panNumber: { type: String, required: true },
     operatingHours: { type: String, required: true },
-    // staffName: {
-    //   type: String,
-    //   required: true,
-    // },
-    // staffEmail: {
-    //   type: String,
-    //   required: true,
-    // },
-    // staffPassword: {
-    //   type: String,
-    //   required: true,
-    // },
+    staffName: {
+        type: String,
+        required: true,
+    },
+    staffEmail: {
+        type: String,
+        required: true,
+    },
+    staffPassword: {
+        type: String,
+        required: true,
+    },
     aadharNumber: {
         type: Number,
         required: true,

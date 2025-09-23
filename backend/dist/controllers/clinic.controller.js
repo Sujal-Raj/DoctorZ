@@ -3,7 +3,7 @@ import clinicModel from "../models/clinic.model.js";
 import doctorModel from "../models/doctor.model.js";
 export const clinicRegister = async (req, res) => {
     try {
-        const { clinicName, clinicType, specialities, operatingHours, licenseNo, ownerAadhar, ownerPan, address, state, district, pincode, contact, email, } = req.body;
+        const { clinicName, clinicType, specialities, operatingHours, licenseNo, ownerAadhar, ownerPan, address, state, district, pincode, contact, email, staffEmail, staffName, staffPassword, } = req.body;
         if (!clinicName || !clinicType || !specialities || !licenseNo || !ownerAadhar) {
             return res.status(400).json({ message: "All required fields must be filled." });
         }
@@ -24,6 +24,9 @@ export const clinicRegister = async (req, res) => {
             pincode: Number(pincode),
             phone: contact,
             email,
+            staffEmail,
+            staffName,
+            staffPassword: await bcrypt.hash(staffPassword, 10), // Hash the password before saving
             registrationCertificate: registrationCertPath,
         });
         await clinic.save();

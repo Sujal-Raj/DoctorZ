@@ -23,9 +23,9 @@ export interface IClinic extends Document {
   aadharNumber: number;
   panNumber: string;
 
-  // staffName: string;
-  // staffEmail: string;
-  // staffPassword: string;
+  staffName: string;
+  staffEmail: string;
+  staffPassword: string;
 }
 
 const clinicSchema = new mongoose.Schema<IClinic>({
@@ -62,18 +62,18 @@ const clinicSchema = new mongoose.Schema<IClinic>({
   panNumber: { type: String, required: true },
   operatingHours: { type: String, required: true },
 
-  // staffName: {
-  //   type: String,
-  //   required: true,
-  // },
-  // staffEmail: {
-  //   type: String,
-  //   required: true,
-  // },
-  // staffPassword: {
-  //   type: String,
-  //   required: true,
-  // },
+  staffName: {
+    type: String,
+    required: true,
+  },
+  staffEmail: {
+    type: String,
+    required: true,
+  },
+  staffPassword: {
+    type: String,
+    required: true,
+  },
   aadharNumber: {
     type: Number,
     required: true,
