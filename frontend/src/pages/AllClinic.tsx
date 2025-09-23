@@ -29,6 +29,8 @@ export default function AllClinic() {
         const response = await fetch("http://localhost:3000/api/clinic/getClinic");
         const data = await response.json();
         setClinics(data.clinic || []);
+  
+
       } catch (err) {
         console.error("Error fetching clinics:", err);
       } finally {
@@ -71,10 +73,9 @@ export default function AllClinic() {
                 </p>
 
                 <p className="text-gray-700 mb-1">
-                  <strong>Specialties:</strong>{" "}
-                  {clinic.specialities?.length > 0
-                    ? clinic.specialities.join(", ")
-                    : "N/A"}
+     
+                    <strong>Specialties:</strong>{" "}
+  {clinic.specialities?.join(", ") || "N/A"}
                 </p>
 
                 <p className="text-gray-700 mb-1">

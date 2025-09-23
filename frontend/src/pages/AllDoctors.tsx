@@ -18,7 +18,9 @@ export default function AllDoctors() {
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/doctor/allDoctors");
+        const response = await fetch(
+          "http://localhost:3000/api/doctor/allDoctors"
+        );
         const data = await response.json();
         console.log("API Response:", data);
 
@@ -62,7 +64,7 @@ export default function AllDoctors() {
               {/* Doctor Photo */}
               <div className="w-32 h-32 mb-4">
                 <img
-                  src={`/uploads/${doctor.photo}`}
+                  src={`http://localhost:3000/uploads/${doctor.photo}`}
                   alt={doctor.fullName}
                   className="w-full h-full rounded-full object-cover border-2 border-green-500 shadow-sm"
                 />
@@ -93,7 +95,9 @@ export default function AllDoctors() {
 
               {/* Appointment Button */}
               <button
-                onClick={() => alert(`Booking appointment with ${doctor.fullName}`)}
+                onClick={() =>
+                  alert(`Booking appointment with ${doctor.fullName}`)
+                }
                 className="mt-auto w-full bg-green-600 text-white font-semibold px-4 py-2 rounded-xl hover:bg-green-700 transition shadow-md"
               >
                 Get Appointment
