@@ -18,6 +18,7 @@ type ClinicFormInputs = {
   staffName: string;
   staffEmail: string;
   staffPassword: string;
+  staffId:string;
   registrationCert?: FileList;
 };
 
@@ -28,7 +29,21 @@ const [registrationFile, setRegistrationFile] = useState<File | null>(null);
 
 
 
+// Utility to generate alphanumeric ID
+const generateStaffID = (length = 8) => {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return id;
+};
+
+
+
   const onSubmit = async (data: ClinicFormInputs) => {
+   const   staffId = generateStaffID(8); // 8 character ID
+   console.log("Generated Staff ID:", staffId);
     const formData = new FormData();
     formData.append("clinicName", data.clinicName || "");
     formData.append("clinicType", data.clinicType || "");
@@ -47,7 +62,7 @@ const [registrationFile, setRegistrationFile] = useState<File | null>(null);
     formData.append("staffEmail", data.staffEmail || "");
     formData.append("staffPassword", data.staffPassword || "");
 
-  
+  formData.append("staffId", staffId);
      if (registrationFile) {
   formData.append("registrationCert", registrationFile);
 }

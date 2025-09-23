@@ -3,6 +3,15 @@ import bcrypt  from "bcryptjs";
 import clinicModel from "../models/clinic.model.js";
 import type { IClinic } from "../models/clinic.model.js";
 import  doctorModel from "../models/doctor.model.js";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
 
 export const clinicRegister = async (req: Request, res: Response) => {
@@ -24,6 +33,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
       staffEmail,
       staffName,
       staffPassword,
+      staffId
     } = req.body;
 
     if (!clinicName || !clinicType || !specialities || !licenseNo || !ownerAadhar) {
@@ -51,6 +61,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
       email,
       staffEmail,
       staffName,
+      staffId,
       staffPassword: await bcrypt.hash(staffPassword, 10), // Hash the password before saving
       registrationCertificate: registrationCertPath, 
     });
