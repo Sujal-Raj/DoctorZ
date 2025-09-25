@@ -1,5 +1,5 @@
 import express from "express";
-import { clinicRegister, deleteClinic, getAllClinic, searchClinicAndDoctor, updateClinic } from "../controllers/clinic.controller.js";
+import { clinicLogin, clinicRegister, deleteClinic, getAllClinic, searchClinicAndDoctor, updateClinic } from "../controllers/clinic.controller.js";
 import { upload } from "../middlewares/upload.js";
 const router = express.Router();
 // Route with single file upload
@@ -8,5 +8,6 @@ router.put("/update/:id", updateClinic);
 router.delete("/delete/:id", deleteClinic);
 router.get("/search", searchClinicAndDoctor);
 router.get("/getClinic", getAllClinic);
+router.post("/clinicLogin", clinicLogin);
 export default router;
 //# sourceMappingURL=clinic.routes.js.map

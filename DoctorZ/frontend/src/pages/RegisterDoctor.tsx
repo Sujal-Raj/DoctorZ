@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-
+import Cookies from "js-cookie";
+import * as jwt_decode from "jwt-decode";
+import api from "../api/client";
+import { useOutletContext } from "react-router-dom";
 type DoctorFormInputs = {
   fullName: string;
   gender: string;
@@ -16,12 +19,25 @@ type DoctorFormInputs = {
   specialization: string;
 };
 
+interface OutletContext {
+  clinicId: string | undefined;
+}
+
+
+
+
 const RegisterDoctor: React.FC = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<DoctorFormInputs>();
+
+const {clinicId}=useOutletContext<OutletContext>();
+  console.log("Clinic ID in RegisterDoctor:", clinicId);
+ 
+ 
+
 
   // Files in state
   const [degreeFile, setDegreeFile] = useState<File | null>(null);
@@ -47,19 +63,19 @@ const RegisterDoctor: React.FC = () => {
     formData.append("pan", data.pan);
     formData.append("specialization", data.specialization);
     formData.append("mobileNo", data.mobileNo);
-
+    if(clinicId) formData.append("clinicId", clinicId);
     if (degreeFile) formData.append("degreeCert", degreeFile);
     if (photoFile) formData.append("photo", photoFile);
     if (signatureFile) formData.append("signature", signatureFile);
 
     try {
-      const res = await fetch("http://localhost:3000/api/doctor/register", {
-        method: "POST",
-        body: formData,
+       const res = await api.post("/api/doctor/register", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const result = await res.json();
-      console.log("Doctor Registered:", result);
+
+      
+      console.log("Doctor Registered:", res.data);
       alert("Doctor registered successfully!");
     } catch (err) {
       console.error("Error:", err);

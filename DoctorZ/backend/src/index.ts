@@ -14,7 +14,10 @@ import clinicRoutes from "./routes/clinic.routes.js";
 dbConnect();
 const PORT = 3000;
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",  
+    credentials: true,  
+}));
 
 
 // Body parser

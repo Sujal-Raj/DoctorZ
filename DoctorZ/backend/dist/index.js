@@ -12,12 +12,13 @@ import doctorRoutes from "./routes/doctor.routes.js";
 import clinicRoutes from "./routes/clinic.routes.js";
 dbConnect();
 const PORT = 3000;
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 // Body parser
 app.use(express.json());
 dotenv.config();
-console.log("MAIL_USER:", process.env.MAIL_USER);
-console.log("MAIL_PASS:", process.env.MAIL_PASS ? "Loaded ✅" : "Missing ❌");
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     console.log('Incoming request:', req.method, req.url);

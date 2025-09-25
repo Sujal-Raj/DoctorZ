@@ -104,12 +104,58 @@ const Navbar: React.FC = () => {
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
             ) : (
-              <Link
-                to="/login"
-                className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center gap-2"
-              >
-                <LogIn size={18} /> Login
-              </Link>
+              <DropdownMenu.Root>
+  <DropdownMenu.Trigger asChild>
+    <button className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center gap-2">
+      <LogIn size={18} /> Login
+    </button>
+  </DropdownMenu.Trigger>
+
+  <DropdownMenu.Content
+    sideOffset={8}
+    className="bg-white rounded-lg shadow-xl border border-gray-100 w-56 overflow-hidden"
+  >
+    {/* Patient */}
+    <DropdownMenu.Item asChild>
+      <Link
+        to="/patient-login"
+        className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
+      >
+        <User size={18} className="text-indigo-600" /> Patient Login
+      </Link>
+    </DropdownMenu.Item>
+
+    {/* Doctor */}
+    <DropdownMenu.Item asChild>
+      <Link
+        to="/doctor-login"
+        className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
+      >
+        <Stethoscope size={18} className="text-blue-600" /> Doctor Login
+      </Link>
+    </DropdownMenu.Item>
+
+    {/* Clinic */}
+    <DropdownMenu.Item asChild>
+      {isLoggedIn ? (
+        <Link
+          to="/clinic-dashboard"
+          className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
+        >
+          <Hospital size={18} className="text-green-600" /> Clinic Dashboard
+        </Link>
+      ) : (
+        <Link
+          to="/clinic-login"
+          className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
+        >
+          <Hospital size={18} className="text-green-600" /> Clinic Login
+        </Link>
+      )}
+    </DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu.Root>
+
             )}
           </div>
         </div>
@@ -124,65 +170,106 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Dropdown */}
-      {mobileOpen && (
-        <div className="md:hidden bg-white shadow-md border-t border-gray-200">
-          <div className="flex flex-col px-6 py-4 space-y-4">
-            <Link
-              to="/"
-              className="text-gray-700 font-medium hover:text-blue-600 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              Home
-            </Link>
-              <Link
-            to="/all-clinics"
-            className="text-gray-700 font-medium hover:text-blue-600 transition"
+     {mobileOpen && (
+  <div className="md:hidden bg-white shadow-md border-t border-gray-200">
+    <div className="flex flex-col px-6 py-4 space-y-4">
+      <Link
+        to="/"
+        className="text-gray-700 font-medium hover:text-blue-600 transition"
+        onClick={() => setMobileOpen(false)}
+      >
+        Home
+      </Link>
+      <Link
+        to="/all-clinics"
+        className="text-gray-700 font-medium hover:text-blue-600 transition"
+        onClick={() => setMobileOpen(false)}
+      >
+        Clinic
+      </Link>
+      <Link
+        to="/all-doctors"
+        className="text-gray-700 font-medium hover:text-blue-600 transition"
+        onClick={() => setMobileOpen(false)}
+      >
+        Doctor
+      </Link>
+
+      {/* Registration Section */}
+      <div className="border-t pt-3">
+        <p className="text-gray-500 text-sm mb-2">Registration</p>
+        <Link
+          to="/patient-register"
+          className="text-gray-700 font-medium hover:text-blue-600 transition block"
+          onClick={() => setMobileOpen(false)}
+        >
+          👤 Patient Registration
+        </Link>
+        <Link
+          to="/doctor-register"
+          className="text-gray-700 font-medium hover:text-blue-600 transition block"
+          onClick={() => setMobileOpen(false)}
+        >
+          👨‍⚕️ Doctor Registration
+        </Link>
+        <Link
+          to="/clinic-register"
+          className="text-gray-700 font-medium hover:text-blue-600 transition block"
+          onClick={() => setMobileOpen(false)}
+        >
+          🏥 Clinic Registration
+        </Link>
+      </div>
+
+      {/* Login Section */}
+      <div className="border-t pt-3">
+        <p className="text-gray-500 text-sm mb-2">Login</p>
+        <Link
+          to="/patient-login"
+          className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 transition"
+          onClick={() => setMobileOpen(false)}
+        >
+          <User size={18} className="text-indigo-600" /> Patient Login
+        </Link>
+        <Link
+          to="/doctor-login"
+          className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 transition"
+          onClick={() => setMobileOpen(false)}
+        >
+          <Stethoscope size={18} className="text-blue-600" /> Doctor Login
+        </Link>
+        {isLoggedIn ? (
+          <Link
+            to="/clinic-dashboard"
+            className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 transition"
+            onClick={() => setMobileOpen(false)}
           >
-            Clinic
+            <Hospital size={18} className="text-green-600" /> Clinic Dashboard
           </Link>
-           <Link
-            to="/all-doctors"
-            className="text-gray-700 font-medium hover:text-blue-600 transition"
+        ) : (
+          <Link
+            to="/clinic-login"
+            className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 transition"
+            onClick={() => setMobileOpen(false)}
           >
-            Doctor
+            <Hospital size={18} className="text-green-600" /> Clinic Login
           </Link>
-            <Link
-              to="/patient-register"
-              className="text-gray-700 font-medium hover:text-blue-600 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              👤 Patient Registration
-            </Link>
-            <Link
-              to="/doctor-register"
-              className="text-gray-700 font-medium hover:text-blue-600 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              👨‍⚕️ Doctor Registration
-            </Link>
-            <Link
-              to="/clinic-register"
-              className="text-gray-700 font-medium hover:text-blue-600 transition"
-              onClick={() => setMobileOpen(false)}
-            >
-              🏥 Clinic Registration
-            </Link>
-            {isLoggedIn ? (
-              <button className="flex items-center gap-2 text-red-600 font-medium hover:text-red-700 transition">
-                <LogOut size={18} /> Logout
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center gap-2 text-green-600 font-medium hover:text-green-700 transition"
-                onClick={() => setMobileOpen(false)}
-              >
-                <LogIn size={18} /> Login
-              </Link>
-            )}
-          </div>
-        </div>
+        )}
+      </div>
+
+      {/* Logout */}
+      {isLoggedIn && (
+        <button
+          className="flex items-center gap-2 text-red-600 font-medium hover:text-red-700 transition"
+          onClick={() => setMobileOpen(false)}
+        >
+          <LogOut size={18} /> Logout
+        </button>
       )}
+    </div>
+  </div>
+)}
+
     </nav>
   );
 };

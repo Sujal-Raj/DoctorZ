@@ -32,7 +32,7 @@ const MobileNo = req.body.mobileNo;
     const photo = files?.['photo']?.[0]?.filename || '';
     const signature = files?.['signature']?.[0]?.filename || '';
 
-  
+     const clinicId = req.body.clinicId;
 
 
     const doctor = new doctorModel({
@@ -51,6 +51,7 @@ const MobileNo = req.body.mobileNo;
       DegreeCertificate: degreeCert,
       photo,
       signature,
+      clinic:clinicId
     });
 
     await doctor.save();
@@ -113,7 +114,7 @@ const deleteDoctor = async(req:Request,res:Response)=>{
     try{
         const {id} = req.params;
 
-        const deltedoctor = await doctorModel.findByIdAndDelete(id);
+        const deletedoctor = await doctorModel.findByIdAndDelete(id);
 
         if(!deleteDoctor){
              return res.status(400).json({
@@ -160,4 +161,24 @@ const updateDoctor =async(req:Request,res:Response)=>{
     }
 }
 
-export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor};
+
+ const getClinicDoctors=async(req:Request,res:Response)=>{
+    try{
+        const {clinicId}=req.params;
+        const doctors = await doctorModel.find({clinic:clinicId});
+        return res.status(200).json({
+            message:"Doctors fetched successfully",doctors
+        })
+
+    }
+    catch(error){
+        console.error("Error fetching doctors",error);
+        return res.status(500).json({
+            message:"failed to fetch doctors"
+        })
+    }
+    
+}
+
+
+export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors};

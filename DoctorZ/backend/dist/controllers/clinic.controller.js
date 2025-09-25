@@ -3,6 +3,7 @@ import clinicModel from "../models/clinic.model.js";
 import doctorModel from "../models/doctor.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 dotenv.config();
 console.log("MAIL_USER:", process.env.MAIL_USER);
 const transporter = nodemailer.createTransport({
@@ -12,60 +13,7 @@ const transporter = nodemailer.createTransport({
         pass: process.env.MAIL_PASS,
     },
 });
-// export const clinicRegister = async (req: Request, res: Response) => {
-//   try {
-//     const {
-//       clinicName,
-//       clinicType,
-//       specialities,
-//       operatingHours,
-//       licenseNo,
-//       ownerAadhar,
-//       ownerPan,
-//       address,
-//       state,
-//       district,
-//       pincode,
-//       contact,
-//       email,
-//       staffEmail,
-//       staffName,
-//       staffPassword,
-//       staffId
-//     } = req.body;
-//     if (!clinicName || !clinicType || !specialities || !licenseNo || !ownerAadhar) {
-//       return res.status(400).json({ message: "All required fields must be filled." });
-//     }
-//     // Multer provides the uploaded file here
-//     const registrationCertPath = req.file ? req.file.path : undefined;
-//     console.log("Uploaded file path:", registrationCertPath);
-//     const clinic = new clinicModel({
-//       clinicName,
-//       clinicType,
-//       specialities: JSON.parse(specialities),//convert string into array of strings
-//       operatingHours,
-//       clinicLicenseNumber: licenseNo,
-//       aadharNumber: Number(ownerAadhar),
-//       panNumber: ownerPan,
-//       address,
-//       state,
-//       district,
-//       pincode: Number(pincode),
-//       phone: contact,
-//       email,
-//       staffEmail,
-//       staffName,
-//       staffId,
-//       staffPassword: await bcrypt.hash(staffPassword, 10), // Hash the password before saving
-//       registrationCertificate: registrationCertPath, 
-//     });
-//     await clinic.save();
-//     return res.status(201).json({ message: "Clinic Registered", clinic });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ message: "Something went wrong", error });
-//   }
-// };
+// ---------------- Clinic Registration ----------------
 export const clinicRegister = async (req, res) => {
     try {
         const { clinicName, clinicType, specialities, operatingHours, licenseNo, ownerAadhar, ownerPan, address, state, district, pincode, contact, email, staffEmail, staffName, staffPassword, staffId, } = req.body;
@@ -110,16 +58,62 @@ export const clinicRegister = async (req, res) => {
           <p>Thanks,<br/>Clinic Management Team</p>
         `,
             });
-            console.log("✅ Staff ID email sent to:", staffEmail);
+            console.log(" Staff ID email sent to:", staffEmail);
         }
         catch (mailErr) {
-            console.error("❌ Failed to send email:", mailErr);
+            console.error(" Failed to send email:", mailErr);
         }
         return res.status(201).json({ message: "Clinic Registered", clinic });
     }
     catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Something went wrong", error });
+    }
+};
+// ---------------- Clinic Login ----------------
+export const clinicLogin = async (req, res) => {
+    try {
+        const { staffId, staffPassword } = req.body;
+        if (!staffId || !staffPassword) {
+            return res.status(400).json({
+                message: "All fields are required"
+            });
+        }
+        const clinic = await clinicModel.findOne({ staffId: staffId });
+        if (!clinic) {
+            return res.status(404).json({
+                message: "Clinic not found"
+            });
+        }
+        const isMatch = await bcrypt.compare(staffPassword, clinic.staffPassword);
+        if (!isMatch) {
+            return res.status(401).json({
+                message: "Invalid credentials"
+            });
+        }
+        const token = jwt.sign({ id: clinic._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+        // ✅ Set cookie
+        res.cookie("authToken", token, {
+            httpOnly: false, // allow frontend JS to read
+            secure: false, // because localhost is not HTTPS
+            sameSite: "lax",
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+        return res.status(200).json({
+            message: "Login successful",
+            clinic: {
+                id: clinic._id,
+                staffId: clinic.staffId,
+                staffName: clinic.staffName,
+                staffEmail: clinic.staffEmail,
+                clinicName: clinic.clinicName,
+            },
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            message: "Something went wrong"
+        });
     }
 };
 // // ---------------- Update Clinic ----------------
@@ -155,6 +149,7 @@ export const updateClinic = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong", error });
     }
 };
+// ---------------- Delete Clinic ----------------
 export const deleteClinic = async (req, res) => {
     try {
         const { id } = req.params;
@@ -169,6 +164,7 @@ export const deleteClinic = async (req, res) => {
         });
     }
 };
+// ---------------- Search Clinic and Doctor ----------------
 export const searchClinicAndDoctor = async (req, res) => {
     try {
         const { q } = req.query;
@@ -206,6 +202,7 @@ export const searchClinicAndDoctor = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong" });
     }
 };
+// ---------------- Get All Clinics ----------------
 export const getAllClinic = async (req, res) => {
     try {
         const clinic = await clinicModel.find();

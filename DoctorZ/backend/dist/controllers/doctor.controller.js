@@ -18,6 +18,7 @@ const doctorRegister = async (req, res) => {
         const degreeCert = files?.['degreeCert']?.[0]?.filename || '';
         const photo = files?.['photo']?.[0]?.filename || '';
         const signature = files?.['signature']?.[0]?.filename || '';
+        const clinicId = req.body.clinicId;
         const doctor = new doctorModel({
             fullName: req.body.fullName,
             gender: req.body.gender,
@@ -33,6 +34,7 @@ const doctorRegister = async (req, res) => {
             DegreeCertificate: degreeCert,
             photo,
             signature,
+            clinic: clinicId
         });
         await doctor.save();
         return res.status(201).json({ message: 'Doctor registered', doctor });
@@ -80,7 +82,7 @@ const getAllDoctors = async (req, res) => {
 const deleteDoctor = async (req, res) => {
     try {
         const { id } = req.params;
-        const deltedoctor = await doctorModel.findByIdAndDelete(id);
+        const deletedoctor = await doctorModel.findByIdAndDelete(id);
         if (!deleteDoctor) {
             return res.status(400).json({
                 message: "Doctor not found"
@@ -117,5 +119,20 @@ const updateDoctor = async (req, res) => {
         });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor };
+const getClinicDoctors = async (req, res) => {
+    try {
+        const { clinicId } = req.params;
+        const doctors = await doctorModel.find({ clinic: clinicId });
+        return res.status(200).json({
+            message: "Doctors fetched successfully", doctors
+        });
+    }
+    catch (error) {
+        console.error("Error fetching doctors", error);
+        return res.status(500).json({
+            message: "failed to fetch doctors"
+        });
+    }
+};
+export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors };
 //# sourceMappingURL=doctor.controller.js.map
