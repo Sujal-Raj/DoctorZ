@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 import { Types } from 'mongoose';
 export interface IDoctor extends Document {
+    doctorId: string;
     fullName: string;
     password: string;
+    email: string;
     gender: string;
     dob: Date;
     MobileNo: string;
@@ -17,6 +19,7 @@ export interface IDoctor extends Document {
     signature: string;
     photo: string;
     clinic: Types.ObjectId[];
+    status?: string;
 }
 declare const doctorModel: mongoose.Model<IDoctor, {}, {}, {}, mongoose.Document<unknown, {}, IDoctor, {}, mongoose.DefaultSchemaOptions> & IDoctor & {
     _id: Types.ObjectId;

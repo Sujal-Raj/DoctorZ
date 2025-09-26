@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import api from "../api/client";
 
 // Doctor type
@@ -28,6 +28,8 @@ const ClinicDoctors = () => {
   const { clinicId } = useOutletContext<OutletContext>();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -68,24 +70,35 @@ const ClinicDoctors = () => {
             >
               {/* Doctor Image */}
               <img
-               src={`http://localhost:3000/uploads/${doctor.photo}`}
-                  alt={doctor.fullName}
-               
+                src={`http://localhost:3000/uploads/${doctor.photo}`}
+                alt={doctor.fullName}
                 className="w-20 h-20 rounded-full object-cover border"
               />
 
               {/* Doctor Info */}
-              <div>
+              <div className="flex-1">
                 <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
                 <p className="text-sm text-gray-600 capitalize">{doctor.specialization}</p>
-                <p className="text-sm text-gray-500">
-                  {doctor.experience} years experience
-                </p>
+                <p className="text-sm text-gray-500">{doctor.experience} years experience</p>
                 <p className="text-sm text-gray-500">{doctor.qualification}</p>
                 <p className="text-sm text-gray-500">Speaks: {doctor.language}</p>
-                <p className="mt-2 font-semibold text-blue-600">
-                  ₹{doctor.consultationFee}
-                </p>
+                <p className="mt-2 font-semibold text-blue-600">₹{doctor.consultationFee}</p>
+
+                {/* Buttons */}
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={() => navigate(`/doctor/profile/${doctor._id}`)}
+                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                  >
+                    View Profile
+                  </button>
+                  <button
+                    onClick={() => navigate(`${doctor._id}/availability`)}
+                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                  >
+                    Set Availability
+                  </button>
+                </div>
               </div>
             </div>
           ))}

@@ -12,6 +12,7 @@ import patientRoutes from "./routes/patient.routes.js";
 import doctorRoutes from "./routes/doctor.routes.js";
 import clinicRoutes from "./routes/clinic.routes.js";
 import timeSlotsRoutes from "./routes/timeSlots.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 dbConnect();
 const PORT = 3000;
 
@@ -35,6 +36,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 
 
+app.use("/api/admin",adminRoutes)
 app.use("/api/patient",patientRoutes)
 app.use("/api/clinic",clinicRoutes)
 app.use("/api/doctor",doctorRoutes)

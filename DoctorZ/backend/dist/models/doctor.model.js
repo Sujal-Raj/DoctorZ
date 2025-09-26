@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Types } from 'mongoose';
 const doctorSchema = new mongoose.Schema({
+    doctorId: { type: String, default: null, required: false },
     fullName: {
         type: String,
         required: true
@@ -13,6 +14,8 @@ const doctorSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    password: { type: String, required: true },
+    email: { type: String, required: true },
     MobileNo: {
         type: String,
         required: true,
@@ -60,7 +63,8 @@ const doctorSchema = new mongoose.Schema({
     clinic: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Clinic',
-        }]
+        }],
+    status: { type: String, default: "pending" }
 });
 const doctorModel = mongoose.model("Doctor", doctorSchema, "Doctor");
 export default doctorModel;

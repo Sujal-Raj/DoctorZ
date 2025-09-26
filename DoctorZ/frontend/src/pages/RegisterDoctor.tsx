@@ -6,6 +6,7 @@ import api from "../api/client";
 import { useOutletContext } from "react-router-dom";
 type DoctorFormInputs = {
   fullName: string;
+    email:string;
   gender: string;
   dob: string;
   regNumber: string;
@@ -17,13 +18,13 @@ type DoctorFormInputs = {
   aadhar: string;
   pan: string;
   specialization: string;
+   password:string;
 };
 
-interface OutletContext {
-  clinicId: string | undefined;
+
+interface ClinicContext {
+  clinicId?: string;
 }
-
-
 
 
 const RegisterDoctor: React.FC = () => {
@@ -33,7 +34,8 @@ const RegisterDoctor: React.FC = () => {
     formState: { errors },
   } = useForm<DoctorFormInputs>();
 
-const {clinicId}=useOutletContext<OutletContext>();
+ const context = useOutletContext<ClinicContext | null>();
+  const clinicId = context?.clinicId || null; // safe access
   console.log("Clinic ID in RegisterDoctor:", clinicId);
  
  
@@ -52,6 +54,7 @@ const {clinicId}=useOutletContext<OutletContext>();
   const onSubmit = async (data: DoctorFormInputs) => {
     const formData = new FormData();
     formData.append("fullName", data.fullName);
+     formData.append("email",data.email);
     formData.append("gender", data.gender);
     formData.append("dob", data.dob);
     formData.append("regNumber", data.regNumber);
@@ -63,6 +66,7 @@ const {clinicId}=useOutletContext<OutletContext>();
     formData.append("pan", data.pan);
     formData.append("specialization", data.specialization);
     formData.append("mobileNo", data.mobileNo);
+      formData.append("password",data.password);
     if(clinicId) formData.append("clinicId", clinicId);
     if (degreeFile) formData.append("degreeCert", degreeFile);
     if (photoFile) formData.append("photo", photoFile);
@@ -116,6 +120,18 @@ const {clinicId}=useOutletContext<OutletContext>();
             </select>
             {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
           </div>
+          
+
+          {/* password */}
+          <div>
+            <label className="block text-gray-700 font-medium">Password</label>
+            <input type="password"
+              {...register("password", { required: "Full name is required" })}
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
+              
+            />
+            {errors.password&& <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+          </div>
 
           {/* DOB */}
           <div>
@@ -126,6 +142,17 @@ const {clinicId}=useOutletContext<OutletContext>();
               className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
             />
             {errors.dob && <p className="text-red-500 text-sm mt-1">{errors.dob.message}</p>}
+          </div>
+
+            {/* email */}
+        <div>
+            <label className="block text-gray-700 font-medium">Email</label>
+            <input
+              {...register("email", { required: "Full name is required" })}
+              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
+              placeholder="john@gmail.com"
+            />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
 
           {/* Medical Reg Number */}

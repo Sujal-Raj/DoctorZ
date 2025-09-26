@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import api from "../api/client";
+import { useParams } from "react-router-dom";
 
 type SelectionType = "single" | "multiple" | "month";
 
@@ -22,13 +23,15 @@ interface SavedSlot {
 }
 
 const TimeSlots: React.FC = () => {
+  const {drId}=useParams();
+  console.log("Doctor ID from params in TimeSlots:", drId);
   const [step, setStep] = useState<number>(1);
   const [selectionType, setSelectionType] = useState<SelectionType | "">("");
   const [selectedSingleDate, setSelectedSingleDate] = useState<Date | undefined>(undefined);
   const [selectedMultipleDates, setSelectedMultipleDates] = useState<Date[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>({ start: "", end: "" });
   const [savedSlots, setSavedSlots] = useState<SavedSlot[]>([]);
-  const doctorId = "68d4b05f3139480e19bec3a3"; // replace with logged-in doctor ID
+  const doctorId = drId;
 
   // Fetch saved slots
   const fetchSavedSlots = async () => {
@@ -46,10 +49,33 @@ const TimeSlots: React.FC = () => {
 
   const handleSelectionType = (type: SelectionType) => {
     setSelectionType(type);
-    setStep(2);
+    setStep(2);//calender
     setSelectedSingleDate(undefined);
     setSelectedMultipleDates([]);
   };
+
+
+const handleMonthSelect = (selected: Date[] | undefined) => {
+  if (!selected) return;
+
+  const firstDate = selected[0]; // month ke liye user ek date select karega
+  const year = firstDate.getFullYear();
+  const month = firstDate.getMonth();
+  const today = new Date();
+
+  const dates: Date[] = [];
+  const d = new Date(year, month, 1); // month ka pehla din
+
+  while (d.getMonth() === month) {
+    if (d >= today) dates.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+
+  setSelectedMultipleDates(dates); // multiple dates set kar do
+};
+
+
+
 
   const handleSave = async () => {
     const dates =
@@ -145,9 +171,9 @@ const TimeSlots: React.FC = () => {
             )}
             {selectionType === "month" && (
               <DayPicker
-                mode="single"
-                selected={undefined}
-                onSelect={() => {}}
+                mode="multiple"
+                 selected={selectedMultipleDates as Date[]}
+    onSelect={handleMonthSelect}
                 captionLayout="dropdown"
                 disabled={{ before: new Date() }}
               />

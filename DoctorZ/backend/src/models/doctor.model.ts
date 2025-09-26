@@ -3,8 +3,10 @@ import {Types} from 'mongoose';
 
 
 export interface IDoctor extends Document{
+      doctorId:string;
     fullName: string,
     password:string,
+     email:string;
     gender:string,
     dob:Date,
     MobileNo:string,
@@ -19,10 +21,12 @@ export interface IDoctor extends Document{
     signature:string,
     photo:string,
     clinic:Types.ObjectId[];
+       status?: string;
 }
 
 
 const doctorSchema = new mongoose.Schema<IDoctor>({
+      doctorId:{type:String,default:null,required:false},
     fullName:{
         type:String,
         required:true
@@ -36,6 +40,8 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
         type:Date,
         required:true,
     },
+      password:{type:String,required:true},
+      email:{type:String,required:true},
     MobileNo:{
         type:String,
         required:true,
@@ -83,7 +89,8 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
     clinic:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Clinic',
-    }]
+    }],
+      status: { type: String, default: "pending" }
 
 });
 

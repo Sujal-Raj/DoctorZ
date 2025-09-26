@@ -13,5 +13,6 @@ router.get('/:id', doctorController.getDoctorById);
 router.delete('/:id', doctorController.deleteDoctor);
 router.put('/:id', doctorController.updateDoctor);
 router.get('/getClinicDoctors/:clinicId', doctorController.getClinicDoctors);
+router.post('/login', doctorController.doctorLogin);
 export default router;
 //# sourceMappingURL=doctor.routes.js.map

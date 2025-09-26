@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { json } from "stream/consumers";
 import doctorModel from '../models/doctor.model.js';
+import jwt from "jsonwebtoken";
 const doctorRegister = async (req, res) => {
     try {
         console.log('Text fields:', req.body);
@@ -14,13 +14,20 @@ const doctorRegister = async (req, res) => {
         const Aadhar = Number(req.body.aadhar);
         const dob = new Date(req.body.dob);
         const MobileNo = req.body.mobileNo;
+        const email = req.body.email;
         // Handle files
         const degreeCert = files?.['degreeCert']?.[0]?.filename || '';
         const photo = files?.['photo']?.[0]?.filename || '';
         const signature = files?.['signature']?.[0]?.filename || '';
+        if (!req.body.password) {
+            return res.status(400).json({ message: "Password is required" });
+        }
+        // Hash password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const clinicId = req.body.clinicId;
         const doctor = new doctorModel({
             fullName: req.body.fullName,
+            password: hashedPassword,
             gender: req.body.gender,
             dob,
             MobileNo,
@@ -34,7 +41,9 @@ const doctorRegister = async (req, res) => {
             DegreeCertificate: degreeCert,
             photo,
             signature,
-            clinic: clinicId
+            email,
+            clinic: clinicId,
+            status: "pending",
         });
         await doctor.save();
         return res.status(201).json({ message: 'Doctor registered', doctor });
@@ -42,6 +51,45 @@ const doctorRegister = async (req, res) => {
     catch (error) {
         console.error('Registration error:', error);
         return res.status(500).json({ message: 'Registration failed', error });
+    }
+};
+// Login Doctor
+const doctorLogin = async (req, res) => {
+    try {
+        console.log("Login request body:", req.body);
+        const { doctorId, password } = req.body;
+        if (!doctorId || !password) {
+            return res.status(400).json({ message: "doctorId and password are required" });
+        }
+        const doctor = await doctorModel.findOne({ doctorId });
+        if (!doctor) {
+            return res.status(400).json({ message: "Invalid Credentials" });
+        }
+        //password verify
+        const isMatch = await bcrypt.compare(password, doctor.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid Credentials" });
+        }
+        const token = jwt.sign({
+            id: doctor._id,
+            doctorId: doctor.doctorId,
+            email: doctor.email,
+            role: "doctor",
+        }, process.env.JWT_SECRET, { expiresIn: "7d" });
+        return res.status(200).json({
+            message: "Login Successful",
+            token,
+            doctor: {
+                _id: doctor._id,
+                doctorId: doctor.doctorId,
+                fullName: doctor.fullName,
+                email: doctor.email,
+            }
+        });
+    }
+    catch (error) {
+        console.error("Doctor login error:", error);
+        return res.status(500).json({ message: "Server error" });
     }
 };
 const getDoctorById = async (req, res) => {
@@ -134,5 +182,5 @@ const getClinicDoctors = async (req, res) => {
         });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors };
+export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin };
 //# sourceMappingURL=doctor.controller.js.map
