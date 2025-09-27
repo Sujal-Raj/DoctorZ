@@ -22,9 +22,15 @@ interface SavedSlot {
   slots: Slot[];
 }
 
+interface CreateSlotResponse {
+  success: boolean;
+  createdDates: string[];
+  alreadyExistDates: string[];
+  message: string;
+}
+
 const TimeSlots: React.FC = () => {
-  const {drId}=useParams();
-  console.log("Doctor ID from params in TimeSlots:", drId);
+  const { drId } = useParams();
   const [step, setStep] = useState<number>(1);
   const [selectionType, setSelectionType] = useState<SelectionType | "">("");
   const [selectedSingleDate, setSelectedSingleDate] = useState<Date | undefined>(undefined);
@@ -35,9 +41,10 @@ const TimeSlots: React.FC = () => {
 
   // Fetch saved slots
   const fetchSavedSlots = async () => {
+    if (!doctorId) return;
     try {
-      const res = await api.get(`/api/availability/getTimeSlots/${doctorId}`);
-      setSavedSlots(res.data as SavedSlot[]);
+      const res = await api.get<SavedSlot[]>(`/api/availability/getTimeSlots/${doctorId}`);
+      setSavedSlots(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -45,37 +52,37 @@ const TimeSlots: React.FC = () => {
 
   useEffect(() => {
     fetchSavedSlots();
-  }, []);
+  }, [doctorId]);
 
   const handleSelectionType = (type: SelectionType) => {
     setSelectionType(type);
-    setStep(2);//calender
+    setStep(2);
     setSelectedSingleDate(undefined);
     setSelectedMultipleDates([]);
   };
 
+  const disabledDates = savedSlots.map(s => new Date(s.date));
 
-const handleMonthSelect = (selected: Date[] | undefined) => {
-  if (!selected) return;
+  const handleMonthSelect = (selected: Date[] | undefined) => {
+    if (!selected) return;
 
-  const firstDate = selected[0]; // month ke liye user ek date select karega
-  const year = firstDate.getFullYear();
-  const month = firstDate.getMonth();
-  const today = new Date();
+    const firstDate = selected[0];
+    const year = firstDate.getFullYear();
+    const month = firstDate.getMonth();
+    const today = new Date();
 
-  const dates: Date[] = [];
-  const d = new Date(year, month, 1); // month ka pehla din
+    const dates: Date[] = [];
+    const d = new Date(year, month, 1);
 
-  while (d.getMonth() === month) {
-    if (d >= today) dates.push(new Date(d));
-    d.setDate(d.getDate() + 1);
-  }
+    while (d.getMonth() === month) {
+      if (d >= today && !disabledDates.some(dd => dd.toDateString() === d.toDateString())) {
+        dates.push(new Date(d));
+      }
+      d.setDate(d.getDate() + 1);
+    }
 
-  setSelectedMultipleDates(dates); // multiple dates set kar do
-};
-
-
-
+    setSelectedMultipleDates(dates);
+  };
 
   const handleSave = async () => {
     const dates =
@@ -83,7 +90,7 @@ const handleMonthSelect = (selected: Date[] | undefined) => {
         ? selectedSingleDate
           ? [selectedSingleDate.toISOString()]
           : []
-        : selectedMultipleDates.map((d) => d.toISOString());
+        : selectedMultipleDates.map(d => d.toISOString());
 
     if (!dates.length) return alert("Please select at least one date");
     if (!workingHours.start || !workingHours.end) return alert("Enter working hours");
@@ -91,25 +98,33 @@ const handleMonthSelect = (selected: Date[] | undefined) => {
     const payload = { doctorId, dates, workingHours };
 
     try {
-      await api.post("/api/availability/createTimeSlot", payload);
-      alert("Availability saved!");
+      const res = await api.post<CreateSlotResponse>("/api/availability/createTimeSlot", payload);
+      const data = res.data;
+
+      if (data.createdDates.length > 0) {
+        alert(`Slots created for: ${data.createdDates.join(", ")}`);
+      }
+
+      if (data.alreadyExistDates.length > 0) {
+        alert(`Slots already exist for: ${data.alreadyExistDates.join(", ")}`);
+      }
+
       setStep(1);
       setSelectionType("");
       setSelectedSingleDate(undefined);
       setSelectedMultipleDates([]);
       setWorkingHours({ start: "", end: "" });
-      fetchSavedSlots(); // refresh saved slots
+      fetchSavedSlots();
     } catch (err: any) {
       console.error(err);
       alert(err.response?.data?.error || "Server error");
     }
   };
 
-  // Toggle slot active/inactive
   const toggleSlot = async (slotId: string, time: string, isActive: boolean) => {
     try {
       await api.patch(`/api/availability/updateSlot/${slotId}`, { time, isActive });
-      fetchSavedSlots(); // refresh after toggle
+      fetchSavedSlots();
     } catch (err) {
       console.error(err);
     }
@@ -153,10 +168,10 @@ const handleMonthSelect = (selected: Date[] | undefined) => {
               <DayPicker
                 mode="single"
                 selected={selectedSingleDate}
-                onSelect={(date) => setSelectedSingleDate(date)}
+                onSelect={setSelectedSingleDate}
                 modifiersClassNames={{ selected: "bg-blue-500 text-white rounded-full" }}
                 showOutsideDays
-                disabled={{ before: new Date() }}
+                disabled={[{ before: new Date() }, ...disabledDates]}
               />
             )}
             {selectionType === "multiple" && (
@@ -166,16 +181,16 @@ const handleMonthSelect = (selected: Date[] | undefined) => {
                 onSelect={(dates) => setSelectedMultipleDates(dates || [])}
                 modifiersClassNames={{ selected: "bg-blue-500 text-white rounded-full" }}
                 showOutsideDays
-                disabled={{ before: new Date() }}
+                disabled={[{ before: new Date() }, ...disabledDates]}
               />
             )}
             {selectionType === "month" && (
               <DayPicker
                 mode="multiple"
-                 selected={selectedMultipleDates as Date[]}
-    onSelect={handleMonthSelect}
+                selected={selectedMultipleDates}
+                onSelect={handleMonthSelect}
                 captionLayout="dropdown"
-                disabled={{ before: new Date() }}
+                disabled={[{ before: new Date() }, ...disabledDates]}
               />
             )}
           </div>
@@ -240,4 +255,4 @@ const handleMonthSelect = (selected: Date[] | undefined) => {
   );
 };
 
-export default TimeSlots; 
+export default TimeSlots;
