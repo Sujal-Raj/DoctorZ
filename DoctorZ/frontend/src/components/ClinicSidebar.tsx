@@ -5,11 +5,11 @@ import { Home, User, UserPlus, LogOut } from "lucide-react";
 const ClinicSidebar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    // Remove token/cookie here
-    localStorage.removeItem("clinic_portal_token");
-    navigate("/clinic-login");
-  };
+  // const handleLogout = () => {
+  //   // Remove token/cookie here
+  //   localStorage.removeItem("clinic_portal_token");
+  //   navigate("/clinic-login");
+  // };
 
   return (
     <div className="w-64 min-h-screen bg-gray-900 text-gray-200 flex flex-col justify-between shadow-lg">
@@ -22,6 +22,14 @@ const ClinicSidebar = () => {
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           >
             <Home size={18} /> Home
+          </Link>
+
+
+            <Link
+            to="clinic-profile"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            <Home size={18} /> Profile
           </Link>
           <Link
             to="all-clinic-doctors"
@@ -41,7 +49,7 @@ const ClinicSidebar = () => {
       {/* Bottom section */}
       <div className="px-6 py-6 border-t border-gray-700">
         <button
-          onClick={handleLogout}
+          // onClick={handleLogout}
           className="flex items-center gap-3 px-4 py-2 w-full rounded-lg hover:bg-red-600 transition text-red-400"
         >
           <LogOut size={18} /> Logout

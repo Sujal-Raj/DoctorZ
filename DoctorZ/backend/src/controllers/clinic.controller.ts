@@ -48,7 +48,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
     }
 
     // Multer provides the uploaded file here
-    const registrationCertPath = req.file ? req.file.path : undefined;
+    const registrationCertPath = req.file ? req.file.filename : undefined;
 
     const clinic = new clinicModel({
       clinicName,
@@ -300,4 +300,27 @@ export const getAllClinic=async(req:Request,res:Response)=>{
 }
 
 
+export const getClinicById = async(req:Request,res:Response)=>{
+   try{
+      const {id} = req.params;
+
+      const clinic = await clinicModel.findById(id);
+
+      if(!clinic){
+        return res.status(404).json({
+          message:"Clinic not found"
+        })
+      }
+
+      return res.status(200).json({
+        message:"Clinic found", clinic
+      })
+   }
+   catch(error){
+    console.error("error in getClinicById",error);
+    return res.status(500).json({
+      message:"Something went wrong"
+    })
+   }
+}
 

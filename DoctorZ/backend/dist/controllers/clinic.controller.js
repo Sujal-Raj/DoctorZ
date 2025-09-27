@@ -21,7 +21,7 @@ export const clinicRegister = async (req, res) => {
             return res.status(400).json({ message: "All required fields must be filled." });
         }
         // Multer provides the uploaded file here
-        const registrationCertPath = req.file ? req.file.path : undefined;
+        const registrationCertPath = req.file ? req.file.filename : undefined;
         const clinic = new clinicModel({
             clinicName,
             clinicType,
@@ -212,6 +212,26 @@ export const getAllClinic = async (req, res) => {
         });
     }
     catch (error) {
+        return res.status(500).json({
+            message: "Something went wrong"
+        });
+    }
+};
+export const getClinicById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const clinic = await clinicModel.findById(id);
+        if (!clinic) {
+            return res.status(404).json({
+                message: "Clinic not found"
+            });
+        }
+        return res.status(200).json({
+            message: "Clinic found", clinic
+        });
+    }
+    catch (error) {
+        console.error("error in getClinicById", error);
         return res.status(500).json({
             message: "Something went wrong"
         });
