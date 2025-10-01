@@ -24,21 +24,40 @@ const RegisterPatient: React.FC = () => {
   } = useForm<PatientFormInputs>();
 
   const onSubmit = async (data: PatientFormInputs) => {
-    try {
-      const res = await fetch("http://localhost:5000/api/patients/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+  try {
+    const payload = {
+      fullName: data.fullName,
+      gender: data.gender,
+      dob: data.dob,
+      email: data.email,
+      password: data.password,
+      mobileNumber: data.mobileNumber,
+      Aadhar: data.aadhar,  // backend capital "Aadhar" expect kar raha hai
+      abhaId: data.abhaId,
+      address: {
+        city: data.city,
+        pincode: data.pincode,
+      },
+      emergencyContact: {
+        name: data.emergencyName,
+        number: data.emergencyNumber,
+      },
+    };
 
-      const result = await res.json();
-      console.log(" Patient Registered:", result);
-      alert("Patient registered successfully!");
-    } catch (err) {
-      console.error(" Error:", err);
-      alert("Something went wrong!");
-    }
-  };
+    const res = await fetch("http://localhost:3000/api/patient/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await res.json();
+    console.log(" Patient Registered:", result);
+    alert("Patient registered successfully!");
+  } catch (err) {
+    console.error(" Error:", err);
+    alert("Something went wrong!");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-100 p-6">

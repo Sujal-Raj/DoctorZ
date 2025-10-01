@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
+import Cookies from "js-cookie";
 
 interface LoginResponse {
   token: string;
@@ -10,7 +11,7 @@ interface LoginResponse {
   };
 }
 
-export default function Login() {
+export default function LoginPatient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -18,10 +19,14 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post<LoginResponse>("/api/auth/login", { email, password });
-      localStorage.setItem("clinic_portal_token", res.data.token);
+      const res = await api.post<LoginResponse>("/api/patient/login", { email, password });
+      Cookies.set("patientToken", res.data.token, { expires: 7 });
+    console.log(document.cookie);
+      alert("Login successful");
       navigate("/");
+
     } catch (err) {
+      console.error(err);
       alert("Invalid login");
     }
   };

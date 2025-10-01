@@ -4,7 +4,9 @@ import { Router } from "express";
 import patientController from "../controllers/patient.controller.js";
 const router = Router();
 router.post("/register", patientController.patientRegister);
+router.post("/login", patientController.patientLogin);
 router.get("/:id", patientController.getPatientById);
 router.delete("/:id", patientController.deleteUser);
+router.get("/slots/:doctorId/:date", patientController.getAvailableSlotsByDoctorId);
 export default router;
 //# sourceMappingURL=patient.routes.js.map

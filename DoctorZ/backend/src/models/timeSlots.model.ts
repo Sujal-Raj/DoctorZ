@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 interface Slot {
+   _id: string;
   time: string;
   isActive: boolean;
 }
@@ -13,6 +14,7 @@ export interface TimeSlot extends Document {
 }
 
 const slotSchema = new Schema<Slot>({
+  
   time: { type: String, required: true },
   isActive: { type: Boolean, default: false },
 });

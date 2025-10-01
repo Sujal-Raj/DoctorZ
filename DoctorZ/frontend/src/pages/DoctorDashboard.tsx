@@ -48,7 +48,7 @@
 // export default DoctorDashboard;
 
 
-import { use } from "react";
+
 import { Link, Outlet, useParams } from "react-router-dom";
 
 function DoctorDashboard() {

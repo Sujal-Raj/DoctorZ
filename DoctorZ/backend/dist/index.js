@@ -7,6 +7,7 @@ import cors from "cors";
 import express, { urlencoded } from "express";
 const app = express();
 import dbConnect from "./config/dbConfig.js";
+import bookingRoutes from "./routes/booking.routes.js";
 import patientRoutes from "./routes/patient.routes.js";
 import doctorRoutes from "./routes/doctor.routes.js";
 import clinicRoutes from "./routes/clinic.routes.js";
@@ -32,6 +33,7 @@ app.use("/api/patient", patientRoutes);
 app.use("/api/clinic", clinicRoutes);
 app.use("/api/doctor", doctorRoutes);
 app.use("/api/availability", timeSlotsRoutes);
+app.use("/api/booking", bookingRoutes);
 app.listen(PORT, () => {
     console.log("Server running at " + PORT);
 });

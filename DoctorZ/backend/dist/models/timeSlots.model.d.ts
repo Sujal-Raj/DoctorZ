@@ -1,5 +1,6 @@
 import mongoose, { Document } from "mongoose";
 interface Slot {
+    _id: string;
     time: string;
     isActive: boolean;
 }
