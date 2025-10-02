@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/client";
 
 interface Patient {
@@ -17,6 +17,7 @@ interface Booking {
 }
 
 const AllPatient: React.FC = () => {
+  const navigate = useNavigate();
   const { drId } = useParams<{ drId: string }>();
   const [patients, setPatients] = useState<Patient[]>([]);
 
@@ -61,7 +62,7 @@ const AllPatient: React.FC = () => {
                 >
                   Call
                 </a>
-                <button className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                <button onClick={()=>navigate('/patient-chat')} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                   Chat
                 </button>
               </div>

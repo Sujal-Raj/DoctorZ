@@ -68,6 +68,7 @@ const patientLogin = async(req: Request, res: Response)=>{
 
     const patient = await patientModel.findOne({ email:email.toLowerCase() });
     if (!patient) {
+      
       return res.status(400).json({ message: "Invalid Credentials." });
     }
 

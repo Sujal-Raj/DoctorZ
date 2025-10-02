@@ -102,6 +102,7 @@
 // src/components/DoctorCard.tsx
 import React from "react";
 import { Video, MapPin, Clock, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export interface Doctor {
   _id: string;
@@ -127,6 +128,7 @@ interface Props {
 }
 
 const DoctorCard: React.FC<Props> = ({ doctor, onConsult, onViewProfile }) => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
       <div className="flex p-6 gap-6">
@@ -181,6 +183,17 @@ const DoctorCard: React.FC<Props> = ({ doctor, onConsult, onViewProfile }) => {
                     <Video className="w-4 h-4" /> Consult
                   </div>
                 </button>
+                <button onClick={()=>navigate('/patient-chat')}
+    className="flex items-center gap-2 rounded-xl bg-blue-300 text-gray-700 px-4 py-2 text-sm font-medium shadow-sm hover:bg-blue-200 transition"
+  >
+    💬 Chat
+  </button>
+
+  <button
+    className="flex items-center gap-2 rounded-xl bg-blue-100 text-blue-700 px-4 py-2 text-sm font-medium shadow-sm hover:bg-blue-200 transition"
+  >
+    📞 Call
+  </button>
 
                 <button
                   onClick={() => onViewProfile?.(doctor)}

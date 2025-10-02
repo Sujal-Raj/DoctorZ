@@ -21,6 +21,8 @@ import DoctorProfile from "./pages/DoctorProfile";
 import ClinicProfile from "./pages/ClinicProfile";
 import LoginPatient from "./pages/LoginPatient";
 import AllPatient from "./pages/AllPatient";
+import PatientChat from "./pages/PatientChat";
+import DoctorChat from "./pages/DoctorChat";
 
 // Wrapper component to conditionally render Navbar
 const AppWrapper: React.FC = () => {
@@ -62,6 +64,8 @@ const AppWrapper: React.FC = () => {
             <Route path="settings" element={<p>Settings Page</p>} />
           </Route>
           <Route path="/patient-login" element={<LoginPatient />} />
+           <Route path ="/patient-chat" element={<PatientChat />} />
+          <Route path ="/doctor-chat" element={<DoctorChat />} />
         </Routes>
       </div>
     </>
