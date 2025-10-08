@@ -27,6 +27,15 @@ const mapToBookingDoctor = (doc: Doctor): DoctorForBooking => ({
 });
 
 const AllDoctor: React.FC = () => {
+   const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("patientToken="))
+      ?.split("=")[1];
+    const payloadBase64 = token?.split(".")[1];
+    const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
+    const patientId = pay?.id;
+   console.log(token);
+   console.log(patientId);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null); // Doctor रखा हुआ है
