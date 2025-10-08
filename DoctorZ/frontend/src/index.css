@@ -76,6 +76,14 @@ button:focus-visible {
 body {
   background-color: #f9fafb; /* gray-50 */
   color: #111827;           /* gray-900 */
-  font-family: sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

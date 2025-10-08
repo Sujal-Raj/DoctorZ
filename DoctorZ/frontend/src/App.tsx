@@ -23,6 +23,11 @@ import LoginPatient from "./pages/LoginPatient";
 import AllPatient from "./pages/AllPatient";
 import PatientChat from "./pages/PatientChat";
 import DoctorChat from "./pages/DoctorChat";
+import ViewDoctorProfile from "./pages/ViewDoctorProfile";
+import RegisterLab from "./pages/RegisterLab";
+import LoginLab from "./pages/LoginLab";
+import AdminLab from "./pages/AdminLab";
+import AllLabTest from "./pages/AllLabTest";
 
 // Wrapper component to conditionally render Navbar
 const AppWrapper: React.FC = () => {
@@ -66,6 +71,11 @@ const AppWrapper: React.FC = () => {
           <Route path="/patient-login" element={<LoginPatient />} />
            <Route path ="/patient-chat" element={<PatientChat />} />
           <Route path ="/doctor-chat" element={<DoctorChat />} />
+          <Route path="/view-doctor-profile/:drId" element={<ViewDoctorProfile />} />
+          <Route path="/lab-register" element={<RegisterLab/>}/>
+          <Route path="/lab-login" element={<LoginLab/>}/>
+          <Route path="/admin-lab" element={<AdminLab/>}/>
+          <Route path="all-lab-test" element={<AllLabTest/>} />
         </Routes>
       </div>
     </>

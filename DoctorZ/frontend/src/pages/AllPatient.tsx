@@ -13,7 +13,7 @@ interface Patient {
 interface Booking {
   _id: string;
   patientId: Patient;
-  // other booking fields if needed
+  
 }
 
 const AllPatient: React.FC = () => {
@@ -28,7 +28,7 @@ const AllPatient: React.FC = () => {
         const res = await api.get<{ bookings: Booking[] }>(
           `/api/booking/doctor/${drId}`
         );
-        // Extract patient info from bookings
+       
         const patientList = res.data.bookings.map((b) => b.patientId);
         setPatients(patientList);
       } catch (err) {
@@ -62,7 +62,7 @@ const AllPatient: React.FC = () => {
                 >
                   Call
                 </a>
-                <button onClick={()=>navigate('/patient-chat')} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                <button onClick={()=>navigate('/doctor-chat')} className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
                   Chat
                 </button>
               </div>

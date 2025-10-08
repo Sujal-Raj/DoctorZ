@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import doctorModel from "../models/doctor.model.js";
 import nodemailer from 'nodemailer';
+import { LabModel } from "../models/lab.model.js";
 dotenv.config();
 
 // 🔹 Generate Token
@@ -113,7 +114,7 @@ export const approveDoctor = async (req: Request, res: Response):Promise<Respons
   }
 };
 
-// 🔹 Reject Doctor
+//  Reject Doctor
 export const rejectDoctor = async (req: Request, res: Response) :Promise<Response> => {
   try {
     const { id } = req.params;
@@ -138,6 +139,87 @@ export const rejectDoctor = async (req: Request, res: Response) :Promise<Respons
     return res.status(200).json({ message: "Doctor rejected ❌", doctor });
   } catch (error) {
     console.error("Error rejecting doctor:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+
+//  Approve Lab
+const generateLabId = (): string => {
+  return "LAB-" + Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+export const approveLab = async (req: Request, res: Response):Promise<Response> => {
+  try {
+    const { id } = req.params;
+
+
+    const generatedId = generateLabId();
+
+    const lab = await LabModel.findByIdAndUpdate(
+      id,
+      { status: "approved",labId:generatedId },
+      { new: true }
+    );
+
+    if (!lab) {
+      return res.status(404).json({ message: "Lab not found" });
+    }
+
+    await sendMail (lab.email,
+   "Lab Registration Approved ✅",
+      `<p>Dear  ${lab.name},</p>
+       <p>Your registration is <b>Approved</b>.</p>
+       <p><b>Lab ID:</b> ${generatedId}</p>`
+    );
+
+    return res.status(200).json({ message: "Lab approved ✅ & mail sent", lab });
+  } catch (error) {
+    console.error("Error approving lab:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+//  Reject Lab
+export const rejectLab = async (req: Request, res: Response) :Promise<Response> => {
+  try {
+    const { id } = req.params;
+
+    const lab = await LabModel.findByIdAndUpdate(
+      id,
+      { status: "rejected" },
+      { new: true }
+    );
+
+    if (!lab) {
+      return res.status(404).json({ message: "lab not found" });
+    }
+
+    await sendMail(
+        lab.email,
+        "Lab Registration Rejected ❌",
+      `<p>Dear ${lab.name},</p>
+       <p>Your registration is <b>Rejected</b>. Please contact admin for details.</p>`
+    );
+
+    return res.status(200).json({ message: "Lab rejected ❌", lab});
+  } catch (error) {
+    console.error("Error rejecting lab:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// get all labs
+
+export const getPendingLabs = async (req: Request, res: Response) :Promise<Response>=> {
+  try {
+    const pendingLabs = await LabModel.find();
+
+    return res.status(200).json(pendingLabs);
+  } catch (error) {
+    console.error("Error fetching pending Labs:", error);
     return res.status(500).json({ message: "Server Error" });
   }
 };
