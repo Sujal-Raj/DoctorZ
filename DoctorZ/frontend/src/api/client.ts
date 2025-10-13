@@ -7,11 +7,6 @@ const api = axios.create({
   withCredentials: true, 
 });
 
-
-
-
-///mamka
-
 export default api;
 
 
