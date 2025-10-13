@@ -2,10 +2,6 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 import api from "../api/client";
 
-interface Test {
-  name: string;
-  price: number;
-}
 
 interface Timings {
   open: string;
@@ -21,7 +17,7 @@ interface Lab {
   pincode: string;
   address: string;
   timings: Timings;
-  tests: Test[];
+ 
 }
 
 export default function RegisterLab() {
@@ -33,12 +29,9 @@ export default function RegisterLab() {
     city: "",
     pincode: "",
     address: "",
-    timings: { open: "", close: "" },
-    tests: [],
+    timings: { open: "", close: "" }
+   
   });
-
-  const [testName, setTestName] = useState<string>("");
-  const [testPrice, setTestPrice] = useState<string>("");
 
   const handleOnChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -47,36 +40,15 @@ export default function RegisterLab() {
     setLab((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addTest = (): void => {
-    if (!testName || !testPrice) {
-      alert("Please enter both Test name and Price");
-      return;
-    }
-    setLab((prev) => ({
-      ...prev,
-      tests: [...prev.tests, { name: testName, price: Number(testPrice) }],
-    }));
-    setTestName("");
-    setTestPrice("");
-  };
 
-  const removeTest = (index: number): void => {
-    setLab((prev) => ({
-      ...prev,
-      tests: prev.tests.filter((_, i) => i !== index),
-    }));
-  };
-
+ 
   const handleRegistration = async (): Promise<void> => {
     
 
     try {
-      const pricingObj: Record<string, number> = {};
-      lab.tests.forEach((t) => {
-        pricingObj[t.name] = t.price;
-      });
+     
 
-     const response=await api.post("/api/lab/register", { ...lab, pricing: pricingObj, tests: lab.tests },{
+     const response=await api.post("/api/lab/register", { ...lab },{
       headers: {"Content-Type": "application/json" }
      })
       
@@ -190,56 +162,7 @@ export default function RegisterLab() {
         />
       </div>
 
-      {/* Tests Section */}
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">
-          Tests & Pricing
-        </h2>
-        <div className="flex flex-col sm:flex-row gap-3 mb-3">
-          <input
-            type="text"
-            value={testName}
-            onChange={(e) => setTestName(e.target.value)}
-            placeholder="Test Name"
-            className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-50"
-          />
-          <input
-            type="number"
-            value={testPrice}
-            onChange={(e) => setTestPrice(e.target.value)}
-            placeholder="Price"
-            className="w-32 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-50"
-          />
-          <button
-            onClick={addTest}
-            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition font-medium"
-          >
-            Add
-          </button>
-        </div>
-
-        {lab.tests.length > 0 && (
-          <ul className="border rounded-lg divide-y bg-gray-50">
-            {lab.tests.map((t, i) => (
-              <li
-                key={i}
-                className="flex justify-between items-center px-3 py-2 text-gray-700"
-              >
-                <span>
-                  {t.name} - ₹{t.price}
-                </span>
-                <button
-                  onClick={() => removeTest(i)}
-                  className="text-red-500 hover:text-red-700 text-sm font-medium"
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
+      
       <div className="flex justify-center">
         <button
           onClick={handleRegistration}

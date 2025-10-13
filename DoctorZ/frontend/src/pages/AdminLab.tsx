@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import api from "../api/client";
@@ -8,7 +9,7 @@ interface Timings {
 }
 
 interface Test {
-  name: string;
+  testName: string;
   price: number;
 }
 
@@ -21,7 +22,6 @@ interface Lab {
   pincode: string;
   address: string;
   timings: Timings;
-  tests: Test[];
   status: string; // "pending", "approved", "rejected"
 }
 
@@ -30,18 +30,22 @@ export default function AdminLab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // ✅ Fetch all pending labs
   const fetchLabDetails = async () => {
     try {
+      setLoading(true);
       const response = await api.get("/api/admin/labs/pending");
       setLabs(response.data as Lab[]);
-      setLoading(false);
+      setError("");
     } catch (err: any) {
       console.error(err);
       setError(err?.response?.data?.message || "Failed to fetch labs");
+    } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Approve or Reject lab
   const handleAction = async (id: string, action: "approve" | "reject") => {
     try {
       const url =
@@ -49,17 +53,14 @@ export default function AdminLab() {
           ? `/api/admin/lab/${id}/approve`
           : `/api/admin/lab/${id}/reject`;
 
-      const response = await api.put(
-        url,
-        
-      );
+      const response = await api.put(url);
 
       if (response.status === 200) {
         Swal.fire({
           title:
             action === "approve"
-              ? "Lab Approved "
-              : "Lab Rejected ",
+              ? "Lab Approved ✅"
+              : "Lab Rejected ❌",
           text:
             action === "approve"
               ? "This lab can now log in using its credentials."
@@ -68,16 +69,14 @@ export default function AdminLab() {
           timer: 1500,
           showConfirmButton: false,
         });
-        // Refresh list after action
+        // Refresh list
         fetchLabDetails();
       }
     } catch (err: any) {
       console.error(err);
       Swal.fire({
         title: "Error!",
-        text:
-          err?.response?.data?.message ||
-          `Failed to ${action} the lab.`,
+        text: err?.response?.data?.message || `Failed to ${action} the lab.`,
         icon: "error",
         confirmButtonText: "Ok",
       });
@@ -88,10 +87,11 @@ export default function AdminLab() {
     fetchLabDetails();
   }, []);
 
+  // ✅ Loading and Error States
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen text-gray-700 text-lg">
-        Loading labs...
+        Fetching lab details...
       </div>
     );
 
@@ -102,6 +102,7 @@ export default function AdminLab() {
       </div>
     );
 
+  // ✅ Main UI
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -109,7 +110,7 @@ export default function AdminLab() {
       </h1>
 
       {labs.length === 0 ? (
-        <p className="text-center text-gray-600">No labs found.</p>
+        <p className="text-center text-gray-600">No pending labs found.</p>
       ) : (
         <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
           <table className="min-w-full text-sm text-left text-gray-700">
@@ -119,7 +120,6 @@ export default function AdminLab() {
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Location</th>
                 <th className="py-3 px-4">Timings</th>
-                <th className="py-3 px-4">Tests</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4 text-center">Actions</th>
               </tr>
@@ -137,19 +137,6 @@ export default function AdminLab() {
                   </td>
                   <td className="py-3 px-4">
                     {lab.timings.open} - {lab.timings.close}
-                  </td>
-                  <td className="py-3 px-4">
-                    {lab.tests.length > 0 ? (
-                      <ul className="list-disc pl-5">
-                        {lab.tests.map((test, idx) => (
-                          <li key={idx}>
-                            {test.name} - ₹{test.price}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span className="text-gray-500">No tests</span>
-                    )}
                   </td>
                   <td className="py-3 px-4 capitalize font-semibold">
                     <span
@@ -197,3 +184,4 @@ export default function AdminLab() {
     </div>
   );
 }
+

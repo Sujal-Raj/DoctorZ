@@ -1,10 +1,13 @@
+// import type { Request, Response } from "express";
+// import BookingModel from "../models/booking.model.js";
+// import timeSlotsModel from "../models/timeSlots.model.js";
 import BookingModel from "../models/booking.model.js";
 import timeSlotsModel from "../models/timeSlots.model.js";
 // ✅ Book appointment
 export const bookAppointment = async (req, res) => {
     try {
-        const { patientId, doctorId, slotId, datetime, mode, fees } = req.body;
-        if (!patientId || !doctorId || !slotId || !datetime || !mode) {
+        const { patient, doctorId, slotId, datetime, mode, fees, userId } = req.body;
+        if (!patient || !doctorId || !slotId || !datetime || !mode || !userId) {
             return res.status(400).json({ message: "Missing required fields" });
         }
         // check if slot already booked
@@ -14,7 +17,8 @@ export const bookAppointment = async (req, res) => {
         }
         // create booking
         const booking = new BookingModel({
-            patientId,
+            userId,
+            patient, // embedded patient info
             doctorId,
             slotId,
             datetime,
@@ -38,8 +42,8 @@ export const bookAppointment = async (req, res) => {
 // ✅ Get bookings by patient
 export const getBookingsByPatient = async (req, res) => {
     try {
-        const { patientId } = req.params;
-        const bookings = await BookingModel.find({ patientId }).populate("doctorId slotId");
+        const { userId } = req.params; // now fetch by userId
+        const bookings = await BookingModel.find({ userId }).populate("doctorId slotId");
         return res.json({ bookings });
     }
     catch (err) {
@@ -51,7 +55,7 @@ export const getBookingsByPatient = async (req, res) => {
 export const getBookingsByDoctor = async (req, res) => {
     try {
         const { doctorId } = req.params;
-        const bookings = await BookingModel.find({ doctorId }).populate("patientId");
+        const bookings = await BookingModel.find({ doctorId }).populate("doctorId slotId");
         const slotDocs = await timeSlotsModel.find({ doctorId });
         const bookingsWithSlot = bookings.map(b => {
             const slotDoc = slotDocs.find(d => d.slots.some(s => s._id.toString() === b.slotId.toString()));

@@ -3,9 +3,15 @@ interface Timings {
     open: string;
     close: string;
 }
-interface Test {
-    name: string;
+export type TestCategory = "Liver" | "Kidney" | "Diabetes" | "Fever" | "Vitamin" | "Pregnancy" | "Heart" | "Other";
+export interface Test {
+    testName: string;
     price: number;
+    description: string;
+    precaution: string;
+    category: string;
+    customCategory?: string;
+    labId: mongoose.Types.ObjectId;
 }
 export interface Lab extends Document {
     labId?: string | null;
@@ -17,8 +23,6 @@ export interface Lab extends Document {
     pincode: string;
     address: string;
     status: "pending" | "approved" | "rejected";
-    tests: Test[];
-    pricing?: Record<string, number>;
     timings: Timings;
     createdAt?: string;
     updatedAt?: string;
@@ -33,5 +37,6 @@ export interface LabTestBooking extends Document {
 }
 export declare const LabModel: Model<Lab>;
 export declare const LabTestBookingModel: Model<LabTestBooking>;
+export declare const TestModel: Model<Test>;
 export {};
 //# sourceMappingURL=lab.model.d.ts.map
