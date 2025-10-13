@@ -28,6 +28,12 @@ import RegisterLab from "./pages/RegisterLab";
 import LoginLab from "./pages/LoginLab";
 import AdminLab from "./pages/AdminLab";
 import AllLabTest from "./pages/AllLabTest";
+import LabTestDetails from "./pages/LabTestDetails";
+import Patients from "./pages/LabPatients";
+import LabTests from "./pages/LabTests";
+import LabProfile from "./pages/LabProfile";
+import LabDashboard from "./pages/LabDashboard";
+import AppointmentForm from "./pages/AppointmentForm";
 
 // Wrapper component to conditionally render Navbar
 const AppWrapper: React.FC = () => {
@@ -42,6 +48,15 @@ const AppWrapper: React.FC = () => {
       <div className="">
         <Routes>
           <Route path="/" element={<Home />} />
+            <Route path="/lab-dashboard" element={<LabDashboard />}>
+         <Route
+          index
+          element={<h1 className="text-2xl font-bold">Welcome to Dashboard</h1>}
+        />
+          <Route path="patients" element={<Patients />} />
+          <Route path="tests" element={<LabTests />} />
+          <Route path="profile" element={<LabProfile />} />
+        </Route>
           <Route path="/patient-register" element={<RegisterPatient />} />
           <Route path="/doctor-register" element={<RegisterDoctor />} />
           <Route path="/clinic-register" element={<RegisterClinic />} />
@@ -76,6 +91,8 @@ const AppWrapper: React.FC = () => {
           <Route path="/lab-login" element={<LoginLab/>}/>
           <Route path="/admin-lab" element={<AdminLab/>}/>
           <Route path="all-lab-test" element={<AllLabTest/>} />
+           <Route path="/lab-test-details/:id" element={<LabTestDetails/>}/>
+           
         </Routes>
       </div>
     </>

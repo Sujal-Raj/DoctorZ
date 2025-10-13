@@ -1,7 +1,15 @@
 import mongoose, { Document } from "mongoose";
+export interface IPatientInfo {
+    name: string;
+    age: number;
+    gender: "Male" | "Female" | "Other";
+    aadhar: string;
+    contact: string;
+}
 export interface IBooking extends Document {
     doctorId: mongoose.Types.ObjectId;
-    patientId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
+    patient: IPatientInfo;
     slotId: mongoose.Types.ObjectId;
     datetime: Date;
     mode: "online" | "offline";

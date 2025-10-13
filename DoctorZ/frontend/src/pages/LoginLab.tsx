@@ -1,14 +1,26 @@
+
 import { useState } from "react";
 import Swal from "sweetalert2";
 import api from "../api/client";
 
+interface LabLoginResponse {
+  token: string;
+  lab: {
+    _id: string;
+    labId: string;
+    name: string;
+    email: string;
+  };
+  message: string;
+}
+
 export default function LoginLab() {
-  const [loginId, setLoginId] = useState("");
+  const [labId, setLabId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!loginId || !password) {
+    if (!labId || !password) {
       Swal.fire({
         title: "Missing Info!",
         text: "Please enter both Login ID and Password.",
@@ -20,30 +32,36 @@ export default function LoginLab() {
 
     try {
       setLoading(true);
-      const response = await api.post(
+
+      const response = await api.post<LabLoginResponse>(
         "/api/lab/login",
- { labId: loginId, password },
+        { labId, password },
         { headers: { "Content-Type": "application/json" } }
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.token) {
+        // ✅ Store both token and labId (MongoDB _id)
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("labId", response.data.lab._id);
+        localStorage.setItem("labName", response.data.lab.name);
+
         Swal.fire({
           title: "Login Successful!",
-          text: "Welcome ! Redirecting to your dashboard...",
+          text: `Welcome ${response.data.lab.name}! Redirecting to your dashboard...`,
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
         });
+
         setTimeout(() => {
-          window.location.href = "/lab-Dashboard";
+          window.location.href = "/lab-dashboard";
         }, 1500);
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Error:", error);
       Swal.fire({
         title: "Login Failed!",
-        text:
-          error?.response?.data?.message ||
-          "Invalid credentials or your lab is not approved yet.",
+        text: "Invalid credentials or your lab is not approved yet.",
         icon: "error",
         confirmButtonText: "Ok",
       });
@@ -60,15 +78,17 @@ export default function LoginLab() {
         </h1>
 
         <p className="text-center text-gray-500 mb-6 text-sm">
-          Use your <span className="font-semibold text-blue-600">Login ID</span> provided after admin approval.
+          Use your{" "}
+          <span className="font-semibold text-blue-600">Login ID</span> provided
+          after admin approval.
         </p>
 
         <div className="space-y-4">
           <input
             type="text"
             placeholder="Login ID"
-            value={loginId}
-            onChange={(e) => setLoginId(e.target.value)}
+            value={labId}
+            onChange={(e) => setLabId(e.target.value)}
             className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-50"
           />
           <input
@@ -92,12 +112,10 @@ export default function LoginLab() {
 
         <p className="text-center text-gray-600 mt-6">
           Don’t have an account?{" "}
-          <a href="/registerLab" className="text-blue-500 hover:underline">
+          <a href="/lab-register" className="text-blue-500 hover:underline">
             Register
           </a>
         </p>
-
-        
       </div>
     </div>
   );

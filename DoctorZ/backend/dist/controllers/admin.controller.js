@@ -102,52 +102,64 @@ export const rejectDoctor = async (req, res) => {
     }
 };
 //  Approve Lab
+// ------------------ Generate Lab ID ------------------
 const generateLabId = () => {
     return "LAB-" + Math.floor(100000 + Math.random() * 900000).toString();
 };
+// ------------------ Approve Lab ------------------
 export const approveLab = async (req, res) => {
     try {
         const { id } = req.params;
         const generatedId = generateLabId();
+        // ✅ Update lab to approved and assign labId
         const lab = await LabModel.findByIdAndUpdate(id, { status: "approved", labId: generatedId }, { new: true });
         if (!lab) {
             return res.status(404).json({ message: "Lab not found" });
         }
-        await sendMail(lab.email, "Lab Registration Approved ✅", `<p>Dear  ${lab.name},</p>
-       <p>Your registration is <b>Approved</b>.</p>
-       <p><b>Lab ID:</b> ${generatedId}</p>`);
-        return res.status(200).json({ message: "Lab approved ✅ & mail sent", lab });
+        // ✅ Send approval mail
+        await sendMail(lab.email, "Lab Registration Approved ✅", `<p>Dear ${lab.name},</p>
+       <p>Your registration has been <b>approved</b>.</p>
+       <p><b>Lab ID:</b> ${generatedId}</p>
+       <p>Welcome to our platform!</p>`);
+        return res.status(200).json({
+            message: "Lab approved ✅ & mail sent successfully",
+            lab,
+        });
     }
     catch (error) {
         console.error("Error approving lab:", error);
         return res.status(500).json({ message: "Server Error" });
     }
 };
-//  Reject Lab
+// ------------------ Reject Lab ------------------
 export const rejectLab = async (req, res) => {
     try {
         const { id } = req.params;
         const lab = await LabModel.findByIdAndUpdate(id, { status: "rejected" }, { new: true });
         if (!lab) {
-            return res.status(404).json({ message: "lab not found" });
+            return res.status(404).json({ message: "Lab not found" });
         }
         await sendMail(lab.email, "Lab Registration Rejected ❌", `<p>Dear ${lab.name},</p>
-       <p>Your registration is <b>Rejected</b>. Please contact admin for details.</p>`);
-        return res.status(200).json({ message: "Lab rejected ❌", lab });
+       <p>Your registration has been <b>rejected</b>. Please contact admin for more details.</p>`);
+        return res.status(200).json({
+            message: "Lab rejected ❌ & mail sent successfully",
+            lab,
+        });
     }
     catch (error) {
         console.error("Error rejecting lab:", error);
         return res.status(500).json({ message: "Server Error" });
     }
 };
-// get all labs
+// ------------------ Get Pending Labs ------------------
 export const getPendingLabs = async (req, res) => {
     try {
-        const pendingLabs = await LabModel.find();
+        // ✅ Fetch only pending labs
+        const pendingLabs = await LabModel.find({ status: "pending" }).select("-password"); // exclude password
         return res.status(200).json(pendingLabs);
     }
     catch (error) {
-        console.error("Error fetching pending Labs:", error);
+        console.error("Error fetching pending labs:", error);
         return res.status(500).json({ message: "Server Error" });
     }
 };

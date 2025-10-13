@@ -146,20 +146,23 @@ export const rejectDoctor = async (req: Request, res: Response) :Promise<Respons
 
 
 //  Approve Lab
+
+// ------------------ Generate Lab ID ------------------
 const generateLabId = (): string => {
   return "LAB-" + Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-export const approveLab = async (req: Request, res: Response):Promise<Response> => {
+// ------------------ Approve Lab ------------------
+export const approveLab = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { id } = req.params;
 
-
     const generatedId = generateLabId();
 
+    // ✅ Update lab to approved and assign labId
     const lab = await LabModel.findByIdAndUpdate(
       id,
-      { status: "approved",labId:generatedId },
+      { status: "approved", labId: generatedId },
       { new: true }
     );
 
@@ -167,23 +170,28 @@ export const approveLab = async (req: Request, res: Response):Promise<Response> 
       return res.status(404).json({ message: "Lab not found" });
     }
 
-    await sendMail (lab.email,
-   "Lab Registration Approved ✅",
-      `<p>Dear  ${lab.name},</p>
-       <p>Your registration is <b>Approved</b>.</p>
-       <p><b>Lab ID:</b> ${generatedId}</p>`
+    // ✅ Send approval mail
+    await sendMail(
+      lab.email,
+      "Lab Registration Approved ✅",
+      `<p>Dear ${lab.name},</p>
+       <p>Your registration has been <b>approved</b>.</p>
+       <p><b>Lab ID:</b> ${generatedId}</p>
+       <p>Welcome to our platform!</p>`
     );
 
-    return res.status(200).json({ message: "Lab approved ✅ & mail sent", lab });
+    return res.status(200).json({
+      message: "Lab approved ✅ & mail sent successfully",
+      lab,
+    });
   } catch (error) {
     console.error("Error approving lab:", error);
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
-//  Reject Lab
-export const rejectLab = async (req: Request, res: Response) :Promise<Response> => {
+// ------------------ Reject Lab ------------------
+export const rejectLab = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -194,32 +202,35 @@ export const rejectLab = async (req: Request, res: Response) :Promise<Response> 
     );
 
     if (!lab) {
-      return res.status(404).json({ message: "lab not found" });
+      return res.status(404).json({ message: "Lab not found" });
     }
 
     await sendMail(
-        lab.email,
-        "Lab Registration Rejected ❌",
+      lab.email,
+      "Lab Registration Rejected ❌",
       `<p>Dear ${lab.name},</p>
-       <p>Your registration is <b>Rejected</b>. Please contact admin for details.</p>`
+       <p>Your registration has been <b>rejected</b>. Please contact admin for more details.</p>`
     );
 
-    return res.status(200).json({ message: "Lab rejected ❌", lab});
+    return res.status(200).json({
+      message: "Lab rejected ❌ & mail sent successfully",
+      lab,
+    });
   } catch (error) {
     console.error("Error rejecting lab:", error);
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
-// get all labs
-
-export const getPendingLabs = async (req: Request, res: Response) :Promise<Response>=> {
+// ------------------ Get Pending Labs ------------------
+export const getPendingLabs = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const pendingLabs = await LabModel.find();
+    // ✅ Fetch only pending labs
+    const pendingLabs = await LabModel.find({ status: "pending" }).select("-password"); // exclude password
 
     return res.status(200).json(pendingLabs);
   } catch (error) {
-    console.error("Error fetching pending Labs:", error);
+    console.error("Error fetching pending labs:", error);
     return res.status(500).json({ message: "Server Error" });
   }
 };
