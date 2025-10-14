@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
+import api from "../Services/mainApi";
 
 interface LoginResponse {
   message: string;

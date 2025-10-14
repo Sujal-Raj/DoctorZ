@@ -1,6 +1,6 @@
 // src/api/doctorApi.ts
 
-import api from "./client"; // your axios instance
+import api from "./mainApi"; // your axios instance
 
 export const registerDoctor = async (formData: FormData) => {
   try {
@@ -14,7 +14,6 @@ export const registerDoctor = async (formData: FormData) => {
     throw error.response?.data || error;
   }
 };
-
 
 interface LoginResponse {
   message: string;

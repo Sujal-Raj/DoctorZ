@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerClinic } from "../api/mainClinicApi";  // Adjust path as needed
+import { registerClinic } from "../Services/mainClinicApi";  // Adjust path as needed
 
 type ClinicFormInputs = {
   clinicName: string;

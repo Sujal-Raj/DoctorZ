@@ -1,6 +1,6 @@
 // clinicApi.ts
 import axios from "axios";
-import api from "./client";
+import api from "./mainApi";
 export interface LoginResponse {
   message: string;
   clinic: {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerDoctor } from "../api/doctorApi";
+import { registerDoctor } from "../Services/doctorApi";
 import { useOutletContext } from "react-router-dom";
 type DoctorFormInputs = {
   fullName: string;

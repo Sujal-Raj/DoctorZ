@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { registerLab } from "../api/labApi";
-import type { Lab } from "../api/labApi";
+import { registerLab } from "../Services/labApi";
+import type { Lab } from "../Services/labApi";
 
 export default function RegisterLab() {
   const [lab, setLab] = useState<Lab>({

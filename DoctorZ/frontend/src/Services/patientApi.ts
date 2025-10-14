@@ -1,5 +1,5 @@
 // src/api/patient.ts
-import api from "./client";
+import api from "./mainApi";
 
 export interface PatientFormPayload {
   fullName: string;

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import doctorController from "../controllers/doctor.controller.js";
 import Router from 'express';
 import { upload } from "../middlewares/upload.js";
-import { verifyToken } from "../middlewares/auth.js";
+
 const router = Router();
 
 router.post('/register',upload.fields([

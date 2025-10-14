@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginDoctor } from "../api/doctorApi"; // 👈 import API function
+import { loginDoctor } from "../Services/doctorApi"; // 👈 import API function
 
 const DoctorLogin: React.FC = () => {
   const [doctorId, setDoctorId] = useState("");
