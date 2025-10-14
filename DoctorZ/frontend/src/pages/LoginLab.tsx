@@ -1,18 +1,7 @@
-
+// 📁 src/pages/LoginLab.tsx
 import { useState } from "react";
 import Swal from "sweetalert2";
-import api from "../api/client";
-
-interface LabLoginResponse {
-  token: string;
-  lab: {
-    _id: string;
-    labId: string;
-    name: string;
-    email: string;
-  };
-  message: string;
-}
+import { loginLab } from "../api/labApi"; // ✅ import from labApi
 
 export default function LoginLab() {
   const [labId, setLabId] = useState("");
@@ -33,14 +22,9 @@ export default function LoginLab() {
     try {
       setLoading(true);
 
-      const response = await api.post<LabLoginResponse>(
-        "/api/lab/login",
-        { labId, password },
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const response = await loginLab(labId, password); // ✅ using API function
 
       if (response.status === 200 && response.data.token) {
-        // ✅ Store both token and labId (MongoDB _id)
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("labId", response.data.lab._id);
         localStorage.setItem("labName", response.data.lab.name);

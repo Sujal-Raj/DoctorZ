@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import doctorModel from '../models/doctor.model.js';
 import patientModel from '../models/patient.model.js';
+import clinicModel from '../models/clinic.model.js';
 /// Doctor token verification
 export const verifyToken = async (req, res, next) => {
     try {
@@ -31,6 +32,7 @@ export const verifyToken = async (req, res, next) => {
         return res.status(401).json({ message: 'Invalid or expired token' });
     }
 };
+// Extend Request type to allow custom property
 // patient verificatuion 
 export const verifyPatientToken = async (req, res, next) => {
     try {
@@ -57,6 +59,34 @@ export const verifyPatientToken = async (req, res, next) => {
     catch (error) {
         console.error('Token verification error:', error);
         return res.status(401).json({ message: 'Invalid or expired token' });
+    }
+};
+export const verifyClinicToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "Authorization header missing or malformed" });
+        }
+        const token = authHeader.split(" ")[1];
+        if (!token) {
+            return res.status(401).json({ message: "Token is undefined or missing" });
+        }
+        const secret = process.env.JWT_SECRET;
+        if (!secret) {
+            return res.status(500).json({ message: "JWT secret is not configured" });
+        }
+        const decoded = jwt.verify(token, secret);
+        const clinic = await clinicModel.findById(decoded.id).select("-staffPassword");
+        if (!clinic) {
+            return res.status(404).json({ message: "Clinic not found" });
+        }
+        // Attach clinic info to request object for downstream handlers
+        req.body.clinic = clinic;
+        next();
+    }
+    catch (error) {
+        console.error("Clinic token verification error:", error);
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
 };
 //# sourceMappingURL=auth.js.map

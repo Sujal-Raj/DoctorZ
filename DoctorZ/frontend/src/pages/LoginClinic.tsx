@@ -17,25 +17,32 @@ interface LoginResponse {
 export default function LoginClinic() {
   const [staffId, setStaffId] = useState("");
   const [staffPassword, setStaffPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMsg("");
+
     try {
-      const res = await api.post<LoginResponse>("/api/clinic/clinicLogin", { staffId, staffPassword },
-      { withCredentials: true }
-      );
+      const res = await api.post<LoginResponse>("/api/clinic/clinicLogin", {
+        staffId,
+        staffPassword,
+      });
 
-      // ✅ Save JWT in cookie
-      document.cookie = `authToken=${res.data.jwtToken}; path=/; max-age=86400; samesite=lax`;
+      console.log("Full response data:", res.data); // Check full response object
+      console.log("JWT token from response:", res.data.jwtToken); // Check the token field
+      // ✅ Store token in localStorage
+      localStorage.setItem("authTokenClinic", res.data.jwtToken);
 
-      console.log("Login Response:", res.data); 
-      const clinicId=res.data.clinic.id;
-      // ✅ Redirect to dashboarda
       alert(res.data.message);
-    navigate(`/clinicDashboard/${clinicId}`);
+      navigate(`/clinicDashboard/${res.data.clinic.id}`);
     } catch (err: any) {
-      alert(err.response?.data?.message || "Invalid login");
+      setErrorMsg(err.response?.data?.message || "Invalid login credentials");
+      setStaffPassword("");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,6 +57,7 @@ export default function LoginClinic() {
           value={staffId}
           onChange={(e) => setStaffId(e.target.value)}
           required
+          disabled={loading}
         />
         <input
           type="password"
@@ -58,12 +66,17 @@ export default function LoginClinic() {
           value={staffPassword}
           onChange={(e) => setStaffPassword(e.target.value)}
           required
+          disabled={loading}
         />
+        {errorMsg && (
+          <p className="text-red-600 mb-4 text-sm font-medium">{errorMsg}</p>
+        )}
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-700 transition disabled:opacity-50"
+          disabled={loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

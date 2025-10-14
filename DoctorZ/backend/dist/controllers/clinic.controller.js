@@ -1,10 +1,8 @@
 import bcrypt from "bcryptjs";
 import clinicModel from "../models/clinic.model.js";
 import doctorModel from "../models/doctor.model.js";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import { log } from "console";
 dotenv.config();
 console.log("MAIL_USER:", process.env.MAIL_USER);
 // ---------------- Clinic Registration ----------------
@@ -54,31 +52,26 @@ export const clinicLogin = async (req, res) => {
         const { staffId, staffPassword } = req.body;
         if (!staffId || !staffPassword) {
             return res.status(400).json({
-                message: "All fields are required"
+                message: "All fields are required",
             });
         }
-        const clinic = await clinicModel.findOne({ staffId: staffId });
+        const clinic = await clinicModel.findOne({ staffId });
         if (!clinic) {
             return res.status(404).json({
-                message: "Clinic not found"
+                message: "Clinic not found",
             });
         }
         const isMatch = await bcrypt.compare(staffPassword, clinic.staffPassword);
         if (!isMatch) {
             return res.status(401).json({
-                message: "Invalid credentials"
+                message: "Invalid credentials",
             });
         }
         const token = jwt.sign({ id: clinic._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-        // ✅ Set cookie
-        res.cookie("authToken", token, {
-            httpOnly: false, // allow frontend JS to read
-            secure: false, // because localhost is not HTTPS
-            sameSite: "lax",
-            maxAge: 24 * 60 * 60 * 1000,
-        });
+        // ✅ Just return the token in the response (no cookie)
         return res.status(200).json({
             message: "Login successful",
+            jwtToken: token,
             clinic: {
                 id: clinic._id,
                 staffId: clinic.staffId,
@@ -89,8 +82,9 @@ export const clinicLogin = async (req, res) => {
         });
     }
     catch (error) {
+        console.error("Login Error:", error);
         return res.status(500).json({
-            message: "Something went wrong"
+            message: "Something went wrong",
         });
     }
 };

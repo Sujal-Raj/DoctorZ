@@ -10,11 +10,11 @@ router.post('/register', upload.fields([
     { name: 'signature', maxCount: 1 },
 ]), doctorController.doctorRegister);
 router.get('/allDoctors', doctorController.getAllDoctors);
-router.get('/:id', doctorController.getDoctorById);
-router.delete('/:id', doctorController.deleteDoctor);
-router.put('/:id', doctorController.updateDoctor);
+router.get('/:id', doctorController.getDoctorById); // add verify token
+router.delete('/:id', doctorController.deleteDoctor); /// why we using  
+router.put('/:id', doctorController.updateDoctor); // for update doctro profile
 router.get('/getClinicDoctors/:clinicId', doctorController.getClinicDoctors);
-router.post('/login', verifyToken, doctorController.doctorLogin);
-router.post('/logout', verifyToken, doctorController.logoutDoctor);
+router.post('/login', doctorController.doctorLogin);
+router.post('/logout', doctorController.logoutDoctor);
 export default router;
 //# sourceMappingURL=doctor.routes.js.map

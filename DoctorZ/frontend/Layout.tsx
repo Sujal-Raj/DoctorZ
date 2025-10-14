@@ -10,7 +10,7 @@ const Layout: React.FC = () => {
     "/clinicDashboard",
     "/doctordashboard",
     "/admin",
-    "/lab-login",
+    
     "/admin-lab"
   ];
 

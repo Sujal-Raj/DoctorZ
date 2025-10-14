@@ -27,21 +27,6 @@ interface LoginResponse {
   };
 }
 
-// export const loginDoctor = async (
-//   doctorId: string,
-//   password: string
-// ): Promise<LoginResponse> => {
-//   try {
-//     const response = await api.post<LoginResponse>("/api/doctor/login", {
-//       doctorId,
-//       password,
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error("Login Error:", error);
-//     throw error;
-//   }
-// };
 export const loginDoctor = async (
   doctorId: string,
   password: string
