@@ -1,32 +1,37 @@
-import { useState } from "react";
+// src/pages/LoginPatient.tsx
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
 import Cookies from "js-cookie";
-
-interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-  };
-}
+import { loginPatient } from "../api/patientApi";
+import { AuthContext } from "../Context/AuthContext"; // ✅ Import AuthContext
 
 export default function LoginPatient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const { login } = useContext(AuthContext); // ✅ use the login method from context
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.post<LoginResponse>("/api/patient/login", { email, password });
-      Cookies.set("patientToken", res.data.token, { expires: 7 });
-    console.log(document.cookie);
-      alert("Login successful");
-      navigate("/");
+      const res = await loginPatient({ email, password });
 
+      // ✅ Store token in cookie (optional)
+      Cookies.set("patientToken", res.token, { expires: 7 });
+
+      // ✅ Store in context/localStorage so that Navbar updates
+    login(res.token, {
+  id: res.user._id ,      // ✅ Convert _id to id
+  email: res.user.email,
+});
+
+      console.log("Token stored in cookie:", document.cookie);
+      alert("Login successful");
+
+      navigate("/");
     } catch (err) {
-      console.error(err);
+      console.error("Login failed:", err);
       alert("Invalid login");
     }
   };

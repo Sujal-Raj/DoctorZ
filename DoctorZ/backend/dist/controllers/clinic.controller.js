@@ -4,6 +4,7 @@ import doctorModel from "../models/doctor.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { log } from "console";
 dotenv.config();
 console.log("MAIL_USER:", process.env.MAIL_USER);
 const transporter = nodemailer.createTransport({
@@ -15,6 +16,9 @@ const transporter = nodemailer.createTransport({
 });
 // ---------------- Clinic Registration ----------------
 export const clinicRegister = async (req, res) => {
+    console.log("➡️ Received form submission");
+    console.log("🧾 req.body:", req.body);
+    console.log("📎 req.file:", req.file);
     try {
         const { clinicName, clinicType, specialities, operatingHours, licenseNo, ownerAadhar, ownerPan, address, state, district, pincode, contact, email, staffEmail, staffName, staffPassword, staffId, } = req.body;
         if (!clinicName || !clinicType || !specialities || !licenseNo || !ownerAadhar) {
@@ -42,6 +46,7 @@ export const clinicRegister = async (req, res) => {
             staffPassword: await bcrypt.hash(staffPassword, 10),
             registrationCertificate: registrationCertPath,
         });
+        // console.log(clinic);
         await clinic.save();
         // 📧 Send staff ID via email after saving
         try {

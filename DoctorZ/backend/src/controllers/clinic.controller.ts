@@ -6,6 +6,7 @@ import  doctorModel from "../models/doctor.model.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import { log } from "console";
 dotenv.config();
 
 console.log("MAIL_USER:", process.env.MAIL_USER);
@@ -22,6 +23,10 @@ const transporter = nodemailer.createTransport({
 // ---------------- Clinic Registration ----------------
 
 export const clinicRegister = async (req: Request, res: Response) => {
+  console.log("➡️ Received form submission");
+
+    console.log("🧾 req.body:", req.body);
+    console.log("📎 req.file:", req.file);
   try {
     const {
       clinicName,
@@ -71,8 +76,9 @@ export const clinicRegister = async (req: Request, res: Response) => {
       registrationCertificate: registrationCertPath,
     });
 
+    // console.log(clinic);
     await clinic.save();
-
+    
     // 📧 Send staff ID via email after saving
     try {
       await transporter.sendMail({
@@ -94,6 +100,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
     }
 
     return res.status(201).json({ message: "Clinic Registered", clinic });
+    
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Something went wrong", error });
