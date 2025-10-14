@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import doctorModel from "../models/doctor.model.js";
 import nodemailer from 'nodemailer';
 import { LabModel } from "../models/lab.model.js";
+import clinicModel from "../models/clinic.model.js";
 dotenv.config();
 
 // 🔹 Generate Token
@@ -234,3 +235,99 @@ export const getPendingLabs = async (req: Request, res: Response): Promise<Respo
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+
+// clinic
+export const getPendingClinics=async(req:Request,res:Response)=>{
+  try{
+    const pendingClinics= await clinicModel.find({status:"pending"});
+    return res.status(200).json({
+      message:"Pending Clinics retrieved",
+      Clinics:pendingClinics
+    })
+  }
+  catch(err){
+    return res.status(500).json({
+      message:"server error"
+    })
+  }
+}
+
+
+// CLINIC
+// ------------------ Generate Staff ID ------------------
+const generateClinicStaffId = (): string => {
+  return "STAFF-" + Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// ------------------ Approve Clinic ------------------
+export const approveClinic = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { id } = req.params;
+
+    // ✅ Generate Staff ID
+    const staffId = generateClinicStaffId();
+
+    // ✅ Update clinic status to approved and set staffId
+    const clinic = await clinicModel.findByIdAndUpdate(
+      id,
+      { status: "approved", staffId },
+      { new: true }
+    );
+
+    if (!clinic) {
+      return res.status(404).json({ message: "Clinic not found" });
+    }
+
+    // ✅ Send approval email to staff
+    await sendMail(
+      clinic.staffEmail,
+      "Clinic Registration Approved ✅",
+      `<p>Dear ${clinic.staffName},</p>
+       <p>Your clinic registration has been <b>approved</b>.</p>
+       <p><b>Staff ID:</b> ${staffId}</p>
+       <p>Welcome to our platform!</p>`
+    );
+
+    return res.status(200).json({
+      message: "Clinic approved ✅ & email sent successfully",
+      clinic,
+    });
+  } catch (error) {
+    console.error("Error approving clinic:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// ------------------ Reject Clinic ------------------
+export const rejectClinic=async(req:Request,res:Response)=>{
+ try {
+    const { id } = req.params;
+
+    const clinic = await clinicModel.findByIdAndUpdate(
+      id,
+      { status: "rejected" },
+      { new: true }
+    );
+
+    if (!clinic) {
+      return res.status(404).json({ message: "Clinic not found" });
+    }
+
+    await sendMail(
+      clinic.email,
+      "Clinic Registration Rejected ❌",
+      `<p> ${clinic.clinicName},</p>
+       <p>Your registration has been <b>rejected</b>. Please contact admin for more details.</p>`
+    );
+
+    return res.status(200).json({
+      message: "Clinic rejected ❌ & mail sent successfully",
+      clinic,
+    });
+  } catch (error) {
+    console.error("Error rejecting clinic:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+}

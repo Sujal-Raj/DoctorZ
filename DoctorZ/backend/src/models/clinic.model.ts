@@ -27,6 +27,7 @@ export interface IClinic extends Document {
   staffEmail: string;
   staffPassword: string;
   staffId:string;
+  status:string;
 }
 
 const clinicSchema = new mongoose.Schema<IClinic>({
@@ -85,6 +86,11 @@ const clinicSchema = new mongoose.Schema<IClinic>({
     type: Number,
     required: true,
   },
+  status:{
+    type:String,
+    default:"pending",
+    required:true
+  }
 });
 
 const clinicModel = mongoose.model<IClinic>("Clinic", clinicSchema, "Clinic");

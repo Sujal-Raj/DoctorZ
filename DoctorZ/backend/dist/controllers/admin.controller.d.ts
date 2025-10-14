@@ -6,4 +6,7 @@ export declare const rejectDoctor: (req: Request, res: Response) => Promise<Resp
 export declare const approveLab: (req: Request, res: Response) => Promise<Response>;
 export declare const rejectLab: (req: Request, res: Response) => Promise<Response>;
 export declare const getPendingLabs: (req: Request, res: Response) => Promise<Response>;
+export declare const getPendingClinics: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+export declare const approveClinic: (req: Request, res: Response) => Promise<Response>;
+export declare const rejectClinic: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 //# sourceMappingURL=admin.controller.d.ts.map

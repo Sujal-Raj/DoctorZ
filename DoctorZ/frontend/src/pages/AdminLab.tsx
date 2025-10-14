@@ -105,12 +105,9 @@ export default function AdminLab() {
   // ✅ Main UI
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-        🧪 Lab Approval Dashboard
-      </h1>
-
+      <h2 className="text-xl font-bold mb-4">Pending Labs</h2>
       {labs.length === 0 ? (
-        <p className="text-center text-gray-600">No pending labs found.</p>
+        <p className=" text-gray-600">No pending labs found.</p>
       ) : (
         <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
           <table className="min-w-full text-sm text-left text-gray-700">

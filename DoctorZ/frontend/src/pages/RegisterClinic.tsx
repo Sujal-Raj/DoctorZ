@@ -73,7 +73,7 @@ try {
     });
 
     
-    alert("Clinic registered successfully! Staff ID has been sent to your email.");
+    alert("Your clinic details have been sent for admin approval. You’ll receive login access once approved.");
     console.log("Clinic Registered:", res.data);
     
   } catch (err: any) {
