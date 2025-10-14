@@ -6,13 +6,6 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 dotenv.config();
 console.log("MAIL_USER:", process.env.MAIL_USER);
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-    },
-});
 // ---------------- Clinic Registration ----------------
 export const clinicRegister = async (req, res) => {
     try {
@@ -43,26 +36,6 @@ export const clinicRegister = async (req, res) => {
             registrationCertificate: registrationCertPath,
         });
         await clinic.save();
-        // 📧 Send staff ID via email after saving
-        try {
-            await transporter.sendMail({
-                from: process.env.MAIL_USER,
-                to: staffEmail,
-                subject: "Your Staff ID for Clinic Registration",
-                html: `
-          <p>Hi <b>${staffName}</b>,</p>
-          <p>Your staff account has been created successfully!</p>
-          <p><strong>Staff ID:</strong> ${staffId}</p>
-          <p>Please use this ID along with your password to login.</p>
-          <br/>
-          <p>Thanks,<br/>Clinic Management Team</p>
-        `,
-            });
-            console.log(" Staff ID email sent to:", staffEmail);
-        }
-        catch (mailErr) {
-            console.error(" Failed to send email:", mailErr);
-        }
         return res.status(201).json({ message: "Clinic Registered", clinic });
     }
     catch (error) {

@@ -847,14 +847,14 @@ const BookingDrawer: React.FC<Props> = ({
           : "w-full"
       }`}
     >
-      {isModal && (
+      {/* {isModal && (
         <div
           className={`absolute inset-0 bg-black/50 transition-opacity ${
             open ? "opacity-100" : "opacity-0"
           }`}
           onClick={() => !bookingLoading && onClose()}
         />
-      )}
+      )} */}
 
       <div
         className={`relative bg-white rounded-xl shadow p-5 ${
