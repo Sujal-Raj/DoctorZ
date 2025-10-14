@@ -47,97 +47,97 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminClinic from "./pages/AdminClinic";
 
 // Wrapper component to conditionally render Navbar
-const AppWrapper: React.FC = () => {
-  const location = useLocation();
+// const App: React.FC = () => {
+//   const location = useLocation();
 
-  const hidePaths = ["/clinicDashboard", "/adminDashboard","/doctordashboard"];
-const showNavbar = !hidePaths.some(path => location.pathname.startsWith(path));
+//   const hidePaths = ["/clinicDashboard", "/adminDashboard","/doctordashboard"];
+// const showNavbar = !hidePaths.some(path => location.pathname.startsWith(path));
 
-  return (
-    <>
-      {showNavbar && <Navbar />}
-      <div className="">
-        <Routes>
-          <Route path="/" element={<Home />} />
+//   return (
+//     <>
+//       {showNavbar && <Navbar />}
+//       <div className="">
+//         <Routes>
+//           <Route path="/" element={<Home />} />
 
-          {/* LAB */}
-          <Route path="/lab-dashboard" element={<LabDashboard />}>
-            <Route
-              index
-              element={
-                <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
-              }
-            />
-            <Route path="patients" element={<Patients />} />
-            <Route path="tests" element={<LabTests />} />
-            <Route path="profile" element={<LabProfile />} />
-          </Route>
+//           {/* LAB */}
+//           <Route path="/lab-dashboard" element={<LabDashboard />}>
+//             <Route
+//               index
+//               element={
+//                 <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
+//               }
+//             />
+//             <Route path="patients" element={<Patients />} />
+//             <Route path="tests" element={<LabTests />} />
+//             <Route path="profile" element={<LabProfile />} />
+//           </Route>
 
-          <Route path="/patient-register" element={<RegisterPatient />} />
-          <Route path="/doctor-register" element={<RegisterDoctor />} />
-          <Route path="/clinic-register" element={<RegisterClinic />} />
-          <Route path="/all-clinics" element={<AllClinic />} />
-          <Route path="/all-doctors" element={<AllDoctors />} />
+//           <Route path="/patient-register" element={<RegisterPatient />} />
+//           <Route path="/doctor-register" element={<RegisterDoctor />} />
+//           <Route path="/clinic-register" element={<RegisterClinic />} />
+//           <Route path="/all-clinics" element={<AllClinic />} />
+//           <Route path="/all-doctors" element={<AllDoctors />} />
 
-          {/* CLINIC */}
-          <Route path="/clinic-login" element={<LoginClinic />} />
-          <Route
-            path="/clinicDashboard/:clinicId"
-            element={<ClinicDashboard />}
-          >
-            <Route path="clinic-profile" element={<ClinicProfile />} />
-            <Route path="doctorProfile" element={<DoctorProfile />} />
-            <Route
-              path="all-clinic-doctors/:drId/availability"
-              element={<TimeSlots />}
-            />
-            <Route path="add-doctor" element={<AddDoctor />} />
-            <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-          </Route>
+//           {/* CLINIC */}
+//           <Route path="/clinic-login" element={<LoginClinic />} />
+//           <Route
+//             path="/clinicDashboard/:clinicId"
+//             element={<ClinicDashboard />}
+//           >
+//             <Route path="clinic-profile" element={<ClinicProfile />} />
+//             <Route path="doctorProfile" element={<DoctorProfile />} />
+//             <Route
+//               path="all-clinic-doctors/:drId/availability"
+//               element={<TimeSlots />}
+//             />
+//             <Route path="add-doctor" element={<AddDoctor />} />
+//             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
+//           </Route>
            
 
-        {/* ADMIN */}
-        <Route path="/adminDashboard" element={<AdminDashboard/>}>
-        <Route path="admin-lab" element={<AdminLab />} />
-        <Route path="admin-doctor" element={<AdminDoctor />} />
-         <Route path="admin-doctor" element={<AdminDoctor />} />
-          <Route path="admin-clinic" element={<AdminClinic />} />
-        </Route>
+//         {/* ADMIN */}
+//         <Route path="/adminDashboard" element={<AdminDashboard/>}>
+//         <Route path="admin-lab" element={<AdminLab />} />
+//         <Route path="admin-doctor" element={<AdminDoctor />} />
+//          <Route path="admin-doctor" element={<AdminDoctor />} />
+//           <Route path="admin-clinic" element={<AdminClinic />} />
+//         </Route>
        
 
-       {/* DOCTOR */}
+//        {/* DOCTOR */}
 
-          <Route path="/doctor/login" element={<DoctorLogin />} />
+//           <Route path="/doctor/login" element={<DoctorLogin />} />
 
 
-          <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
-            <Route
-              index
-              element={<p>Welcome Doctor, choose a menu from sidebar.</p>}
-            />
-            <Route path="doctorProfile" element={<DoctorProfile />} />
-            <Route path="time-slots" element={<TimeSlots />} />
-            <Route path="appointments" element={<p>Appointments Page</p>} />
-            <Route path="patients" element={<AllPatient />} />
-            <Route path="settings" element={<p>Settings Page</p>} />
-          </Route>
-          <Route path="/patient-login" element={<LoginPatient />} />
-          <Route path="/patient-chat" element={<PatientChat />} />
-          <Route path="/doctor-chat" element={<DoctorChat />} />
-          <Route
-            path="/view-doctor-profile/:drId"
-            element={<ViewDoctorProfile />}
-          />
-          <Route path="/lab-register" element={<RegisterLab />} />
-          <Route path="/lab-login" element={<LoginLab />} />
-          <Route path="/admin-lab" element={<AdminLab />} />
-          <Route path="all-lab-test" element={<AllLabTest />} />
-          <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
-        </Routes>
-      </div>
-    </>
-  );
-};
+//           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
+//             <Route
+//               index
+//               element={<p>Welcome Doctor, choose a menu from sidebar.</p>}
+//             />
+//             <Route path="doctorProfile" element={<DoctorProfile />} />
+//             <Route path="time-slots" element={<TimeSlots />} />
+//             <Route path="appointments" element={<p>Appointments Page</p>} />
+//             <Route path="patients" element={<AllPatient />} />
+//             <Route path="settings" element={<p>Settings Page</p>} />
+//           </Route>
+//           <Route path="/patient-login" element={<LoginPatient />} />
+//           <Route path="/patient-chat" element={<PatientChat />} />
+//           <Route path="/doctor-chat" element={<DoctorChat />} />
+//           <Route
+//             path="/view-doctor-profile/:drId"
+//             element={<ViewDoctorProfile />}
+//           />
+//           <Route path="/lab-register" element={<RegisterLab />} />
+//           <Route path="/lab-login" element={<LoginLab />} />
+//           <Route path="/admin-lab" element={<AdminLab />} />
+//           <Route path="all-lab-test" element={<AllLabTest />} />
+//           <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
+//         </Routes>
+//       </div>
+//     </>
+//   );
+// };
 
 const App: React.FC = () => {
   return (
@@ -165,7 +165,7 @@ const App: React.FC = () => {
           </Route>
 
           {/* Routes without navbar */}
-          <Route path="/admin" element={<AdminDashboard />} />
+          {/* <Route path="/admin" element={<AdminDashboard />} /> */}
 
           <Route path="/clinicDashboard/:clinicId" element={<ClinicDashboard />}>
             <Route path="clinic-profile" element={<ClinicProfile />} />
@@ -185,6 +185,13 @@ const App: React.FC = () => {
             <Route path="patients" element={<AllPatient />} />
             <Route path="settings" element={<p>Settings Page</p>} />
           </Route>
+           <Route path="/adminDashboard" element={<AdminDashboard/>}>
+        <Route path="admin-lab" element={<AdminLab />} />
+         <Route path="admin-doctor" element={<AdminDoctor />} />
+          <Route path="admin-doctor" element={<AdminDoctor />} />
+           <Route path="admin-clinic" element={<AdminClinic />} />
+         </Route>
+       
         </Routes>
       </Router>
     </AuthProvider>

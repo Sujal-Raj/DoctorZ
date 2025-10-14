@@ -81,6 +81,7 @@ const email = req.body.email;
 const doctorLogin = async(req:Request, res:Response)=>{
   try{
      console.log("Login request body:", req.body);
+     
     const {doctorId , password} = req.body;
     
 
