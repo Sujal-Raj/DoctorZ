@@ -1,5 +1,5 @@
 import express from "express";
-import { adminLogin, getPendingDoctors, approveDoctor, rejectDoctor, rejectLab, approveLab, getPendingLabs, getPendingClinics, approveClinic, rejectClinic } from "../controllers/admin.controller.js";
+import { adminLogin, getPendingDoctors, approveDoctor, rejectDoctor, rejectLab, approveLab, getPendingLabs, getPendingClinics, approveClinic, rejectClinic, } from "../controllers/admin.controller.js";
 // import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
 const router = express.Router();
 //  Admin Login

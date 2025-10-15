@@ -1,4 +1,4 @@
-// src/api/doctorApi.ts
+
 
 import api from "./mainApi"; // your axios instance
 

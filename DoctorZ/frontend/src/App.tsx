@@ -44,6 +44,7 @@ import LabDashboard from "./pages/LabDashboard";
 import AdminDoctor from "./pages/AdminDoctor";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminClinic from "./pages/AdminClinic";
+import AdminLogin from "./pages/AdminLogin";
 
 // Wrapper component to conditionally render Navbar
 // const App: React.FC = () => {
@@ -212,6 +213,8 @@ const App: React.FC = () => {
             <Route path="tests" element={<LabTests />} />
             <Route path="profile" element={<LabProfile />} />
           </Route>
+
+          <Route path="/admin/login" element={<AdminLogin/>}></Route>
         </Routes>
       </Router>
     </AuthProvider>
