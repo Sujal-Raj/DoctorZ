@@ -4,6 +4,7 @@ import type { Request,Response } from 'express';
 
 import doctorModel from '../models/doctor.model.js';
 import jwt from "jsonwebtoken";
+import clinicModel from '../models/clinic.model.js';
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -62,9 +63,13 @@ const email = req.body.email;
       signature,
       email,
       clinic:clinicId,
-         status: "pending",
+    status: "pending",
     });
-
+ if (req.body.clinicId) {
+      await clinicModel.findByIdAndUpdate(req.body.clinicId, {
+        $push: { doctors: doctor._id },
+      });
+    }
     await doctor.save();
 
     return res.status(201).json({ message: 'Doctor registered', doctor });
@@ -157,7 +162,7 @@ const getDoctorById = async(req:Request , res:Response)=>{
 const getAllDoctors=async(req:Request,
     res:Response)=>{
         try{
-            const doctors = await doctorModel.find();
+            const doctors = await doctorModel.find({status:"approved"});
 
             return res.status(200).json({
                 message:"Doctors fetched successfully",doctors
@@ -226,9 +231,11 @@ const updateDoctor =async(req:Request,res:Response)=>{
  const getClinicDoctors=async(req:Request,res:Response)=>{
     try{
         const {clinicId}=req.params;
-        const doctors = await doctorModel.find({clinic:clinicId});
+        const doctors = await doctorModel.find({clinic:clinicId,
+            status:"approved",
+        });
         return res.status(200).json({
-            message:"Doctors fetched successfully",doctors
+            message:"Doctors fetched successfully",doctors:doctors
         })
 
     }

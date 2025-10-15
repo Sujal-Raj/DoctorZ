@@ -62,6 +62,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
       staffId,
       staffPassword: await bcrypt.hash(staffPassword, 10),
       registrationCertificate: registrationCertPath,
+     
     });
 
     await clinic.save();
@@ -288,7 +289,8 @@ export const getClinicById = async(req:Request,res:Response)=>{
       }
 
       return res.status(200).json({
-        message:"Clinic found", clinic
+        message:"Clinic found", 
+        clinic:clinic
       })
    }
    catch(error){
@@ -298,4 +300,6 @@ export const getClinicById = async(req:Request,res:Response)=>{
     })
    }
 }
+
+
 

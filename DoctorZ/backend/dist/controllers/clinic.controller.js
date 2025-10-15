@@ -200,7 +200,8 @@ export const getClinicById = async (req, res) => {
             });
         }
         return res.status(200).json({
-            message: "Clinic found", clinic
+            message: "Clinic found",
+            clinic: clinic
         });
     }
     catch (error) {

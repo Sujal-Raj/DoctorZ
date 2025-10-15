@@ -42,12 +42,13 @@ import AppointmentForm from "./pages/AppointmentForm";
 import AdminDoctor from "./pages/AdminDoctor";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminClinic from "./pages/AdminClinic";
+import ClinicDetails from "./pages/ClinicDetails";
 
 // Wrapper component to conditionally render Navbar
 const AppWrapper: React.FC = () => {
   const location = useLocation();
 
-  const hidePaths = ["/clinicDashboard", "/adminDashboard","/doctordashboard"];
+  const hidePaths = ["/clinicDashboard", "/adminDashboard","/doctordashboard","/lab-dashboard"];
 const showNavbar = !hidePaths.some(path => location.pathname.startsWith(path));
 
   return (
@@ -91,7 +92,7 @@ const showNavbar = !hidePaths.some(path => location.pathname.startsWith(path));
             <Route path="add-doctor" element={<AddDoctor />} />
             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
           </Route>
-           
+           <Route path="/clinic/:id" element={<ClinicDetails/>}/>
 
         {/* ADMIN */}
         <Route path="/adminDashboard" element={<AdminDashboard/>}>
