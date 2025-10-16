@@ -60,6 +60,7 @@ const doctorRegister = async (req, res) => {
     }
 };
 // Login Doctor
+// Login Doctor
 const doctorLogin = async (req, res) => {
     try {
         console.log("Login request body:", req.body);
@@ -96,6 +97,16 @@ const doctorLogin = async (req, res) => {
     catch (error) {
         console.error("Doctor login error:", error);
         return res.status(500).json({ message: "Server error" });
+    }
+};
+const logoutDoctor = async (req, res) => {
+    try {
+        // This just confirms logout. JWT is stateless, so we can't "destroy" token server-side
+        return res.status(200).json({ message: "Doctor logged out successfully" });
+    }
+    catch (error) {
+        console.error("Logout error:", error);
+        return res.status(500).json({ message: "Failed to logout" });
     }
 };
 const getDoctorById = async (req, res) => {
@@ -190,5 +201,5 @@ const getClinicDoctors = async (req, res) => {
         });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin };
+export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin, logoutDoctor };
 //# sourceMappingURL=doctor.controller.js.map

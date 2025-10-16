@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import Cookies from "js-cookie";
-import * as jwt_decode from "jwt-decode";
-import api from "../api/client";
+import { registerDoctor } from "../Services/doctorApi";
 import { useOutletContext } from "react-router-dom";
 type DoctorFormInputs = {
   fullName: string;
@@ -72,19 +70,13 @@ const RegisterDoctor: React.FC = () => {
     if (photoFile) formData.append("photo", photoFile);
     if (signatureFile) formData.append("signature", signatureFile);
 
-    try {
-       const res = await api.post("/api/doctor/register", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-
-      
-      console.log("Doctor Registered:", res.data);
-      alert("Doctor registered successfully!");
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Something went wrong!");
-    }
+   try {
+    const result = await registerDoctor(formData);
+    console.log('Doctor Registered:', result);
+    alert('Doctor registered successfully!');
+  } catch (err) {
+    alert('Something went wrong!');
+  }
   };
 
   return (

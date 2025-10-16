@@ -2,9 +2,10 @@ import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import doctorModel from "../models/doctor.model.js";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 import { LabModel } from "../models/lab.model.js";
 import clinicModel from "../models/clinic.model.js";
+import Admin from "../models/adminModel.js";
 dotenv.config();
 
 // 🔹 Generate Token
@@ -20,58 +21,36 @@ const generateDoctorId = (): string => {
 
 //Nodemailer transporter
 const transporter = nodemailer.createTransport({
-  service:"gmail",
-  auth:{
-    user:process.env.MAIL_USER,
-    pass:process.env.MAIL_PASS,
-
-  }
-  
-})
-
+  service: "gmail",
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
 //send Email
-const sendMail = async(to:string,subject:string,html:string):Promise<void>=>{
-  try{
+const sendMail = async (
+  to: string,
+  subject: string,
+  html: string
+): Promise<void> => {
+  try {
     await transporter.sendMail({
-      from:process.env.MAIL_USER,
+      from: process.env.MAIL_USER,
       to,
       subject,
-      html
-    })
-  }
-  catch(error){
-    console.log("Error sending email:", error)
-  }
-}
-
-
-// 🔹 Admin Login
-export const adminLogin = (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
-  }
-
-  if (email === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
-    const token = generateToken("admin-id", email, "admin");
-
-    return res.status(200).json({
-      message: "Admin Login Successful",
-      token,
-      user:{
-      email: process.env.ADMIN_ID,
-      // password: process.env.ADMIN_PASSWORD,
-      }
+      html,
     });
+  } catch (error) {
+    console.log("Error sending email:", error);
   }
-
-  return res.status(401).json({ message: "Invalid Credentials" });
 };
 
 // 🔹 Get all pending doctor requests
-export const getPendingDoctors = async (req: Request, res: Response) :Promise<Response>=> {
+export const getPendingDoctors = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const pendingDoctors = await doctorModel.find({ status: "pending" });
 
@@ -83,16 +62,18 @@ export const getPendingDoctors = async (req: Request, res: Response) :Promise<Re
 };
 
 // 🔹 Approve Doctor
-export const approveDoctor = async (req: Request, res: Response):Promise<Response> => {
+export const approveDoctor = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
-
 
     const generatedId = generateDoctorId();
 
     const doctor = await doctorModel.findByIdAndUpdate(
       id,
-      { status: "approved",doctorId:generatedId },
+      { status: "approved", doctorId: generatedId },
       { new: true }
     );
 
@@ -100,15 +81,17 @@ export const approveDoctor = async (req: Request, res: Response):Promise<Respons
       return res.status(404).json({ message: "Doctor not found" });
     }
 
-
-    await sendMail (doctor.email,
-   "Doctor Registration Approved ✅",
+    await sendMail(
+      doctor.email,
+      "Doctor Registration Approved ✅",
       `<p>Dear Dr. ${doctor.fullName},</p>
        <p>Your registration is <b>Approved</b>.</p>
        <p><b>Doctor ID:</b> ${generatedId}</p>`
     );
 
-    return res.status(200).json({ message: "Doctor approved ✅ & mail sent", doctor });
+    return res
+      .status(200)
+      .json({ message: "Doctor approved ✅ & mail sent", doctor });
   } catch (error) {
     console.error("Error approving doctor:", error);
     return res.status(500).json({ message: "Server Error" });
@@ -116,7 +99,10 @@ export const approveDoctor = async (req: Request, res: Response):Promise<Respons
 };
 
 //  Reject Doctor
-export const rejectDoctor = async (req: Request, res: Response) :Promise<Response> => {
+export const rejectDoctor = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -131,8 +117,8 @@ export const rejectDoctor = async (req: Request, res: Response) :Promise<Respons
     }
 
     await sendMail(
-        doctor.email,
-        "Doctor Registration Rejected ❌",
+      doctor.email,
+      "Doctor Registration Rejected ❌",
       `<p>Dear Dr. ${doctor.fullName},</p>
        <p>Your registration is <b>Rejected</b>. Please contact admin for details.</p>`
     );
@@ -144,8 +130,6 @@ export const rejectDoctor = async (req: Request, res: Response) :Promise<Respons
   }
 };
 
-
-
 //  Approve Lab
 
 // ------------------ Generate Lab ID ------------------
@@ -154,7 +138,10 @@ const generateLabId = (): string => {
 };
 
 // ------------------ Approve Lab ------------------
-export const approveLab = async (req: Request, res: Response): Promise<Response> => {
+export const approveLab = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -192,7 +179,10 @@ export const approveLab = async (req: Request, res: Response): Promise<Response>
 };
 
 // ------------------ Reject Lab ------------------
-export const rejectLab = async (req: Request, res: Response): Promise<Response> => {
+export const rejectLab = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -224,10 +214,15 @@ export const rejectLab = async (req: Request, res: Response): Promise<Response> 
 };
 
 // ------------------ Get Pending Labs ------------------
-export const getPendingLabs = async (req: Request, res: Response): Promise<Response> => {
+export const getPendingLabs = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     // ✅ Fetch only pending labs
-    const pendingLabs = await LabModel.find({ status: "pending" }).select("-password"); // exclude password
+    const pendingLabs = await LabModel.find({ status: "pending" }).select(
+      "-password"
+    ); // exclude password
 
     return res.status(200).json(pendingLabs);
   } catch (error) {
@@ -236,24 +231,20 @@ export const getPendingLabs = async (req: Request, res: Response): Promise<Respo
   }
 };
 
-
-
 // clinic
-export const getPendingClinics=async(req:Request,res:Response)=>{
-  try{
-    const pendingClinics= await clinicModel.find({status:"pending"});
+export const getPendingClinics = async (req: Request, res: Response) => {
+  try {
+    const pendingClinics = await clinicModel.find({ status: "pending" });
     return res.status(200).json({
-      message:"Pending Clinics retrieved",
-      Clinics:pendingClinics
-    })
-  }
-  catch(err){
+      message: "Pending Clinics retrieved",
+      Clinics: pendingClinics,
+    });
+  } catch (err) {
     return res.status(500).json({
-      message:"server error"
-    })
+      message: "server error",
+    });
   }
-}
-
+};
 
 // CLINIC
 // ------------------ Generate Staff ID ------------------
@@ -262,7 +253,10 @@ const generateClinicStaffId = (): string => {
 };
 
 // ------------------ Approve Clinic ------------------
-export const approveClinic = async (req: Request, res: Response): Promise<Response> => {
+export const approveClinic = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const { id } = req.params;
 
@@ -301,8 +295,8 @@ export const approveClinic = async (req: Request, res: Response): Promise<Respon
 };
 
 // ------------------ Reject Clinic ------------------
-export const rejectClinic=async(req:Request,res:Response)=>{
- try {
+export const rejectClinic = async (req: Request, res: Response) => {
+  try {
     const { id } = req.params;
 
     const clinic = await clinicModel.findByIdAndUpdate(
@@ -330,4 +324,51 @@ export const rejectClinic=async(req:Request,res:Response)=>{
     console.error("Error rejecting clinic:", error);
     return res.status(500).json({ message: "Server Error" });
   }
-}
+};
+
+// admin login controllers
+
+// 🔹 Admin Login (using DB model)
+export const adminLogin = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  // Check if fields are present
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  try {
+    // Find admin by email
+    const admin = await Admin.findOne({ email });
+
+    if (!admin) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Compare password
+    const isMatch = await (admin as any).comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Generate JWT
+    const token = generateToken(
+      (admin as any)._id.toString(),
+      (admin as any).email,
+      "admin"
+    );
+
+    return res.status(200).json({
+      message: "Admin Login Successful",
+      token,
+      user: {
+        id: admin._id,
+        email: admin.email,
+        name: admin.name,
+      },
+    });
+  } catch (err) {
+    console.error("Admin login error:", err);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
