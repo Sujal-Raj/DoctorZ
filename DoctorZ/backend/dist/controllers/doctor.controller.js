@@ -1,13 +1,14 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import nodemailer from 'nodemailer';
-import doctorModel from '../models/doctor.model.js';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import { transporter } from "../utils/email.js";
+import nodemailer from "nodemailer";
+import doctorModel from "../models/doctor.model.js";
 import jwt from "jsonwebtoken";
 import clinicModel from '../models/clinic.model.js';
 const doctorRegister = async (req, res) => {
     try {
-        console.log('Text fields:', req.body);
-        console.log('Files:', req.files);
+        console.log("Text fields:", req.body);
+        console.log("Files:", req.files);
         // Cast req.files for TypeScript
         const files = req.files;
         // Convert numbers/dates
@@ -18,9 +19,9 @@ const doctorRegister = async (req, res) => {
         const MobileNo = req.body.mobileNo;
         const email = req.body.email;
         // Handle files
-        const degreeCert = files?.['degreeCert']?.[0]?.filename || '';
-        const photo = files?.['photo']?.[0]?.filename || '';
-        const signature = files?.['signature']?.[0]?.filename || '';
+        const degreeCert = files?.["degreeCert"]?.[0]?.filename || "";
+        const photo = files?.["photo"]?.[0]?.filename || "";
+        const signature = files?.["signature"]?.[0]?.filename || "";
         if (!req.body.password) {
             return res.status(400).json({ message: "Password is required" });
         }
@@ -34,11 +35,11 @@ const doctorRegister = async (req, res) => {
             dob,
             MobileNo,
             MedicalRegistrationNumber: req.body.regNumber,
-            specialization: req.body.specialization || '',
+            specialization: req.body.specialization || "",
             qualification: req.body.qualification,
             experience,
             consultationFee,
-            language: req.body.languages || '',
+            language: req.body.languages || "",
             Aadhar,
             DegreeCertificate: degreeCert,
             photo,
@@ -53,11 +54,11 @@ const doctorRegister = async (req, res) => {
             });
         }
         await doctor.save();
-        return res.status(201).json({ message: 'Doctor registered', doctor });
+        return res.status(201).json({ message: "Doctor registered", doctor });
     }
     catch (error) {
-        console.error('Registration error:', error);
-        return res.status(500).json({ message: 'Registration failed', error });
+        console.error("Registration error:", error);
+        return res.status(500).json({ message: "Registration failed", error });
     }
 };
 // Login Doctor
@@ -67,7 +68,9 @@ const doctorLogin = async (req, res) => {
         console.log("Login request body:", req.body);
         const { doctorId, password } = req.body;
         if (!doctorId || !password) {
-            return res.status(400).json({ message: "doctorId and password are required" });
+            return res
+                .status(400)
+                .json({ message: "doctorId and password are required" });
         }
         const doctor = await doctorModel.findOne({ doctorId });
         if (!doctor) {
@@ -92,7 +95,7 @@ const doctorLogin = async (req, res) => {
                 doctorId: doctor.doctorId,
                 fullName: doctor.fullName,
                 email: doctor.email,
-            }
+            },
         });
     }
     catch (error) {
@@ -117,17 +120,18 @@ const getDoctorById = async (req, res) => {
         const doctor = await doctorModel.findById(id);
         if (!doctor) {
             return res.status(400).json({
-                message: 'doctor not found'
+                message: "doctor not found",
             });
         }
         return res.status(200).json({
-            message: "doctor found", doctor
+            message: "doctor found",
+            doctor,
         });
     }
     catch (error) {
         console.error("Error fetching doctor", error);
         return res.status(500).json({
-            message: "failed to fetch doctor"
+            message: "failed to fetch doctor",
         });
     }
 };
@@ -135,33 +139,14 @@ const getAllDoctors = async (req, res) => {
     try {
         const doctors = await doctorModel.find({ status: "approved" });
         return res.status(200).json({
-            message: "Doctors fetched successfully", doctors
+            message: "Approved doctors fetched successfully",
+            doctors,
         });
     }
     catch (error) {
-        console.error("Error fetching doctors", error);
+        console.error("Error fetching doctors:", error);
         return res.status(500).json({
-            message: "failed to fetch doctors"
-        });
-    }
-};
-const deleteDoctor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const deletedoctor = await doctorModel.findByIdAndDelete(id);
-        if (!deleteDoctor) {
-            return res.status(400).json({
-                message: "Doctor not found"
-            });
-        }
-        return res.status(202).json({
-            message: "doctor deleted successfully", deleteDoctor
-        });
-    }
-    catch (error) {
-        console.error("Error deleting doctor", error);
-        return res.status(500).json({
-            message: "failed to delete doctor"
+            message: "Failed to fetch doctors",
         });
     }
 };
@@ -170,16 +155,44 @@ const updateDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         const { doctorId, password } = req.body;
-        // Validate required fields
         if (!doctorId || !password) {
-            return res.status(400).json({ message: "doctorId and password are required" });
+            return res
+                .status(400)
+                .json({ message: "doctorId and password are required" });
         }
-        // Hash the new password
         const hashedPassword = await bcrypt.hash(password, 10);
-        // Update doctor in the database
         const updatedDoctor = await doctorModel.findByIdAndUpdate(id, { doctorId, password: hashedPassword }, { new: true, runValidators: true });
         if (!updatedDoctor) {
             return res.status(404).json({ message: "Doctor not found" });
+        }
+        // ✅ Send email after update
+        if (updatedDoctor.email) {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: updatedDoctor.email,
+                subject: "Your Doctor Login Details Updated",
+                text: `
+
+
+Your login credentials have been updated successfully.
+
+Doctor ID: ${doctorId}
+Password: (hidden for security)
+
+If you did not request this change, please contact support immediately.
+
+Regards,
+Your Hospital Admin Team
+        `,
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error("Error sending email:", error);
+                }
+                else {
+                    console.log("Email sent:", info.response);
+                }
+            });
         }
         return res.status(200).json({
             message: "Doctor ID and password updated successfully.",
@@ -191,7 +204,7 @@ const updateDoctor = async (req, res) => {
         return res.status(500).json({ message: "Failed to update doctor" });
     }
 };
-///   
+///
 const getClinicDoctors = async (req, res) => {
     try {
         const { clinicId } = req.params;
@@ -209,5 +222,5 @@ const getClinicDoctors = async (req, res) => {
         });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin, logoutDoctor };
+export default { getAllDoctors, doctorRegister, getDoctorById, updateDoctor, getClinicDoctors, doctorLogin, logoutDoctor };
 //# sourceMappingURL=doctor.controller.js.map

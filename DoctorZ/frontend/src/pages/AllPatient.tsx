@@ -1,6 +1,6 @@
 // import React, { useEffect, useState } from "react";
 // import { useNavigate, useParams } from "react-router-dom";
-// import api from "../api/client";
+// import api from  "../Services/mainApi";
 
 // interface Patient {
 //   _id: string;

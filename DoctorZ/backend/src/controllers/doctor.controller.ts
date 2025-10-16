@@ -165,38 +165,23 @@ const getDoctorById = async (req: Request, res: Response) => {
   }
 };
 
+
 const getAllDoctors = async (req: Request, res: Response) => {
   try {
-    const doctors = await doctorModel.find();
+    const doctors = await doctorModel.find({ status: "approved" });
 
-const getAllDoctors=async(req:Request,
-    res:Response)=>{
-        try{
-            const doctors = await doctorModel.find({status:"approved"});
-
-const deleteDoctor = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-
-    const deletedoctor = await doctorModel.findByIdAndDelete(id);
-
-    if (!deleteDoctor) {
-      return res.status(400).json({
-        message: "Doctor not found",
-      });
-    }
-
-    return res.status(202).json({
-      message: "doctor deleted successfully",
-      deleteDoctor,
+    return res.status(200).json({
+      message: "Approved doctors fetched successfully",
+      doctors,
     });
   } catch (error) {
-    console.error("Error deleting doctor", error);
+    console.error("Error fetching doctors:", error);
     return res.status(500).json({
-      message: "failed to delete doctor",
+      message: "Failed to fetch doctors",
     });
   }
 };
+
 
 // update doctorId and password then conformation email to doctor
 const updateDoctor = async (req: Request, res: Response) => {
@@ -262,69 +247,6 @@ Your Hospital Admin Team
   }
 };
 ///
-
-const getClinicDoctors = async (req: Request, res: Response) => {
-  try {
-    const { clinicId } = req.params;
-    const doctors = await doctorModel.find({ clinic: clinicId });
-    return res.status(200).json({
-      message: "Doctors fetched successfully",
-      doctors,
-    });
-  } catch (error) {
-    console.error("Error fetching doctors", error);
-    return res.status(500).json({
-      message: "failed to fetch doctors",
-    });
-  }
-};
-
-        if(!deleteDoctor){
-             return res.status(400).json({
-                message:"Doctor not found"
-            })
-        }
-
-        return res.status(202).json({
-            message:"doctor deleted successfully",deleteDoctor
-        })
-
-    }
-    catch(error){
-        console.error("Error deleting doctor",error);
-        return res.status(500).json({
-            message:"failed to delete doctor"
-        })
-    }
-}
-
-const updateDoctor =async(req:Request,res:Response)=>{
-    try{
-
-        const {id} = req.params;
-
-        const updateDoctor = await doctorModel.findByIdAndUpdate(id,req.body, 
-            { new: true, runValidators: true }); // new:true => updated document return hoga
-
-        if(!updateDoctor){
-            return res.status(400).json({
-                message:"doctor not found"
-            })
-        }
-
-        return res.status(201).json({
-            message:"doctor updated successfully",doctor:updateDoctor
-        })
-    }
-    catch(error){
-        console.error("Error updating doctor ",error);
-        return res.status(500).json({
-            message:"failed to updated doctor"
-        })
-    }
-}
-
-
  const getClinicDoctors=async(req:Request,res:Response)=>{
     try{
         const {clinicId}=req.params;
@@ -346,4 +268,4 @@ const updateDoctor =async(req:Request,res:Response)=>{
 }
 
 
-export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin,logoutDoctor};
+export default {getAllDoctors,doctorRegister,getDoctorById,updateDoctor,getClinicDoctors,doctorLogin,logoutDoctor};

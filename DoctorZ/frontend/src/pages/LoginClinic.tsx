@@ -36,7 +36,8 @@ export default function LoginClinic() {
       // ✅ Store token in localStorage
       localStorage.setItem("authTokenClinic", res.data.jwtToken);
 
-      alert(res.data.message);
+    alert(res.data.message);
+    const clinicId = res.data.clinic.id;
     navigate(`/clinicDashboard/${clinicId}`);
     localStorage.setItem("clinicId", clinicId);
     localStorage.setItem("clinicToken", res.data.jwtToken);

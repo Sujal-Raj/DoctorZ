@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // Pages
 import RegisterPatient from "./pages/RegisterPatient";
@@ -38,6 +38,13 @@ import DoctorAppointments from "./pages/DoctorAppointments";
 import AllClinicPatients from "./pages/AllClinicPatients";
 import DoctorHomeDashboard from "./pages/DoctorHomeDashboard";
 import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
+import EditDoctorProfile from "./components/EditDoctorProfile";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminDoctor from "./pages/AdminDoctor";
+import AdminClinic from "./pages/AdminClinic";
+import AdminLogin from "./pages/AdminLogin";
+import LabTestDetails from "./pages/LabTestDetails";
+import Navbar from "./components/Navbar";
 
 // Wrapper component to conditionally render Navbar
 const AppWrapper: React.FC = () => {

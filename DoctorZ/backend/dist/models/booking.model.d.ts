@@ -14,6 +14,7 @@ export interface IBooking extends Document {
     datetime: Date;
     mode: "online" | "offline";
     fees: number;
+    status: "booked" | "cancelled" | "completed";
     createdAt: Date;
     updatedAt: Date;
 }

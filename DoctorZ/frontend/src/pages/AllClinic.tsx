@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
+import api from "../Services/mainApi";
 
 interface Clinic {
   _id: string;
