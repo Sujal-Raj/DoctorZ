@@ -274,15 +274,30 @@ export const approveClinic = async (
       return res.status(404).json({ message: "Clinic not found" });
     }
 
-    // ✅ Send approval email to staff
-    await sendMail(
-      clinic.staffEmail,
-      "Clinic Registration Approved ✅",
-      `<p>Dear ${clinic.staffName},</p>
-       <p>Your clinic registration has been <b>approved</b>.</p>
-       <p><b>Staff ID:</b> ${staffId}</p>
-       <p>Welcome to our platform!</p>`
-    );
+    // Log email before sending
+    console.log("Clinic staffEmail before sending mail:", clinic.staffEmail);
+
+    // Validate email existence before sending mail
+    if (!clinic.staffEmail) {
+      console.error("No staffEmail found for clinic:", clinic._id);
+      return res.status(400).json({ message: "Clinic staff email not found" });
+    }
+
+    // ✅ Send approval email to staff with error handling
+    try {
+      await sendMail(
+        clinic.staffEmail,
+        "Clinic Registration Approved ✅",
+        `<p>Dear ${clinic.staffName},</p>
+         <p>Your clinic registration has been <b>approved</b>.</p>
+         <p><b>Staff ID:</b> ${staffId}</p>
+         <p>Welcome to our platform!</p>`
+      );
+      console.log("Clinic approval email sent successfully");
+    } catch (emailError) {
+      console.error("Error sending clinic approval email:", emailError);
+      return res.status(500).json({ message: "Failed to send clinic approval email" });
+    }
 
     return res.status(200).json({
       message: "Clinic approved ✅ & email sent successfully",
@@ -293,6 +308,7 @@ export const approveClinic = async (
     return res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 // ------------------ Reject Clinic ------------------
 export const rejectClinic = async (req: Request, res: Response) => {

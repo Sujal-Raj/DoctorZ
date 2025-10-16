@@ -36,13 +36,13 @@ export default function LoginClinic() {
       // ✅ Store token in localStorage
       localStorage.setItem("authTokenClinic", res.data.jwtToken);
 
-      alert(res.data.message);
-      navigate(`/clinicDashboard/${res.data.clinic.id}`);
-    } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || "Invalid login credentials");
-      setStaffPassword("");
-    } finally {
-      setLoading(false);
+    alert(res.data.message);
+    const clinicId = res.data.clinic.id;
+    navigate(`/clinicDashboard/${clinicId}`);
+    localStorage.setItem("clinicId", clinicId);
+    localStorage.setItem("clinicToken", res.data.jwtToken);
+    } catch (err: unknown) {
+      alert(err+ "Invalid login");
     }
   };
 

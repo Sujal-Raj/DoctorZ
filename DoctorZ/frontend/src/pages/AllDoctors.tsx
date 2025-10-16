@@ -53,6 +53,7 @@ const [filterExperience, setFilterExperience] = useState<string[]>([]); // e.g.,
     const fetchDoctors = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/doctor/allDoctors");
+        console.log("Raw Response:", response);
         const data = await response.json();
         console.log("API Response:", data);
 

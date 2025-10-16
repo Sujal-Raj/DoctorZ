@@ -1,7 +1,8 @@
 import React, { useContext } from "react";
 import { Video, MapPin, Clock, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../Context/AuthContext";  // ✅ Import AuthContext
+import { AuthContext } from "../Context/AuthContext";
+// import ViewDoctorProfile from "../pages/ViewDoctorProfile";
 
 export interface Doctor {
   _id: string;
