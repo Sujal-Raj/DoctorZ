@@ -37,12 +37,11 @@ export default function LoginClinic() {
       localStorage.setItem("authTokenClinic", res.data.jwtToken);
 
       alert(res.data.message);
-      navigate(`/clinicDashboard/${res.data.clinic.id}`);
-    } catch (err: any) {
-      setErrorMsg(err.response?.data?.message || "Invalid login credentials");
-      setStaffPassword("");
-    } finally {
-      setLoading(false);
+    navigate(`/clinicDashboard/${clinicId}`);
+    localStorage.setItem("clinicId", clinicId);
+    localStorage.setItem("clinicToken", res.data.jwtToken);
+    } catch (err: unknown) {
+      alert(err+ "Invalid login");
     }
   };
 

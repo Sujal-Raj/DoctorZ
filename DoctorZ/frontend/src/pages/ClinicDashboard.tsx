@@ -1,11 +1,40 @@
-import { Outlet } from "react-router-dom";
+// import { useEffect, useState } from "react";
+import {  Outlet } from "react-router-dom";
 import ClinicSidebar from "../components/ClinicSidebar";
-// ✅ import as namespace
+// import Cookies from "js-cookie";
+// import * as jwt_decode from "jwt-decode"; // ✅ import as namespace
 import { useParams } from "react-router-dom";
+// interface JwtPayload {
+//   id: string;
+//   iat: number;
+//   exp: number;
+// }
 
 export const ClinicDashboard = () => {
-  const { clinicId } = useParams<{ clinicId: string }>();
-  console.log("Clinic ID from URL:", clinicId);
+  // const navigate = useNavigate();
+  // const [clinicId, setClinicId] = useState<string | null>(null);
+
+
+
+const { clinicId } = useParams<{ clinicId: string }>();
+console.log("Clinic ID from URL:", clinicId);
+
+  // useEffect(() => {
+  //   const token = Cookies.get("authToken");
+  //   if (!token) {
+  //     navigate("/clinic-login");
+  //     return;
+  //   }
+
+  //   try {
+  //     const decoded = (jwt_decode as any)(token) as JwtPayload; // ✅ call as function
+  //     setClinicId(decoded.id);
+  //   } catch (err) {
+  //     navigate("/clinicLogin");
+  //   }
+  // }, [navigate]);
+
+  // if (!clinicId) return <div>Loading...</div>;
 
   return (
     <div className="flex">

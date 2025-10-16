@@ -229,7 +229,7 @@ const updateDoctor =async(req:Request,res:Response)=>{
         }
 
         return res.status(201).json({
-            message:"doctor updated successfully",updateDoctor
+            message:"doctor updated successfully",doctor:updateDoctor
         })
     }
     catch(error){
