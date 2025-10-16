@@ -73,7 +73,7 @@ const ClinicSidebar = () => {
   const handleLogout = () => {
     // Remove token/cookie here
     localStorage.removeItem("clinic_portal_token");
-    navigate("/clinic-login");
+    navigate("/");
   };
 
   return (
@@ -100,6 +100,17 @@ const ClinicSidebar = () => {
           >
             <UserPlus size={18} /> Add Doctor
           </Link>
+          <Link to="clinic-profile" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+
+            <User size={18} /> My Profile
+          </Link>
+
+          <Link to="all-clinic-patients" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+
+            <User size={18} /> Patients
+          </Link>
+
+
         </nav>
       </div>
 

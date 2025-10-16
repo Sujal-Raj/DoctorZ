@@ -111,10 +111,10 @@
 
 
 
-import React, { useState } from "react";
+import React, {  } from "react";
 import { Video, MapPin, Clock, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import ViewDoctorProfile from "../pages/ViewDoctorProfile";
+// import ViewDoctorProfile from "../pages/ViewDoctorProfile";
 
 export interface Doctor {
   _id: string;

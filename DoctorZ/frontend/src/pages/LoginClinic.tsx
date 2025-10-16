@@ -34,8 +34,10 @@ export default function LoginClinic() {
       // ✅ Redirect to dashboarda
       alert(res.data.message);
     navigate(`/clinicDashboard/${clinicId}`);
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Invalid login");
+    localStorage.setItem("clinicId", clinicId);
+    localStorage.setItem("clinicToken", res.data.jwtToken);
+    } catch (err: unknown) {
+      alert(err+ "Invalid login");
     }
   };
 

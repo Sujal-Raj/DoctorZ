@@ -11,7 +11,7 @@ interface Clinic {
   state: string;
   phone: string;
   email: string;
-  doctors: any[];
+  doctors: unknown[];
   clinicLicenseNumber: string;
   operatingHours: string;
   staffName: string;

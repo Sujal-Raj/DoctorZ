@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+// import { useEffect, useState } from "react";
+import {  Outlet } from "react-router-dom";
 import ClinicSidebar from "../components/ClinicSidebar";
-import Cookies from "js-cookie";
-import * as jwt_decode from "jwt-decode"; // ✅ import as namespace
+// import Cookies from "js-cookie";
+// import * as jwt_decode from "jwt-decode"; // ✅ import as namespace
 import { useParams } from "react-router-dom";
-interface JwtPayload {
-  id: string;
-  iat: number;
-  exp: number;
-}
+// interface JwtPayload {
+//   id: string;
+//   iat: number;
+//   exp: number;
+// }
 
 export const ClinicDashboard = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   // const [clinicId, setClinicId] = useState<string | null>(null);
 
 
