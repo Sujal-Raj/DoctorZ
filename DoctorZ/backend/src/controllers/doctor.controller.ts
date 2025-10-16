@@ -4,6 +4,7 @@ import type { Request,Response } from 'express';
 
 import doctorModel from '../models/doctor.model.js';
 import jwt from "jsonwebtoken";
+import clinicModel from '../models/clinic.model.js';
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -62,9 +63,13 @@ const email = req.body.email;
       signature,
       email,
       clinic:clinicId,
-         status: "pending",
+    status: "pending",
     });
-
+ if (req.body.clinicId) {
+      await clinicModel.findByIdAndUpdate(req.body.clinicId, {
+        $push: { doctors: doctor._id },
+      });
+    }
     await doctor.save();
 
     return res.status(201).json({ message: 'Doctor registered', doctor });
@@ -77,9 +82,11 @@ const email = req.body.email;
 
 
 // Login Doctor
+// Login Doctor
 const doctorLogin = async(req:Request, res:Response)=>{
   try{
      console.log("Login request body:", req.body);
+     
     const {doctorId , password} = req.body;
     
 
@@ -126,6 +133,17 @@ const doctorLogin = async(req:Request, res:Response)=>{
   }
 }
 
+const logoutDoctor = async (req: Request, res: Response) => {
+  try {
+    // This just confirms logout. JWT is stateless, so we can't "destroy" token server-side
+    return res.status(200).json({ message: "Doctor logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({ message: "Failed to logout" });
+  }
+};
+
+
 
 const getDoctorById = async(req:Request , res:Response)=>{
     try{
@@ -157,7 +175,7 @@ const getDoctorById = async(req:Request , res:Response)=>{
 const getAllDoctors=async(req:Request,
     res:Response)=>{
         try{
-            const doctors = await doctorModel.find();
+            const doctors = await doctorModel.find({status:"approved"});
 
             return res.status(200).json({
                 message:"Doctors fetched successfully",doctors
@@ -226,9 +244,11 @@ const updateDoctor =async(req:Request,res:Response)=>{
  const getClinicDoctors=async(req:Request,res:Response)=>{
     try{
         const {clinicId}=req.params;
-        const doctors = await doctorModel.find({clinic:clinicId});
+        const doctors = await doctorModel.find({clinic:clinicId,
+            status:"approved",
+        });
         return res.status(200).json({
-            message:"Doctors fetched successfully",doctors
+            message:"Doctors fetched successfully",doctors:doctors
         })
 
     }
@@ -242,4 +262,4 @@ const updateDoctor =async(req:Request,res:Response)=>{
 }
 
 
-export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin};
+export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin,logoutDoctor};

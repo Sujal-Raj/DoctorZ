@@ -7,6 +7,7 @@ declare const _default: {
     updateDoctor: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     getClinicDoctors: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     doctorLogin: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    logoutDoctor: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 };
 export default _default;
 //# sourceMappingURL=doctor.controller.d.ts.map

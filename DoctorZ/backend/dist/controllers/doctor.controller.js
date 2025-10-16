@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import doctorModel from '../models/doctor.model.js';
 import jwt from "jsonwebtoken";
+import clinicModel from '../models/clinic.model.js';
 const doctorRegister = async (req, res) => {
     try {
         console.log('Text fields:', req.body);
@@ -45,6 +46,11 @@ const doctorRegister = async (req, res) => {
             clinic: clinicId,
             status: "pending",
         });
+        if (req.body.clinicId) {
+            await clinicModel.findByIdAndUpdate(req.body.clinicId, {
+                $push: { doctors: doctor._id },
+            });
+        }
         await doctor.save();
         return res.status(201).json({ message: 'Doctor registered', doctor });
     }
@@ -53,6 +59,7 @@ const doctorRegister = async (req, res) => {
         return res.status(500).json({ message: 'Registration failed', error });
     }
 };
+// Login Doctor
 // Login Doctor
 const doctorLogin = async (req, res) => {
     try {
@@ -92,6 +99,16 @@ const doctorLogin = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+const logoutDoctor = async (req, res) => {
+    try {
+        // This just confirms logout. JWT is stateless, so we can't "destroy" token server-side
+        return res.status(200).json({ message: "Doctor logged out successfully" });
+    }
+    catch (error) {
+        console.error("Logout error:", error);
+        return res.status(500).json({ message: "Failed to logout" });
+    }
+};
 const getDoctorById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -115,7 +132,7 @@ const getDoctorById = async (req, res) => {
 };
 const getAllDoctors = async (req, res) => {
     try {
-        const doctors = await doctorModel.find();
+        const doctors = await doctorModel.find({ status: "approved" });
         return res.status(200).json({
             message: "Doctors fetched successfully", doctors
         });
@@ -170,9 +187,11 @@ const updateDoctor = async (req, res) => {
 const getClinicDoctors = async (req, res) => {
     try {
         const { clinicId } = req.params;
-        const doctors = await doctorModel.find({ clinic: clinicId });
+        const doctors = await doctorModel.find({ clinic: clinicId,
+            status: "approved",
+        });
         return res.status(200).json({
-            message: "Doctors fetched successfully", doctors
+            message: "Doctors fetched successfully", doctors: doctors
         });
     }
     catch (error) {
@@ -182,5 +201,5 @@ const getClinicDoctors = async (req, res) => {
         });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin };
+export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin, logoutDoctor };
 //# sourceMappingURL=doctor.controller.js.map

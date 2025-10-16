@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 import patientModel from "../models/patient.model.js";
-const MONGO_URI = "mongodb://localhost:27017/DoctorZ";
 const dbConnect = async () => {
     try {
-        await mongoose.connect(MONGO_URI);
+        if (!process.env.MONGO_URI) {
+            throw new Error("MONGO_URI environment variable is not defined");
+        }
+        await mongoose.connect(process.env.MONGO_URI);
         console.log("Database Connected");
     }
     catch (error) {
@@ -22,13 +24,13 @@ const testPatientModel = async () => {
             Aadhar: 123456789012,
             address: {
                 city: "Mumbai",
-                pincode: 400001
+                pincode: 400001,
             },
             abhaId: "ABHA123456",
             emergencyContact: {
                 name: "John Doe",
-                number: 9123456789
-            }
+                number: 9123456789,
+            },
         });
         const savedPatient = await testPatient.save();
         console.log("🧪 Test patient saved:", savedPatient.fullName);

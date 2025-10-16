@@ -3,25 +3,21 @@ import bcrypt  from "bcryptjs";
 import clinicModel from "../models/clinic.model.js";
 import type { IClinic } from "../models/clinic.model.js";
 import  doctorModel from "../models/doctor.model.js";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-dotenv.config();
 
+dotenv.config();
 console.log("MAIL_USER:", process.env.MAIL_USER);
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
 
 
 // ---------------- Clinic Registration ----------------
 
 export const clinicRegister = async (req: Request, res: Response) => {
+  console.log("➡️ Received form submission");
+
+    console.log("🧾 req.body:", req.body);
+    console.log("📎 req.file:", req.file);
   try {
     const {
       clinicName,
@@ -69,31 +65,16 @@ export const clinicRegister = async (req: Request, res: Response) => {
       staffId,
       staffPassword: await bcrypt.hash(staffPassword, 10),
       registrationCertificate: registrationCertPath,
+     
     });
 
+    // console.log(clinic);
     await clinic.save();
 
-    // 📧 Send staff ID via email after saving
-    try {
-      await transporter.sendMail({
-        from: process.env.MAIL_USER,
-        to: staffEmail,
-        subject: "Your Staff ID for Clinic Registration",
-        html: `
-          <p>Hi <b>${staffName}</b>,</p>
-          <p>Your staff account has been created successfully!</p>
-          <p><strong>Staff ID:</strong> ${staffId}</p>
-          <p>Please use this ID along with your password to login.</p>
-          <br/>
-          <p>Thanks,<br/>Clinic Management Team</p>
-        `,
-      });
-      console.log(" Staff ID email sent to:", staffEmail);
-    } catch (mailErr) {
-      console.error(" Failed to send email:", mailErr);
-    }
+   
 
     return res.status(201).json({ message: "Clinic Registered", clinic });
+    
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Something went wrong", error });
@@ -105,43 +86,40 @@ export const clinicRegister = async (req: Request, res: Response) => {
 
 // ---------------- Clinic Login ----------------
 
-export const clinicLogin=async(req:Request,res:Response)=>{
-  try{
-    const{staffId,staffPassword}=req.body;
-    if(!staffId || !staffPassword){
+export const clinicLogin = async (req: Request, res: Response) => {
+  try {
+    const { staffId, staffPassword } = req.body;
+
+    if (!staffId || !staffPassword) {
       return res.status(400).json({
-        message:"All fields are required"
-      })
+        message: "All fields are required",
+      });
     }
-    const clinic=await clinicModel.findOne({staffId:staffId});
-    if(!clinic){
+
+    const clinic = await clinicModel.findOne({ staffId });
+    if (!clinic) {
       return res.status(404).json({
-        message:"Clinic not found"
-      })
+        message: "Clinic not found",
+      });
     }
-    const isMatch=await bcrypt.compare(staffPassword,clinic.staffPassword);
-    if(!isMatch){
+
+    const isMatch = await bcrypt.compare(staffPassword, clinic.staffPassword);
+    if (!isMatch) {
       return res.status(401).json({
-        message:"Invalid credentials"
-      })
+        message: "Invalid credentials",
+      });
     }
+
     const token = jwt.sign(
       { id: clinic._id },
       process.env.JWT_SECRET as string,
       { expiresIn: "1d" }
     );
 
-     // ✅ Set cookie
-   res.cookie("authToken", token, {
-  httpOnly: false,   // allow frontend JS to read
-  secure: false,     // because localhost is not HTTPS
-  sameSite: "lax",
-  maxAge: 24 * 60 * 60 * 1000,
-});
-
-
+    // ✅ Just return the token in the response (no cookie)
     return res.status(200).json({
       message: "Login successful",
+     jwtToken: token,
       clinic: {
         id: clinic._id,
         staffId: clinic.staffId,
@@ -150,13 +128,13 @@ export const clinicLogin=async(req:Request,res:Response)=>{
         clinicName: clinic.clinicName,
       },
     });
-  }catch(error){
+  } catch (error) {
+    console.error("Login Error:", error);
     return res.status(500).json({
-      message:"Something went wrong"
-    })
+      message: "Something went wrong",
+    });
   }
-}
-
+};
 // // ---------------- Update Clinic ----------------
 export const updateClinic = async (req: Request, res: Response) => {
   try {
@@ -313,7 +291,8 @@ export const getClinicById = async(req:Request,res:Response)=>{
       }
 
       return res.status(200).json({
-        message:"Clinic found", clinic
+        message:"Clinic found", 
+        clinic:clinic
       })
    }
    catch(error){
@@ -323,4 +302,6 @@ export const getClinicById = async(req:Request,res:Response)=>{
     })
    }
 }
+
+
 
