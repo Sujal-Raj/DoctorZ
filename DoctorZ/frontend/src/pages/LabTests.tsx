@@ -290,4 +290,30 @@ const LabTests: React.FC = () => {
   );
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default LabTests;
