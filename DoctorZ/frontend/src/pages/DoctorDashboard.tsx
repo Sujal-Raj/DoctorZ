@@ -42,6 +42,13 @@ function DoctorDashboard() {
             >
               My Patients
             </Link>
+
+            <Link
+  to="edit-profile"
+  className="block py-2 px-3 rounded hover:bg-gray-800 transition"
+>
+  ✏️ Edit Profile
+</Link>
           </nav>
         </div>
 

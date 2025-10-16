@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import nodemailer from 'nodemailer';
 import doctorModel from '../models/doctor.model.js';
 import jwt from "jsonwebtoken";
 const doctorRegister = async (req, res) => {
@@ -158,26 +159,33 @@ const deleteDoctor = async (req, res) => {
         });
     }
 };
+// update doctorId and password then conformation email to doctor
 const updateDoctor = async (req, res) => {
     try {
         const { id } = req.params;
-        const updateDoctor = await doctorModel.findByIdAndUpdate(id, req.body, { new: true, runValidators: true }); // new:true => updated document return hoga
-        if (!updateDoctor) {
-            return res.status(400).json({
-                message: "doctor not found"
-            });
+        const { doctorId, password } = req.body;
+        // Validate required fields
+        if (!doctorId || !password) {
+            return res.status(400).json({ message: "doctorId and password are required" });
         }
-        return res.status(201).json({
-            message: "doctor updated successfully", updateDoctor
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // Update doctor in the database
+        const updatedDoctor = await doctorModel.findByIdAndUpdate(id, { doctorId, password: hashedPassword }, { new: true, runValidators: true });
+        if (!updatedDoctor) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
+        return res.status(200).json({
+            message: "Doctor ID and password updated successfully.",
+            updatedDoctor,
         });
     }
     catch (error) {
-        console.error("Error updating doctor ", error);
-        return res.status(500).json({
-            message: "failed to updated doctor"
-        });
+        console.error("Error updating doctor:", error.message || error);
+        return res.status(500).json({ message: "Failed to update doctor" });
     }
 };
+///   
 const getClinicDoctors = async (req, res) => {
     try {
         const { clinicId } = req.params;
