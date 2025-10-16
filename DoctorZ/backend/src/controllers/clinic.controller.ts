@@ -3,6 +3,9 @@ import bcrypt  from "bcryptjs";
 import clinicModel from "../models/clinic.model.js";
 import type { IClinic } from "../models/clinic.model.js";
 import  doctorModel from "../models/doctor.model.js";
+import nodemailer from "nodemailer";
+import bookingModel from "../models/booking.model.js";
+import patientModel from "../models/patient.model.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 
@@ -65,6 +68,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
       staffId,
       staffPassword: await bcrypt.hash(staffPassword, 10),
       registrationCertificate: registrationCertPath,
+     
     });
 
     // console.log(clinic);
@@ -290,7 +294,8 @@ export const getClinicById = async(req:Request,res:Response)=>{
       }
 
       return res.status(200).json({
-        message:"Clinic found", clinic
+        message:"Clinic found", 
+        clinic:clinic
       })
    }
    catch(error){
@@ -301,3 +306,62 @@ export const getClinicById = async(req:Request,res:Response)=>{
    }
 }
 
+// ---------------- Get All Clinic Patients ----------------
+export const getAllClinicPatients = async (req: Request, res: Response) => {
+  try {
+    const { clinicId } = req.params;
+
+    if (!clinicId) {
+      return res.status(400).json({ message: "Clinic ID is required" });
+    }
+
+    // ✅ Step 1: Find all doctors linked to this clinic
+    const doctors = await doctorModel
+      .find({ clinic: clinicId })
+      .select("_id fullName specialization");
+
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: "No doctors found for this clinic" });
+    }
+
+    const doctorIds = doctors.map((d) => d._id);
+
+    // ✅ Step 2: Fetch all bookings for those doctors
+    const bookings = await bookingModel
+      .find({ doctorId: { $in: doctorIds } })
+      .populate("doctorId", "fullName specialization");
+
+    if (bookings.length === 0) {
+      return res.status(404).json({ message: "No patients found for this clinic" });
+    }
+
+    // ✅ Step 3: Build patient list using the `patient` object
+    const patients = bookings.map((b) => {
+      const doctor: any = b.doctorId;
+      const patient: any = b.patient; // 👈 comes from embedded field
+
+      return {
+        patientName: patient?.name,
+        age: patient?.age,
+        gender: patient?.gender,
+        contact: patient?.contact,
+        aadhar: patient?.aadhar,
+        appointedTo: `Dr. ${doctor?.fullName}`,
+        specialization: doctor?.specialization,
+        datetime: b.datetime,
+        mode: b.mode,
+        fees: b.fees,
+      };
+    });
+
+    return res.status(200).json({
+      message: "All clinic patients fetched successfully",
+      clinicId,
+      totalPatients: patients.length,
+      patients,
+    });
+  } catch (error) {
+    console.error("Error fetching clinic patients:", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
