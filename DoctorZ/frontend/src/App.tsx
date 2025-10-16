@@ -34,6 +34,7 @@ import RegisterLab from "./pages/RegisterLab";
 import LoginLab from "./pages/LoginLab";
 import AdminLab from "./pages/AdminLab";
 import AllLabTest from "./pages/AllLabTest";
+import LabTestDetails from "./pages/LabTestDetails";
 import Patients from "./pages/LabPatients";
 import LabTests from "./pages/LabTests";
 import LabProfile from "./pages/LabProfile";
@@ -72,6 +73,8 @@ const App: React.FC = () => {
             <Route path="/lab-login" element={<LoginLab />} />
             <Route path="/admin-lab" element={<AdminLab />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
+            <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
+
           </Route>
 
           {/* Routes without navbar */}
