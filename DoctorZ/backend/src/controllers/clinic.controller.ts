@@ -53,7 +53,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
     const clinic = new clinicModel({
       clinicName,
       clinicType,
-      specialities: JSON.parse(specialities),
+      specialities,
       operatingHours,
       clinicLicenseNumber: licenseNo,
       aadharNumber: Number(ownerAadhar),

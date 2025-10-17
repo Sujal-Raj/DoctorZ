@@ -245,24 +245,6 @@ const getLabPatients = async (req, res) => {
         return res.status(500).json({ message: "Server Error" });
     }
 };
-// const getLabPatients=async(req:Request,res:Response)=>{
-//  try{
-//      const {labId}=req.params;
-//      const patients=await LabTestBookingModel.find({labId});
-//       if (!patients || patients.length === 0) {
-//       return res.status(404).json({ message: "No patients found for this lab" });
-//     }
-//      return res.status(200).json({
-//       message:"patients retrieved ",
-//       labPatients:patients
-//      })
-//  }catch(err){
-//   console.log(err);
-//   return res.status(500).json({
-//     message:"Server Error"
-//   })
-//  }
-// }
 export default {
     labRegister,
     labLogin,
