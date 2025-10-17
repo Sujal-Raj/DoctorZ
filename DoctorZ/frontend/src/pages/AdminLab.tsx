@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import api from "../Services/mainApi";
@@ -6,11 +5,6 @@ import api from "../Services/mainApi";
 interface Timings {
   open: string;
   close: string;
-}
-
-interface Test {
-  testName: string;
-  price: number;
 }
 
 interface Lab {
@@ -23,6 +17,7 @@ interface Lab {
   address: string;
   timings: Timings;
   status: string; // "pending", "approved", "rejected"
+  certificateNumber: string; // ✅ Added
 }
 
 export default function AdminLab() {
@@ -30,7 +25,7 @@ export default function AdminLab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // ✅ Fetch all pending labs
+  // Fetch all pending labs
   const fetchLabDetails = async () => {
     try {
       setLoading(true);
@@ -45,7 +40,7 @@ export default function AdminLab() {
     }
   };
 
-  // ✅ Approve or Reject lab
+  // Approve or Reject lab
   const handleAction = async (id: string, action: "approve" | "reject") => {
     try {
       const url =
@@ -69,7 +64,6 @@ export default function AdminLab() {
           timer: 1500,
           showConfirmButton: false,
         });
-        // Refresh list
         fetchLabDetails();
       }
     } catch (err: any) {
@@ -87,7 +81,6 @@ export default function AdminLab() {
     fetchLabDetails();
   }, []);
 
-  // ✅ Loading and Error States
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen text-gray-700 text-lg">
@@ -102,12 +95,11 @@ export default function AdminLab() {
       </div>
     );
 
-  // ✅ Main UI
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h2 className="text-xl font-bold mb-4">Pending Labs</h2>
       {labs.length === 0 ? (
-        <p className=" text-gray-600">No pending labs found.</p>
+        <p className="text-gray-600">No pending labs found.</p>
       ) : (
         <div className="overflow-x-auto shadow-lg rounded-lg bg-white">
           <table className="min-w-full text-sm text-left text-gray-700">
@@ -115,6 +107,7 @@ export default function AdminLab() {
               <tr>
                 <th className="py-3 px-4">Lab Name</th>
                 <th className="py-3 px-4">Email</th>
+                <th className="py-3 px-4">Certificate Number</th> {/* ✅ Added */}
                 <th className="py-3 px-4">Location</th>
                 <th className="py-3 px-4">Timings</th>
                 <th className="py-3 px-4">Status</th>
@@ -129,6 +122,10 @@ export default function AdminLab() {
                 >
                   <td className="py-3 px-4 font-medium">{lab.name}</td>
                   <td className="py-3 px-4">{lab.email}</td>
+                  <td className="py-3 px-4 font-semibold text-yellow-700">
+                    {/* Highlighted certificate number */}
+                    {lab.certificateNumber || "N/A"}
+                  </td>
                   <td className="py-3 px-4">
                     {lab.city}, {lab.state} ({lab.pincode})
                   </td>
@@ -181,4 +178,3 @@ export default function AdminLab() {
     </div>
   );
 }
-
