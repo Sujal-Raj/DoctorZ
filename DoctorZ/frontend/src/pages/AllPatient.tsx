@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../api/client";
+import api from "../Services/client";
 import { HiUserCircle } from "react-icons/hi"; // at the top
 import {Phone} from "lucide-react";
 

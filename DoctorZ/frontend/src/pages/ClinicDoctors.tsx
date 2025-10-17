@@ -1,7 +1,7 @@
 // export default ClinicDoctors;
 import { useEffect, useState } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
-import api from "../api/client";
+import api from "../Services/client";
 
 interface Doctor {
   _id: string;

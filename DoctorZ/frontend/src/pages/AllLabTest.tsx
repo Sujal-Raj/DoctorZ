@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/client";
+import api from "../Services/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 // ✅ Import category images

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import * as jwt_decode from "jwt-decode";
-import api from "../api/client";
+import api from "../Services/client";
 import { useOutletContext } from "react-router-dom";
 type DoctorFormInputs = {
   fullName: string;

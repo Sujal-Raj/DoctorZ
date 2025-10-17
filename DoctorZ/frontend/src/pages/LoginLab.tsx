@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import Swal from "sweetalert2";
-import api from "../api/client";
+import api from "../Services/client";
 
 interface LabLoginResponse {
   token: string;

@@ -7,7 +7,7 @@ import {
   FaHeartbeat,
   FaRupeeSign,
 } from "react-icons/fa";
-import api from "../api/client";
+import api from "../Services/client";
 import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer,
