@@ -14,4 +14,6 @@ router.delete('/delete/:id',doctorController.deleteDoctor)
 router.put('/update/:id',doctorController.updateDoctor);
 router.get('/getClinicDoctors/:clinicId',doctorController.getClinicDoctors);
 router.post('/login',doctorController.doctorLogin);
+router.get("/todays-appointments/:doctorId", doctorController.getTodaysBookedAppointments);
+router.get('/total-patients/:doctorId', doctorController.getTotalPatients);
 export default router;

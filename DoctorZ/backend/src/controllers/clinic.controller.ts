@@ -50,7 +50,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
     }
 
     // Multer provides the uploaded file here
-    const registrationCertPath = req.file ? req.file.filename : undefined;
+    const registrationCertPath = req.file ? `http://localhost:3000/uploads/${req.file.filename}`: undefined;
 
     const clinic = new clinicModel({
       clinicName,
@@ -180,7 +180,7 @@ export const updateClinic = async (req: Request, res: Response) => {
     const updateData: Partial<IClinic> = {
       clinicName,
       clinicType,
-      specialities: JSON.parse(specialities),
+      specialities,
       operatingHours,
       clinicLicenseNumber,
       aadharNumber:  Number(aadharNumber) ,
@@ -193,7 +193,7 @@ export const updateClinic = async (req: Request, res: Response) => {
 
     // Multer file handling
     if (req.file) {
-      updateData.registrationCertificate = req.file.path;
+      updateData.registrationCertificate = `http://localhost:3000/uploads/${req.file.filename}`;;
     }
 
     const updatedClinic = await clinicModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -326,6 +326,8 @@ export const getClinicById = async(req:Request,res:Response)=>{
    }
 }
 
+
+
 // ---------------- Get All Clinic Patients ----------------
 export const getAllClinicPatients = async (req: Request, res: Response) => {
   try {
@@ -382,6 +384,38 @@ export const getAllClinicPatients = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Error fetching clinic patients:", error);
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+};
+
+
+// ---------------- Get Clinic Stats ----------------
+export const getClinicStatus = async (req: Request, res: Response) => {
+  try {
+    const { clinicId } = req.params;
+
+    if (!clinicId) {
+      return res.status(400).json({ message: "Clinic ID is required" });
+    }
+
+    // ✅ Fetch doctors linked to this clinic with approved status
+    const doctors = await doctorModel.find({
+      clinic: clinicId,
+      status: "approved",
+    });
+
+    const totalDoctors = doctors.length;
+    const totalDepartments = new Set(doctors.map((d) => d.specialization)).size;
+
+    return res.status(200).json({
+      message: "Clinic stats fetched successfully",
+      stats: {
+        totalDoctors,
+        totalDepartments,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching clinic stats:", error);
     return res.status(500).json({ message: "Something went wrong", error });
   }
 };

@@ -3,12 +3,16 @@ import bcrypt from 'bcryptjs';
 import type { Request,Response } from 'express';
 
 import doctorModel from '../models/doctor.model.js';
+import Booking from '../models/booking.model.js';
 import jwt from "jsonwebtoken";
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
 }
 
+interface Params {
+  doctorId: string; // this ensures `req.params.doctorId` is typed as string
+}
 
 
 const doctorRegister = async (req: Request, res: Response) => {
@@ -240,6 +244,53 @@ const updateDoctor =async(req:Request,res:Response)=>{
     }
     
 }
+export const getTodaysBookedAppointments = async (req: Request, res: Response) => {
+  try {
+    const doctorId = req.params.doctorId;
+
+    // Use UTC to define the start and end of the current day
+    const now = new Date();
+    const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+
+    // Debug logging (optional)
+    console.log("Start of Day (UTC):", startOfDay.toISOString());
+    console.log("End of Day (UTC):", endOfDay.toISOString());
+
+    // Find bookings for today
+    const bookedAppointments = await Booking.find({
+      doctorId: doctorId,
+      datetime: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      },
+      status: "booked"
+    });
+
+    res.status(200).json(bookedAppointments);
+  } catch (error) {
+    console.error("Error fetching today's booked appointments:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 
-export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin};
+
+export const getTotalPatients = async (req: Request, res: Response) => {
+  try {
+    const doctorId = req.params.doctorId;
+
+    // Count total booked appointments for this doctor (status "booked")
+    const totalPatients = await Booking.countDocuments({
+      doctorId: doctorId,
+      status: "booked",
+    });
+
+    res.status(200).json({ totalPatients });
+  } catch (error) {
+    console.error("Error fetching total patients:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin ,getTodaysBookedAppointments ,getTotalPatients};

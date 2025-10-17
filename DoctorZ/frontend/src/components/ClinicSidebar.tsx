@@ -83,10 +83,10 @@ const ClinicSidebar = () => {
         <h2 className="text-xl font-bold mb-8 text-white">Clinic Dashboard</h2>
         <nav className="flex flex-col space-y-4">
           <Link
-            to="/"
+            to="clinic-home-dashboard"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition"
           >
-            <Home size={18} /> Home
+            <Home size={18} /> Dashboard
           </Link>
           <Link
             to="all-clinic-doctors"
