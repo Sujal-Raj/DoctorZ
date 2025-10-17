@@ -1,8 +1,13 @@
-
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { FaUserMd, FaCalendarAlt, FaUsers, FaClock, FaHome, FaSignOutAlt } from "react-icons/fa";
-
-function DoctorDashboard() {
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  HomeIcon,
+  UserIcon,
+  ClockIcon,
+  CalendarIcon,
+  UsersIcon,
+  KeyIcon,
+} from "@heroicons/react/24/outline";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 
 export default function DoctorDashboard() {
   const location = useLocation();
@@ -15,13 +20,12 @@ export default function DoctorDashboard() {
   };
 
   const menuItems = [
-    { name: "Home", path: "/", icon: <FaHome /> },
-    { name: "Profile", path: "doctorProfile", icon: <FaUserMd /> },
-    { name: "Add Availability", path: "time-slots", icon: <FaClock /> },
-    { name: "Appointments", path: "appointments", icon: <FaCalendarAlt /> },
-    { name: "Edit ID & Password", path: "editDoctorIdPassword", icon: <FaCalendarAlt /> },
-
-    { name: "My Patients", path: "patients", icon: <FaUsers /> },
+    { name: "Home", path: "/", icon: <HomeIcon className="w-5 h-5" /> },
+    { name: "Profile", path: "doctorProfile", icon: <UserIcon className="w-5 h-5" /> },
+    { name: "Add Availability", path: "time-slots", icon: <ClockIcon className="w-5 h-5" /> },
+    { name: "Appointments", path: "appointments", icon: <CalendarIcon className="w-5 h-5" /> },
+    { name: "Edit ID & Password", path: "editDoctorIdPassword", icon: <KeyIcon className="w-5 h-5" /> },
+    { name: "My Patients", path: "patients", icon: <UsersIcon className="w-5 h-5" /> },
   ];
 
   return (
@@ -30,8 +34,6 @@ export default function DoctorDashboard() {
       <aside className="w-64 bg-gray-800 text-white flex flex-col justify-between p-6">
         <div>
           <div className="flex items-center justify-center gap-2 mb-10">
-            {/* Optional logo icon */}
-            {/* <StethoscopeIcon className="w-6 h-6 text-blue-400" /> */}
             <h2 className="text-2xl font-bold">Doctor Panel</h2>
           </div>
 
@@ -59,7 +61,7 @@ export default function DoctorDashboard() {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 mt-6 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-700 transition text-white w-full justify-center "
+          className="flex items-center gap-2 mt-6 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-700 transition text-white w-full justify-center"
         >
           <ArrowRightOnRectangleIcon className="w-5 h-5" /> Logout
         </button>

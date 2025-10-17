@@ -47,6 +47,10 @@ import AdminLogin from "./pages/AdminLogin";
 import LabTestDetails from "./pages/LabTestDetails";
 import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
+import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
+import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
+import AllClinicPatients from "./pages/AllClinicPatients";
+import ClinicDetails from "./pages/ClinicDetails";
 
 // Wrapper component to conditionally render Navbar
 // const AppWrapper: React.FC = () => {
@@ -164,6 +168,7 @@ const App: React.FC = () => {
             <Route path="/lab-login" element={<LoginLab />} />
             <Route path="/admin-lab" element={<AdminLab />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
+            <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
           </Route>
 
           {/* Routes without navbar */}
@@ -222,8 +227,9 @@ const App: React.FC = () => {
             <Route path="tests" element={<LabTests />} />
             <Route path="profile" element={<LabProfile />} />
           </Route>
-
+        
           <Route path="/admin/login" element={<AdminLogin />}></Route>
+           <Route path="clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
         
         </Routes>
       </Router>

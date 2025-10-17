@@ -16,7 +16,7 @@ interface Clinic {
   district: string;
   pincode: number;
   clinicLicenseNumber: string;
-  registrationCertificate?: string; // URL or base64 string
+  registrationCertificate?: string;
   aadharNumber: number;
   panNumber: string;
   staffName: string;
@@ -38,11 +38,7 @@ export default function ClinicProfile() {
   const [saving, setSaving] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
 
-  // Modal state for showing certificate
-  const [showCertificateModal, setShowCertificateModal] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+  // Fetch clinic data
   const fetchClinicData = async () => {
     if (!clinicId) return;
     try {
@@ -83,39 +79,7 @@ export default function ClinicProfile() {
     });
   };
 
-  // Handle file upload for Registration Certificate
- const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (!formData) return;
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  const uploadForm = new FormData();
-  uploadForm.append("file", file);
-
-  try {
-    const response = await axios.put<{ registrationCertificate: string }>(
-      `http://localhost:3000/api/clinic/updateCertificate/${formData._id}`,
-      uploadForm,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    setFormData({
-      ...formData,
-      registrationCertificate: response.data.registrationCertificate,
-    });
-
-    toast.success("Certificate uploaded successfully");
-  } catch (error) {
-    console.error("Certificate upload error:", error);
-    toast.error("Failed to upload certificate");
-  }
-};
-
-
+  // Update clinic
   const handleUpdate = async () => {
     if (!formData) return;
 
@@ -144,6 +108,7 @@ export default function ClinicProfile() {
     }
   };
 
+  // Delete clinic
   const handleDelete = async () => {
     if (!clinic) return;
     if (window.confirm("Are you sure you want to delete this clinic?")) {
@@ -271,108 +236,8 @@ export default function ClinicProfile() {
               </p>
             )}
           </div>
-        </header>
-
-        {/* Clinic Info Fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
-          {fields.map(({ label, key }) => (
-            <div key={key as string} className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1">
-                {label}
-              </label>
-
-              {key === "registrationCertificate" ? (
-                editMode ? (
-                  <>
-                    <input
-                      type="file"
-                      accept=".pdf,image/*"
-                      onChange={handleFileChange}
-                      ref={fileInputRef}
-                      className="text-gray-700"
-                    />
-                    {formData.registrationCertificate && (
-                      <p className="text-xs mt-1 text-green-600 break-all">
-                        File selected
-                      </p>
-                    )}
-                  </>
-                ) : formData.registrationCertificate ? (
-                  <button
-                    onClick={() => setShowCertificateModal(true)}
-                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm font-medium transition"
-                  >
-                    View Certificate
-                  </button>
-                ) : (
-                  <span className="text-gray-500">No certificate uploaded</span>
-                )
-              ) : editMode ? (
-                <input
-                  type={
-                    key === "pincode" || key === "aadharNumber"
-                      ? "number"
-                      : "text"
-                  }
-                  name={key}
-                  value={
-                    Array.isArray(formData[key])
-                      ? (formData[key] as string[]).join(", ")
-                      : (formData[key] as string | number | undefined) || ""
-                  }
-                  onChange={handleChange}
-                  className="rounded-md border border-gray-300 p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
-                  placeholder={`Enter ${label.toLowerCase()}`}
-                />
-              ) : (
-                <div className="bg-gray-50 rounded-md p-3 text-gray-800 min-h-[40px] shadow-inner break-words">
-                  {Array.isArray(formData[key])
-                    ? (formData[key] as string[]).join(", ")
-                    : formData[key]}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Certificate Modal */}
-      {showCertificateModal && formData?.registrationCertificate && (
-  <div
-    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
-    onClick={() => setShowCertificateModal(false)}
-  >
-    <div
-      className="bg-white rounded-lg overflow-auto max-w-full max-h-full p-4 relative"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        className="absolute top-2 right-2 text-gray-700 hover:text-gray-900 font-bold text-xl"
-        onClick={() => setShowCertificateModal(false)}
-        aria-label="Close modal"
-      >
-        &times;
-      </button>
-
-      {/* Check if it's a PDF or image based on URL or base64 */}
-      {formData.registrationCertificate.endsWith(".pdf") ||
-      formData.registrationCertificate.startsWith("data:application/pdf") ? (
-        <iframe
-          src={formData.registrationCertificate}
-          title="Registration Certificate"
-          className="w-[80vw] h-[80vh]"
-        />
-      ) : (
-        <img
-          src={formData.registrationCertificate}
-          alt="Registration Certificate"
-          className="max-w-full max-h-[80vh] object-contain"
-        />
-      )}
+        ))}
+      </div>
     </div>
-  </div>
-)}
-
-    </>
   );
 }
