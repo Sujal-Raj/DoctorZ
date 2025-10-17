@@ -42,7 +42,8 @@ app.use("/api/clinic",clinicRoutes)
 app.use("/api/doctor",doctorRoutes)
 app.use("/api/availability",timeSlotsRoutes)
 app.use("/api/booking",bookingRoutes)
-app.use("/api/lab",labRoutes)
+app.use("/api/lab", labRoutes);
+
 
 app.listen(PORT,()=>{
     console.log("Server running at " + PORT)
