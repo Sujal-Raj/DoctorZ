@@ -51,7 +51,7 @@ const DoctorDashboardHome: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("doctorToken");
+  const token = localStorage.getItem("token");
   const doctorId = localStorage.getItem("doctorId");
 
   useEffect(() => {
@@ -210,28 +210,28 @@ useEffect(() => {
           {
             title: "Total Patients",
             value: totalPatients.toString(),
-            icon: <UserIcon className="text-cyan-600 text-2xl" />,
+            icon: <UserIcon className="text-cyan-600 w-6 h-6" />,
             change: "+10%",
             note: "since last month",
           },
           {
             title: "Today's Appointments",
             value: (todaysAppointments ?? 0).toString(), // dynamic value here
-            icon: <CalendarIcon className="text-indigo-600 text-2xl" />,
+            icon: <CalendarIcon className="text-indigo-600 w-6 h-6" />,
             change: "",
             note: "scheduled today",
           },
           {
             title: "Critical Patients",
             value: "5",
-            icon: <HeartIcon className="text-red-500 text-2xl" />,
+            icon: <HeartIcon className="text-red-500 w-6 h-6" />,
             change: "Urgent",
             note: "requires attention",
           },
           {
             title: "Monthly Revenue",
             value: "₹85,000",
-            icon: <CurrencyRupeeIcon className="text-green-600 text-2xl" />,
+            icon: <CurrencyRupeeIcon className="text-green-600 w-6 h-6" />,
             change: "+18%",
             note: "growth this month",
           },

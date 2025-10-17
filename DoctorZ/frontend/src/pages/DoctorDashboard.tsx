@@ -20,7 +20,7 @@ export default function DoctorDashboard() {
   };
 
   const menuItems = [
-    { name: "Home", path: "/", icon: <HomeIcon className="w-5 h-5" /> },
+    { name: "Dashboard", path: "doctor-home-dashboard", icon: <HomeIcon className="w-5 h-5" /> },
     { name: "Profile", path: "doctorProfile", icon: <UserIcon className="w-5 h-5" /> },
     { name: "Add Availability", path: "time-slots", icon: <ClockIcon className="w-5 h-5" /> },
     { name: "Appointments", path: "appointments", icon: <CalendarIcon className="w-5 h-5" /> },
