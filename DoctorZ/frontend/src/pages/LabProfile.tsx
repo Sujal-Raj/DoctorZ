@@ -347,12 +347,14 @@ import { useOutletContext } from "react-router-dom";
 import { Building2, Mail, MapPin, Edit3, Save, CheckCircle2, AlertCircle, X } from "lucide-react";
 
 interface Lab {
+  labId: string;
   name: string;
   email: string;
   address: string;
   city: string;
   state: string;
   pincode: string;
+  password?: string;
 }
 
 interface LabDashboardContext {
@@ -370,42 +372,45 @@ interface UpdateLabResponse {
 }
 
 const LabProfile = () => {
-  const { labId } = useOutletContext<LabDashboardContext>();
+  const outletContext = useOutletContext<LabDashboardContext>();
+  const contextLabId = outletContext.labId;
 
   const [lab, setLab] = useState<Lab>({
+    labId: "",
     name: "",
     email: "",
     address: "",
     city: "",
     state: "",
     pincode: "",
+    password: "",
   });
 
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [notification, setNotification] = useState<{type: 'success' | 'error', message: string} | null>(null);
+  const [passwordInput, setPasswordInput] = useState("");
 
   useEffect(() => {
-    if (!labId) return;
+    if (!contextLabId) return;
 
     const fetchLab = async () => {
       setLoading(true);
       try {
         const res = await axios.get<GetLabResponse>(
-          `http://localhost:3000/api/lab/getLabById/${labId}`
+          `http://localhost:3000/api/lab/getLabById/${contextLabId}`
         );
-        if (res.data.labDetails) setLab(res.data.labDetails);
+        if (res.data.labDetails) {
+          setLab(res.data.labDetails);
+        }
       } catch (err) {
         console.error("Error fetching lab:", err);
-        showNotification('error', 'Failed to load profile');
+        alert("Failed to load lab data");
       } finally {
         setLoading(false);
       }
     };
 
     fetchLab();
-  }, [labId]);
+  }, [contextLabId]);
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
@@ -413,25 +418,41 @@ const LabProfile = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLab({ ...lab, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "password") {
+      setPasswordInput(value);
+    } else {
+      setLab((prevLab) => ({
+        ...prevLab,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!labId) {
-      showNotification('error', 'Lab ID not found');
+
+    if (!contextLabId) {
+      alert("Lab ID not found in context!");
       return;
     }
 
     setSaving(true);
     try {
+      const payload = {
+        ...lab,
+        ...(passwordInput ? { password: passwordInput } : {}),
+      };
+
       const res = await axios.put<UpdateLabResponse>(
-        `http://localhost:3000/api/lab/updateLabProfile/${labId}`,
-        lab
+        `http://localhost:3000/api/lab/updateLabProfile/${contextLabId}`,
+        payload
       );
+
+      alert("Profile updated successfully!");
       setLab(res.data.lab);
-      setIsEditing(false);
-      showNotification('success', 'Profile updated successfully!');
+      setPasswordInput(""); // Clear password field after update
     } catch (err) {
       console.error("Error updating lab:", err);
       showNotification('error', 'Failed to update profile');
@@ -440,38 +461,75 @@ const LabProfile = () => {
     }
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#070738] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-700 font-semibold text-lg">Loading Profile...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      {/* Notification */}
-      {notification && (
-        <div className={`fixed top-8 right-8 z-50 flex items-center gap-3 px-8 py-4 rounded-2xl shadow-2xl transform transition-all duration-500 ${
-          notification.type === 'success' 
-            ? 'bg-emerald-600 text-white' 
-            : 'bg-red-600 text-white'
-        }`}>
-          {notification.type === 'success' ? (
-            <CheckCircle2 className="w-6 h-6" />
-          ) : (
-            <AlertCircle className="w-6 h-6" />
-          )}
-          <span className="font-semibold text-lg">{notification.message}</span>
-          <button onClick={() => setNotification(null)} className="ml-3 hover:bg-white/20 rounded-lg p-1.5 transition-colors">
-            <X className="w-5 h-5" />
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4 text-blue-700">Lab Profile</h2>
+
+      {loading ? (
+        <p>Loading profile...</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
+
+          {/* Editable Lab ID */}
+          <div className="flex flex-col">
+            <label htmlFor="labId" className="text-sm font-medium text-gray-700 mb-1">
+              Lab ID
+            </label>
+            <input
+              id="labId"
+              name="labId"
+              value={lab.labId}
+              onChange={handleChange}
+              className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Lab ID"
+            />
+          </div>
+
+          {/* Input Fields */}
+          {[
+            { label: "Lab Name", name: "name" },
+            { label: "Email", name: "email" },
+            { label: "Address", name: "address" },
+            { label: "City", name: "city" },
+            { label: "State", name: "state" },
+            { label: "Pincode", name: "pincode" },
+          ].map(({ label, name }) => (
+            <div key={name} className="flex flex-col">
+              <label htmlFor={name} className="text-sm font-medium text-gray-700 mb-1">
+                {label}
+              </label>
+              <input
+                id={name}
+                name={name}
+                value={(lab as any)[name]}
+                onChange={handleChange}
+                className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder={label}
+              />
+            </div>
+          ))}
+
+          {/* Password Field */}
+          <div className="flex flex-col">
+            <label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={passwordInput}
+              onChange={handleChange}
+              placeholder="Enter new password"
+              className="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition"
+          >
+            Save Changes
           </button>
         </div>
       )}
