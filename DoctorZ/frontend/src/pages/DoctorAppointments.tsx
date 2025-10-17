@@ -71,7 +71,7 @@ export default function DoctorAppointments() {
             {/* Patient Info */}
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <UserIcon className="text-gray-600" />
+                <UserIcon className="text-gray-600 w-6 h-6" />
                 <h3 className="text-lg font-semibold text-gray-900">{b.patient?.name}</h3>
               </div>
               <p className="text-sm text-gray-600">
@@ -83,15 +83,15 @@ export default function DoctorAppointments() {
             {/* Appointment Info */}
             <div className="mb-4 text-gray-700 text-sm space-y-2">
               <p className="flex items-center gap-2">
-                <CalendarDaysIcon className="text-gray-500" />
+                <CalendarDaysIcon className="text-gray-500 w-6 h-6" />
                 <span className="font-medium">Date & Time:</span> {new Date(b.datetime).toLocaleString()}
               </p>
               <p className="flex items-center gap-2">
-                <CurrencyRupeeIcon className="text-gray-500" />
+                <CurrencyRupeeIcon className="text-gray-500 w-6 h-6" />
                 <span className="font-medium">Fees:</span> {b.fees}
               </p>
               <p className="flex items-center gap-2 capitalize">
-                <ClockIcon className="text-gray-500" />
+                <ClockIcon className="text-gray-500 w-6 h-6" />
                 <span className="font-medium">Mode:</span> {b.mode}
               </p>
             </div>
@@ -116,7 +116,7 @@ export default function DoctorAppointments() {
                   onClick={() => updateStatus(b._id, "completed")}
                   className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-500 text-white py-2 rounded-lg font-medium transition-colors cursor-pointer"
                 >
-                  <CheckIcon/> Complete
+                  <CheckIcon className="w-6 h-6"/> Complete
                 </button>
               )}
               {b.status !== "cancelled" && (
@@ -124,7 +124,7 @@ export default function DoctorAppointments() {
                   onClick={() => updateStatus(b._id, "cancelled")}
                   className="flex-1 flex items-center justify-center gap-2 bg-red-400 hover:bg-red-500 text-white py-2 rounded-lg font-medium transition-colors cursor-pointer"
                 >
-                  <XMarkIcon /> Cancel
+                  <XMarkIcon className="w-6 h-6" /> Cancel
                 </button>
               )}
             </div>

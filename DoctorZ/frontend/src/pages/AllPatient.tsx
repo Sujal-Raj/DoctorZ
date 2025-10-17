@@ -66,7 +66,7 @@ const AllPatient: React.FC = () => {
             {patients.map((patient, idx) => (
               <tr key={idx} className="border-t hover:bg-gray-50 text-sm ">
                 <td className="px-4 py-3 font-medium flex items-center gap-2 ">
-                  <UserCircleIcon className="text-2xl text-pink-500" />
+                  <UserCircleIcon className="w-7 h-7 text-pink-500" />
                   {patient.name}
                 </td>
                 <td className="px-4 py-3 ">{patient.gender}</td>
