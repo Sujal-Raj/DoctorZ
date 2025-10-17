@@ -1,7 +1,10 @@
+import { VideoCameraIcon, UserIcon, BuildingOfficeIcon } from "@heroicons/react/24/solid";
+
+
 import { useState } from "react";
 // Assuming SearchBar is a component that handles the search input and API calls.
 import SearchBar from "../components/SearchBar"; 
-import { FaVideo, FaUserMd, FaHospital } from "react-icons/fa";
+
 import Gynecologist from "../assets/Gynecologist.jpeg";
 import Dentist from "../assets/Dentist.jpeg";
 import Dietitian from "../assets/nutrition.jpeg";
@@ -48,12 +51,30 @@ export default function Home() {
 
   // Dummy data for the 'Consult top doctors online' section 
   // until actual content is loaded
-  const serviceBlocks = [
-    { title: "Instant Video Consultation", subtitle: "Connect within 60 secs", icon: FaVideo, bgColor: "bg-purple-100", iconColor: "text-purple-600" },
-    { title: "Find Doctors Near You", subtitle: "Confirmed appointments", icon: FaUserMd, bgColor: "bg-blue-100", iconColor: "text-blue-600" },
-    { title: "Surgeries", subtitle: "Safe and trusted surgery centers", icon: FaHospital, bgColor: "bg-green-100", iconColor: "text-green-600" },
-  ];
-
+  
+const serviceBlocks = [
+  {
+    title: "Instant Video Consultation",
+    subtitle: "Connect within 60 secs",
+    icon: VideoCameraIcon, // was FaVideo
+    bgColor: "bg-purple-100",
+    iconColor: "text-purple-600",
+  },
+  {
+    title: "Find Doctors Near You",
+    subtitle: "Confirmed appointments",
+    icon: UserIcon, // was FaUserMd
+    bgColor: "bg-blue-100",
+    iconColor: "text-blue-600",
+  },
+  {
+    title: "Surgeries",
+    subtitle: "Safe and trusted surgery centers",
+    icon: BuildingOfficeIcon, // was FaHospital
+    bgColor: "bg-green-100",
+    iconColor: "text-green-600",
+  },
+];
   const handleSearchResults = (data: any) => {
     // Clear previous results if no results or empty array
     if (Array.isArray(data) && data.length === 0) {
@@ -106,7 +127,7 @@ export default function Home() {
                 className={`p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1 ${block.bgColor}`}
               >
                 <div className={`text-4xl mx-auto mb-3 ${block.iconColor}`}>
-                  <block.icon className="mx-auto" />
+                  <block.icon className="h-6 w-6 mx-auto" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">
                   {block.title}
@@ -544,3 +565,4 @@ export default function Home() {
     </div>
   );
 }
+

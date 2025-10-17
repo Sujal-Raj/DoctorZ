@@ -1,7 +1,13 @@
-
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaCalendarAlt, FaRupeeSign, FaClock, FaUser ,FaTimes ,FaCheck } from "react-icons/fa";
+import {
+  CalendarDaysIcon,
+  CurrencyRupeeIcon,
+  ClockIcon,
+  UserIcon,
+  XMarkIcon,
+  CheckIcon,
+} from "@heroicons/react/24/solid";
 
 interface Patient {
   name: string;
@@ -13,7 +19,7 @@ interface Patient {
 
 interface Booking {
   _id: string;
-  patient: Patient; // matches backend populate("patientId")
+  patient: Patient;
   datetime: string;
   fees: number;
   mode: "online" | "offline";
@@ -22,15 +28,12 @@ interface Booking {
 
 export default function DoctorAppointments() {
   const [bookings, setBookings] = useState<Booking[]>([]);
-
-  // Get doctor ID from localStorage (dynamic per login)
   const doctorId = localStorage.getItem("doctorId");
 
-  // Fetch bookings for this doctor
   const fetchBookings = async () => {
-    if (!doctorId){
-       console.error("Doctor ID missing from localStorage");
-       return;
+    if (!doctorId) {
+      console.error("Doctor ID missing from localStorage");
+      return;
     }
     try {
       const { data } = await axios.get<{ bookings: Booking[] }>(
@@ -42,11 +45,10 @@ export default function DoctorAppointments() {
     }
   };
 
-  // Update booking status
   const updateStatus = async (id: string, status: "completed" | "cancelled") => {
     try {
       await axios.put(`http://localhost:3000/api/booking/${id}/status`, { status });
-      fetchBookings(); // refresh after update
+      fetchBookings();
     } catch (err) {
       console.error("Failed to update status:", err);
     }

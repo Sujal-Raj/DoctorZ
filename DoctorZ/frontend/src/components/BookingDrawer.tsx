@@ -4,7 +4,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { X, Video, Phone } from "lucide-react";
 import { formatDayShort, formatDateNumber } from "../utils/date.js";
-import api from "../api/client";
+import api from "../Services/mainApi.js";
 import { addMonths, startOfMonth, endOfMonth } from "date-fns";
 
 import AppointmentFormModal from "./AppointmentFormModal.js";
@@ -189,14 +189,14 @@ const BookingDrawer: React.FC<Props> = ({
           : "w-full"
       }`}
     >
-      {isModal && (
+      {/* {isModal && (
         <div
           className={`absolute inset-0 bg-black/50 transition-opacity ${
             open ? "opacity-100" : "opacity-0"
           }`}
           onClick={() => !bookingLoading && onClose()}
         />
-      )}
+      )} */}
 
       <div
         className={`relative bg-white rounded-xl shadow p-5 ${
@@ -380,7 +380,7 @@ export default BookingDrawer;
 // import React, { useEffect, useMemo, useState } from "react";
 // import { X, Video, Phone } from "lucide-react";
 // import { formatDayShort, formatDateNumber } from "../utils/date.js";
-// import api from "../api/client";
+// import api from  "../Services/mainApi";
 // import { addMonths, startOfMonth, endOfMonth } from "date-fns";
 
 // import AppointmentFormModal from "./AppointmentFormModal.js";

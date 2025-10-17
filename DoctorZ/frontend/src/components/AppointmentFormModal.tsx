@@ -30,10 +30,9 @@ const AppointmentFormModal: React.FC<FormModalProps> = ({ open, onClose, onSubmi
     <div className="fixed inset-0 z-50 flex items-center justify-center ">
       {/* Overlay */}
       <div
-        className=" absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
-
+    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+    onClick={onClose}
+  />
       {/* Modal content */}
       <div
         className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4 animate-fadeIn"

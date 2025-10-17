@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import doctorModel from "../models/doctor.model.js";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 import { LabModel } from "../models/lab.model.js";
+import clinicModel from "../models/clinic.model.js";
+import Admin from "../models/adminModel.js";
 dotenv.config();
 // 🔹 Generate Token
 const generateToken = (id, email, role) => {
@@ -19,7 +21,7 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
-    }
+    },
 });
 //send Email
 const sendMail = async (to, subject, html) => {
@@ -28,31 +30,12 @@ const sendMail = async (to, subject, html) => {
             from: process.env.MAIL_USER,
             to,
             subject,
-            html
+            html,
         });
     }
     catch (error) {
         console.log("Error sending email:", error);
     }
-};
-// 🔹 Admin Login
-export const adminLogin = (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-    }
-    if (email === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
-        const token = generateToken("admin-id", email, "admin");
-        return res.status(200).json({
-            message: "Admin Login Successful",
-            token,
-            user: {
-                email: process.env.ADMIN_ID,
-                // password: process.env.ADMIN_PASSWORD,
-            }
-        });
-    }
-    return res.status(401).json({ message: "Invalid Credentials" });
 };
 // 🔹 Get all pending doctor requests
 export const getPendingDoctors = async (req, res) => {
@@ -77,7 +60,9 @@ export const approveDoctor = async (req, res) => {
         await sendMail(doctor.email, "Doctor Registration Approved ✅", `<p>Dear Dr. ${doctor.fullName},</p>
        <p>Your registration is <b>Approved</b>.</p>
        <p><b>Doctor ID:</b> ${generatedId}</p>`);
-        return res.status(200).json({ message: "Doctor approved ✅ & mail sent", doctor });
+        return res
+            .status(200)
+            .json({ message: "Doctor approved ✅ & mail sent", doctor });
     }
     catch (error) {
         console.error("Error approving doctor:", error);
@@ -160,6 +145,122 @@ export const getPendingLabs = async (req, res) => {
     }
     catch (error) {
         console.error("Error fetching pending labs:", error);
+        return res.status(500).json({ message: "Server Error" });
+    }
+};
+// clinic
+export const getPendingClinics = async (req, res) => {
+    try {
+        const pendingClinics = await clinicModel.find({ status: "pending" });
+        return res.status(200).json({
+            message: "Pending Clinics retrieved",
+            Clinics: pendingClinics,
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "server error",
+        });
+    }
+};
+// CLINIC
+// ------------------ Generate Staff ID ------------------
+const generateClinicStaffId = () => {
+    return "STAFF-" + Math.floor(100000 + Math.random() * 900000).toString();
+};
+// ------------------ Approve Clinic ------------------
+export const approveClinic = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // ✅ Generate Staff ID
+        const staffId = generateClinicStaffId();
+        // ✅ Update clinic status to approved and set staffId
+        const clinic = await clinicModel.findByIdAndUpdate(id, { status: "approved", staffId }, { new: true });
+        if (!clinic) {
+            return res.status(404).json({ message: "Clinic not found" });
+        }
+        // Log email before sending
+        console.log("Clinic staffEmail before sending mail:", clinic.staffEmail);
+        // Validate email existence before sending mail
+        if (!clinic.staffEmail) {
+            console.error("No staffEmail found for clinic:", clinic._id);
+            return res.status(400).json({ message: "Clinic staff email not found" });
+        }
+        // ✅ Send approval email to staff with error handling
+        try {
+            await sendMail(clinic.staffEmail, "Clinic Registration Approved ✅", `<p>Dear ${clinic.staffName},</p>
+         <p>Your clinic registration has been <b>approved</b>.</p>
+         <p><b>Staff ID:</b> ${staffId}</p>
+         <p>Welcome to our platform!</p>`);
+            console.log("Clinic approval email sent successfully");
+        }
+        catch (emailError) {
+            console.error("Error sending clinic approval email:", emailError);
+            return res.status(500).json({ message: "Failed to send clinic approval email" });
+        }
+        return res.status(200).json({
+            message: "Clinic approved ✅ & email sent successfully",
+            clinic,
+        });
+    }
+    catch (error) {
+        console.error("Error approving clinic:", error);
+        return res.status(500).json({ message: "Server Error" });
+    }
+};
+// ------------------ Reject Clinic ------------------
+export const rejectClinic = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const clinic = await clinicModel.findByIdAndUpdate(id, { status: "rejected" }, { new: true });
+        if (!clinic) {
+            return res.status(404).json({ message: "Clinic not found" });
+        }
+        await sendMail(clinic.email, "Clinic Registration Rejected ❌", `<p> ${clinic.clinicName},</p>
+       <p>Your registration has been <b>rejected</b>. Please contact admin for more details.</p>`);
+        return res.status(200).json({
+            message: "Clinic rejected ❌ & mail sent successfully",
+            clinic,
+        });
+    }
+    catch (error) {
+        console.error("Error rejecting clinic:", error);
+        return res.status(500).json({ message: "Server Error" });
+    }
+};
+// admin login controllers
+// 🔹 Admin Login (using DB model)
+export const adminLogin = async (req, res) => {
+    const { email, password } = req.body;
+    // Check if fields are present
+    if (!email || !password) {
+        return res.status(400).json({ message: "Email and password are required" });
+    }
+    try {
+        // Find admin by email
+        const admin = await Admin.findOne({ email });
+        if (!admin) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+        // Compare password
+        const isMatch = await admin.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+        // Generate JWT
+        const token = generateToken(admin._id.toString(), admin.email, "admin");
+        return res.status(200).json({
+            message: "Admin Login Successful",
+            token,
+            user: {
+                id: admin._id,
+                email: admin.email,
+                name: admin.name,
+            },
+        });
+    }
+    catch (err) {
+        console.error("Admin login error:", err);
         return res.status(500).json({ message: "Server Error" });
     }
 };

@@ -19,6 +19,7 @@ export interface IClinic extends Document {
     staffEmail: string;
     staffPassword: string;
     staffId: string;
+    status: string;
 }
 declare const clinicModel: mongoose.Model<IClinic, {}, {}, {}, mongoose.Document<unknown, {}, IClinic, {}, {}> & IClinic & Required<{
     _id: unknown;

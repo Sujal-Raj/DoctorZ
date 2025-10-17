@@ -3,12 +3,12 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  FaHospitalUser,
-  FaCalendarCheck,
-  FaRupeeSign,
-  FaUserInjured,
-} from "react-icons/fa";
-import api from "../api/client";
+  UserGroupIcon,
+  CalendarDaysIcon,
+  CurrencyRupeeIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
+import api from "../Services/mainApi";
 import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer,
@@ -84,9 +84,12 @@ const ClinicHomeDashboard: React.FC = () => {
 
     const fetchClinic = async () => {
       try {
-        const res = await api.get<ClinicResponse>(`/api/clinic/getClinicById/${clinicId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get<ClinicResponse>(
+          `/api/clinic/getClinicById/${clinicId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         setClinic(res.data.clinic);
       } catch (err) {
         console.error("Error fetching clinic:", err);
@@ -173,12 +176,12 @@ const ClinicHomeDashboard: React.FC = () => {
           {
             title: "Weekly Revenue",
             value: "₹1.3L",
-            icon: <FaRupeeSign className="text-green-500 text-2xl" />,
+            icon: <CurrencyRupeeIcon className="w-7 h-7 text-green-500" />,
           },
           {
             title: "Active Patients",
             value: 210,
-            icon: <FaUserInjured className="text-rose-500 text-2xl" />,
+            icon: <UserIcon className="w-7 h-7 text-rose-500" />,
           },
           {
             title: "Departments",
@@ -203,7 +206,9 @@ const ClinicHomeDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         {/* Chart */}
         <div className="bg-white rounded-xl p-6 shadow-lg lg:col-span-2">
-          <h2 className="font-semibold text-gray-800 mb-4">📈 Weekly Patients & Revenue</h2>
+          <h2 className="font-semibold text-gray-800 mb-4">
+            📈 Weekly Patients & Revenue
+          </h2>
           <ResponsiveContainer width="100%" height={250}>
             <AreaChart data={weeklyData}>
               <defs>
@@ -271,3 +276,4 @@ const ClinicHomeDashboard: React.FC = () => {
 };
 
 export default ClinicHomeDashboard;
+

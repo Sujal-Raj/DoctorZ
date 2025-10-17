@@ -36,8 +36,6 @@ app.use((req, res, next) => {
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-
-
 app.use("/api/admin",adminRoutes)
 app.use("/api/patient",patientRoutes)
 app.use("/api/clinic",clinicRoutes)

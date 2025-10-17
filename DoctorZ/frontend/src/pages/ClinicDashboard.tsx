@@ -40,7 +40,7 @@ console.log("Clinic ID from URL:", clinicId);
     <div className="flex">
       <ClinicSidebar />
       <div className="flex-1 p-6 bg-gray-100 min-h-screen">
-        <Outlet context={{clinicId} }/>
+        <Outlet context={{ clinicId }} />
       </div>
     </div>
   );

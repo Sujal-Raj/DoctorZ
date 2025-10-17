@@ -49,6 +49,11 @@ const clinicSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    status: {
+        type: String,
+        default: "pending",
+        required: true
+    }
 });
 const clinicModel = mongoose.model("Clinic", clinicSchema, "Clinic");
 export default clinicModel;

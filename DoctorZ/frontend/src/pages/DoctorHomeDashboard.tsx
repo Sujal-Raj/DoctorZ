@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  FaUserMd,
-  FaCalendarAlt,
-  FaHeartbeat,
-  FaRupeeSign,
-} from "react-icons/fa";
-import api from "../api/client";
+  UserIcon,
+  CalendarIcon,
+  HeartIcon,
+  CurrencyRupeeIcon,
+} from "@heroicons/react/24/solid";
+import api from "../Services/mainApi";
 import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer,
@@ -153,6 +153,37 @@ useEffect(() => {
     { day: "Sun", heartRate: 82, bp: 121 },
   ];
 
+  const stats = [
+    {
+      title: "Total Patients",
+      value: "1,247",
+      icon: <UserIcon className="w-6 h-6 text-cyan-600" />,
+      change: "+10%",
+      note: "since last month",
+    },
+    {
+      title: "Today's Appointments",
+      value: "10",
+      icon: <CalendarIcon className="w-6 h-6 text-indigo-600" />,
+      change: "3 pending",
+      note: "scheduled today",
+    },
+    {
+      title: "Critical Patients",
+      value: "5",
+      icon: <HeartIcon className="w-6 h-6 text-red-500" />,
+      change: "Urgent",
+      note: "requires attention",
+    },
+    {
+      title: "Monthly Revenue",
+      value: "₹85,000",
+      icon: <CurrencyRupeeIcon className="w-6 h-6 text-green-600" />,
+      change: "+18%",
+      note: "growth this month",
+    },
+  ];
+
   return (
     <div className=" min-h-screen p-6 text-gray-800">
       {/* Header */}
@@ -164,7 +195,7 @@ useEffect(() => {
           <p className="text-sm text-gray-500">{dateTime}</p>
         </div>
         <div className="space-x-3">
-          <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm font-medium">
+          <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition text-sm font-medium text-gray-800 bg-white">
             Export Report
           </button>
           <button className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium shadow">
