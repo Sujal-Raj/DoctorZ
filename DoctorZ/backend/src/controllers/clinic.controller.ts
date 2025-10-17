@@ -1,3 +1,4 @@
+
 import type {Request,Response} from "express";
 import bcrypt  from "bcryptjs";
 import clinicModel from "../models/clinic.model.js";
@@ -139,6 +140,7 @@ export const clinicLogin = async (req: Request, res: Response) => {
   }
 };
 // // ---------------- Update Clinic ----------------
+
 export const updateClinic = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -154,39 +156,67 @@ export const updateClinic = async (req: Request, res: Response) => {
       district,
       pincode,
       state,
+      phone,
+      email,
+      staffEmail,
+      staffPassword,
+      staffName,
+      staffId,
+      doctors,
     } = req.body;
 
     const updateData: Partial<IClinic> = {
       clinicName,
       clinicType,
-      specialities: JSON.parse(specialities),
+      specialities: Array.isArray(specialities)
+        ? specialities
+        : typeof specialities === "string"
+        ? specialities.split(",").map((s) => s.trim())
+        : [],
       operatingHours,
       clinicLicenseNumber,
-      aadharNumber:  Number(aadharNumber) ,
+      aadharNumber: Number(aadharNumber),
       panNumber,
       address,
       district,
       state,
-      pincode:  Number(pincode) ,
+      pincode: Number(pincode),
+      phone,
+      email,
+      staffEmail,
+      staffName,
+      staffId,
+      doctors,
     };
 
-    // Multer file handling
+    // 🔒 Hash new password if provided
+    if (staffPassword && staffPassword.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(staffPassword, 10);
+      updateData.staffPassword = hashedPassword;
+    }
+
+    // Optional file upload handling
     if (req.file) {
       updateData.registrationCertificate = req.file.path;
     }
 
-    const updatedClinic = await clinicModel.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedClinic = await clinicModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     if (!updatedClinic) {
       return res.status(404).json({ message: "Clinic not found" });
     }
 
-    return res.status(200).json({ message: "Clinic updated", clinic: updatedClinic });
+    return res
+      .status(200)
+      .json({ message: "Clinic updated", clinic: updatedClinic });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating clinic:", error);
     return res.status(500).json({ message: "Something went wrong", error });
   }
 };
+
 
 
 
