@@ -29,6 +29,7 @@ import RegisterLab from "./pages/RegisterLab";
 import LoginLab from "./pages/LoginLab";
 import AdminLab from "./pages/AdminLab";
 import AllLabTest from "./pages/AllLabTest";
+import LabTestDetails from "./pages/LabTestDetails";
 import Patients from "./pages/LabPatients";
 import LabTests from "./pages/LabTests";
 import LabProfile from "./pages/LabProfile";
