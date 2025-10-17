@@ -2,7 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, type TargetAndTransition } from "framer-motion";
+import api from "../Services/client";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import api from "../Services/mainApi";
 import {

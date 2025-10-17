@@ -257,7 +257,7 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import api from "../Services/mainApi";
+import api from "../Services/client";
 
 // ✅ Import same category images
 import diabetes from "../assets/diabetes.png";
