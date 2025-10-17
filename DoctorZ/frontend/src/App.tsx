@@ -45,7 +45,7 @@ import EditDoctorProfile from "./components/EditDoctorProfile";
 import AdminDoctor from "./pages/AdminDoctor";
 import AdminClinic from "./pages/AdminClinic";
 import AdminLogin from "./pages/AdminLogin";
-import LabTestDetails from "./pages/LabTestDetails";
+
 import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
 import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
@@ -186,7 +186,7 @@ const App: React.FC = () => {
              <Route
               path="clinic-home-dashboard"
                element={<ClinicHomeDashboard/>}/>
-               <Route path="clinic-doctor-profile/:drid" element={<ClinicDoctorProfile/>}/>
+       
             <Route path="clinic-profile" element={<ClinicProfile />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
             <Route
