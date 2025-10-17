@@ -23,11 +23,11 @@ export default function DoctorDashboard() {
   };
 
   const menuItems = [
-    { name: "Dashboard", path: "doctor-home-dashboard", icon: <UserCircleIcon /> },
-    { name: "Profile", path: "doctorProfile", icon: <UserCircleIcon /> },
-    { name: "Add Availability", path: "time-slots", icon: <ClockIcon /> },
-    { name: "Appointments", path: "appointments", icon: <CalendarDaysIcon /> },
-    { name: "My Patients", path: "patients", icon: <UsersIcon /> },
+    { name: "Dashboard", path: "doctor-home-dashboard", icon: <UserCircleIcon className="w-7 h-7" /> },
+    { name: "Profile", path: "doctorProfile", icon: <UserCircleIcon className="w-7 h-7" /> },
+    { name: "Add Availability", path: "time-slots", icon: <ClockIcon className="w-7 h-7"  /> },
+    { name: "Appointments", path: "appointments", icon: <CalendarDaysIcon className="w-7 h-7"/> },
+    { name: "My Patients", path: "patients", icon: <UsersIcon className="w-7 h-7"/> },
   ];
 
   return (

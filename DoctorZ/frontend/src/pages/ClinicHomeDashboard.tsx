@@ -171,7 +171,7 @@ const ClinicHomeDashboard: React.FC = () => {
           {
             title: "Total Doctors",
             value: clinicStats.totalDoctors,
-            icon: <UserGroupIcon className="text-[#00D09C] text-2xl" />,
+            icon: <UserGroupIcon className="w-7 h-7 text-[#00D09C] text-2xl" />,
           },
           {
             title: "Weekly Revenue",
@@ -186,7 +186,7 @@ const ClinicHomeDashboard: React.FC = () => {
           {
             title: "Departments",
             value: clinicStats.totalDepartments,
-            icon: <CalendarDaysIcon className="text-indigo-500 text-2xl" />,
+            icon: <CalendarDaysIcon className="text-indigo-500 w-7 h-7" />,
           },
         ].map((item, idx) => (
           <div
