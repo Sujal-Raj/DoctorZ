@@ -1,455 +1,5 @@
-// // import React, { useEffect, useState } from "react";
-// // import axios from "axios";
-// // import { useOutletContext } from "react-router-dom";
 
-// // interface Clinic {
-// //   _id: string;
-// //   clinicName: string;
-// //   clinicType: "Private" | "Government";
-// //   specialities: string[];
-
-// //   address: string;
-// //   state: string;
-// //   district: string;
-// //   pincode: number;
-
-// //   phone: string;
-// //   email: string;
-
-// //   doctors: string[]; // Doctor IDs (populate करोगे तो Doctor[] बना सकते हो)
-// //   operatingHours: string;
-// //   clinicLicenseNumber: string;
-// //   registrationCertificate?: string;
-
-// //   aadharNumber: number;
-// //   panNumber: string;
-
-// //   staffName: string;
-// //   staffEmail: string;
-// //   staffId: string;
-  
-// // }
-
-// // interface OutletContext {
-// //   clinicId: string | undefined;
-// // }
-
-
-// // const ClinicProfile: React.FC = () => {
-// //     const { clinicId } = useOutletContext<OutletContext>();
-// //   const [clinic, setClinic] = useState<Clinic | null>(null);
-// //   const [loading, setLoading] = useState<boolean>(true);
-// //   const [error, setError] = useState<string>("");
-
-// //   useEffect(() => {
-// //     const fetchClinic = async () => {
-// //       try {
-      
-// //         if (!clinicId) {
-// //           setError("Clinic ID not found. Please login again.");
-// //           setLoading(false);
-// //           return;
-// //         }
-
-// //         const res = await axios.get<{ clinic: Clinic }>(
-// //           `http://localhost:3000/api/clinic/getClinicById/${clinicId}`
-// //         );
-// //         setClinic(res.data.clinic);
-// //       } catch (err) {
-// //         setError("Failed to fetch clinic details: " + err);
-// //       } finally {
-// //         setLoading(false);
-// //       }
-// //     };
-
-// //     fetchClinic();
-// //   }, []);
-
-// //   if (loading) return <p className="text-center text-lg">Loading clinic profile...</p>;
-// //   if (error) return <p className="text-red-500 text-center">{error}</p>;
-// //   if (!clinic) return <p className="text-center">Clinic not found</p>;
-
-// //   return (
-// //     <div className="max-w-4xl mx-auto mt-10 p-6 bg-gradient-to-b from-gray-50 to-white rounded-2xl shadow-lg border border-gray-200">
-// //   {/* Header */}
-// //   <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">Clinic Profile</h2>
-
-// //   {/* Clinic Info Section */}
-// //   <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100 mb-6">
-// //     <h3 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Clinic Information</h3>
-    
-// //     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-// //       <p><span className="font-medium text-gray-800">Clinic Name:</span> {clinic.clinicName}</p>
-// //       <p><span className="font-medium text-gray-800">Type:</span> {clinic.clinicType}</p>
-// //       <p><span className="font-medium text-gray-800">Specialities:</span> {clinic.specialities.join(", ")}</p>
-// //       <p><span className="font-medium text-gray-800">Operating Hours:</span> {clinic.operatingHours}</p>
-// //       <p className="col-span-2"><span className="font-medium text-gray-800">Address:</span> {clinic.address}, {clinic.district}, {clinic.state} - {clinic.pincode}</p>
-// //       <p><span className="font-medium text-gray-800">Phone:</span> {clinic.phone}</p>
-// //       <p><span className="font-medium text-gray-800">Email:</span> {clinic.email}</p>
-// //       <p><span className="font-medium text-gray-800">Clinic License No:</span> {clinic.clinicLicenseNumber}</p>
-// //       {clinic.registrationCertificate && (
-// //         <a
-// //           href={`http://localhost:3000/uploads/${clinic.registrationCertificate}`}
-// //           target="_blank"
-// //           rel="noopener noreferrer"
-// //           className="col-span-2 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-// //         >
-// //           View Registration Certificate
-// //         </a>
-// //       )}
-// //       <p><span className="font-medium text-gray-800">PAN No:</span> {clinic.panNumber}</p>
-// //       <p><span className="font-medium text-gray-800">Aadhar No:</span> {clinic.aadharNumber}</p>
-// //     </div>
-// //   </div>
-
-// //   {/* Staff Info Section */}
-// //   <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-// //     <h3 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Staff Details</h3>
-    
-// //     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-// //       <p><span className="font-medium text-gray-800">Staff Name:</span> {clinic.staffName}</p>
-// //       <p><span className="font-medium text-gray-800">Staff Email:</span> {clinic.staffEmail}</p>
-// //       <p><span className="font-medium text-gray-800">Staff ID:</span> {clinic.staffId}</p>
-// //     </div>
-// //   </div>
-// // </div>
-
-// //   );
-// // };
-
-// // export default ClinicProfile;
-
-// // ...imports and interfaces remain same
-
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import { useOutletContext } from "react-router-dom";
-
-// interface Clinic {
-//   _id: string;
-//   clinicName: string;
-//   clinicType: "Private" | "Government";
-//   specialities: string[];
-
-//   address: string;
-//   state: string;
-//   district: string;
-//   pincode: number;
-
-//   phone: string;
-//   email: string;
-
-//   doctors: string[]; // Doctor IDs (populate करोगे तो Doctor[] बना सकते हो)
-//   operatingHours: string;
-//   clinicLicenseNumber: string;
-//   registrationCertificate?: string;
-
-//   aadharNumber: number;
-//   panNumber: string;
-
-//   staffName: string;
-//   staffEmail: string;
-//   staffId: string;
-  
-// }
-
-// interface OutletContext {
-//   clinicId: string | undefined;
-// }
-
-
-// const ClinicProfile: React.FC = () => {
-//   const { clinicId } = useOutletContext<OutletContext>();
-//   const [clinic, setClinic] = useState<Clinic | null>(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState("");
-//   const [editMode, setEditMode] = useState(false);
-//   const [formData, setFormData] = useState<Partial<Clinic>>({});
-
-//   useEffect(() => {
-//     const fetchClinic = async () => {
-//       try {
-//         if (!clinicId) throw new Error("Clinic ID not found");
-
-//         const res = await axios.get<{ clinic: Clinic }>(
-//           `http://localhost:3000/api/clinic/getClinicById/${clinicId}`
-//         );
-//         setClinic(res.data.clinic);
-//         setFormData(res.data.clinic);
-//       } catch (err: unknown) {
-//         setError("Failed to fetch clinic details: " );
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchClinic();
-//   }, [clinicId]);
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-// const handleUpdate = async () => {
-//   try {
-//     if (!clinic) return;
-
-//     const payload = {
-//       ...formData,
-//       specialities: Array.isArray(formData.specialities)
-//         ? formData.specialities // already array hai to direct use kro
-//         : typeof formData.specialities === "string"
-//         ? formData.specialities.split(",").map((s) => s.trim()) // string hai to array me convert kro
-//         : clinic.specialities, // fallback (in case undefined)
-//     };
-
-//     const res = await axios.put(
-//       `http://localhost:3000/api/clinic/updateClinic/${clinic._id}`,
-//       payload
-//     );
-
-//     setClinic(res.data.clinic);
-//     setEditMode(false);
-//     alert("Clinic updated successfully!");
-//   } catch (err) {
-//     console.error("Error updating clinic:", err);
-//     alert("Failed to update clinic");
-//   }
-// };
-
-
-//   const handleDelete = async () => {
-//     if (!clinic) return;
-//     const confirm = window.confirm(
-//       `Are you sure you want to delete the clinic "${clinic.clinicName}"? This action cannot be undone.`
-//     );
-//     if (!confirm) return;
-
-//     try {
-//       await axios.delete(`http://localhost:3000/api/clinic/deleteClinic/${clinic._id}`);
-//       alert("Clinic deleted successfully!");
-//       window.location.href = "/"; // redirect after deletion
-//     } catch (err) {
-//       console.error(err);
-//       alert("Failed to delete clinic");
-//     }
-//   };
-
-//   if (loading) return <p className="text-center text-lg">Loading clinic profile...</p>;
-//   if (error) return <p className="text-red-500 text-center">{error}</p>;
-//   if (!clinic) return <p className="text-center">Clinic not found</p>;
-
-//   return (
-//     <div className="max-w-4xl mx-auto mt-10 p-6 bg-gradient-to-b from-gray-50 to-white rounded-2xl shadow-lg border border-gray-200">
-//       <div className="flex justify-between items-center mb-6">
-//         <h2 className="text-3xl font-bold text-blue-700">Clinic Profile</h2>
-//         <button
-//           onClick={() => setEditMode(!editMode)}
-//           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
-//         >
-//           {editMode ? "Cancel" : "Edit"}
-//         </button>
-//       </div>
-
-//       {/* Clinic Info */}
-//       <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100 mb-6">
-//         <h3 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-//           Clinic Information
-//         </h3>
-
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-//           {editMode ? (
-//             <>
-//               <input
-//                 type="text"
-//                 name="clinicName"
-//                 value={formData.clinicName || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <select
-//                 name="clinicType"
-//                 value={formData.clinicType || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               >
-//                 <option value="">Select Type</option>
-//                 <option value="Private">Private</option>
-//                 <option value="Government">Government</option>
-//               </select>
-//               <input
-//                 type="text"
-//                 name="specialities"
-//                 value={formData.specialities?.toString() || ""}
-//                 onChange={handleChange}
-//                 placeholder="Specialities (comma separated)"
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="text"
-//                 name="operatingHours"
-//                 value={formData.operatingHours || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <textarea
-//                 name="address"
-//                 value={formData.address || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full col-span-2"
-//               />
-//               <input
-//                 type="text"
-//                 name="district"
-//                 value={formData.district || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="text"
-//                 name="state"
-//                 value={formData.state || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="number"
-//                 name="pincode"
-//                 value={formData.pincode || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="text"
-//                 name="phone"
-//                 value={formData.phone || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="email"
-//                 name="email"
-//                 value={formData.email || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="text"
-//                 name="clinicLicenseNumber"
-//                 value={formData.clinicLicenseNumber || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="number"
-//                 name="aadharNumber"
-//                 value={formData.aadharNumber || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//               <input
-//                 type="text"
-//                 name="panNumber"
-//                 value={formData.panNumber || ""}
-//                 onChange={handleChange}
-//                 className="border p-2 rounded-md w-full"
-//               />
-//             </>
-//           ) : (
-//             <>
-//               <p>
-//                 <span className="font-medium text-gray-800">Clinic Name:</span> {clinic.clinicName}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Type:</span> {clinic.clinicType}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Specialities:</span>{" "}
-//                 {clinic.specialities.join(", ")}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Operating Hours:</span>{" "}
-//                 {clinic.operatingHours}
-//               </p>
-//               <p className="col-span-2">
-//                 <span className="font-medium text-gray-800">Address:</span> {clinic.address},{" "}
-//                 {clinic.district}, {clinic.state} - {clinic.pincode}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Phone:</span> {clinic.phone}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Email:</span> {clinic.email}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Clinic License No:</span>{" "}
-//                 {clinic.clinicLicenseNumber}
-//               </p>
-//               {clinic.registrationCertificate && (
-//                 <a
-//                   href={`http://localhost:3000/uploads/${clinic.registrationCertificate}`}
-//                   target="_blank"
-//                   rel="noopener noreferrer"
-//                   className="col-span-2 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-//                 >
-//                   View Registration Certificate
-//                 </a>
-//               )}
-//               <p>
-//                 <span className="font-medium text-gray-800">PAN No:</span> {clinic.panNumber}
-//               </p>
-//               <p>
-//                 <span className="font-medium text-gray-800">Aadhar No:</span> {clinic.aadharNumber}
-//               </p>
-//             </>
-//           )}
-//         </div>
-
-//         {editMode && (
-//           <div className="flex justify-between mt-4">
-//             <button
-//               onClick={handleUpdate}
-//               className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition"
-//             >
-//               Save Changes
-//             </button>
-//             <button
-//               onClick={handleDelete}
-//               className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition"
-//             >
-//               Delete Clinic
-//             </button>
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Staff Info */}
-//       <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-//         <h3 className="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">
-//           Staff Details
-//         </h3>
-
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
-//           <p>
-//             <span className="font-medium text-gray-800">Staff Name:</span> {clinic.staffName}
-//           </p>
-//           <p>
-//             <span className="font-medium text-gray-800">Staff Email:</span> {clinic.staffEmail}
-//           </p>
-//           <p>
-//             <span className="font-medium text-gray-800">Staff ID:</span> {clinic.staffId}
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ClinicProfile;
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -467,7 +17,7 @@ interface Clinic {
   district: string;
   pincode: number;
   clinicLicenseNumber: string;
-  registrationCertificate?: string;
+  registrationCertificate?: string; // URL or base64 string
   aadharNumber: number;
   panNumber: string;
   staffName: string;
@@ -487,7 +37,11 @@ export default function ClinicProfile() {
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Fetch clinic data
+  // Modal state for showing certificate
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const fetchClinicData = async () => {
     if (!clinicId) return;
     try {
@@ -507,13 +61,54 @@ export default function ClinicProfile() {
     fetchClinicData();
   }, [clinicId]);
 
-  // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     if (!formData) return;
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // For specialities array, if you want comma separated input, you can add logic here.
+    if (name === "specialities") {
+      const arr = value.split(",").map((s) => s.trim());
+      setFormData({ ...formData, [name]: arr });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
-  // Update clinic
+  // Handle file upload for Registration Certificate
+ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (!formData) return;
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const uploadForm = new FormData();
+  uploadForm.append("file", file);
+
+  try {
+    const response = await axios.put<{ registrationCertificate: string }>(
+      `http://localhost:3000/api/clinic/updateCertificate/${formData._id}`,
+      uploadForm,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    setFormData({
+      ...formData,
+      registrationCertificate: response.data.registrationCertificate,
+    });
+
+    toast.success("Certificate uploaded successfully");
+  } catch (error) {
+    console.error("Certificate upload error:", error);
+    toast.error("Failed to upload certificate");
+  }
+};
+
+
   const handleUpdate = async () => {
     if (!formData) return;
     try {
@@ -523,9 +118,9 @@ export default function ClinicProfile() {
         formData
       );
       toast.success("Clinic profile updated successfully");
-      setEditMode(false); // Hide Save button
+      setEditMode(false);
       setSaving(false);
-      fetchClinicData();
+      await fetchClinicData();
     } catch (error) {
       console.error("Error updating clinic:", error);
       toast.error("Failed to update profile");
@@ -533,7 +128,6 @@ export default function ClinicProfile() {
     }
   };
 
-  // Delete clinic
   const handleDelete = async () => {
     if (!clinic) return;
     if (window.confirm("Are you sure you want to delete this clinic?")) {
@@ -551,7 +145,11 @@ export default function ClinicProfile() {
   };
 
   if (!clinic || !formData)
-    return <p className="text-center mt-6 text-gray-500">Loading clinic profile...</p>;
+    return (
+      <p className="text-center mt-6 text-gray-500 text-lg">
+        Loading clinic profile...
+      </p>
+    );
 
   const fields: { label: string; key: keyof Clinic }[] = [
     { label: "Clinic Name", key: "clinicName" },
@@ -573,75 +171,155 @@ export default function ClinicProfile() {
     { label: "Staff ID", key: "staffId" },
   ];
 
-  return (
-    <div className="max-w-5xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow-lg border border-gray-200">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8 ">
-        <h2 className="text-3xl font-bold text-blue-700">Clinic Profile</h2>
-        <div className="flex gap-3">
-          {editMode && (
-            <>
-              <button
-                onClick={handleUpdate}
-                disabled={saving}
-                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg transition disabled:opacity-50"
-              >
-                {saving ? "Saving..." : "Save"}
-              </button>
-              <button
-                onClick={() => setEditMode(false)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg transition"
-              >
-                Cancel
-              </button>
-            </>
-          )}
-          {!editMode && (
-            <button
-              onClick={() => setEditMode(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
-            >
-              Edit
-            </button>
-          )}
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg transition"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
+  
 
-      {/* Fields */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {fields.map(({ label, key }) => (
-          <div key={key as string} className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-600 mb-1">{label}</label>
+  return (
+    <>
+      <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 max-w-full md:max-w-3xl mx-auto">
+        {/* Title & Buttons */}
+        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <h1 className="text-2xl font-semibold text-gray-800 tracking-wide">
+            Clinic Profile
+          </h1>
+          <div className="flex gap-3">
             {editMode ? (
-              <input
-                type={
-                  key === "pincode" || key === "aadharNumber" ? "number" : "text"
-                }
-                name={key}
-                value={
-                  Array.isArray(formData[key])
-                    ? (formData[key] as string[]).join(", ")
-                    : (formData[key] as string | number | undefined) || ""
-                }
-                onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              />
+              <>
+                <button
+                  onClick={handleUpdate}
+                  disabled={saving}
+                  className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-green-400"
+                >
+                  {saving ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={() => {
+                    setFormData(clinic);
+                    setEditMode(false);
+                  }}
+                  className="px-4 py-2 rounded-md bg-gray-500 hover:bg-gray-600 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-gray-400"
+                >
+                  Cancel
+                </button>
+              </>
             ) : (
-              <p className="bg-gray-100 p-2 rounded-md text-gray-800">
-                {Array.isArray(formData[key])
-                  ? (formData[key] as string[]).join(", ")
-                  : formData[key]}
-              </p>
+              <>
+                <button
+                  onClick={() => setEditMode(true)}
+                  className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-red-400"
+                >
+                  Delete
+                </button>
+              </>
             )}
           </div>
-        ))}
-      </div>
+        </header>
+
+        {/* Clinic Info Fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+          {fields.map(({ label, key }) => (
+            <div key={key as string} className="flex flex-col">
+              <label className="text-sm font-medium text-gray-600 mb-1">
+                {label}
+              </label>
+
+              {key === "registrationCertificate" ? (
+                editMode ? (
+                  <>
+                    <input
+                      type="file"
+                      accept=".pdf,image/*"
+                      onChange={handleFileChange}
+                      ref={fileInputRef}
+                      className="text-gray-700"
+                    />
+                    {formData.registrationCertificate && (
+                      <p className="text-xs mt-1 text-green-600 break-all">
+                        File selected
+                      </p>
+                    )}
+                  </>
+                ) : formData.registrationCertificate ? (
+                  <button
+                    onClick={() => setShowCertificateModal(true)}
+                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm font-medium transition"
+                  >
+                    View Certificate
+                  </button>
+                ) : (
+                  <span className="text-gray-500">No certificate uploaded</span>
+                )
+              ) : editMode ? (
+                <input
+                  type={
+                    key === "pincode" || key === "aadharNumber"
+                      ? "number"
+                      : "text"
+                  }
+                  name={key}
+                  value={
+                    Array.isArray(formData[key])
+                      ? (formData[key] as string[]).join(", ")
+                      : (formData[key] as string | number | undefined) || ""
+                  }
+                  onChange={handleChange}
+                  className="rounded-md border border-gray-300 p-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-sm"
+                  placeholder={`Enter ${label.toLowerCase()}`}
+                />
+              ) : (
+                <div className="bg-gray-50 rounded-md p-3 text-gray-800 min-h-[40px] shadow-inner break-words">
+                  {Array.isArray(formData[key])
+                    ? (formData[key] as string[]).join(", ")
+                    : formData[key]}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Certificate Modal */}
+      {showCertificateModal && formData?.registrationCertificate && (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
+    onClick={() => setShowCertificateModal(false)}
+  >
+    <div
+      className="bg-white rounded-lg overflow-auto max-w-full max-h-full p-4 relative"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        className="absolute top-2 right-2 text-gray-700 hover:text-gray-900 font-bold text-xl"
+        onClick={() => setShowCertificateModal(false)}
+        aria-label="Close modal"
+      >
+        &times;
+      </button>
+
+      {/* Check if it's a PDF or image based on URL or base64 */}
+      {formData.registrationCertificate.endsWith(".pdf") ||
+      formData.registrationCertificate.startsWith("data:application/pdf") ? (
+        <iframe
+          src={formData.registrationCertificate}
+          title="Registration Certificate"
+          className="w-[80vw] h-[80vh]"
+        />
+      ) : (
+        <img
+          src={formData.registrationCertificate}
+          alt="Registration Certificate"
+          className="max-w-full max-h-[80vh] object-contain"
+        />
+      )}
     </div>
+  </div>
+)}
+
+    </>
   );
 }

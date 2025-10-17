@@ -58,41 +58,40 @@ export default function DoctorAppointments() {
     fetchBookings();
   }, []);
 
-  return (
-    <div className="p-6">
+ return (
+<div className="p-6">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">Appointments</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {bookings.map((b) => (
           <div
             key={b._id}
-            className="bg-white shadow-lg rounded-2xl border border-gray-200 p-5 hover:shadow-xl transition-shadow"
+            className="bg-white/0 border border-gray-300 rounded-2xl p-5 shadow-sm transition-transform hover:shadow-md hover:scale-[1.02] cursor-pointer hover:border-black"
           >
             {/* Patient Info */}
             <div className="mb-4">
               <div className="flex items-center gap-2">
-                <UserIcon className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-semibold text-gray-800">{b.patient?.name}</h3>
+                <UserIcon className="text-gray-600" />
+                <h3 className="text-lg font-semibold text-gray-900">{b.patient?.name}</h3>
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-600">
                 {b.patient?.age} yrs / {b.patient?.gender}
               </p>
-              <p className="text-sm text-gray-500">Contact: {b.patient?.contact}</p>
+              <p className="text-sm text-gray-600">Contact: {b.patient?.contact}</p>
             </div>
 
             {/* Appointment Info */}
             <div className="mb-4 text-gray-700 text-sm space-y-2">
               <p className="flex items-center gap-2">
-                <CalendarDaysIcon className="w-5 h-5 text-gray-500" />
-                <span className="font-medium">Date & Time:</span>{" "}
-                {new Date(b.datetime).toLocaleString()}
+                <CalendarDaysIcon className="text-gray-500" />
+                <span className="font-medium">Date & Time:</span> {new Date(b.datetime).toLocaleString()}
               </p>
               <p className="flex items-center gap-2">
-                <CurrencyRupeeIcon className="w-5 h-5 text-gray-500" />
+                <CurrencyRupeeIcon className="text-gray-500" />
                 <span className="font-medium">Fees:</span> {b.fees}
               </p>
               <p className="flex items-center gap-2 capitalize">
-                <ClockIcon className="w-5 h-5 text-gray-500" />
+                <ClockIcon className="text-gray-500" />
                 <span className="font-medium">Mode:</span> {b.mode}
               </p>
             </div>
@@ -101,10 +100,10 @@ export default function DoctorAppointments() {
             <div
               className={`inline-block px-3 py-1 rounded-full text-sm font-semibold mb-4 ${
                 b.status === "completed"
-                  ? "bg-green-100 text-green-800"
+                  ? "bg-green-200 text-green-800"
                   : b.status === "cancelled"
-                  ? "bg-red-100 text-red-800"
-                  : "bg-yellow-100 text-yellow-800"
+                  ? "bg-red-200 text-red-800"
+                  : "bg-yellow-200 text-yellow-800"
               }`}
             >
               {b.status.toUpperCase()}
@@ -115,17 +114,17 @@ export default function DoctorAppointments() {
               {b.status !== "completed" && (
                 <button
                   onClick={() => updateStatus(b._id, "completed")}
-                  className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-medium transition"
+                  className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-500 text-white py-2 rounded-lg font-medium transition-colors cursor-pointer"
                 >
-                  <CheckIcon className="w-5 h-5 text-white" /> Complete
+                  <CheckIcon/> Complete
                 </button>
               )}
               {b.status !== "cancelled" && (
                 <button
                   onClick={() => updateStatus(b._id, "cancelled")}
-                  className="flex-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium transition"
+                  className="flex-1 flex items-center justify-center gap-2 bg-red-400 hover:bg-red-500 text-white py-2 rounded-lg font-medium transition-colors cursor-pointer"
                 >
-                  <XMarkIcon className="w-5 h-5 text-white" /> Cancel
+                  <XMarkIcon /> Cancel
                 </button>
               )}
             </div>
@@ -133,5 +132,6 @@ export default function DoctorAppointments() {
         ))}
       </div>
     </div>
-  );
+);
+
 }

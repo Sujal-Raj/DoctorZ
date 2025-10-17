@@ -38,8 +38,9 @@ import DoctorAppointments from "./pages/DoctorAppointments";
 import AllClinicPatients from "./pages/AllClinicPatients";
 import DoctorHomeDashboard from "./pages/DoctorHomeDashboard";
 import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
-import EditDoctorProfile from "./components/EditDoctorProfile";
+import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
 import AdminDashboard from "./pages/AdminDashboard";
+import EditDoctorProfile from "./components/EditDoctorProfile";
 import AdminDoctor from "./pages/AdminDoctor";
 import AdminClinic from "./pages/AdminClinic";
 import AdminLogin from "./pages/AdminLogin";
@@ -50,7 +51,8 @@ import Navbar from "./components/Navbar";
 const AppWrapper: React.FC = () => {
   const location = useLocation();
 
-  const showNavbar = !location.pathname.startsWith("/clinicDashboard");
+  const showNavbar = !location.pathname.startsWith("/clinicDashboard") &&
+                       !location.pathname.startsWith("/doctorDashboard");
 
   return (
     <>
@@ -85,22 +87,29 @@ const AppWrapper: React.FC = () => {
               index
               element={<ClinicHomeDashboard/>}
             />
+             <Route
+              path="clinic-home-dashboard"
+               element={<ClinicHomeDashboard/>}/>
+          
             <Route path="clinic-profile" element={<ClinicProfile/>} />
             <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
             <Route
               path="all-clinic-doctors/:drId/availability"
               element={<TimeSlots />}
             />
+           
             <Route path="add-doctor" element={<AddDoctor />} />
             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
+            
           </Route>
 
           <Route path="/doctor/login" element={<DoctorLogin />} />
 
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
+           <Route index element={<DoctorHomeDashboard />} />
             <Route
-              index
+              path="doctor-home-dashboard"
               element={<DoctorHomeDashboard/>}
             />
             <Route path="doctorProfile" element={<DoctorProfile />} />
@@ -117,11 +126,13 @@ const AppWrapper: React.FC = () => {
             path="/view-doctor-profile/:drId"
             element={<ViewDoctorProfile />}
           />
+          <Route path="clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
           <Route path="/lab-register" element={<RegisterLab />} />
           <Route path="/lab-login" element={<LoginLab />} />
           <Route path="/admin-lab" element={<AdminLab />} />
           <Route path="all-lab-test" element={<AllLabTest />} />
           <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
+            
         </Routes>
       </div>
     </>
@@ -189,7 +200,7 @@ const App: React.FC = () => {
           <Route path="/adminDashboard" element={<AdminDashboard />}>
             <Route path="admin-lab" element={<AdminLab />} />
             <Route path="admin-doctor" element={<AdminDoctor />} />
-            <Route path="admin-doctor" element={<AdminDoctor />} />
+            
             <Route path="admin-clinic" element={<AdminClinic />} />
           </Route>
 

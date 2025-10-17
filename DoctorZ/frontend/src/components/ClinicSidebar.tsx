@@ -1,6 +1,6 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import {  User, UserPlus, LogOut } from "lucide-react";
+import {  User, UserPlus, LogOut,Home } from "lucide-react";
 
 const ClinicSidebar = () => {
   const navigate = useNavigate();
@@ -17,7 +17,12 @@ const ClinicSidebar = () => {
       <div className="px-6 py-8">
         <h2 className="text-xl font-bold mb-8 text-white">Clinic Dashboard</h2>
         <nav className="flex flex-col space-y-4">
-       
+          <Link
+            to="clinic-home-dashboard"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+          >
+            <Home size={18} /> Dashboard
+          </Link>
           <Link
             to="all-clinic-doctors"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition"
