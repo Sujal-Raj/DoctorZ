@@ -1,16 +1,8 @@
 
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { FaUserMd, FaCalendarAlt, FaUsers, FaClock, FaHome, FaSignOutAlt } from "react-icons/fa";
 
-
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import {
-  HomeIcon,
-  UserCircleIcon,
-  ClockIcon,
-  CalendarDaysIcon,
-  UsersIcon,
-  ArrowRightOnRectangleIcon,
-  // optional if you want a logo icon
-} from "@heroicons/react/24/solid";
+function DoctorDashboard() {
 
 export default function DoctorDashboard() {
   const location = useLocation();
@@ -23,11 +15,13 @@ export default function DoctorDashboard() {
   };
 
   const menuItems = [
-    { name: "Dashboard", path: "doctor-home-dashboard", icon: <UserCircleIcon className="w-7 h-7" /> },
-    { name: "Profile", path: "doctorProfile", icon: <UserCircleIcon className="w-7 h-7" /> },
-    { name: "Add Availability", path: "time-slots", icon: <ClockIcon className="w-7 h-7"  /> },
-    { name: "Appointments", path: "appointments", icon: <CalendarDaysIcon className="w-7 h-7"/> },
-    { name: "My Patients", path: "patients", icon: <UsersIcon className="w-7 h-7"/> },
+    { name: "Home", path: "/", icon: <FaHome /> },
+    { name: "Profile", path: "doctorProfile", icon: <FaUserMd /> },
+    { name: "Add Availability", path: "time-slots", icon: <FaClock /> },
+    { name: "Appointments", path: "appointments", icon: <FaCalendarAlt /> },
+    { name: "Edit ID & Password", path: "editDoctorIdPassword", icon: <FaCalendarAlt /> },
+
+    { name: "My Patients", path: "patients", icon: <FaUsers /> },
   ];
 
   return (

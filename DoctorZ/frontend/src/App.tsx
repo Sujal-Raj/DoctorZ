@@ -44,12 +44,9 @@ import EditDoctorProfile from "./components/EditDoctorProfile";
 import AdminDoctor from "./pages/AdminDoctor";
 import AdminClinic from "./pages/AdminClinic";
 import AdminLogin from "./pages/AdminLogin";
-// import LabTestDetails from "./pages/LabTestDetails";
-// import Navbar from "./components/Navbar";
-import ClinicDetails from "./pages/ClinicDetails";
-import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
-import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
-import AllClinicPatients from "./pages/AllClinicPatients";
+import LabTestDetails from "./pages/LabTestDetails";
+import Navbar from "./components/Navbar";
+import { ToastContainer } from "react-toastify";
 
 // Wrapper component to conditionally render Navbar
 // const AppWrapper: React.FC = () => {
@@ -83,30 +80,25 @@ import AllClinicPatients from "./pages/AllClinicPatients";
 //           <Route path="/clinic-login" element={<LoginClinic />} />
 //           <Route path="/admin" element={<AdminDashboard />} />
 
-//           <Route
-//             path="/clinicDashboard/:clinicId"
-//             element={<ClinicDashboard />} 
-//           >
-//              <Route
-//               index
-//               element={<ClinicHomeDashboard/>}
-//             />
-//              <Route
-//               path="clinic-home-dashboard"
-//                element={<ClinicHomeDashboard/>}/>
-          
-//             <Route path="clinic-profile" element={<ClinicProfile/>} />
-//             <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
-//             <Route
-//               path="all-clinic-doctors/:drId/availability"
-//               element={<TimeSlots />}
-//             />
-           
-//             <Route path="add-doctor" element={<AddDoctor />} />
-//             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-//             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
+          <Route
+            path="/clinicDashboard/:clinicId"
+            element={<ClinicDashboard />} 
+          >
+             <Route
+              index
+              element={<ClinicHomeDashboard/>}
+            />
+            <Route path="clinic-profile" element={<ClinicProfile/>} />
             
-//           </Route>
+            <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
+            <Route
+              path="all-clinic-doctors/:drId/availability"
+              element={<TimeSlots />}
+            />
+            <Route path="add-doctor" element={<AddDoctor />} />
+            <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
+            <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
+          </Route>
 
 //           <Route path="/doctor/login" element={<DoctorLogin />} />
 
@@ -209,7 +201,7 @@ const App: React.FC = () => {
             <Route path="appointments" element={<p>Appointments Page</p>} />
             <Route path="patients" element={<AllPatient />} />
             <Route path="settings" element={<p>Settings Page</p>} />
-              <Route path="edit-profile" element={<EditDoctorProfile />} />
+              <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
           </Route>
           <Route path="/adminDashboard" element={<AdminDashboard />}>
             <Route path="admin-lab" element={<AdminLab />} />

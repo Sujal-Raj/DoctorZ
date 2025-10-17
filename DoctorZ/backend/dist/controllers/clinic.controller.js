@@ -132,11 +132,15 @@ export const clinicLogin = async (req, res) => {
 export const updateClinic = async (req, res) => {
     try {
         const { id } = req.params;
-        const { clinicName, clinicType, specialities, operatingHours, clinicLicenseNumber, aadharNumber, panNumber, address, district, pincode, state, } = req.body;
+        const { clinicName, clinicType, specialities, operatingHours, clinicLicenseNumber, aadharNumber, panNumber, address, district, pincode, state, phone, email, staffEmail, staffPassword, staffName, staffId, doctors, } = req.body;
         const updateData = {
             clinicName,
             clinicType,
-            specialities,
+            specialities: Array.isArray(specialities)
+                ? specialities
+                : typeof specialities === "string"
+                    ? specialities.split(",").map((s) => s.trim())
+                    : [],
             operatingHours,
             clinicLicenseNumber,
             aadharNumber: Number(aadharNumber),
@@ -145,20 +149,35 @@ export const updateClinic = async (req, res) => {
             district,
             state,
             pincode: Number(pincode),
+            phone,
+            email,
+            staffEmail,
+            staffName,
+            staffId,
+            doctors,
         };
-        // Multer file handling
+        // 🔒 Hash new password if provided
+        if (staffPassword && staffPassword.trim() !== "") {
+            const hashedPassword = await bcrypt.hash(staffPassword, 10);
+            updateData.staffPassword = hashedPassword;
+        }
+        // Optional file upload handling
         if (req.file) {
             updateData.registrationCertificate = `http://localhost:3000/uploads/${req.file.filename}`;
             ;
         }
-        const updatedClinic = await clinicModel.findByIdAndUpdate(id, updateData, { new: true });
+        const updatedClinic = await clinicModel.findByIdAndUpdate(id, updateData, {
+            new: true,
+        });
         if (!updatedClinic) {
             return res.status(404).json({ message: "Clinic not found" });
         }
-        return res.status(200).json({ message: "Clinic updated", clinic: updatedClinic });
+        return res
+            .status(200)
+            .json({ message: "Clinic updated", clinic: updatedClinic });
     }
     catch (error) {
-        console.error(error);
+        console.error("Error updating clinic:", error);
         return res.status(500).json({ message: "Something went wrong", error });
     }
 };

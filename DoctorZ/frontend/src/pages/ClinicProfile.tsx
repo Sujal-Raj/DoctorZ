@@ -1,5 +1,4 @@
-
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -23,6 +22,7 @@ interface Clinic {
   staffName: string;
   staffEmail: string;
   staffId: string;
+  staffPassword?: string;
   doctors: string[];
 }
 
@@ -36,6 +36,7 @@ export default function ClinicProfile() {
   const [formData, setFormData] = useState<Clinic | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
 
   // Modal state for showing certificate
   const [showCertificateModal, setShowCertificateModal] = useState(false);
@@ -61,19 +62,25 @@ export default function ClinicProfile() {
     fetchClinicData();
   }, [clinicId]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    if (!formData) return;
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (!formData) return;
 
-    // For specialities array, if you want comma separated input, you can add logic here.
-    if (name === "specialities") {
-      const arr = value.split(",").map((s) => s.trim());
-      setFormData({ ...formData, [name]: arr });
-    } else {
-      setFormData({ ...formData, [name]: value });
+    if (name === "staffPassword") {
+      setPasswordInput(value); // Update separate state
+      return;
     }
+
+    const updatedValue =
+      name === "specialities"
+        ? value.split(",").map((item) => item.trim())
+        : value;
+
+    setFormData({
+      ...formData,
+      [name]: updatedValue,
+    });
   };
 
   // Handle file upload for Registration Certificate
@@ -111,16 +118,25 @@ export default function ClinicProfile() {
 
   const handleUpdate = async () => {
     if (!formData) return;
+
     try {
       setSaving(true);
+
+      const payload = {
+        ...formData,
+        ...(passwordInput ? { staffPassword: passwordInput } : {}), // Only send if entered
+      };
+
       await axios.put(
         `http://localhost:3000/api/clinic/update/${formData._id}`,
-        formData
+        payload
       );
-      toast.success("Clinic profile updated successfully");
+
+      alert("Clinic profile updated successfully");
       setEditMode(false);
       setSaving(false);
-      await fetchClinicData();
+      setPasswordInput(""); // Clear password field after update
+      fetchClinicData();
     } catch (error) {
       console.error("Error updating clinic:", error);
       toast.error("Failed to update profile");
@@ -146,7 +162,7 @@ export default function ClinicProfile() {
 
   if (!clinic || !formData)
     return (
-      <p className="text-center mt-6 text-gray-500 text-lg">
+      <p className="text-center mt-6 text-gray-500">
         Loading clinic profile...
       </p>
     );
@@ -169,53 +185,90 @@ export default function ClinicProfile() {
     { label: "Staff Name", key: "staffName" },
     { label: "Staff Email", key: "staffEmail" },
     { label: "Staff ID", key: "staffId" },
+    { label: "Staff Password", key: "staffPassword" },
   ];
 
-  
-
   return (
-    <>
-      <section className="bg-white rounded-xl shadow-md border border-gray-200 p-6 max-w-full md:max-w-3xl mx-auto">
-        {/* Title & Buttons */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <h1 className="text-2xl font-semibold text-gray-800 tracking-wide">
-            Clinic Profile
-          </h1>
-          <div className="flex gap-3">
+    <div className="max-w-5xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow-lg border border-gray-200">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-blue-700">Clinic Profile</h2>
+        <div className="flex gap-3">
+          {editMode ? (
+            <>
+              <button
+                onClick={handleUpdate}
+                disabled={saving}
+                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg transition disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+              <button
+                onClick={() => {
+                  setEditMode(false);
+                  setPasswordInput("");
+                  fetchClinicData();
+                }}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg transition"
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setEditMode(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
+            >
+              Edit
+            </button>
+          )}
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg transition"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      {/* Fields */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {fields.map(({ label, key }) => (
+          <div key={key as string} className="flex flex-col">
+            <label className="text-sm font-semibold text-gray-600 mb-1">
+              {label}
+            </label>
             {editMode ? (
-              <>
-                <button
-                  onClick={handleUpdate}
-                  disabled={saving}
-                  className="px-4 py-2 rounded-md bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-green-400"
-                >
-                  {saving ? "Saving..." : "Save"}
-                </button>
-                <button
-                  onClick={() => {
-                    setFormData(clinic);
-                    setEditMode(false);
-                  }}
-                  className="px-4 py-2 rounded-md bg-gray-500 hover:bg-gray-600 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-gray-400"
-                >
-                  Cancel
-                </button>
-              </>
+              <input
+                type={
+                  key === "pincode" || key === "aadharNumber"
+                    ? "number"
+                    : key === "staffPassword"
+                    ? "password"
+                    : "text"
+                }
+                name={key}
+                value={
+                  key === "staffPassword"
+                    ? passwordInput
+                    : Array.isArray(formData[key])
+                    ? (formData[key] as string[]).join(", ")
+                    : (formData[key] as string | number | undefined) || ""
+                }
+                onChange={handleChange}
+                placeholder={
+                  key === "staffPassword" ? "Enter new password" : ""
+                }
+                className="border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              />
             ) : (
-              <>
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium shadow-sm transition focus:outline-none focus:ring-2 focus:ring-red-400"
-                >
-                  Delete
-                </button>
-              </>
+              <p className="bg-gray-100 p-2 rounded-md text-gray-800">
+                {key === "staffPassword"
+                  ? "••••••••"
+                  : Array.isArray(formData[key])
+                  ? (formData[key] as string[]).join(", ")
+                  : formData[key]}
+              </p>
             )}
           </div>
         </header>
