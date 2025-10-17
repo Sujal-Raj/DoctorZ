@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -40,6 +38,7 @@ const TimeSlots: React.FC = () => {
   const [selectedMultipleDates, setSelectedMultipleDates] = useState<Date[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>({ start: "", end: "" });
   const [savedSlots, setSavedSlots] = useState<SavedSlot[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const doctorId = drId;
 
   // Fetch saved slots
@@ -95,10 +94,17 @@ const TimeSlots: React.FC = () => {
           : []
         : selectedMultipleDates.map(d => d.toISOString());
 
-    if (!dates.length) return alert("Please select at least one date");
-    if (!workingHours.start || !workingHours.end) return alert("Enter working hours");
+    if (!dates.length) {
+      alert("Please select at least one date");
+      return;
+    }
+    if (!workingHours.start || !workingHours.end) {
+      alert("Please enter working hours");
+      return;
+    }
 
     const payload = { doctorId, dates, workingHours };
+    setIsLoading(true);
 
     try {
       const res = await api.post<CreateSlotResponse>("/api/availability/createTimeSlot", payload);
@@ -120,7 +126,9 @@ const TimeSlots: React.FC = () => {
       fetchSavedSlots();
     } catch (err: unknown) {
       console.error(err);
-      alert( "Server error");
+      alert("Server error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,146 +140,290 @@ const TimeSlots: React.FC = () => {
       console.error(err);
     }
   };
-return (
-  <div className="max-w-4xl mx-auto  p-4">
-    {/* Step 1 - Select Type */}
-    {step === 1 && (
-      <div className="bg-white p-8 rounded-lg shadow-md text-center">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Choose Availability Type</h2>
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          {["single", "multiple", "month"].map((type) => (
+
+  const formatTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto mt-8 p-6">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Availability Management</h1>
+        <p className="text-gray-600">Manage your appointment slots and working hours</p>
+      </div>
+
+      {/* Step 1 - Selection Type */}
+      {step === 1 && (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl text-blue-600 font-bold">1</span>
+            </div>
+            <h2 className="text-2xl font-semibold text-gray-800 mb-2">Select Availability Type</h2>
+            <p className="text-gray-500">Choose how you want to set your availability</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto">
             <button
-              key={type}
-              onClick={() => handleSelectionType(type as SelectionType)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-md transition"
+              className="group p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:shadow-md transition-all duration-300 text-left"
+              onClick={() => handleSelectionType("single")}
             >
-              {type === "single"
-                ? "Single Day"
-                : type === "multiple"
-                ? "Multiple Days"
-                : "Full Month"}
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-2">Single Day</h3>
+              <p className="text-sm text-gray-500">Set availability for a specific date</p>
             </button>
-          ))}
-        </div>
-      </div>
-    )}
 
-    {/* Step 2 - Date Picker & Working Hours */}
-    {step === 2 && (
-      <div className="bg-white p-8 rounded-lg shadow-md mt-8">
-        <h2 className="text-xl font-semibold text-gray-700 mb-6">Select Dates</h2>
+            <button
+              className="group p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-green-500 hover:shadow-md transition-all duration-300 text-left"
+              onClick={() => handleSelectionType("multiple")}
+            >
+              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-2">Multiple Days</h3>
+              <p className="text-sm text-gray-500">Select multiple specific dates</p>
+            </button>
 
-        {/* Day Picker */}
-        <div className="mb-6">
-          {selectionType === "single" && (
-            <DayPicker
-              mode="single"
-              selected={selectedSingleDate}
-              onSelect={setSelectedSingleDate}
-              modifiersClassNames={{ selected: "bg-blue-500 text-white rounded-full" }}
-              showOutsideDays
-              disabled={[{ before: new Date() }, ...disabledDates]}
-            />
-          )}
-          {selectionType === "multiple" && (
-            <DayPicker
-              mode="multiple"
-              selected={selectedMultipleDates}
-              onSelect={(dates) => setSelectedMultipleDates(dates || [])}
-              modifiersClassNames={{ selected: "bg-blue-500 text-white rounded-full" }}
-              showOutsideDays
-              disabled={[{ before: new Date() }, ...disabledDates]}
-            />
-          )}
-          {selectionType === "month" && (
-            <DayPicker
-              mode="multiple"
-              selected={selectedMultipleDates}
-              onSelect={handleMonthSelect}
-              captionLayout="dropdown"
-              disabled={[{ before: new Date() }, ...disabledDates]}
-            />
-          )}
-        </div>
-
-        {/* Working Hours Input */}
-        <h3 className="text-lg font-medium text-gray-700 mb-4">Set Working Hours</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block mb-1 text-sm text-gray-600">Start Time:</label>
-            <input
-              type="time"
-              className="w-full border rounded-md px-3 py-2"
-              value={workingHours.start}
-              onChange={(e) => setWorkingHours({ ...workingHours, start: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-sm text-gray-600">End Time:</label>
-            <input
-              type="time"
-              className="w-full border rounded-md px-3 py-2"
-              value={workingHours.end}
-              onChange={(e) => setWorkingHours({ ...workingHours, end: e.target.value })}
-            />
+            <button
+              className="group p-6 bg-white border-2 border-gray-200 rounded-xl hover:border-purple-500 hover:shadow-md transition-all duration-300 text-left"
+              onClick={() => handleSelectionType("month")}
+            >
+              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-800 mb-2">Full Month</h3>
+              <p className="text-sm text-gray-500">Set availability for entire month</p>
+            </button>
           </div>
         </div>
+      )}
 
-        <div className="flex items-center justify-between">
-          <button
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
-            onClick={() => {
-              setStep(1);
-              setSelectionType("");
-              setSelectedSingleDate(undefined);
-              setSelectedMultipleDates([]);
-            }}
-          >
-            Back
-          </button>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
-            onClick={handleSave}
-          >
-            Save Availability
-          </button>
-        </div>
-      </div>
-    )}
-
-    {/* Saved Slots */}
-    {savedSlots.length > 0 && (
-      <div className="bg-white p-6 rounded-lg shadow-md mt-10">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Saved Time Slots</h2>
-        <div className="space-y-6">
-          {savedSlots.map((slotItem) => (
-            <div key={slotItem._id} className="border-b pb-4">
-              <p className="text-gray-600 font-medium mb-2">
-                {new Date(slotItem.date).toDateString()}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {slotItem.slots.map((s) => (
-                  <button
-                    key={s.time}
-                    className={`px-3 py-1 rounded-full text-sm transition ${
-                      s.isActive
-                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                    }`}
-                    onClick={() => toggleSlot(slotItem._id, s.time, !s.isActive)}
-                  >
-                    {s.time}
-                  </button>
-                ))}
+      {/* Step 2 - Date Selection */}
+      {step === 2 && (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => {
+                  setStep(1);
+                  setSelectionType("");
+                }}
+                className="flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white text-sm font-bold">2</span>
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-800">Select Dates & Hours</h2>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-    )}
-  </div>
-);
+            <div className="text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+              {selectionType === "single" && "Single Day"}
+              {selectionType === "multiple" && "Multiple Days"}
+              {selectionType === "month" && "Full Month"}
+            </div>
+          </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Calendar Section */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="font-semibold text-gray-700 mb-4">Date Selection</h3>
+              <div className="flex justify-center">
+                {selectionType === "single" && (
+                  <DayPicker
+                    mode="single"
+                    selected={selectedSingleDate}
+                    onSelect={setSelectedSingleDate}
+                    modifiersClassNames={{ 
+                      selected: "bg-blue-600 text-white rounded-full font-semibold",
+                      today: "border border-blue-200 bg-blue-50"
+                    }}
+                    showOutsideDays
+                    disabled={[{ before: new Date() }, ...disabledDates]}
+                    className="border-0"
+                  />
+                )}
+                {selectionType === "multiple" && (
+                  <DayPicker
+                    mode="multiple"
+                    selected={selectedMultipleDates}
+                    onSelect={(dates) => setSelectedMultipleDates(dates || [])}
+                    modifiersClassNames={{ 
+                      selected: "bg-green-600 text-white rounded-full font-semibold",
+                      today: "border border-green-200 bg-green-50"
+                    }}
+                    showOutsideDays
+                    disabled={[{ before: new Date() }, ...disabledDates]}
+                    className="border-0"
+                  />
+                )}
+                {selectionType === "month" && (
+                  <DayPicker
+                    mode="multiple"
+                    selected={selectedMultipleDates}
+                    onSelect={handleMonthSelect}
+                    captionLayout="dropdown"
+                    disabled={[{ before: new Date() }, ...disabledDates]}
+                    modifiersClassNames={{ 
+                      selected: "bg-purple-600 text-white rounded-full font-semibold",
+                      today: "border border-purple-200 bg-purple-50"
+                    }}
+                    className="border-0"
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Working Hours Section */}
+            <div className="space-y-6">
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="font-semibold text-gray-700 mb-4">Working Hours</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                    <input
+                      type="time"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      value={workingHours.start}
+                      onChange={(e) => setWorkingHours({ ...workingHours, start: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                    <input
+                      type="time"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      value={workingHours.end}
+                      onChange={(e) => setWorkingHours({ ...workingHours, end: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected Dates Preview */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="font-semibold text-gray-700 mb-3">Selected Dates</h3>
+                <div className="max-h-32 overflow-y-auto">
+                  {selectionType === "single" && selectedSingleDate ? (
+                    <div className="text-sm text-gray-600 bg-white p-2 rounded border">
+                      {selectedSingleDate.toDateString()}
+                    </div>
+                  ) : selectionType !== "single" && selectedMultipleDates.length > 0 ? (
+                    <div className="space-y-1">
+                      {selectedMultipleDates.slice(0, 5).map((date, index) => (
+                        <div key={index} className="text-sm text-gray-600 bg-white p-2 rounded border">
+                          {date.toDateString()}
+                        </div>
+                      ))}
+                      {selectedMultipleDates.length > 5 && (
+                        <div className="text-sm text-gray-500 text-center">
+                          +{selectedMultipleDates.length - 5} more dates
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-400 text-center py-2">
+                      No dates selected
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                onClick={handleSave}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating Slots...
+                  </>
+                ) : (
+                  "Save Availability"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Saved Slots */}
+      {savedSlots.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800">Managed Availability</h2>
+            <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+              {savedSlots.length} date{savedSlots.length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {savedSlots.map((slotItem) => (
+              <div key={slotItem._id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-800">
+                    {new Date(slotItem.date).toLocaleDateString('en-US', { 
+                      weekday: 'short', 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}
+                  </h3>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                    slotItem.slots.filter(s => s.isActive).length > 0 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {slotItem.slots.filter(s => s.isActive).length} active
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2">
+                  {slotItem.slots.map((s) => (
+                    <button
+                      key={s.time}
+                      className={`p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                        s.isActive 
+                          ? 'bg-green-500 hover:bg-green-600 text-white shadow-sm' 
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                      }`}
+                      onClick={() => toggleSlot(slotItem._id, s.time, !s.isActive)}
+                    >
+                      {formatTime(s.time)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default TimeSlots;

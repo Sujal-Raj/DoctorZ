@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { updateDoctor } from "../Services/doctorApi";
 
 function EditDoctorProfile() {
   const { drId } = useParams<{ drId: string }>();
@@ -11,21 +11,17 @@ function EditDoctorProfile() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      await axios.put(`http://localhost:3000/api/doctor/${drId}`, {
-        doctorId,
-        password,
-      });
-
+      await updateDoctor(drId!, doctorId, password);
       alert("Profile updated successfully!");
-      navigate(`/doctordashboard/${drId}`); // Redirect back to dashboard
+      navigate(`/doctordashboard/${drId}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Update failed");
+      setError(err.message || "Update failed");
     } finally {
       setLoading(false);
     }

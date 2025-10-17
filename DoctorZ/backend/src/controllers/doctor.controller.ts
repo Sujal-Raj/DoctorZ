@@ -349,9 +349,10 @@
 
 import bcrypt from "bcryptjs";
 import { transporter } from "../utils/email.js";
-import type { Request, Response } from "express";
-import doctorModel from "../models/doctor.model.js";
-import Booking from "../models/booking.model.js";
+import nodemailer from "nodemailer";
+import type {Response,Request} from "express";
+import doctorModel from '../models/doctor.model.js';
+import Booking from '../models/booking.model.js';
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
 
@@ -359,9 +360,11 @@ interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
 }
 
-// ==========================
-// Doctor Registration
-// ==========================
+interface Params {
+  doctorId: string; // this ensures `req.params.doctorId` is typed as string
+}
+
+
 const doctorRegister = async (req: Request, res: Response) => {
   try {
     console.log("Text fields:", req.body);
@@ -612,9 +615,8 @@ export const getTodaysBookedAppointments = async (req: Request, res: Response) =
   }
 };
 
-// ==========================
-// Get Total Patients
-// ==========================
+
+
 export const getTotalPatients = async (req: Request, res: Response) => {
   try {
     const doctorId = req.params.doctorId;
@@ -631,46 +633,29 @@ export const getTotalPatients = async (req: Request, res: Response) => {
   }
 };
 
-// ==========================
-// Delete Doctor (Fixed)
-// ==========================
-const deleteDoctor = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
+const deleteDoctor = async(req:Request,res:Response)=>{
+    try{
+        const {id} = req.params;
 
-    const deletedDoctor = await doctorModel.findByIdAndDelete(id);
-    if (!deletedDoctor) {
-      return res.status(400).json({ message: "Doctor not found" });
+        const deletedoctor = await doctorModel.findByIdAndDelete(id);
+
+        if(!deleteDoctor){
+             return res.status(400).json({
+                message:"Doctor not found"
+            })
+        }
+
+        return res.status(202).json({
+            message:"doctor deleted successfully",deleteDoctor
+        })
+
     }
-
-    // Remove reference from clinic (if exists)
-    if (deletedDoctor.clinic) {
-      await clinicModel.findByIdAndUpdate(deletedDoctor.clinic, {
-        $pull: { doctors: deletedDoctor._id },
-      });
+    catch(error){
+        console.error("Error deleting doctor",error);
+        return res.status(500).json({
+            message:"failed to delete doctor"
+        })
     }
+}
 
-    return res.status(202).json({
-      message: "Doctor deleted successfully",
-      deletedDoctor,
-    });
-  } catch (error) {
-    console.error("Error deleting doctor:", error);
-    return res.status(500).json({ message: "Failed to delete doctor" });
-  }
-};
-
-// ==========================
-// Export All
-// ==========================
-export default {
-  getAllDoctors,
-  doctorRegister,
-  getDoctorById,
-  deleteDoctor,
-  updateDoctor,
-  getClinicDoctors,
-  doctorLogin,
-  getTodaysBookedAppointments,
-  getTotalPatients,
-};
+export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin ,getTodaysBookedAppointments ,getTotalPatients};

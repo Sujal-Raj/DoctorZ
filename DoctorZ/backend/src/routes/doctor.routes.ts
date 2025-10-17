@@ -11,7 +11,7 @@ router.post('/register',upload.fields([
   { name: 'signature', maxCount: 1 },]),doctorController.doctorRegister);
 router.get('/allDoctors',doctorController.getAllDoctors);
 router.get('/:id',doctorController.getDoctorById);
-// router.delete('/delete/:id',doctorController.deleteDoctor);
+router.delete('/delete/:id',doctorController.deleteDoctor);
 router.put('/update/:id',doctorController.updateDoctor);
 router.get('/getClinicDoctors/:clinicId',doctorController.getClinicDoctors);
 router.post('/login',doctorController.doctorLogin);

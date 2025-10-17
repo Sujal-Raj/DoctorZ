@@ -69,7 +69,7 @@
 
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, UserPlus, LogOut, Home } from "lucide-react";
+import {  User, UserPlus, LogOut,Home } from "lucide-react";
 
 const ClinicSidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -95,7 +95,6 @@ const ClinicSidebar: React.FC = () => {
           >
             <Home size={18} /> <span>Dashboard</span>
           </Link>
-
           <Link
             to="all-clinic-doctors"
             className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition"

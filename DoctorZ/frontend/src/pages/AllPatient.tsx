@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../Services/mainApi";
-import { HiUserCircle } from "react-icons/hi"; // at the top
+
+import { UserCircleIcon } from "@heroicons/react/24/solid"; // at the top
 import {Phone} from "lucide-react";
+import api from "../Services/mainApi";
 
 interface Patient {
   name: string;
@@ -34,8 +35,8 @@ const AllPatient: React.FC = () => {
 
         // Extract embedded patient info from bookings
         const patientList = res.data.bookings
-          .map((b) => b.patient)
-          .filter((p) => p !== undefined && p !== null);
+          .map((b:any) => b.patient)
+          .filter((p:any) => p !== undefined && p !== null);
         setPatients(patientList);
       } catch (err) {
         console.error(err);
@@ -65,7 +66,7 @@ const AllPatient: React.FC = () => {
             {patients.map((patient, idx) => (
               <tr key={idx} className="border-t hover:bg-gray-50 text-sm ">
                 <td className="px-4 py-3 font-medium flex items-center gap-2 ">
-                  <HiUserCircle className="text-2xl text-pink-500" />
+                  <UserCircleIcon className="text-2xl text-pink-500" />
                   {patient.name}
                 </td>
                 <td className="px-4 py-3 ">{patient.gender}</td>
