@@ -1,13 +1,3 @@
-// import type {Request,Response} from "express";
-// import bcrypt  from "bcryptjs";
-// import clinicModel from "../models/clinic.model.js";
-// import type { IClinic } from "../models/clinic.model.js";
-// import  doctorModel from "../models/doctor.model.js";
-// import nodemailer from "nodemailer";
-// import bookingModel from "../models/booking.model.js";
-// import patientModel from "../models/patient.model.js";
-// import dotenv from "dotenv";
-// import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import clinicModel from "../models/clinic.model.js";
 import doctorModel from "../models/doctor.model.js";

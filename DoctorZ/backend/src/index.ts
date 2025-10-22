@@ -1,6 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import path, { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import cors from "cors";
@@ -15,6 +20,7 @@ import clinicRoutes from "./routes/clinic.routes.js";
 import timeSlotsRoutes from "./routes/timeSlots.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import labRoutes from "./routes/lab.routes.js";
+// dotenv.config();
 dbConnect();
 const PORT = 3000;
 
@@ -26,7 +32,6 @@ app.use(cors({
 
 // Body parser
 app.use(express.json());
-dotenv.config();
 
 app.use(express.urlencoded({ extended: true })); 
 app.use((req, res, next) => {

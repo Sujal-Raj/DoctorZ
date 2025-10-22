@@ -35,8 +35,18 @@ export interface LabTestBooking extends Document {
     status: "pending" | "completed" | "cancelled";
     reportFile?: string | null;
 }
+export interface LabPackage extends Document {
+    labId: mongoose.Types.ObjectId;
+    packageName: string;
+    description?: string;
+    tests: mongoose.Types.ObjectId[];
+    totalPrice: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
 export declare const LabModel: Model<Lab>;
 export declare const LabTestBookingModel: Model<LabTestBooking>;
 export declare const TestModel: Model<Test>;
+export declare const LabPackageModel: Model<LabPackage>;
 export {};
 //# sourceMappingURL=lab.model.d.ts.map
