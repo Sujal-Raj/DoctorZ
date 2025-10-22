@@ -53,6 +53,7 @@ import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
 import AllClinicPatients from "./pages/AllClinicPatients";
 import ClinicDetails from "./pages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
+import DoctorAppointments from "./pages/DoctorAppointments";
 
 // Wrapper component to conditionally render Navbar
 // const AppWrapper: React.FC = () => {
@@ -207,6 +208,7 @@ const App: React.FC = () => {
               path="doctor-home-dashboard"
               element={<DoctorDashboardHome/>}
             />
+            <Route path="appointments" element={<DoctorAppointments />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
             <Route path="time-slots" element={<TimeSlots />} />
             <Route path="appointments" element={<p>Appointments Page</p>} />

@@ -19,22 +19,7 @@ export const ClinicDashboard = () => {
 const { clinicId } = useParams<{ clinicId: string }>();
 console.log("Clinic ID from URL:", clinicId);
 
-  // useEffect(() => {
-  //   const token = Cookies.get("authToken");
-  //   if (!token) {
-  //     navigate("/clinic-login");
-  //     return;
-  //   }
-
-  //   try {
-  //     const decoded = (jwt_decode as any)(token) as JwtPayload; // ✅ call as function
-  //     setClinicId(decoded.id);
-  //   } catch (err) {
-  //     navigate("/clinicLogin");
-  //   }
-  // }, [navigate]);
-
-  // if (!clinicId) return <div>Loading...</div>;
+ 
 
   return (
     <div className="flex">
