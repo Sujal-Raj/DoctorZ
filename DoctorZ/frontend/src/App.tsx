@@ -2,38 +2,38 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 // Pages
-import RegisterPatient from "./pages/RegisterPatient";
-import RegisterDoctor from "./pages/RegisterDoctor";
-import RegisterClinic from "./pages/RegisterClinic";
+import RegisterPatient from "./pages/RegisterPages/RegisterPatient";
+import RegisterDoctor from "./pages/RegisterPages/RegisterDoctor";
+import RegisterClinic from "./pages/RegisterPages/RegisterClinic";
 import { AuthProvider } from "../src/Context/AuthContext"; // <-- adjust path as needed
 
-import LoginClinic from "./pages/LoginClinic";
+import LoginClinic from "./pages/LoginPages/LoginClinic";
 import Layout from "../Layout";
 import Home from "./pages/Home";
 import AllClinic from "./pages/AllClinic";
 import AllDoctors from "./pages/AllDoctors";
-import { ClinicDashboard } from "./pages/ClinicDashboard";
-import ClinicDoctors from "./pages/ClinicDoctors";
+import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
+import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
-import DoctorLogin from "./pages/DoctorLogin";
-import DoctorDashboard from "./pages/DoctorDashboard";
-import DoctorProfile from "./pages/DoctorProfile";
-import ClinicProfile from "./pages/ClinicProfile";
-import LoginPatient from "./pages/LoginPatient";
+import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
+import DoctorDashboard from "./pages/DoctorPages/DoctorDashboard";
+import DoctorProfile from "./pages/DoctorPages/DoctorProfile";
+import ClinicProfile from "./pages/ClinicPages/ClinicProfile";
+import LoginPatient from "./pages/LoginPages/LoginPatient";
 import AllPatient from "./pages/AllPatient";
 import PatientChat from "./pages/PatientChat";
-import DoctorChat from "./pages/DoctorChat";
+import DoctorChat from "./pages/DoctorPages/DoctorChat";
 import ViewDoctorProfile from "./pages/ViewDoctorProfile";
-import RegisterLab from "./pages/RegisterLab";
-import LoginLab from "./pages/LoginLab";
+import RegisterLab from "./pages/RegisterPages/RegisterLab";
+import LoginLab from "./pages/LoginPages/LoginLab";
 import AdminLab from "./pages/AdminPages/AdminLab";
 import AllLabTest from "./pages/AllLabTest";
-import LabTestDetails from "./pages/LabTestDetails";
-import Patients from "./pages/LabPatients";
-import LabTests from "./pages/LabTests";
-import LabProfile from "./pages/LabProfile";
-import LabDashboard from "./pages/LabDashboard";
+import LabTestDetails from "./pages/LabPages/LabTestDetails";
+import Patients from "./pages/LabPages/LabPatients";
+import LabTests from "./pages/LabPages/LabTests";
+import LabProfile from "./pages/LabPages/LabProfile";
+import LabDashboard from "./pages/LabPages/LabDashboard";
 // import AppointmentForm from "./pages/AppointmentForm";
 // import DoctorAppointments from "./pages/DoctorAppointments";
 // import AllClinicPatients from "./pages/AllClinicPatients";
@@ -46,14 +46,14 @@ import AdminDoctor from "./pages/AdminPages/AdminDoctor";
 import AdminClinic from "./pages/AdminPages/AdminClinic";
 import AdminLogin from "./pages/AdminPages/AdminLogin";
 
-import Navbar from "./components/Navbar";
-import { ToastContainer } from "react-toastify";
-import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
-import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
+// import Navbar from "./components/Navbar";
+// import { ToastContainer } from "react-toastify";
+import ClinicHomeDashboard from "./pages/ClinicPages/ClinicHomeDashboard";
+import ClinicDoctorProfile from "./pages/ClinicPages/ClinicDoctorProfile";
 import AllClinicPatients from "./pages/AllClinicPatients";
-import ClinicDetails from "./pages/ClinicDetails";
-import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
-import DoctorAppointments from "./pages/DoctorAppointments";
+import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
+import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
+import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 
 // Wrapper component to conditionally render Navbar
 // const AppWrapper: React.FC = () => {

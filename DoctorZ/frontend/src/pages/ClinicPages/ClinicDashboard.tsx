@@ -1,6 +1,6 @@
 // import { useEffect, useState } from "react";
 import {  Outlet } from "react-router-dom";
-import ClinicSidebar from "../components/ClinicSidebar";
+import ClinicSidebar from "../../components/ClinicSidebar";
 // import Cookies from "js-cookie";
 // import * as jwt_decode from "jwt-decode"; // ✅ import as namespace
 import { useParams } from "react-router-dom";
