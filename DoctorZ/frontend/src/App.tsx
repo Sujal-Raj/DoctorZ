@@ -54,6 +54,7 @@ import AllClinicPatients from "./pages/AllClinicPatients";
 import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
+import { PackageDetails } from "./pages/PackageDetails";
 
 // Wrapper component to conditionally render Navbar
 // const AppWrapper: React.FC = () => {
@@ -172,6 +173,7 @@ const App: React.FC = () => {
             <Route path="/admin-lab" element={<AdminLab />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
+            <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
           </Route>
 
           {/* Routes without navbar */}
@@ -196,6 +198,8 @@ const App: React.FC = () => {
             />
             <Route path="add-doctor" element={<AddDoctor />} />
             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
+             <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
+            
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
           </Route>
           
@@ -211,9 +215,9 @@ const App: React.FC = () => {
             <Route path="appointments" element={<DoctorAppointments />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
             <Route path="time-slots" element={<TimeSlots />} />
-            <Route path="appointments" element={<p>Appointments Page</p>} />
+         
             <Route path="patients" element={<AllPatient />} />
-            <Route path="settings" element={<p>Settings Page</p>} />
+            
               <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
           </Route>
           <Route path="/adminDashboard" element={<AdminDashboard />}>
@@ -237,7 +241,7 @@ const App: React.FC = () => {
           </Route>
         
           <Route path="/admin/login" element={<AdminLogin />}></Route>
-           <Route path="clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
+         
         
         </Routes>
       </Router>

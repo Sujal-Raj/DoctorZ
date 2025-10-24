@@ -1,8 +1,4 @@
-// import type { Request, Response } from "express";
-// import bcrypt from "bcryptjs";
-// import jwt from "jsonwebtoken";
-// import { LabModel, LabTestBookingModel, TestModel } from "../models/lab.model.js";
-// import mongoose from "mongoose";
+///////////////////// Manish Works ///////////////////////
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -341,6 +337,21 @@ const getAllPackages = async (req, res) => {
         return res.status(500).json({ message: errorMessage });
     }
 };
+//Get packageDetails by packageid
+const getPackageDetailsById = async (req, res) => {
+    try {
+        const { packageId } = req.params;
+        const packageDetails = await LabPackageModel.findById(packageId).populate("tests", "testName price category description").populate("labId", "name city state");
+        if (!packageDetails)
+            return res.status(404).json({ message: "Package not found" });
+        return res.status(200).json({ message: "Package details fetched successfully", packageDetails });
+    }
+    catch (err) {
+        console.error("Error fetching package details:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch package details";
+        return res.status(500).json({ message: errorMessage });
+    }
+};
 // ------------------ EXPORTS ------------------
 export default {
     labRegister,
@@ -359,5 +370,6 @@ export default {
     getAllPackages,
     updateLabPackage,
     deleteLabPackage,
+    getPackageDetailsById
 };
 //# sourceMappingURL=lab.controller.js.map

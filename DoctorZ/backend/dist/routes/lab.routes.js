@@ -57,6 +57,7 @@ router.get("/getLabPatients/:labId", labController.getLabPatients);
 // 💼 Packages
 // ✅ Get all available packages
 router.get("/packages", labController.getAllPackages);
+router.get("/packages/:packageId", labController.getPackageDetailsById);
 // (Other routes…)
 router.get("/packages/:labId", labController.getAllPackagesByLabId);
 router.post("/addPackage", labController.addLabPackage);

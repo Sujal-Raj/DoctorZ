@@ -37,8 +37,8 @@ export default function AllClinicPatients() {
           `http://localhost:3000/api/clinic/getAllClinicPatients/${clinicId}`
         );
         setPatients(res.data.patients || []);
-      } catch (err: unknown) {
-        setError(err + "Failed to fetch clinic patients");
+      } catch {
+        setError("Failed to fetch clinic patients");
       } finally {
         setLoading(false);
       }
@@ -68,40 +68,31 @@ export default function AllClinicPatients() {
     );
 
   return (
-    <div
-      className="p-8 bg-gray-50 min-h-screen font-[Poppins]"
-      style={{ fontFamily: "Poppins, sans-serif" }}
-    >
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 tracking-tight">
-          Patients List
-        </h2>
-      </div>
+    <div className="w-full bg-white rounded-xl shadow-sm p-4 sm:p-6 md:p-8">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+        Patients List
+      </h2>
 
-      <div className="overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-100">
-        <table className="min-w-full text-sm text-left text-gray-700 whitespace-nowrap">
-          <thead className="bg-indigo-50 text-gray-700 uppercase text-xs font-semibold tracking-wider">
+      {/* 👇 Only this wrapper scrolls horizontally */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse text-sm text-left text-gray-700 whitespace-nowrap">
+          <thead className="bg-indigo-100 text-gray-700 uppercase text-xs font-semibold">
             <tr>
-              <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Gender</th>
-              <th className="px-6 py-4">Age</th>
-              <th className="px-6 py-4">Doctor</th>
-              <th className="px-6 py-4">Specialization</th>
-              <th className="px-6 py-4 min-w-[160px]">Contact</th>
-              <th className="px-6 py-4 min-w-[200px]">Date & Time</th>
-              <th className="px-6 py-4">Mode</th>
-              <th className="px-6 py-4">Fees</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Gender</th>
+              <th className="px-4 py-3">Age</th>
+              <th className="px-4 py-3">Doctor</th>
+              <th className="px-4 py-3">Specialization</th>
+              <th className="px-4 py-3 min-w-[130px]">Contact</th>
+              <th className="px-4 py-3 min-w-[170px]">Date & Time</th>
+              <th className="px-4 py-3">Mode</th>
+              <th className="px-4 py-3">Fees</th>
             </tr>
           </thead>
           <tbody>
             {patients.map((p, index) => {
-              if (!p) return null;
-              const gender =
-                typeof p.gender === "string"
-                  ? p.gender.toLowerCase()
-                  : "unknown";
+              const gender = p.gender?.toLowerCase() || "unknown";
               const isFemale = gender === "female";
-
               const formattedDate = p.datetime
                 ? new Date(p.datetime).toLocaleString("en-IN", {
                     day: "2-digit",
@@ -116,42 +107,47 @@ export default function AllClinicPatients() {
               return (
                 <tr
                   key={index}
-                  className="border-b border-gray-100 hover:bg-indigo-50 transition-all duration-150"
+                  className="border-b border-gray-200 hover:bg-indigo-50 transition-all"
                 >
-                  <td className="px-6 py-4 flex items-center gap-3 font-medium text-gray-800">
+                  <td className="px-4 py-3 flex items-center gap-2 font-medium text-gray-800">
                     {isFemale ? (
-                      <User2 className="text-pink-500" size={26} />
+                      <User2 className="text-pink-500" size={18} />
                     ) : (
-                      <User className="text-blue-500" size={26} />
+                      <User className="text-blue-500" size={18} />
                     )}
-                    <span>{p.patientName || "N/A"}</span>
+                    <span className="truncate max-w-[160px]">
+                      {p.patientName || "N/A"}
+                    </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-600">{p.gender || "N/A"}</td>
-                  <td className="px-6 py-4 text-gray-600">
-                    {p.age ? `${p.age} yrs` : "N/A"}
-                  </td>
-                  <td className="px-6 py-4 text-gray-700 font-medium">
+                  <td className="px-4 py-3">{p.gender || "N/A"}</td>
+                  <td className="px-4 py-3">{p.age ? `${p.age} yrs` : "N/A"}</td>
+                  <td className="px-4 py-3 font-medium">
                     {p.appointedTo || "N/A"}
                   </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    {p.specialization || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Phone size={20} className="text-gray-500 flex-shrink-0" />
-                      <span className="truncate">{p.contact || "N/A"}</span>
+                  <td className="px-4 py-3">{p.specialization || "N/A"}</td>
+
+                  {/* CONTACT COLUMN */}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1 break-words">
+                      <Phone size={15} className="text-gray-500 shrink-0" />
+                      <span className="truncate max-w-[140px]">
+                        {p.contact || "N/A"}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={20} className="text-gray-500 flex-shrink-0" />
-                      <span className="truncate">{formattedDate}</span>
+
+                  {/* DATE & TIME COLUMN */}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1 break-words">
+                      <Calendar size={15} className="text-gray-500 shrink-0" />
+                      <span className="truncate max-w-[160px]">
+                        {formattedDate}
+                      </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 capitalize text-gray-700">
-                    {p.mode || "N/A"}
-                  </td>
-                  <td className="px-6 py-4 font-semibold text-indigo-600">
+
+                  <td className="px-4 py-3 capitalize">{p.mode || "N/A"}</td>
+                  <td className="px-4 py-3 font-semibold text-indigo-600">
                     ₹{p.fees ?? 0}
                   </td>
                 </tr>

@@ -1,6 +1,3 @@
-
-///////////////////// Manish Works ///////////////////////
-
 import mongoose, { Document, Model } from "mongoose";
 
 // ---------- Interfaces ----------

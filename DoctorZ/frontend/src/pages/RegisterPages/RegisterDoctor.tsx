@@ -1,10 +1,12 @@
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { registerDoctor } from "../Services/doctorApi";
 import { useOutletContext } from "react-router-dom";
+
 type DoctorFormInputs = {
   fullName: string;
-    email:string;
+  email: string;
   gender: string;
   dob: string;
   regNumber: string;
@@ -16,14 +18,12 @@ type DoctorFormInputs = {
   aadhar: string;
   pan: string;
   specialization: string;
-   password:string;
+  password: string;
 };
-
 
 interface ClinicContext {
   clinicId?: string;
 }
-
 
 const RegisterDoctor: React.FC = () => {
   const {
@@ -32,278 +32,71 @@ const RegisterDoctor: React.FC = () => {
     formState: { errors },
   } = useForm<DoctorFormInputs>();
 
- const context = useOutletContext<ClinicContext | null>();
-  const clinicId = context?.clinicId || null; // safe access
-  console.log("Clinic ID in RegisterDoctor:", clinicId);
- 
- 
+  const context = useOutletContext<ClinicContext | null>();
+  const clinicId = context?.clinicId || null;
 
-
-  // Files in state
   const [degreeFile, setDegreeFile] = useState<File | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
 
-  // filenames for display
   const [degreeName, setDegreeName] = useState("No file selected");
   const [photoName, setPhotoName] = useState("No file selected");
   const [sigName, setSigName] = useState("No file selected");
 
   const onSubmit = async (data: DoctorFormInputs) => {
     const formData = new FormData();
-    formData.append("fullName", data.fullName);
-     formData.append("email",data.email);
-    formData.append("gender", data.gender);
-    formData.append("dob", data.dob);
-    formData.append("regNumber", data.regNumber);
-    formData.append("qualification", data.qualification);
-    formData.append("experience", data.experience);
-    formData.append("fees", data.fees);
-    formData.append("languages", data.languages);
-    formData.append("aadhar", data.aadhar);
-    formData.append("pan", data.pan);
-    formData.append("specialization", data.specialization);
-    formData.append("mobileNo", data.mobileNo);
-      formData.append("password",data.password);
-    if(clinicId) formData.append("clinicId", clinicId);
+    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+    if (clinicId) formData.append("clinicId", clinicId);
     if (degreeFile) formData.append("degreeCert", degreeFile);
     if (photoFile) formData.append("photo", photoFile);
     if (signatureFile) formData.append("signature", signatureFile);
 
-   try {
-    const result = await registerDoctor(formData);
-    console.log('Doctor Registered:', result);
-    alert('Doctor registered successfully!');
-  } catch (err) {
-    alert('Something went wrong!');
-  }
+    try {
+      const result = await registerDoctor(formData);
+      console.log("Doctor Registered:", result);
+      alert("Doctor registered successfully!");
+    } catch {
+      alert("Something went wrong!");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
-      <div className="w-full max-w-4xl bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
-          👨‍⚕️ Doctor Registration
+    <div className="min-h-screen flex justify-center items-start   overflow-hidden">
+      <div className="w-full max-w-6xl bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10">
+        <h2 className="text-2xl sm:text-3xl md:text-3xl font-bold text-center text-blue-700 mb-8">
+          Doctor Registration
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Full Name */}
-          <div>
-            <label className="block text-gray-700 font-medium">Full Name</label>
-            <input
-              {...register("fullName", { required: "Full name is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="Dr. John Doe"
-            />
-            {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>}
-          </div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {/* Text Inputs */}
+          <FormInput label="Full Name" name="fullName" register={register} error={errors.fullName} placeholder="Dr. John Doe" />
+          <SelectInput label="Gender" name="gender" register={register} error={errors.gender} />
+          <FormInput label="Password" name="password" type="password" register={register} error={errors.password} placeholder="••••••••" />
+          <FormInput label="Date of Birth" name="dob" type="date" register={register} error={errors.dob} />
+          <FormInput label="Email" name="email" register={register} error={errors.email} placeholder="doctor@example.com" />
+          <FormInput label="Medical Reg. Number" name="regNumber" register={register} error={errors.regNumber} placeholder="MED123456" />
+          <FormInput label="Qualification" name="qualification" register={register} error={errors.qualification} placeholder="MBBS, MD" />
+          <FormInput label="Specialization" name="specialization" register={register} error={errors.specialization} placeholder="Dermatology" />
+          <FormInput label="Mobile No" name="mobileNo" register={register} error={errors.mobileNo} placeholder="9876543210" />
+          <FormInput label="Experience (Years)" name="experience" type="number" register={register} error={errors.experience} placeholder="5" />
+          <FormInput label="Consultation Fees" name="fees" type="number" register={register} error={errors.fees} placeholder="500" />
+          <FormInput label="Languages Known" name="languages" register={register} placeholder="English, Hindi" />
+          <FormInput label="Aadhar No" name="aadhar" register={register} placeholder="123456789012" />
+          <FormInput label="PAN No" name="pan" register={register} placeholder="ABCDE1234F" />
 
-          {/* Gender */}
-          <div>
-            <label className="block text-gray-700 font-medium">Gender</label>
-            <select
-              {...register("gender", { required: "Gender is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Select Gender</option>
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-            {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender.message}</p>}
-          </div>
-          
-
-          {/* password */}
-          <div>
-            <label className="block text-gray-700 font-medium">Password</label>
-            <input type="password"
-              {...register("password", { required: "Full name is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              
-            />
-            {errors.password&& <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
-          </div>
-
-          {/* DOB */}
-          <div>
-            <label className="block text-gray-700 font-medium">Date of Birth</label>
-            <input
-              type="date"
-              {...register("dob", { required: "Date of Birth is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-            />
-            {errors.dob && <p className="text-red-500 text-sm mt-1">{errors.dob.message}</p>}
-          </div>
-
-            {/* email */}
-        <div>
-            <label className="block text-gray-700 font-medium">Email</label>
-            <input
-              {...register("email", { required: "Full name is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="john@gmail.com"
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
-          </div>
-
-          {/* Medical Reg Number */}
-          <div>
-            <label className="block text-gray-700 font-medium">Medical Registration Number</label>
-            <input
-              {...register("regNumber", { required: "Registration number is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="MED123456"
-            />
-            {errors.regNumber && <p className="text-red-500 text-sm mt-1">{errors.regNumber.message}</p>}
-          </div>
-
-          {/* Qualification */}
-          <div>
-            <label className="block text-gray-700 font-medium">Qualification</label>
-            <input
-              {...register("qualification", { required: "Qualification is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="MBBS, MD"
-            />
-            {errors.qualification && <p className="text-red-500 text-sm mt-1">{errors.qualification.message}</p>}
-          </div>
-
-          {/* Specialization */}
-          <div>
-            <label className="block text-gray-700 font-medium">Specialization</label>
-            <input
-              {...register("specialization", { required: "Specialization is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="Dermatology"
-            />
-            {errors.specialization && <p className="text-red-500 text-sm mt-1">{errors.specialization.message}</p>}
-          </div>
-
-          {/* Mobile Number */}
-          <div>
-            <label className="block text-gray-700 font-medium">Mobile Number</label>
-            <input
-              {...register("mobileNo", { required: "Mobile number is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="9876543210"
-            />
-            {errors.mobileNo && <p className="text-red-500 text-sm mt-1">{errors.mobileNo.message}</p>}
-          </div>
-
-          {/* Experience */}
-          <div>
-            <label className="block text-gray-700 font-medium">Experience (Years)</label>
-            <input
-              type="number"
-              {...register("experience", { required: "Experience is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="10"
-            />
-            {errors.experience && <p className="text-red-500 text-sm mt-1">{errors.experience.message}</p>}
-          </div>
-
-          {/* Fees */}
-          <div>
-            <label className="block text-gray-700 font-medium">Consultation Fees</label>
-            <input
-              type="number"
-              {...register("fees", { required: "Fees is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="500"
-            />
-            {errors.fees && <p className="text-red-500 text-sm mt-1">{errors.fees.message}</p>}
-          </div>
-
-          {/* Languages */}
-          <div>
-            <label className="block text-gray-700 font-medium">Languages Known</label>
-            <input
-              {...register("languages")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="English, Hindi"
-            />
-          </div>
-
-          {/* Aadhar */}
-          <div>
-            <label className="block text-gray-700 font-medium">Aadhar No</label>
-            <input
-              {...register("aadhar")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="123456789012"
-            />
-          </div>
-
-          {/* PAN */}
-          <div>
-            <label className="block text-gray-700 font-medium">PAN No</label>
-            <input
-              {...register("pan")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="ABCDE1234F"
-            />
-          </div>
-
-          {/* Degree Certificate */}
-          <div>
-            <label className="block text-gray-700 font-medium">Degree Certificate</label>
-            <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all">
-              Upload File
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                className="hidden"
-                onChange={(e) => {
-                  setDegreeFile(e.target.files?.[0] || null);
-                  setDegreeName(e.target.files?.[0]?.name || "No file selected");
-                }}
-              />
-            </label>
-            <p className="mt-2 text-sm text-gray-500">{degreeName}</p>
-          </div>
-
-          {/* Photo */}
-          <div>
-            <label className="block text-gray-700 font-medium">Recent Photo</label>
-            <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all">
-              Upload Photo
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  setPhotoFile(e.target.files?.[0] || null);
-                  setPhotoName(e.target.files?.[0]?.name || "No file selected");
-                }}
-              />
-            </label>
-            <p className="mt-2 text-sm text-gray-500">{photoName}</p>
-          </div>
-
-          {/* Signature */}
-          <div>
-            <label className="block text-gray-700 font-medium">Signature</label>
-            <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all">
-              Upload Signature
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  setSignatureFile(e.target.files?.[0] || null);
-                  setSigName(e.target.files?.[0]?.name || "No file selected");
-                }}
-              />
-            </label>
-            <p className="mt-2 text-sm text-gray-500">{sigName}</p>
-          </div>
+          {/* File Uploads */}
+          <FileUpload label="Degree Certificate" fileName={degreeName} setFile={setDegreeFile} setFileName={setDegreeName} accept="image/*,application/pdf" />
+          <FileUpload label="Recent Photo" fileName={photoName} setFile={setPhotoFile} setFileName={setPhotoName} accept="image/*" />
+          <FileUpload label="Signature" fileName={sigName} setFile={setSignatureFile} setFileName={setSigName} accept="image/*" />
 
           {/* Submit Button */}
-          <div className="col-span-2 mt-6 text-center">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-8 flex justify-center">
             <button
               type="submit"
-              className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-lg hover:bg-green-700 transition-all"
+              className="px-8 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-md hover:bg-green-700 transition-all text-lg"
             >
               Register Doctor
             </button>
@@ -313,5 +106,55 @@ const RegisterDoctor: React.FC = () => {
     </div>
   );
 };
+
+/* -------------------------- Reusable Inputs -------------------------- */
+const FormInput = ({ label, name, register, error, placeholder, type = "text" }: any) => (
+  <div className="flex flex-col">
+    <label className="text-gray-700 font-medium">{label}</label>
+    <input
+      type={type}
+      {...register(name, { required: `${label} is required` })}
+      placeholder={placeholder}
+      className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
+    />
+    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+  </div>
+);
+
+const SelectInput = ({ label, name, register, error }: any) => (
+  <div className="flex flex-col">
+    <label className="text-gray-700 font-medium">{label}</label>
+    <select
+      {...register(name, { required: `${label} is required` })}
+      className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
+    >
+      <option value="">Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+  </div>
+);
+
+const FileUpload = ({ label, fileName, setFile, setFileName, accept }: any) => (
+  <div className="flex flex-col">
+    <label className="text-gray-700 font-medium">{label}</label>
+    <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all text-sm sm:text-base">
+      Upload File
+      <input
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          setFile(file || null);
+          setFileName(file?.name || "No file selected");
+        }}
+      />
+    </label>
+    <p className="mt-2 text-xs sm:text-sm text-gray-500 truncate">{fileName}</p>
+  </div>
+);
 
 export default RegisterDoctor;

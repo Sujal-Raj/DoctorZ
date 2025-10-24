@@ -1,4 +1,3 @@
-///////////////////// Manish Works ///////////////////////
 import mongoose, { Document, Model } from "mongoose";
 // ---------- Lab Schema ----------
 const labSchema = new mongoose.Schema({
