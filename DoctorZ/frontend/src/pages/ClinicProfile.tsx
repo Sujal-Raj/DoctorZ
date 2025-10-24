@@ -154,10 +154,10 @@ export default function ClinicProfile() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto p-8 mt-10 bg-white rounded-2xl shadow-lg border border-gray-200">
+    <div className="max-w-5xl mx-auto p-8  bg-white rounded-2xl shadow-lg border border-gray-200">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-blue-700">Clinic Profile</h2>
+        <h2 className="text-2xl font-bold text-blue-700">Clinic Profile</h2>
         <div className="flex gap-3">
           {editMode ? (
             <>

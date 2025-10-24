@@ -1,4 +1,5 @@
-// export default ClinicDoctors;
+
+
 import { useEffect, useState } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import api from "../Services/mainApi";
@@ -59,33 +60,49 @@ const ClinicDoctors = () => {
     if (clinicId) fetchDoctors();
   }, [clinicId]);
 
-  if (loading) return <p className="p-6">Loading doctors...</p>;
+  if (loading)
+    return (
+      <p className="p-6 text-center text-gray-500 text-sm sm:text-base">
+        Loading doctors...
+      </p>
+    );
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen ">
-      <h2 className="text-2xl font-bold mb-6">Doctor List</h2>
+    <div className="p-4 sm:p-6 bg-gray-100 min-h-screen font-poppins">
+      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">
+        Doctor List
+      </h2>
 
       {doctors.length === 0 ? (
-        <p className="text-gray-600">No doctors found in this clinic.</p>
+        <p className="text-gray-600 text-sm sm:text-base">
+          No doctors found in this clinic.
+        </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ">
+        <div
+          className="
+          grid grid-cols-1
+          sm:grid-cols-2
+         lg:grid-cols-3
+         
+          gap-4 sm:gap-6"
+        >
           {doctors.map((doctor) => (
             <div
               key={doctor._id}
-              onClick={() => navigate(`/clinic-doctor-profile/${doctor._id}`)}
-              className="cursor-pointer bg-white rounded-xl shadow-md border border-transparent hover:border-blue-500 hover:shadow-lg transition duration-200 group relative"
+              onClick={() => navigate(`clinic-doctor-profile/${doctor._id}`)}
+              className="cursor-pointer bg-white rounded-xl shadow-md border border-transparent hover:border-blue-500 hover:shadow-lg transition duration-200 group relative overflow-hidden"
             >
               {/* Doctor Image */}
-              <div className="w-full h-64 overflow-hidden rounded-t-xl">
+              <div className="w-full h-52 sm:h-60 md:h-64 overflow-hidden rounded-t-xl">
                 <img
                   src={`http://localhost:3000/uploads/${doctor.photo}`}
                   alt={doctor.fullName}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition duration-300"
                 />
               </div>
 
               {/* Doctor Info */}
-              <div className="p-4 group-hover:bg-blue-500 transition font-poppins">
+              <div className="p-3 sm:p-4 group-hover:bg-blue-500 transition duration-200">
                 {/* Status */}
                 <div className="flex items-center mb-1">
                   <span
@@ -93,23 +110,23 @@ const ClinicDoctors = () => {
                       doctor.mode || "offline"
                     )}`}
                   ></span>
-                  <p className="text-sm text-gray-500 capitalize group-hover:text-white">
+                  <p className="text-xs sm:text-sm text-gray-500 capitalize group-hover:text-white">
                     {doctor.mode || "offline"}
                   </p>
                 </div>
 
                 {/* Name & Specialization */}
-                <h3 className="text-md font-semibold text-gray-800 group-hover:text-white font-poppins">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-800 group-hover:text-white truncate">
                   {doctor.fullName}
                 </h3>
-                <p className="text-sm text-gray-600 group-hover:text-white font-poppins">
+                <p className="text-xs sm:text-sm text-gray-600 group-hover:text-white truncate">
                   {doctor.specialization}
                 </p>
               </div>
 
-              {/* 💬 Chat Icon in Bottom Right */}
-              <div className="absolute bottom-4 right-4">
-                <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm group-hover:bg-white group-hover:text-blue-500 transition">
+              {/* 💬 Chat Icon */}
+              <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs sm:text-sm group-hover:bg-white group-hover:text-blue-500 transition">
                   💬
                 </div>
               </div>

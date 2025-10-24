@@ -37,7 +37,6 @@ interface ClinicResponse {
   message: string;
 }
 
-// Type for stats response
 interface StatsResponse {
   stats: ClinicStats;
   message: string;
@@ -56,7 +55,6 @@ const ClinicHomeDashboard: React.FC = () => {
   const token = localStorage.getItem("clinicToken");
   const clinicId = localStorage.getItem("clinicId");
 
-  // Update date & time every minute
   useEffect(() => {
     const updateDateTime = () => {
       const now = new Date();
@@ -75,7 +73,6 @@ const ClinicHomeDashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch clinic info
   useEffect(() => {
     if (!token || !clinicId) {
       navigate(`/clinicDashboard/${clinicId}`);
@@ -101,16 +98,15 @@ const ClinicHomeDashboard: React.FC = () => {
     fetchClinic();
   }, [token, clinicId, navigate]);
 
-  // Fetch clinic stats (doctors & departments)
   useEffect(() => {
     if (!token || !clinicId) return;
-    
 
     const fetchClinicStats = async () => {
       try {
-        const res = await api.get<StatsResponse>(`/api/clinic/getClinicStats/${clinicId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.get<StatsResponse>(
+          `/api/clinic/getClinicStats/${clinicId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setClinicStats(res.data.stats);
       } catch (err) {
         console.error("Error fetching clinic stats:", err);
@@ -135,20 +131,22 @@ const ClinicHomeDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="p-8 bg-[#F9FAFB] min-h-screen space-y-8">
+    <div className="p-4 sm:p-6 md:p-8 bg-[#F9FAFB] min-h-screen space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="bg-[#0B1D3B] text-white p-6 rounded-2xl shadow-md flex justify-between items-center">
+      <div className="bg-[#0B1D3B] text-white p-5 sm:p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Welcome, {clinic?.clinicName}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold">
+            Welcome, {clinic?.clinicName}
+          </h1>
           <p className="text-sm opacity-80">{dateTime}</p>
         </div>
-        <button className="bg-[#00D09C] hover:bg-[#00b58a] text-white px-4 py-2 rounded-lg transition">
+        <button className="bg-[#00D09C] hover:bg-[#00b58a] text-white px-4 py-2 rounded-lg transition w-full sm:w-auto">
           Edit Clinic Info
         </button>
       </div>
 
       {/* Action Buttons */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {[
           { label: "Add Doctor", color: "bg-[#00D09C]", onclick: () => navigate("add-doctor") },
           { label: "View Patients", color: "bg-indigo-600", onclick: () => navigate("all-clinic-patients") },
@@ -158,55 +156,57 @@ const ClinicHomeDashboard: React.FC = () => {
           <button
             key={i}
             onClick={btn.onclick}
-            className={`${btn.color} hover:opacity-90 text-white py-2 rounded-lg font-semibold transition`}
+            className={`${btn.color} hover:opacity-90 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition`}
           >
             {btn.label}
           </button>
         ))}
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {[
           {
             title: "Total Doctors",
             value: clinicStats.totalDoctors,
-            icon: <UserGroupIcon className="w-7 h-7 text-[#00D09C] text-2xl" />,
+            icon: <UserGroupIcon className="w-6 h-6 sm:w-7 sm:h-7 text-[#00D09C]" />,
           },
           {
             title: "Weekly Revenue",
             value: "₹1.3L",
-            icon: <CurrencyRupeeIcon className="w-7 h-7 text-green-500" />,
+            icon: <CurrencyRupeeIcon className="w-6 h-6 sm:w-7 sm:h-7 text-green-500" />,
           },
           {
             title: "Active Patients",
             value: 210,
-            icon: <UserIcon className="w-7 h-7 text-rose-500" />,
+            icon: <UserIcon className="w-6 h-6 sm:w-7 sm:h-7 text-rose-500" />,
           },
           {
             title: "Departments",
             value: clinicStats.totalDepartments,
-            icon: <CalendarDaysIcon className="text-indigo-500 w-7 h-7" />,
+            icon: <CalendarDaysIcon className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-500" />,
           },
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-white p-5 rounded-xl shadow hover:shadow-md transition"
+            className="bg-white p-4 sm:p-5 rounded-xl shadow hover:shadow-md transition"
           >
             <div className="flex justify-between items-center">
-              <div className="text-gray-700 text-sm">{item.title}</div>
+              <div className="text-gray-700 text-xs sm:text-sm">{item.title}</div>
               {item.icon}
             </div>
-            <div className="text-2xl font-bold mt-2 text-gray-900">{item.value}</div>
+            <div className="text-xl sm:text-2xl font-bold mt-2 text-gray-900">
+              {item.value}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Charts & Notices */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        {/* Chart */}
-        <div className="bg-white rounded-xl p-6 shadow-lg lg:col-span-2">
-          <h2 className="font-semibold text-gray-800 mb-4">
+      {/* Chart + Notices */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mt-6">
+        {/* Chart Section */}
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg lg:col-span-2">
+          <h2 className="font-semibold text-gray-800 mb-4 text-base sm:text-lg">
             📈 Weekly Patients & Revenue
           </h2>
           <ResponsiveContainer width="100%" height={250}>
@@ -232,10 +232,12 @@ const ClinicHomeDashboard: React.FC = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Right Panel */}
-        <div className="space-y-6">
-          <div className="bg-white p-4 rounded-xl shadow">
-            <h3 className="font-semibold text-gray-800 mb-2">Top Active Doctors</h3>
+        {/* Right Sidebar Section */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="bg-white p-4 sm:p-5 rounded-xl shadow">
+            <h3 className="font-semibold text-gray-800 mb-2 text-base sm:text-lg">
+              Top Active Doctors
+            </h3>
             {[
               { name: "Dr. Meena Sharma", status: "Online" },
               { name: "Dr. Rajiv Singh", status: "Busy" },
@@ -243,7 +245,7 @@ const ClinicHomeDashboard: React.FC = () => {
             ].map((doc, i) => (
               <div
                 key={i}
-                className="flex justify-between py-2 border-b last:border-none text-sm"
+                className="flex justify-between py-2 border-b last:border-none text-xs sm:text-sm"
               >
                 <span>{doc.name}</span>
                 <span
@@ -261,9 +263,11 @@ const ClinicHomeDashboard: React.FC = () => {
             ))}
           </div>
 
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl shadow">
-            <h4 className="font-semibold text-yellow-800">Clinic Notices</h4>
-            <ul className="list-disc ml-6 text-yellow-700 text-sm mt-2 space-y-1">
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 sm:p-5 rounded-xl shadow">
+            <h4 className="font-semibold text-yellow-800 text-sm sm:text-base">
+              Clinic Notices
+            </h4>
+            <ul className="list-disc ml-5 text-yellow-700 text-xs sm:text-sm mt-2 space-y-1">
               <li>🛠 Power backup maintenance on Friday</li>
               <li>💸 Lab pricing updates from next week</li>
               <li>📋 Staff review on Monday</li>
@@ -276,4 +280,3 @@ const ClinicHomeDashboard: React.FC = () => {
 };
 
 export default ClinicHomeDashboard;
-
