@@ -291,7 +291,7 @@ const [filterExperience, setFilterExperience] = useState<string[]>([]); // e.g.,
               ))
             )}
           </main>
-        </div>
+        </div> 
       </div>
 
       {/* Booking drawer */}

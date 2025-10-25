@@ -46,8 +46,8 @@ import AdminDoctor from "./pages/AdminDoctor";
 import AdminClinic from "./pages/AdminClinic";
 import AdminLogin from "./pages/AdminLogin";
 
-import Navbar from "./components/Navbar";
-import { ToastContainer } from "react-toastify";
+// import Navbar from "./components/Navbar";
+// import { ToastContainer } from "react-toastify";
 import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
 import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
 import AllClinicPatients from "./pages/AllClinicPatients";
