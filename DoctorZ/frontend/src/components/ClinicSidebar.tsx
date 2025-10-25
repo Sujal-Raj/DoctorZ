@@ -69,7 +69,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { User, UserPlus, LogOut, Home, Users, Menu, X } from "lucide-react";
 
-const ClinicSidebar = () => {
+const ClinicSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);

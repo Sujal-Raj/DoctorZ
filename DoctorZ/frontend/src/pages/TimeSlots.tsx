@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import api from "../Services/mainApi";
+import api from "../Services/client";
 import { useParams } from "react-router-dom";
 
 type SelectionType = "single" | "multiple" | "month";

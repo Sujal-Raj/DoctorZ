@@ -1,7 +1,24 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { registerLab } from "../Services/labApi";
-import type { Lab } from "../Services/labApi";
+import api from "../Services/client";
+
+
+interface Timings {
+  open: string;
+  close: string;
+}
+
+interface Lab {
+  name: string;
+  email: string;
+  password: string;
+  state: string;
+  city: string;
+  pincode: string;
+  address: string;
+  timings: Timings;
+ 
+}
 
 export default function RegisterLab() {
   const [lab, setLab] = useState<Lab & { certificateNumber?: string }>({
