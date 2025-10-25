@@ -24,6 +24,7 @@ export interface Lab extends Document {
     address: string;
     status: "pending" | "approved" | "rejected";
     timings: Timings;
+    certificateNumber: string;
     createdAt?: string;
     updatedAt?: string;
 }

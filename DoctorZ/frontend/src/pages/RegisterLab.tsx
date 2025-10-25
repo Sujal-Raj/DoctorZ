@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import api from "../Services/client";
+import { registerLab } from "../Services/labApi";
 
 
 interface Timings {

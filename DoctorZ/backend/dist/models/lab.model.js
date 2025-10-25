@@ -10,6 +10,7 @@ const labSchema = new mongoose.Schema({
     city: { type: String, required: true },
     pincode: { type: String, required: true },
     status: { type: String, default: "pending" },
+    certificateNumber: { type: String, required: true }, // ✅ Added here
     timings: {
         open: { type: String, required: true },
         close: { type: String, required: true },
