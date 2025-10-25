@@ -37,6 +37,7 @@ export interface Lab extends Document {
   address: string;
   status: "pending" | "approved" | "rejected";
   timings: Timings;
+  certificateNumber: string; // ✅ New Field
   createdAt?: string;
   updatedAt?: string;
 }
@@ -82,6 +83,7 @@ const labSchema = new mongoose.Schema<Lab>(
     city: { type: String, required: true },
     pincode: { type: String, required: true },
     status: { type: String, default: "pending" },
+    certificateNumber: { type: String, required: true }, // ✅ Added here
     timings: {
       open: { type: String, required: true },
       close: { type: String, required: true },
