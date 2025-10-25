@@ -100,7 +100,7 @@ const ClinicSidebar = () => {
       <aside
         className={` bg-gray-900 text-gray-200 flex flex-col justify-between shadow-lg transition-all duration-300
           ${sidebarOpen ? "w-64" : "w-0"} 
-          md:w-64 overflow-hidden fixed md:relative z-40 h-full`}
+          md:w-64 overflow-hidden fixed z-40 h-full`}
       >
         {/* Close button for mobile */}
         <button
@@ -137,7 +137,7 @@ const ClinicSidebar = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="px-6 py-6 border-t border-gray-700 hidden md:block">
+        <div className="px-6 py-6 border-t border-gray-700 ">
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-2 w-full rounded-lg hover:bg-red-600 transition text-red-400"

@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { LabModel, LabTestBookingModel, TestModel, LabPackageModel } from "../models/lab.model.js";
+import { LabModel, LabTestBookingModel, TestModel, LabPackageModel, PackageBookingModel } from "../models/lab.model.js";
 // ------------------ LAB REGISTER ------------------
 const labRegister = async (req, res) => {
     try {
@@ -352,6 +352,32 @@ const getPackageDetailsById = async (req, res) => {
         return res.status(500).json({ message: errorMessage });
     }
 };
+const bookPackage = async (req, res) => {
+    try {
+        const { packageId, labId, patientId } = req.body;
+        if (!packageId || !labId || !patientId) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+        const labPackage = await LabPackageModel.findById(packageId);
+        if (!labPackage)
+            return res.status(404).json({ message: "Package not found" });
+        const booking = new PackageBookingModel({
+            packageId,
+            labId,
+            tests: labPackage.tests,
+            userId: patientId,
+            bookingDate: new Date(),
+            status: "pending"
+        });
+        await booking.save();
+        return res.status(200).json({ message: "Package booked successfully", booking });
+    }
+    catch (err) {
+        console.error("Error booking package:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to book package";
+        return res.status(500).json({ message: errorMessage });
+    }
+};
 // ------------------ EXPORTS ------------------
 export default {
     labRegister,
@@ -370,6 +396,7 @@ export default {
     getAllPackages,
     updateLabPackage,
     deleteLabPackage,
-    getPackageDetailsById
+    getPackageDetailsById,
+    bookPackage
 };
 //# sourceMappingURL=lab.controller.js.map

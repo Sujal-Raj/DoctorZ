@@ -14,6 +14,7 @@ interface Test {
 
 interface PackageDetailsType {
   _id: string;
+  labId: string | { _id: string };
   packageName: string;
   description: string;
   totalPrice: number;
@@ -32,6 +33,7 @@ export const PackageDetails: React.FC = () => {
   const { packageId } = useParams<{ packageId: string }>();
   const [packageDetails, setPackageDetails] = useState<PackageDetailsType | null>(null);
 
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchPackageDetails = async () => {
       try {
@@ -51,7 +53,46 @@ export const PackageDetails: React.FC = () => {
       </div>
     );
   }
+  const handlePackageBooking = async (packageId:string,labId: string) => {
+    try{
+      const token = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("patientToken="))
+        ?.split("=")[1];
 
+      if (!token) {
+        alert("Please login to book test");
+        setLoading(false);
+        return;
+      }
+
+      let patientId: string | null = null;
+      try {
+        const base64Payload = token.split(".")[1];
+        const payload = JSON.parse(atob(base64Payload));
+        patientId = payload.id;
+      } catch {
+        alert("Invalid login token");
+        setLoading(false);
+        return;
+      }
+      console.log("Booking package for patient ID:", patientId,"Package ID:", packageId,"Lab ID:", labId);
+      const response=await api.post(`/api/lab/packages/book`,{
+        packageId,
+        patientId,
+        labId
+      },{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
+      alert("Package booked successfully!");
+
+    }catch(error){
+      console.error("Error booking package:", error);
+      alert("Failed to book package. Please try again later."); 
+    }
+  }
   return (
     <div className="min-h-screen bg-[#f8f9ff] p-6 md:p-10 flex flex-col md:flex-row gap-6 justify-center items-start">
       {/* Left: Package Summary */}
@@ -88,8 +129,9 @@ export const PackageDetails: React.FC = () => {
           <p className="text-green-600 font-medium text-sm">60% off</p>
         </div>
 
-        <button className="mt-6 w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition">
-          Book Now
+        <button onClick={() => handlePackageBooking(
+          packageDetails._id, typeof packageDetails.labId === "string" ? packageDetails.labId : packageDetails.labId._id)} className="mt-6 w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition">
+         {loading ? "Booking..." : "Book Now"}
         </button>
       </div>
 

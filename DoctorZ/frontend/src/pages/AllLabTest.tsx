@@ -63,19 +63,25 @@ export default function LabTestsPage() {
     fetchData();
   }, []);
 
-  // ✅ Filter tests based on search and category
+  //  Filter tests based on search and category
+  
   const filteredTests = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return tests.filter((t) => {
-      const matchesQuery =
-        q === "" ||
-        t.testName?.toLowerCase().includes(q) ||
-        t.shortDescription?.toLowerCase().includes(q);
-      const matchesHealth =
-        !selectedHealthCheck || t.healthCheckCategory === selectedHealthCheck;
-      return matchesQuery && matchesHealth;
-    });
-  }, [tests, query, selectedHealthCheck]);
+  const q = query.trim().toLowerCase();
+  return tests.filter((t) => {
+    const matchesQuery =
+      q === "" ||
+      t.testName?.toLowerCase().includes(q) ||
+      t.shortDescription?.toLowerCase().includes(q);
+
+    const matchesHealth =
+      !selectedHealthCheck ||
+      t.category?.toLowerCase() === selectedHealthCheck.toLowerCase() ||
+      t.customCategory?.toLowerCase() === selectedHealthCheck.toLowerCase();
+
+    return matchesQuery && matchesHealth;
+  });
+}, [tests, query, selectedHealthCheck]);
+
 
   const healthChecks = [
     { key: "Full Body Checkup", icon: <Activity className="text-blue-500" /> },
