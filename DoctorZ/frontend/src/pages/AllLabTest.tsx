@@ -136,8 +136,8 @@ export default function LabTestsPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="🔍 Search for lab tests or health packages..."
-            className="w-full py-3 pl-12 pr-5 rounded-full shadow-md border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#106C89] focus:outline-none text-sm bg-gradient-to-r from-white to-blue-50"
+            placeholder=" Search for lab tests or health packages..."
+            className="w-full py-4 pl-12 pr-5 rounded-full shadow-md border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#106C89] focus:outline-none text-md bg-gradient-to-r from-white to-blue-50"
           />
         </div>
 
