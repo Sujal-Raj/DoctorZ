@@ -1,7 +1,19 @@
 // 📁 src/pages/LoginLab.tsx
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { loginLab } from "../../Services/labApi"; // ✅ import from labApi
+
+import { loginLab } from "../Services/labApi";
+
+interface LabLoginResponse {
+  token: string;
+  lab: {
+    _id: string;
+    labId: string;
+    name: string;
+    email: string;
+  };
+  message: string;
+}
 
 export default function LoginLab() {
   const [labId, setLabId] = useState("");

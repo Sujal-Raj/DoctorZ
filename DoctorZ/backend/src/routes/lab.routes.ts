@@ -80,7 +80,7 @@ router.get("/getLabPatients/:labId", labController.getLabPatients);
 // ✅ Get all available packages
 router.get("/packages", labController.getAllPackages);
 router.get("/packages/:packageId", labController.getPackageDetailsById);
-
+router.post("/packages/book", labController.bookPackage);
 // (Other routes…)
 router.get("/packages/:labId", labController.getAllPackagesByLabId);
 router.post("/addPackage", labController.addLabPackage);

@@ -63,19 +63,25 @@ export default function LabTestsPage() {
     fetchData();
   }, []);
 
-  // ✅ Filter tests based on search and category
+  //  Filter tests based on search and category
+  
   const filteredTests = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return tests.filter((t) => {
-      const matchesQuery =
-        q === "" ||
-        t.testName?.toLowerCase().includes(q) ||
-        t.shortDescription?.toLowerCase().includes(q);
-      const matchesHealth =
-        !selectedHealthCheck || t.healthCheckCategory === selectedHealthCheck;
-      return matchesQuery && matchesHealth;
-    });
-  }, [tests, query, selectedHealthCheck]);
+  const q = query.trim().toLowerCase();
+  return tests.filter((t) => {
+    const matchesQuery =
+      q === "" ||
+      t.testName?.toLowerCase().includes(q) ||
+      t.shortDescription?.toLowerCase().includes(q);
+
+    const matchesHealth =
+      !selectedHealthCheck ||
+      t.category?.toLowerCase() === selectedHealthCheck.toLowerCase() ||
+      t.customCategory?.toLowerCase() === selectedHealthCheck.toLowerCase();
+
+    return matchesQuery && matchesHealth;
+  });
+}, [tests, query, selectedHealthCheck]);
+
 
   const healthChecks = [
     { key: "Full Body Checkup", icon: <Activity className="text-blue-500" /> },
@@ -130,8 +136,8 @@ export default function LabTestsPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="🔍 Search for lab tests or health packages..."
-            className="w-full py-3 pl-12 pr-5 rounded-full shadow-md border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#106C89] focus:outline-none text-sm bg-gradient-to-r from-white to-blue-50"
+            placeholder=" Search for lab tests or health packages..."
+            className="w-full py-4 pl-12 pr-5 rounded-full shadow-md border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#106C89] focus:outline-none text-md bg-gradient-to-r from-white to-blue-50"
           />
         </div>
 
