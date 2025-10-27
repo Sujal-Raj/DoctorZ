@@ -966,7 +966,7 @@ export default function AllClinic() {
                 </div>
               ) : (
                 filteredClinics.map((clinic) => (
-                  <div onClick={() => navigate(`/clinic/${clinic._id}`)}
+                  <div
                     key={clinic._id}
                     className="group cursor-pointer transform hover:-translate-y-1 transition-all duration-300"
                     onClick={() => navigate(`/clinic/${clinic._id}`)}
