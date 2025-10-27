@@ -9,7 +9,7 @@ import {
   ChevronUp,
   Stethoscope,
 } from "lucide-react";
-import Availability from "../pages/TimeSlots"; // keep this import
+import Availability from "../../pages/TimeSlots"; // keep this import
 
 interface Doctor {
   _id: string;

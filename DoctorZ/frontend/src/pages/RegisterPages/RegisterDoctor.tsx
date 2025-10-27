@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerDoctor } from "../Services/doctorApi";
+import { registerDoctor } from "../../Services/doctorApi";
 import { useOutletContext } from "react-router-dom";
 
 type DoctorFormInputs = {

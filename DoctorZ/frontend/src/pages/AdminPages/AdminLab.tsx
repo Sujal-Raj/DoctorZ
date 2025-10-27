@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import api from "../Services/mainApi";
+import api from "../../Services/mainApi";
 
 interface Timings {
   open: string;
