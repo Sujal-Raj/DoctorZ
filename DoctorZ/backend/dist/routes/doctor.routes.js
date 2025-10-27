@@ -10,10 +10,11 @@ router.post('/register', upload.fields([
 ]), doctorController.doctorRegister);
 router.get('/allDoctors', doctorController.getAllDoctors);
 router.get('/:id', doctorController.getDoctorById);
-// router.delete('/delete/:id',doctorController.deleteDoctor);
+router.delete('/delete/:id', doctorController.deleteDoctor);
 router.put('/update/:id', doctorController.updateDoctor);
 router.get('/getClinicDoctors/:clinicId', doctorController.getClinicDoctors);
 router.post('/login', doctorController.doctorLogin);
-router.post('/logout', doctorController.logoutDoctor);
+router.get("/todays-appointments/:doctorId", doctorController.getTodaysBookedAppointments);
+router.get('/total-patients/:doctorId', doctorController.getTotalPatients);
 export default router;
 //# sourceMappingURL=doctor.routes.js.map

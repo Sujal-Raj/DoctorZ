@@ -324,7 +324,7 @@ export default function AllClinic() {
             <div className="space-y-6  ">
               {filteredClinics.length === 0 ? (
                 <div className="text-center py-16 ">
-                  <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <div className=" w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Building2 className="h-12 w-12 text-slate-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 mb-2">
@@ -345,16 +345,16 @@ export default function AllClinic() {
                 </div>
               ) : (
                 filteredClinics.map((clinic) => (
-                  <div
+                  <div onClick={() => navigate(`/clinic/${clinic._id}`)}
                     key={clinic._id}
-                    className="bg-white rounded-3xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition-all duration-300 overflow-hidden group "
+                    className="cursor-pointer bg-white rounded-3xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition-all duration-300 overflow-hidden group "
                   >
                     <div className="p-8">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex-1">
                           <h3
-                            onClick={() => navigate(`/clinic/${clinic._id}`)}
+                            
                             className="text-2xl font-bold text-slate-900 hover:text-blue-600 cursor-pointer transition-colors duration-200 flex items-center gap-3 group-hover:text-blue-600"
                           >
                             <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-200 transition-colors duration-200">

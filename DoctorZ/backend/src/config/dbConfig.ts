@@ -1,12 +1,26 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import mongoose from "mongoose";
 import patientModel from "../models/patient.model.js";
 
+let MONGO_URI;
+console.log(process.env.MONGO_DEVELOPMENT_URI, process.env.MONGO_ATLAS_URI)
+
+if(process.env.NODE_ENV == "development"){
+  MONGO_URI = process.env.MONGO_DEVELOPMENT_URI;
+}
+else{
+  MONGO_URI = process.env.MONGO_ATLAS_URI;
+};
+
+console.log(MONGO_URI)
 const dbConnect = async () => {
   try {
-    if (!process.env.MONGO_URI) {
+    if (!MONGO_URI) {
       throw new Error("MONGO_URI environment variable is not defined");
     }
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(MONGO_URI);
     console.log("Database Connected");
   } catch (error) {
     console.log(error);

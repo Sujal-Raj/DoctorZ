@@ -41,3 +41,16 @@ export const loginDoctor = async (
     throw error;
   }
 };
+
+
+export const updateDoctor = async (drId: string, doctorId: string, password: string) => {
+  try {
+    const response = await api.put(`/api/doctor/update/${drId}`, {
+      doctorId,
+      password,
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || error;
+  }
+};

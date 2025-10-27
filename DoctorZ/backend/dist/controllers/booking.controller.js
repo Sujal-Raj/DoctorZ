@@ -1,3 +1,6 @@
+// import type { Request, Response } from "express";
+// import BookingModel from "../models/booking.model.js";
+// import timeSlotsModel from "../models/timeSlots.model.js";
 import BookingModel from "../models/booking.model.js";
 import timeSlotsModel from "../models/timeSlots.model.js";
 // ✅ Book appointment
