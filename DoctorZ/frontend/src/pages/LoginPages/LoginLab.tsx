@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-import { loginLab } from "../Services/labApi";
+import { loginLab } from "../../Services/labApi";
 
 interface LabLoginResponse {
   token: string;

@@ -795,12 +795,13 @@
 
 // export default ClinicDetails;
 
+
 import React, { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../Services/mainApi";
+import api from "../../Services/mainApi";
 import { Phone, MapPin, Mail, Clock, Search } from "lucide-react";
-import clinicImage from "../assets/clinic.jpg";
+import clinicImage from "../../assets/clinic.jpg";
 
 // ---------- Types ----------
 interface Doctor {

@@ -5,18 +5,9 @@ import { LabModel, LabTestBookingModel, TestModel, LabPackageModel, PackageBooki
 // ------------------ LAB REGISTER ------------------
 const labRegister = async (req, res) => {
     try {
-        const { name, email, password, state, address, city, pincode, timings, certificateNumber, // ✅ Added
-         } = req.body;
-        if (!name ||
-            !email ||
-            !password ||
-            !state ||
-            !address ||
-            !city ||
-            !pincode ||
-            !timings ||
-            !certificateNumber) {
-            return res.status(400).json({ message: "Lab Registration Failed - Missing fields" });
+        const { name, email, password, state, address, city, pincode, timings } = req.body;
+        if (!name || !email || !password || !state || !address || !city || !pincode || !timings) {
+            return res.status(400).json({ message: "Lab Registration Failed" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const lab = new LabModel({
@@ -28,7 +19,6 @@ const labRegister = async (req, res) => {
             city,
             pincode,
             timings,
-            certificateNumber, // ✅ Added here
             status: "pending",
         });
         await lab.save();
@@ -56,7 +46,7 @@ const labLogin = async (req, res) => {
         return res.status(200).json({
             message: "Login Successful",
             token,
-            lab: { _id: lab._id, labId: lab.labId, name: lab.name, email: lab.email, certificateNumber: lab.certificateNumber },
+            lab: { _id: lab._id, labId: lab.labId, name: lab.name, email: lab.email },
         });
     }
     catch (err) {
@@ -68,9 +58,9 @@ const labLogin = async (req, res) => {
 // ------------------ GET ALL LAB TESTS ------------------
 const getAllLabTests = async (req, res) => {
     try {
-        const approvedLabs = await LabModel.find({ status: "approved" }).select("_id name certificateNumber");
+        const approvedLabs = await LabModel.find({ status: "approved" }).select("_id name");
         const approvedLabIds = approvedLabs.map((lab) => lab._id);
-        const tests = await TestModel.find({ labId: { $in: approvedLabIds } }).populate("labId", "name certificateNumber").lean();
+        const tests = await TestModel.find({ labId: { $in: approvedLabIds } }).populate("labId", "name").lean();
         const formattedTests = tests.map((test) => ({
             _id: test._id,
             testName: test.testName,
@@ -80,7 +70,6 @@ const getAllLabTests = async (req, res) => {
             category: test.category,
             customCategory: test.customCategory || "",
             labName: test.labId?.name || "Unknown Lab",
-            labCertificateNumber: test.labId?.certificateNumber || "",
             labId: test.labId?._id,
         }));
         return res.status(200).json(formattedTests);
@@ -164,7 +153,7 @@ const updateLabProfile = async (req, res) => {
     try {
         const { labId } = req.params;
         const updateData = req.body;
-        const updatedLab = await LabModel.findByIdAndUpdate({ _id: labId }, { $set: updateData }, { new: true });
+        const updatedLab = await LabModel.findByIdAndUpdate(labId, { $set: updateData }, { new: true });
         if (!updatedLab)
             return res.status(404).json({ message: "Lab not found" });
         return res.status(200).json({ message: "Lab profile updated successfully", lab: updatedLab });
@@ -236,6 +225,7 @@ const getLabPatients = async (req, res) => {
     }
 };
 // ------------------ PACKAGE MANAGEMENT ------------------
+// ✅ Add new package
 const addLabPackage = async (req, res) => {
     try {
         const { labId, packageName, description, testIds, totalPrice } = req.body;
@@ -264,6 +254,7 @@ const addLabPackage = async (req, res) => {
         return res.status(500).json({ message: errorMessage });
     }
 };
+// ✅ Get all packages by labId
 const getAllPackagesByLabId = async (req, res) => {
     try {
         const { labId } = req.params;
@@ -278,6 +269,7 @@ const getAllPackagesByLabId = async (req, res) => {
         return res.status(500).json({ message: errorMessage });
     }
 };
+// ✅ Update a package
 const updateLabPackage = async (req, res) => {
     try {
         const { packageId } = req.params;
@@ -293,6 +285,7 @@ const updateLabPackage = async (req, res) => {
         return res.status(500).json({ message: errorMessage });
     }
 };
+// ✅ Delete a package
 const deleteLabPackage = async (req, res) => {
     try {
         const { packageId } = req.params;
@@ -307,12 +300,15 @@ const deleteLabPackage = async (req, res) => {
         return res.status(500).json({ message: errorMessage });
     }
 };
+// ✅ Get all available packages (from approved labs)
 const getAllPackages = async (req, res) => {
     try {
-        const approvedLabs = await LabModel.find({ status: "approved" }).select("_id name city state certificateNumber");
+        // Fetch only approved labs
+        const approvedLabs = await LabModel.find({ status: "approved" }).select("_id name city state");
         const approvedLabIds = approvedLabs.map((lab) => lab._id);
+        // Fetch all packages from approved labs
         const packages = await LabPackageModel.find({ labId: { $in: approvedLabIds } })
-            .populate("labId", "name city state certificateNumber")
+            .populate("labId", "name city state")
             .populate("tests", "testName price category")
             .lean();
         const formattedPackages = packages.map((pkg) => ({
@@ -326,7 +322,6 @@ const getAllPackages = async (req, res) => {
                     name: pkg.labId.name,
                     city: pkg.labId.city,
                     state: pkg.labId.state,
-                    certificateNumber: pkg.labId.certificateNumber,
                 }
                 : null,
         }));

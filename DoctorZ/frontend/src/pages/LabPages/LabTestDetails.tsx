@@ -5,14 +5,14 @@ import { useEffect, useState } from "react";
 import api from "../../Services/client";
 
 // ✅ Import same category images
-import diabetes from "../assets/diabetes.png";
-import fever from "../assets/Fever and infections.png";
-import Pregnancy from "../assets/Pregnancy.png";
-import vitamin from "../assets/vitamin.png";
-import Liver from "../assets/Liver.png";
-import kidney from "../assets/kidney.png";
-import Heart from "../assets/Heart.png";
-import Imaging from "../assets/Imaging.png";
+import diabetes from "../../assets/diabetes.png";
+import fever from "../../assets/Fever and infections.png";
+import Pregnancy from "../../assets/Pregnancy.png";
+import vitamin from "../../assets/vitamin.png";
+import Liver from "../../assets/Liver.png";
+import kidney from "../../assets/kidney.png";
+import Heart from "../../assets/Heart.png";
+import Imaging from "../../assets/Imaging.png";
 
 interface Test {
   _id: string;
