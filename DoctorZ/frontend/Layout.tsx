@@ -21,7 +21,7 @@ const Layout: React.FC = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <div className="pt-4">
+      <div>
         <Outlet />
       </div>
     </>

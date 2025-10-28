@@ -20,71 +20,102 @@ const Navbar: React.FC = () => {
 console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
 
   return (
-    <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-200">
+     <nav
+      className="
+        sticky top-0 z-50 
+        backdrop-blur-lg bg-white/60 
+     
+        shadow-sm transition-all duration-300
+      "
+    >
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        {/* Logo */}
         <Link
           to="/"
           className="flex items-center gap-2 text-2xl font-bold text-blue-700 hover:text-blue-800 transition"
         >
-          🏥 <span>DoctorZ</span>
-          <span className="hidden md:inline text-sm text-gray-500 font-medium">
+          🏥<span
+  className="
+    text-transparent bg-clip-text 
+    bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600
+    font-extrabold tracking-wide
+    animate-gradient
+    bg-[length:200%_200%]
+  "
+>
+  DoctorZ
+</span>
+
+
+          <span className="hidden md:inline text-sm text-gray-700 font-medium">
             | Smart Healthcare
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          <Link
-            to="/"
-            className={`font-medium transition ${
-              location.pathname === "/"
-                ? "text-blue-600"
-                : "text-gray-700 hover:text-blue-600"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            to="/all-doctors"
-            className={`font-medium transition ${
-              location.pathname === "/all-doctors"
-                ? "text-blue-600"
-                : "text-gray-700 hover:text-blue-600"
-            }`}
-          >
-            Find Doctors
-          </Link>
-          <Link
-            to="/all-clinics"
-            className={`font-medium transition ${
-              location.pathname === "/all-clinics"
-                ? "text-blue-600"
-                : "text-gray-700 hover:text-blue-600"
-            }`}
-          >
-            Find Clinics
-          </Link>
-          <Link
-            to="/all-lab-test"
-            className={`font-medium transition ${
-              location.pathname === "/all-lab-test"
-                ? "text-blue-600"
-                : "text-gray-700 hover:text-blue-600"
-            }`}
-          >
-            Lab Tests
-          </Link>
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-12">
+          {[
+            { to: "/", label: "Home" },
+            { to: "/all-doctors", label: "Find Doctors" },
+            { to: "/all-clinics", label: "Find Clinics" },
+            { to: "/all-lab-test", label: "Lab Tests" },
+          ].map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className={`font-semibold transition relative group ${
+                location.pathname === to
+                  ? "text-blue-600"
+                  : "text-black hover:text-blue-600"
+              }`}
+            >
+              {label}
+              <span
+                className={`absolute bottom-0 left-0 h-0.5 bg-blue-600 transition-all duration-300 ${
+                  location.pathname === to ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              ></span>
+            </Link>
+          ))}
 
-          {/* Show Registration only if not logged in */}
+          {/* Registration Dropdown */}
           {!isLoggedIn && (
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition flex items-center gap-2">
-                  Registration
-                </button>
+              <button
+  className="
+    relative overflow-hidden
+    bg-gradient-to-r from-blue-600 to-indigo-600
+    text-white font-medium
+    px-5 py-2.5
+    rounded-lg shadow-md
+    flex items-center gap-2 justify-center
+    transition-all duration-300 ease-out
+    hover:cursor-pointer
+    hover:scale-[1.03] hover:shadow-lg
+    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1
+    group
+  "
+>
+  <span className="relative z-10 flex items-center gap-2">
+    Registration
+  </span>
+
+  {/* gradient shine overlay */}
+  <span
+    className="
+      absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent
+      translate-x-[-100%]
+      group-hover:translate-x-[100%]
+      transition-transform duration-700 ease-out
+    "
+  ></span>
+</button>
+
               </DropdownMenu.Trigger>
               <DropdownMenu.Content
                 sideOffset={8}
-                className="bg-white rounded-xl shadow-xl border border-gray-100 w-56 overflow-hidden"
+                className="bg-white/80 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 w-56 overflow-hidden"
               >
                 <DropdownMenu.Item asChild>
                   <Link
@@ -122,34 +153,85 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
             </DropdownMenu.Root>
           )}
 
-          {/* Login or Logout */}
+          {/* Login / Profile */}
           <div>
             {isLoggedIn ? (
-               <div className="flex items-center gap-4">
-    <button className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200 transition">
-      <User size={18} /> {user?.email || "Profile"}
-    </button>
-<button
+              <div className="flex items-center gap-4">
+                <button className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200 transition">
+                  <User size={18} /> {user?.email || "Profile"}
+                </button>
+               <button
   onClick={() => {
-    logout(); // pehle logout call hoga
-    alert("You have been logged out."); // fir alert dikhai dega
+    logout();
+    alert("You have been logged out.");
   }}
-  className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition"
+  className="
+    relative overflow-hidden
+    flex items-center justify-center gap-2
+    px-5 py-2.5 rounded-lg
+    font-medium text-white
+    bg-gradient-to-r from-red-600 to-rose-600
+    shadow-md
+    transition-all duration-300 ease-out
+    hover:scale-[1.03] hover:shadow-lg
+    focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1
+    active:scale-95
+    group
+  "
 >
-  <LogOut size={18} /> Logout
+  <span className="relative z-10 flex items-center gap-2">
+    <LogOut size={18} className="text-white/90" /> Logout
+  </span>
+
+  {/* animated shine overlay */}
+  <span
+    className="
+      absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent
+      translate-x-[-100%] group-hover:translate-x-[100%]
+      transition-transform duration-700 ease-out
+    "
+  ></span>
 </button>
-  </div>
+
+              </div>
             ) : (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
-                  <button className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center gap-2">
-                    <LogIn size={18} /> Login
-                  
-                  </button>
+                <button
+  className="
+    relative overflow-hidden
+    flex items-center justify-center 
+    px-6 py-2.5 rounded-lg
+    font-medium text-blue-600
+    bg-white border border-blue-500
+    shadow-sm
+    transition-all duration-300 ease-out
+    hover:bg-blue-50 hover:shadow-md
+    hover:scale-[1.03]
+    active:scale-95
+    hover:cursor-pointer
+    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1
+    group
+  "
+>
+  <span className="relative z-10 flex items-center gap-2">
+    <LogIn size={18} className="text-blue-600" /> Login
+  </span>
+
+  {/* soft shine on hover */}
+  <span
+    className="
+      absolute inset-0 bg-gradient-to-r from-transparent via-blue-100/60 to-transparent
+      translate-x-[-100%] group-hover:translate-x-[100%]
+      transition-transform duration-700 ease-out
+    "
+  ></span>
+</button>
+
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
                   sideOffset={8}
-                  className="bg-white rounded-xl shadow-xl border border-gray-100 w-56 overflow-hidden"
+                  className="bg-white/80 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 w-56 overflow-hidden"
                 >
                   <DropdownMenu.Item asChild>
                     <Link
@@ -189,7 +271,7 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
           </div>
         </div>
 
-        {/* Mobile menu toggle */}
+        {/* Mobile Menu Button */}
         <button
           className="md:hidden text-gray-700"
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -200,43 +282,62 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-white shadow-md border-t border-gray-200">
-          <div className="flex flex-col px-6 py-4 space-y-4">
-            <Link to="/" onClick={() => setMobileOpen(false)}>Home</Link>
-            <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>Find Doctors</Link>
-            <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>Find Clinics</Link>
-            <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>Lab Tests</Link>
+        <div className="md:hidden bg-white/70 backdrop-blur-md shadow-md border-t border-gray-200">
+  <div className="grid grid-cols-2 font-medium text-black gap-2 px-4 py-3 text-start">
+    <Link to="/" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+      Home
+    </Link>
+    <Link to="/all-doctors" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+      Find Doctors
+    </Link>
 
-            {!isLoggedIn && (
-              <>
-                <Link to="/patient-register" onClick={() => setMobileOpen(false)}>Patient Registration</Link>
-                <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>Doctor Registration</Link>
-                <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>Clinic Registration</Link>
-                <Link to="/lab-register" onClick={() => setMobileOpen(false)}>Lab Registration</Link>
-              </>
-            )}
+    <Link to="/all-clinics" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+      Find Clinics
+    </Link>
+    <Link to="/all-lab-test" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+      Lab Tests
+    </Link>
 
-            {isLoggedIn ? (
-              <button
-                onClick={() => {
-                  logout();
-                  setMobileOpen(false);
-                }}
-                               className="text-red-600 font-medium hover:text-red-700 transition flex items-center gap-2"
-              >
-                <LogOut size={18} /> Logout
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className="text-green-600 font-medium hover:text-green-700 transition flex items-center gap-2"
-                onClick={() => setMobileOpen(false)}
-              >
-                <LogIn size={18} /> Login
-              </Link>
-            )}
-          </div>
-        </div>
+    {!isLoggedIn && (
+      <>
+        <Link to="/patient-register" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+          Patient Registration
+        </Link>
+        <Link to="/doctor-register" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+          Doctor Registration
+        </Link>
+
+        <Link to="/clinic-register" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+          Clinic Registration
+        </Link>
+        <Link to="/lab-register" onClick={() => setMobileOpen(false)} className="px-2 py-2 rounded-md hover:bg-gray-100 transition">
+          Lab Registration
+        </Link>
+      </>
+    )}
+
+    {isLoggedIn ? (
+      <button
+        onClick={() => {
+          logout();
+          setMobileOpen(false);
+        }}
+        className="px-2 py-2 rounded-md text-red-600 font-medium hover:text-red-700 hover:bg-red-50 transition col-span-2"
+      >
+        <LogOut size={18} /> Logout
+      </button>
+    ) : (
+      <Link
+        to="/login"
+        onClick={() => setMobileOpen(false)}
+        className="px-2 py-2 rounded-md text-green-600 font-medium hover:text-green-700 hover:bg-green-50 transition col-span-2"
+      >
+        <LogIn size={18} /> Login
+      </Link>
+    )}
+  </div>
+</div>
+
       )}
     </nav>
   );

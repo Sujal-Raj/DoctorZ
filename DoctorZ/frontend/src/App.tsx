@@ -45,7 +45,6 @@ import AdminClinic from "./pages/AdminClinic";
 import AdminLogin from "./pages/AdminLogin";
 import LabTestDetails from "./pages/LabTestDetails";
 import Navbar from "./components/Navbar";
-import { ToastContainer } from "react-toastify";
 
 // Wrapper component to conditionally render Navbar
 const AppWrapper: React.FC = () => {
@@ -56,7 +55,7 @@ const AppWrapper: React.FC = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <div className="">
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/lab-dashboard" element={<LabDashboard />}>
