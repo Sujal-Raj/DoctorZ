@@ -8,7 +8,7 @@ import {
   CurrencyRupeeIcon,
   UserIcon,
 } from "@heroicons/react/24/solid";
-import api from "../Services/mainApi";
+import api from "../../Services/mainApi";
 import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer,

@@ -2,8 +2,8 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { loginPatient } from "../Services/patientApi";
-import { AuthContext } from "../Context/AuthContext"; // ✅ Import AuthContext
+import { loginPatient } from "../../Services/patientApi";
+import { AuthContext } from "../../Context/AuthContext"; // ✅ Import AuthContext
 
 export default function LoginPatient() {
   const [email, setEmail] = useState("");

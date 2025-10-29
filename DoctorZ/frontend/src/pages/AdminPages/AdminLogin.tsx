@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { adminLogin } from "../Services/adminApi";
-import type { AdminLoginPayload } from "../Services/adminApi";
+import { adminLogin } from "../../Services/adminApi";
+import type { AdminLoginPayload } from "../../Services/adminApi";
 import { useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
