@@ -196,7 +196,7 @@ export default function DoctorDashboard() {
         <Outlet />
       </main> */}
 <main className="flex-1 bg-gray-100 p-8 overflow-y-auto">
-  <div className="max-w-5xl  flex ">
+  <div className=" max-w-5xl  flex ">
     <Outlet />
   </div>
 </main>

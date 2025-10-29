@@ -10,6 +10,7 @@ const labSchema = new mongoose.Schema({
     city: { type: String, required: true },
     pincode: { type: String, required: true },
     status: { type: String, default: "pending" },
+    certificateNumber: { type: String, required: true }, // ✅ Added here
     timings: {
         open: { type: String, required: true },
         close: { type: String, required: true },
@@ -54,9 +55,23 @@ const labPackageSchema = new mongoose.Schema({
     ],
     totalPrice: { type: Number, required: true },
 }, { timestamps: true });
+const packageBookingSchema = new mongoose.Schema({
+    packageId: { type: mongoose.Schema.Types.ObjectId, ref: "LabPackage", required: true },
+    labId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Lab",
+        required: true
+    },
+    tests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Test" }],
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "Patient", required: true },
+    bookingDate: { type: Date, default: Date.now },
+    status: { type: String, enum: ["pending", "completed"], default: "pending" },
+    reportFile: { type: String, default: null },
+}, { timestamps: true });
 // ---------- Model Exports ----------
 export const LabModel = mongoose.model("Lab", labSchema);
 export const LabTestBookingModel = mongoose.model("LabTestBooking", labTestBookingSchema);
 export const TestModel = mongoose.model("Test", testSchema);
 export const LabPackageModel = mongoose.model("LabPackage", labPackageSchema);
+export const PackageBookingModel = mongoose.model("PackageBooking", packageBookingSchema);
 //# sourceMappingURL=lab.model.js.map

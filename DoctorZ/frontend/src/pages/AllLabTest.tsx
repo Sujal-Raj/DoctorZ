@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type TargetAndTransition } from "framer-motion";
 import api from "../Services/mainApi";
+import packageIcon from "../assets/package.webp";
 import {
   Search as SearchIcon,
   FlaskConical,
@@ -63,19 +64,25 @@ export default function LabTestsPage() {
     fetchData();
   }, []);
 
-  // ✅ Filter tests based on search and category
+  //  Filter tests based on search and category
+  
   const filteredTests = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return tests.filter((t) => {
-      const matchesQuery =
-        q === "" ||
-        t.testName?.toLowerCase().includes(q) ||
-        t.shortDescription?.toLowerCase().includes(q);
-      const matchesHealth =
-        !selectedHealthCheck || t.healthCheckCategory === selectedHealthCheck;
-      return matchesQuery && matchesHealth;
-    });
-  }, [tests, query, selectedHealthCheck]);
+  const q = query.trim().toLowerCase();
+  return tests.filter((t) => {
+    const matchesQuery =
+      q === "" ||
+      t.testName?.toLowerCase().includes(q) ||
+      t.shortDescription?.toLowerCase().includes(q);
+
+    const matchesHealth =
+      !selectedHealthCheck ||
+      t.category?.toLowerCase() === selectedHealthCheck.toLowerCase() ||
+      t.customCategory?.toLowerCase() === selectedHealthCheck.toLowerCase();
+
+    return matchesQuery && matchesHealth;
+  });
+}, [tests, query, selectedHealthCheck]);
+
 
   const healthChecks = [
     { key: "Full Body Checkup", icon: <Activity className="text-blue-500" /> },
@@ -130,8 +137,8 @@ export default function LabTestsPage() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="🔍 Search for lab tests or health packages..."
-            className="w-full py-3 pl-12 pr-5 rounded-full shadow-md border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#106C89] focus:outline-none text-sm bg-gradient-to-r from-white to-blue-50"
+            placeholder=" Search for lab tests or health packages..."
+            className="w-full py-4 pl-12 pr-5 rounded-full shadow-md border border-gray-200 text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-[#106C89] focus:outline-none text-md bg-gradient-to-r from-white to-blue-50"
           />
         </div>
 
@@ -260,9 +267,10 @@ export default function LabTestsPage() {
                       style={{ minHeight: "180px" }}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="p-2 border border-gray-200 rounded-md bg-gray-50">
-                          <FlaskConical className="text-[#106C89]" />
-                        </div>
+                     
+                    
+                          <img src={packageIcon} alt="Package" className="w-15 h-15" />
+                       
                         <div>
                           <h3 className="text-[16px] font-semibold text-[#121414] line-clamp-1">
                             {packageName}

@@ -17,6 +17,7 @@ declare const _default: {
     updateLabPackage: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     deleteLabPackage: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     getPackageDetailsById: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    bookPackage: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
 };
 export default _default;
 //# sourceMappingURL=lab.controller.d.ts.map

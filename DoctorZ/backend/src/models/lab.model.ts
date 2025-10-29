@@ -37,6 +37,7 @@ export interface Lab extends Document {
   address: string;
   status: "pending" | "approved" | "rejected";
   timings: Timings;
+  certificateNumber: string; // ✅ New Field
   createdAt?: string;
   updatedAt?: string;
 }
@@ -61,6 +62,15 @@ export interface LabPackage extends Document {
   updatedAt?: Date;
 }
 
+export interface PackageBooking extends Document {
+  packageId: mongoose.Types.ObjectId;
+  labId: mongoose.Types.ObjectId;
+  tests: mongoose.Types.ObjectId[];
+  userId: mongoose.Types.ObjectId;
+  bookingDate: Date;
+  status: "pending" | "completed";
+  reportFile?: string | null;
+}
 // ---------- Lab Schema ----------
 const labSchema = new mongoose.Schema<Lab>(
   {
@@ -73,6 +83,7 @@ const labSchema = new mongoose.Schema<Lab>(
     city: { type: String, required: true },
     pincode: { type: String, required: true },
     status: { type: String, default: "pending" },
+    certificateNumber: { type: String, required: true }, // ✅ Added here
     timings: {
       open: { type: String, required: true },
       close: { type: String, required: true },
@@ -129,6 +140,27 @@ const labPackageSchema = new mongoose.Schema<LabPackage>(
   { timestamps: true }
 );
 
+
+
+const packageBookingSchema = new mongoose.Schema<PackageBooking>( 
+  {
+    packageId: { type: mongoose.Schema.Types.ObjectId, ref: "LabPackage", required: true },
+      labId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Lab",
+    required: true
+  },
+  tests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Test" }],
+
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "Patient", required: true },
+    bookingDate: { type: Date, default: Date.now },
+    status: { type: String,   enum: ["pending", "completed"], default: "pending" },
+    reportFile: { type: String, default: null },
+  },
+  { timestamps: true }
+);
+
+
 // ---------- Model Exports ----------
 export const LabModel: Model<Lab> = mongoose.model("Lab", labSchema);
 export const LabTestBookingModel: Model<LabTestBooking> = mongoose.model(
@@ -137,3 +169,4 @@ export const LabTestBookingModel: Model<LabTestBooking> = mongoose.model(
 );
 export const TestModel: Model<Test> = mongoose.model("Test", testSchema);
 export const LabPackageModel: Model<LabPackage> = mongoose.model("LabPackage", labPackageSchema);
+export const PackageBookingModel = mongoose.model("PackageBooking", packageBookingSchema);
