@@ -120,38 +120,75 @@ const deleteUser = async (req, res) => {
         });
     }
 };
+// const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
+//   try {
+//     const { doctorId, date } = req.params;
+//     if (!doctorId || !date) {
+//       return res.status(400).json({
+//         message: "doctorId and date are required",
+//       });
+//     }
+//     // Convert incoming date string (YYYY-MM-DD) to start & end of day
+//     const startOfDay = new Date(date);
+//     startOfDay.setHours(0, 0, 0, 0);
+//     const endOfDay = new Date(date);
+//     endOfDay.setHours(23, 59, 59, 999);
+//     const slots = await timeSlotsModel.find({
+//       doctorId,
+//       date: { $gte: startOfDay, $lte: endOfDay },
+//     });
+//     if (!slots || slots.length === 0) {
+//       return res.status(200).json({
+//         message: "No slots found for this doctor on the specified date",
+//         slots: [],
+//       });
+//     }
+//     return res.status(200).json({
+//       message: "Slots fetched successfully",
+//       slots,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching slots", error);
+//     return res.status(500).json({
+//       message: "Failed to fetch slots",
+//       error: error instanceof Error ? error.message : error,
+//     });
+//   }
+// };
 const getAvailableSlotsByDoctorId = async (req, res) => {
     try {
-        const { doctorId, date } = req.params;
-        if (!doctorId || !date) {
+        const { doctorId } = req.params;
+        if (!doctorId) {
             return res.status(400).json({
-                message: "doctorId and date are required",
+                message: "doctorId is required",
             });
         }
-        // Convert incoming date string (YYYY-MM-DD) to start & end of day
-        const startOfDay = new Date(date);
-        startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date(date);
-        endOfDay.setHours(23, 59, 59, 999);
-        const slots = await timeSlotsModel.find({
-            doctorId,
-            date: { $gte: startOfDay, $lte: endOfDay },
-        });
+        // Find all slots for this doctor
+        const slots = await timeSlotsModel.find({ doctorId });
         if (!slots || slots.length === 0) {
             return res.status(200).json({
-                message: "No slots found for this doctor on the specified date",
-                slots: [],
+                message: "No slots found for this doctor",
+                availableData: [],
             });
         }
+        // ✅ Fix: Define type for slotsByMonth
+        const slotsByMonth = {};
+        slots.forEach(slot => {
+            const d = new Date(slot.date);
+            const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+            if (!slotsByMonth[monthKey])
+                slotsByMonth[monthKey] = [];
+            slotsByMonth[monthKey].push(slot);
+        });
         return res.status(200).json({
-            message: "Slots fetched successfully",
-            slots,
+            message: "Available months and slots fetched successfully",
+            availableMonths: slotsByMonth,
         });
     }
     catch (error) {
-        console.error("Error fetching slots", error);
+        console.error("Error fetching available slots", error);
         return res.status(500).json({
-            message: "Failed to fetch slots",
+            message: "Failed to fetch available slots",
             error: error instanceof Error ? error.message : error,
         });
     }
