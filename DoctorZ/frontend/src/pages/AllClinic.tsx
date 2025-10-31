@@ -653,10 +653,10 @@ export default function AllClinic() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Enhanced Header */}
-      <div className="relative w-full bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
+      <div className="relative w-full  text-white overflow-hidden">
+        {/* <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-blue-600 rounded-full -translate-y-32 translate-x-32 md:-translate-y-48 md:translate-x-48 opacity-20"></div>
-        <div className="absolute bottom-0 left-0 w-56 h-56 md:w-80 md:h-80 bg-blue-500 rounded-full -translate-x-28 translate-y-28 md:-translate-x-40 md:translate-y-40 opacity-30"></div>
+        <div className="absolute bottom-0 left-0 w-56 h-56 md:w-80 md:h-80 bg-blue-500 rounded-full -translate-x-28 translate-y-28 md:-translate-x-40 md:translate-y-40 opacity-30"></div> */}
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
@@ -668,13 +668,13 @@ export default function AllClinic() {
                   <span className="text-xs md:text-sm font-medium">Trusted Healthcare Platform</span>
                 </div>
                 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold leading-tight">
                   Find Your{" "}
-                  <span className="text-blue-200 bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
+                  <span className="text-blue-600 ">
                     Perfect Clinic
                   </span>
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl text-blue-100 leading-relaxed max-w-2xl">
+                <p className="text-base sm:text-lg md:text-xl text-black leading-relaxed max-w-2xl">
                   Discover certified healthcare providers with verified credentials. 
                   Book appointments, read reviews, and get quality care tailored to your needs.
                 </p>
@@ -698,18 +698,18 @@ export default function AllClinic() {
               {/* Quick Stats */}
               <div className="flex items-center gap-4 sm:gap-6 md:gap-8 pt-2 md:pt-4">
                 <div className="text-center">
-                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">{clinics.length}+</div>
-                  <div className="text-blue-200 text-xs sm:text-sm">Verified Clinics</div>
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">{clinics.length}+</div>
+                  <div className="text-blue-600 text-xs sm:text-sm">Verified Clinics</div>
                 </div>
-                <div className="w-px h-6 sm:h-8 bg-blue-400/30"></div>
+                <div className="w-px h-6 sm:h-8 bg-blue-600"></div>
                 <div className="text-center">
-                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">24/7</div>
-                  <div className="text-blue-200 text-xs sm:text-sm">Available</div>
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">24/7</div>
+                  <div className="text-blue-600 text-xs sm:text-sm">Available</div>
                 </div>
-                <div className="w-px h-6 sm:h-8 bg-blue-400/30"></div>
+                <div className="w-px h-6 sm:h-8 bg-blue-600"></div>
                 <div className="text-center">
-                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-white">100%</div>
-                  <div className="text-blue-200 text-xs sm:text-sm">Certified</div>
+                  <div className="text-lg sm:text-xl md:text-2xl font-bold text-black">100%</div>
+                  <div className="text-blue-600 text-xs sm:text-sm">Certified</div>
                 </div>
               </div>
             </div>
@@ -717,7 +717,7 @@ export default function AllClinic() {
             {/* Right Section - Animation */}
             <div className="w-full lg:w-1/2 flex justify-center lg:justify-end mt-4 lg:mt-0">
               <div className="relative">
-                <div className="absolute -inset-2 sm:-inset-3 md:-inset-4 bg-blue-600/20 rounded-2xl sm:rounded-3xl blur-xl"></div>
+                <div className="absolute -inset-2 sm:-inset-3 md:-inset-4 rounded-2xl sm:rounded-3xl blur-xl"></div>
                 <Lottie
                   animationData={animation}
                   loop
