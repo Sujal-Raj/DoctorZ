@@ -8,18 +8,22 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 dotenv.config();
 console.log("MAIL_USER:", process.env.MAIL_USER);
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+    },
+});
 // ---------------- Clinic Registration ----------------
 export const clinicRegister = async (req, res) => {
-    console.log("➡️ Received form submission");
-    console.log("🧾 req.body:", req.body);
-    console.log("📎 req.file:", req.file);
     try {
         const { clinicName, clinicType, specialities, operatingHours, licenseNo, ownerAadhar, ownerPan, address, state, district, pincode, contact, email, staffEmail, staffName, staffPassword, staffId, } = req.body;
         if (!clinicName || !clinicType || !specialities || !licenseNo || !ownerAadhar) {
             return res.status(400).json({ message: "All required fields must be filled." });
         }
         // Multer provides the uploaded file here
-        const registrationCertPath = req.file ? req.file.filename : undefined;
+        const registrationCertPath = req.file ? `http://localhost:3000/uploads/${req.file.filename}` : undefined;
         const clinic = new clinicModel({
             clinicName,
             clinicType,
@@ -40,8 +44,27 @@ export const clinicRegister = async (req, res) => {
             staffPassword: await bcrypt.hash(staffPassword, 10),
             registrationCertificate: registrationCertPath,
         });
-        // console.log(clinic);
         await clinic.save();
+        // 📧 Send staff ID via email after saving
+        try {
+            await transporter.sendMail({
+                from: process.env.MAIL_USER,
+                to: staffEmail,
+                subject: "Your Staff ID for Clinic Registration",
+                html: `
+          <p>Hi <b>${staffName}</b>,</p>
+          <p>Your staff account has been created successfully!</p>
+          <p><strong>Staff ID:</strong> ${staffId}</p>
+          <p>Please use this ID along with your password to login.</p>
+          <br/>
+          <p>Thanks,<br/>Clinic Management Team</p>
+        `,
+            });
+            console.log(" Staff ID email sent to:", staffEmail);
+        }
+        catch (mailErr) {
+            console.error(" Failed to send email:", mailErr);
+        }
         return res.status(201).json({ message: "Clinic Registered", clinic });
     }
     catch (error) {
@@ -55,26 +78,31 @@ export const clinicLogin = async (req, res) => {
         const { staffId, staffPassword } = req.body;
         if (!staffId || !staffPassword) {
             return res.status(400).json({
-                message: "All fields are required",
+                message: "All fields are required"
             });
         }
-        const clinic = await clinicModel.findOne({ staffId });
+        const clinic = await clinicModel.findOne({ staffId: staffId });
         if (!clinic) {
             return res.status(404).json({
-                message: "Clinic not found",
+                message: "Clinic not found"
             });
         }
         const isMatch = await bcrypt.compare(staffPassword, clinic.staffPassword);
         if (!isMatch) {
             return res.status(401).json({
-                message: "Invalid credentials",
+                message: "Invalid credentials"
             });
         }
         const token = jwt.sign({ id: clinic._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-        // ✅ Just return the token in the response (no cookie)
+        // ✅ Set cookie
+        res.cookie("authToken", token, {
+            httpOnly: false, // allow frontend JS to read
+            secure: false, // because localhost is not HTTPS
+            sameSite: "lax",
+            maxAge: 24 * 60 * 60 * 1000,
+        });
         return res.status(200).json({
             message: "Login successful",
-            jwtToken: token,
             clinic: {
                 id: clinic._id,
                 staffId: clinic.staffId,
@@ -85,9 +113,8 @@ export const clinicLogin = async (req, res) => {
         });
     }
     catch (error) {
-        console.error("Login Error:", error);
         return res.status(500).json({
-            message: "Something went wrong",
+            message: "Something went wrong"
         });
     }
 };
@@ -126,7 +153,8 @@ export const updateClinic = async (req, res) => {
         }
         // Optional file upload handling
         if (req.file) {
-            updateData.registrationCertificate = req.file.path;
+            updateData.registrationCertificate = `http://localhost:3000/uploads/${req.file.filename}`;
+            ;
         }
         const updatedClinic = await clinicModel.findByIdAndUpdate(id, updateData, {
             new: true,
@@ -221,8 +249,7 @@ export const getClinicById = async (req, res) => {
             });
         }
         return res.status(200).json({
-            message: "Clinic found",
-            clinic: clinic
+            message: "Clinic found", clinic
         });
     }
     catch (error) {
@@ -280,6 +307,33 @@ export const getAllClinicPatients = async (req, res) => {
     }
     catch (error) {
         console.error("Error fetching clinic patients:", error);
+        return res.status(500).json({ message: "Something went wrong", error });
+    }
+};
+// ---------------- Get Clinic Stats ----------------
+export const getClinicStatus = async (req, res) => {
+    try {
+        const { clinicId } = req.params;
+        if (!clinicId) {
+            return res.status(400).json({ message: "Clinic ID is required" });
+        }
+        // ✅ Fetch doctors linked to this clinic with approved status
+        const doctors = await doctorModel.find({
+            clinic: clinicId,
+            status: "approved",
+        });
+        const totalDoctors = doctors.length;
+        const totalDepartments = new Set(doctors.map((d) => d.specialization)).size;
+        return res.status(200).json({
+            message: "Clinic stats fetched successfully",
+            stats: {
+                totalDoctors,
+                totalDepartments,
+            },
+        });
+    }
+    catch (error) {
+        console.error("Error fetching clinic stats:", error);
         return res.status(500).json({ message: "Something went wrong", error });
     }
 };

@@ -30,8 +30,9 @@ interface Props {
   doctor: DoctorForBooking | null;
   open: boolean;
   onClose: () => void;
-  onBooked?: (bookingInfo: unknown) => void;
+  onBooked?: (bookingInfo: unknown,roomId:unknown) => void;
   variant?: BookingDrawerVariant;
+  roomId:unknown
 }
 
 const BookingDrawer: React.FC<Props> = ({
@@ -155,7 +156,10 @@ const BookingDrawer: React.FC<Props> = ({
 
     try {
       
-      await api.post("/api/booking/book", bookingPayload);
+      const response = await api.post<{ roomId?: string }>("/api/booking/book", bookingPayload);
+      console.log(response.data);
+      const { roomId } = response.data;
+      console.log(roomId)
       Swal.fire({
         icon: "success",
         title: "Appointment Booked!",
@@ -163,7 +167,7 @@ const BookingDrawer: React.FC<Props> = ({
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
       }).then(() => {
-        onBooked?.(bookingPayload);
+        onBooked?.(bookingPayload,roomId);
         setBookingLoading(false);
         onClose();
       });

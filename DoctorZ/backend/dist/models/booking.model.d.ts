@@ -17,6 +17,7 @@ export interface IBooking extends Document {
     status: "booked" | "cancelled" | "completed";
     createdAt: Date;
     updatedAt: Date;
+    roomId: string;
 }
 declare const Booking: mongoose.Model<IBooking, {}, {}, {}, mongoose.Document<unknown, {}, IBooking, {}, {}> & IBooking & Required<{
     _id: unknown;

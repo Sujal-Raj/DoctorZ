@@ -1,3 +1,6 @@
+// import type { Request, Response } from "express";
+// import BookingModel from "../models/booking.model.js";
+// import timeSlotsModel from "../models/timeSlots.model.js";
 import BookingModel from "../models/booking.model.js";
 import timeSlotsModel from "../models/timeSlots.model.js";
 // ✅ Book appointment
@@ -7,6 +10,7 @@ export const bookAppointment = async (req, res) => {
         if (!patient || !doctorId || !slotId || !datetime || !mode || !userId) {
             return res.status(400).json({ message: "Missing required fields" });
         }
+        const roomId = `room_${doctorId}_${userId}_${Date.now()}`;
         // check if slot already booked
         const existingBooking = await BookingModel.findOne({ slotId, datetime, status: "booked" });
         if (existingBooking) {
@@ -22,6 +26,7 @@ export const bookAppointment = async (req, res) => {
             mode,
             fees,
             status: "booked",
+            roomId,
         });
         await booking.save();
         // Mark slot as inactive after booking
@@ -29,6 +34,7 @@ export const bookAppointment = async (req, res) => {
         return res.status(201).json({
             message: "Appointment booked successfully",
             booking,
+            roomId,
         });
     }
     catch (err) {

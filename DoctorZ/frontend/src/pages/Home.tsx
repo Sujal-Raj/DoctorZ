@@ -1,7 +1,10 @@
+import { VideoCameraIcon, UserIcon, BuildingOfficeIcon } from "@heroicons/react/24/solid";
+
+
 import { useState } from "react";
 // Assuming SearchBar is a component that handles the search input and API calls.
-import SearchBar from "../components/SearchBar";
-import { FaVideo, FaUserMd, FaHospital } from "react-icons/fa";
+import SearchBar from "../components/SearchBar"; 
+
 import Gynecologist from "../assets/Gynecologist.jpeg";
 import Dentist from "../assets/Dentist.jpeg";
 import Dietitian from "../assets/nutrition.jpeg";
@@ -54,93 +57,30 @@ export default function Home() {
 
   // Dummy data for the 'Consult top doctors online' section
   // until actual content is loaded
+  
 const serviceBlocks = [
   {
-    title: "Video Consultations",
-    subtitle: "Instantly connect with certified doctors from home.",
-    extraInfo: [
-      "✓ Available 24/7",
-      "✓ Secure & confidential",
-    ],
-    icon: FaVideo,
-    bgColor: "bg-purple-50",
-    iconColor: "text-red-600",
-  },
-  {
-    title: "Find the Best Doctors Nearby",
-    subtitle: "Locate top-rated doctors and book confirmed appointments easily.",
-    extraInfo: [
-      "✓ Verified reviews",
-      "✓ Real-time availability",
-
-    ],
-    icon: FaUserMd,
-    bgColor: "bg-blue-50",
-    iconColor: "text-blue-800",
-  },
-  {
-    title: "Safe & Trusted Surgeries",
-    subtitle: "Get quality care at certified surgical centers you can trust.",
-    extraInfo: [
-      "✓ Board-certified surgeons",
-      "✓ Advanced medical technology",
-   
-    ],
-    icon: FaHospital,
-    bgColor: "bg-green-50",
-    iconColor: "text-green-800",
-  },
-];
-
-const consultOptions = [
-  {
-    id: 1,
-    title: "Period doubts or Pregnancy",
-    img: periods,
-    bgColor: "bg-red-100",
-    textColor: "text-red-500",
-    link: "#",
-  },
-  {
-    id: 2,
-    title: "Acne, pimple or skin issues",
-    img: Acne,
-    bgColor: "bg-blue-100",
-    textColor: "text-blue-500",
-    link: "/consult/skin-issues",
-  },
-  {
-    id: 3,
-    title: "Performance issue in bed",
-    icon: <Venus className="w-12 h-12 sm:w-14 sm:h-14 text-purple-500" />,
+    title: "Instant Video Consultation",
+    subtitle: "Connect within 60 secs",
+    icon: VideoCameraIcon, // was FaVideo
     bgColor: "bg-purple-100",
-    link: "#",
+    iconColor: "text-purple-600",
   },
   {
-    id: 4,
-    title: "Cold, cough or fever",
-    img: cold,
+    title: "Find Doctors Near You",
+    subtitle: "Confirmed appointments",
+    icon: UserIcon, // was FaUserMd
     bgColor: "bg-blue-100",
-    textColor: "text-blue-500",
-    link: "/consult/skin-issues",
+    iconColor: "text-blue-600",
   },
   {
-    id: 5,
-    title: "Child not feeling well",
-    icon: <Baby className="w-12 h-12 sm:w-14 sm:h-14 text-orange-500" />,
-    bgColor: "bg-orange-100",
-    link: "#",
-  },
-  {
-    id: 6,
-    title: "Depression or anxiety",
-    img: Depression,
-    bgColor: "bg-blue-100",
-    textColor: "text-blue-500",
-    link: "#",
+    title: "Surgeries",
+    subtitle: "Safe and trusted surgery centers",
+    icon: BuildingOfficeIcon, // was FaHospital
+    bgColor: "bg-green-100",
+    iconColor: "text-green-600",
   },
 ];
-//
   const handleSearchResults = (data: any) => {
     // Clear previous results if no results or empty array
     if (Array.isArray(data) && data.length === 0) {
@@ -191,67 +131,25 @@ const consultOptions = [
             At DoctorZ, we believe in combining advanced medical expertise with
             a personal touch. Your wellness is our mission.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mt-18 mx-auto">
-  {serviceBlocks.map((block) => (
-    <div
-      key={block.title}
-      className={`
-        group relative p-6 rounded-xl bg-gray-50 
-        border border-blue-500 h-auto
-        shadow-md hover:shadow-lg hover:shadow-blue-200/50
-        transition duration-300 transform hover:-translate-y-1
-        overflow-hidden text-start
-      `}
-    >
-      {/* Subtle moving shine overlay */}
-      <span
-        className=" 
-          absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent
-          -translate-x-full group-hover:translate-x-full
-          transition-transform duration-1000 ease-in-out
-          pointer-events-none
-        "
-      ></span>
-
-      {/* Icon aligned to left */}
-      <div className={`text-4xl mb-3 ${block.iconColor}`}>
-        <block.icon />
-      </div>
-
-      <h3 className="text-lg font-semibold text-gray-800 mb-1">
-        {block.title}
-      </h3>
-      <p className="text-sm text-gray-800 leading-relaxed mb-2">{block.subtitle}</p>
-
-      {/* Extra info list */}
-      {block.extraInfo && (
-        <ul className="text-sm text-gray-800 space-y-1 mb-3">
-          {block.extraInfo.map((info, index) => (
-            <li key={index} className="flex items-center gap-2">
-              <span className="text-red-600 text-lg">✓</span> {info.replace('✓','')}
-            </li>
-          ))}
-        </ul>
-      )}
-
-     <button className="mt-auto px-4 py-2 text-white hover:cursor-pointer rounded-lg bg-blue-600 font-medium  shadow-md
-  hover:bg-blue-100 hover:text-blue-800 transition duration-300 ease-in-out
-  relative overflow-hidden flex items-center gap-1">
-  
-  <span className="relative z-10 flex items-center font-medium gap-1">
-    Get Started <span>&rarr;</span>
-  </span>
-
-  {/* Subtle glow overlay */}
-  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent
-    -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out pointer-events-none">
-  </span>
-</button>
-
-    </div>
-  ))}
-</div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {serviceBlocks.map((block) => (
+              <div 
+                key={block.title} 
+                className={`p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1 ${block.bgColor}`}
+              >
+                <div className={`text-4xl mx-auto mb-3 ${block.iconColor}`}>
+                  <block.icon className="h-6 w-6 mx-auto" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                  {block.title}
+                </h3>
+                <p className="text-sm text-gray-600">{block.subtitle}</p>
+                <button className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-800">
+                    Get Started &rarr;
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
