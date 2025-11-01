@@ -114,8 +114,10 @@ const getPatientById = async (req:Request,res:Response)=>{
         }
 
         return res.status(200).json({
-            message:"User Found"
-        })
+            message:"User Found",
+            user,
+            
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -191,4 +193,22 @@ const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
   }
 };
 
-export default {patientRegister,patientLogin,getPatientById,deleteUser,getAvailableSlotsByDoctorId};
+// In your patient controller file
+const updatePatient = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updated = await patientModel.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (!updated)
+      return res.status(404).json({ message: "User not found." });
+
+    return res.status(200).json({ message: "Profile updated", user: updated });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+
+export default {patientRegister,patientLogin,getPatientById,deleteUser,getAvailableSlotsByDoctorId,updatePatient};

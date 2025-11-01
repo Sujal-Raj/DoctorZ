@@ -9,6 +9,8 @@ router.post("/register",patientController.patientRegister);
 router.post("/login",patientController.patientLogin);
 router.get("/:id",patientController.getPatientById);
 router.delete("/:id",patientController.deleteUser);
+router.put("/update/:id", patientController.updatePatient);
+
 router.get("/slots/:doctorId/:date",patientController.getAvailableSlotsByDoctorId);
 
 

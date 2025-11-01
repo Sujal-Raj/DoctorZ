@@ -41,10 +41,12 @@ export const registerPatient = async (
 };
 
 export interface LoginResponse {
+  message: string;
   token: string;
   user: {
-    _id: string; // ✅ Corrected from id to _id
+    _id?: string; // ✅ Corrected from id to _id
     email: string;
+    fullName?: string;
   };
 }
 

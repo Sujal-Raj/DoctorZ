@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn, user, logout } = useContext(AuthContext);
   const location = useLocation();
-console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
+  console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
 
   return (
     <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-200">
@@ -125,26 +125,33 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
           {/* Login or Logout */}
           <div>
             {isLoggedIn ? (
-               <div className="flex items-center gap-4">
-    <button className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200 transition">
-      <User size={18} /> {user?.email || "Profile"}
-    </button>
-<button
-  onClick={() => {
-    logout(); // pehle logout call hoga
-    alert("You have been logged out."); // fir alert dikhai dega
-  }}
-  className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition"
->
-  <LogOut size={18} /> Logout
-</button>
-  </div>
+              <div className="flex items-center gap-4">
+                {/* ✅ Profile Link */}
+                <Link
+                  to={`/user-profile/${
+                    user?.id || localStorage.getItem("userId")
+                  }`}
+                  className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200 transition"
+                >
+                  <User size={18} /> Profile
+                </Link>
+
+                {/* ✅ Logout Button */}
+                <button
+                  onClick={() => {
+                    logout();
+                    alert("You have been logged out.");
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition"
+                >
+                  <LogOut size={18} /> Logout
+                </button>
+              </div>
             ) : (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <button className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center gap-2">
                     <LogIn size={18} /> Login
-                  
                   </button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
@@ -156,7 +163,8 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
                       to="/patient-login"
                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
                     >
-                      <User size={18} className="text-indigo-600" /> Patient Login
+                      <User size={18} className="text-indigo-600" /> Patient
+                      Login
                     </Link>
                   </DropdownMenu.Item>
                   <DropdownMenu.Item asChild>
@@ -164,7 +172,8 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
                       to="/doctor/login"
                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
                     >
-                      <Stethoscope size={18} className="text-blue-600" /> Doctor Login
+                      <Stethoscope size={18} className="text-blue-600" /> Doctor
+                      Login
                     </Link>
                   </DropdownMenu.Item>
                   <DropdownMenu.Item asChild>
@@ -172,7 +181,8 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
                       to="/clinic-login"
                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
                     >
-                      <Hospital size={18} className="text-green-600" /> Clinic Login
+                      <Hospital size={18} className="text-green-600" /> Clinic
+                      Login
                     </Link>
                   </DropdownMenu.Item>
                   <DropdownMenu.Item asChild>
@@ -180,7 +190,8 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
                       to="/lab-login"
                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
                     >
-                      <Hospital size={18} className="text-green-600" /> Lab Login
+                      <Hospital size={18} className="text-green-600" /> Lab
+                      Login
                     </Link>
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
@@ -202,17 +213,42 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
       {mobileOpen && (
         <div className="md:hidden bg-white shadow-md border-t border-gray-200">
           <div className="flex flex-col px-6 py-4 space-y-4">
-            <Link to="/" onClick={() => setMobileOpen(false)}>Home</Link>
-            <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>Find Doctors</Link>
-            <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>Find Clinics</Link>
-            <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>Lab Tests</Link>
+            <Link to="/" onClick={() => setMobileOpen(false)}>
+              Home
+            </Link>
+            <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>
+              Find Doctors
+            </Link>
+            <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>
+              Find Clinics
+            </Link>
+            <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>
+              Lab Tests
+            </Link>
 
             {!isLoggedIn && (
               <>
-                <Link to="/patient-register" onClick={() => setMobileOpen(false)}>Patient Registration</Link>
-                <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>Doctor Registration</Link>
-                <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>Clinic Registration</Link>
-                <Link to="/lab-register" onClick={() => setMobileOpen(false)}>Lab Registration</Link>
+                <Link
+                  to="/patient-register"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Patient Registration
+                </Link>
+                <Link
+                  to="/doctor-register"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Doctor Registration
+                </Link>
+                <Link
+                  to="/clinic-register"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Clinic Registration
+                </Link>
+                <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
+                  Lab Registration
+                </Link>
               </>
             )}
 
@@ -222,7 +258,7 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
                   logout();
                   setMobileOpen(false);
                 }}
-                               className="text-red-600 font-medium hover:text-red-700 transition flex items-center gap-2"
+                className="text-red-600 font-medium hover:text-red-700 transition flex items-center gap-2"
               >
                 <LogOut size={18} /> Logout
               </button>
@@ -243,4 +279,3 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
 };
 
 export default Navbar;
-

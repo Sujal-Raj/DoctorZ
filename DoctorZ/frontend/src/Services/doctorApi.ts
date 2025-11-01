@@ -10,8 +10,9 @@ export const registerDoctor = async (formData: FormData) => {
       },
     });
     return response.data;
-  } catch (error: any) {
-    throw error.response?.data || error;
+  } catch (error) {
+    console.error("Register Doctor Error:", error);
+    throw error;
   }
 };
 
@@ -49,8 +50,9 @@ export const updateDoctor = async (drId: string, doctorId: string, password: str
       doctorId,
       password,
     });
-    return response.data;
-  } catch (error: any) {
-    throw error.response?.data || error;
+    return response.data; 
+  } catch (error) {
+     console.error("Update Doctor Error:",error);
+    throw error;
   }
 };
