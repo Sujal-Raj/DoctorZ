@@ -12,7 +12,10 @@ import EMRModel from "../models/emr.model.js";
 
 const patientRegister = async (req:Request, res:Response) => {
   try {
+     console.log("Received body:", req.body);
     const body = req.body;
+   
+
     const files = req.files as Express.Multer.File[];
 
 
@@ -23,16 +26,19 @@ const patientRegister = async (req:Request, res:Response) => {
       email,
       password,
       mobileNumber,
-      Aadhar,
+      aadhar,
       abhaId,
-      doctorId      
+      doctorId,
+      city,
+      pincode,
+      name,
+      number,  
+
     } = body;
 
-    const city = body["address[city]"];
-    const pincode = body["address[pincode]"];
+   
 
-    const emergencyName = body["emergencyContact[name]"];
-    const emergencyNumber = body["emergencyContact[number]"];
+   
 
     //  EMR FIELDS  ---
     const allergies = JSON.parse(body.allergies || "[]");
@@ -43,11 +49,11 @@ const patientRegister = async (req:Request, res:Response) => {
     //uploaded report file paths
     const reportUrls =
       files?.length > 0
-        ? files.map((file) => `/uploads/reports/${file.filename}`)
+        ? files.map((file) => `/uploads/${file.filename}`)
         : [];
 
     // --- VALIDATION ---
-    if (!fullName || !gender || !dob || !mobileNumber || !Aadhar) {
+    if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
@@ -67,10 +73,10 @@ const patientRegister = async (req:Request, res:Response) => {
       email: email.toLowerCase(),
       password: hashedPassword,
       mobileNumber,
-      Aadhar,
+      aadhar,
       abhaId,
       address: { city, pincode },
-      emergencyContact: { name: emergencyName, number: emergencyNumber },
+      emergencyContact: { name,number },
       emr: [] 
     });
 

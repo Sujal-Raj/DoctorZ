@@ -21,7 +21,7 @@ export const createEMR = async (req: Request, res: Response) => {
 
     const reportUrls =
       files?.length > 0
-        ? files.map((f) => `/uploads/reports/${f.filename}`)
+        ? files.map((f) => `/uploads/${f.filename}`)
         : [];
 
     // ✅ Create new EMR
@@ -47,5 +47,31 @@ export const createEMR = async (req: Request, res: Response) => {
   } catch (error) {
     console.log("Create EMR Error:", error);
     return res.status(500).json({ message: "Error creating EMR" });
+  }
+};
+
+
+
+export const getEMRByPatientId = async (req: Request, res: Response) => {
+  try {
+    const { patientId } = req.params;
+
+    if (!patientId) {
+      return res.status(400).json({ message: "Patient ID is required" });
+    }
+
+    const emrs = await EMRModel.find({ patientId }).sort({ createdAt: -1 });
+
+    if (!emrs || emrs.length === 0) {
+      return res.status(404).json({ message: "No EMR records found" });
+    }
+
+    return res.status(200).json({
+      message: "EMR records fetched successfully",
+      data: emrs,
+    });
+  } catch (error) {
+    console.log("Error fetching EMR:", error);
+    return res.status(500).json({ message: "Error fetching EMR data" });
   }
 };

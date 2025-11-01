@@ -519,7 +519,7 @@ interface DoctorSlot {
   slots: Slot[];
 }
 
-export default function TimeSlots({ doctorId }: { doctorId: string }) {
+export default function TimeSlots({ doctorId }: { doctorId?: string }) {
   const [savedSlots, setSavedSlots] = useState<DoctorSlot[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [activeSlots, setActiveSlots] = useState<Slot[]>([]);

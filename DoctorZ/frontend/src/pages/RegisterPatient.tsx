@@ -35,13 +35,13 @@ const RegisterPatient: React.FC = () => {
     formData.append("email", data.email);
     formData.append("password", data.password);
     formData.append("mobileNumber", data.mobileNumber);
-    formData.append("Aadhar", data.aadhar);
+    formData.append("aadhar", data.aadhar);
     formData.append("abhaId", data.abhaId);
 
-    formData.append("address[city]", data.city);
-    formData.append("address[pincode]", data.pincode);
-    formData.append("emergencyContact[name]", data.emergencyName);
-    formData.append("emergencyContact[number]", data.emergencyNumber);
+    formData.append("city", data.city);
+    formData.append("pincode", data.pincode);
+    formData.append("name", data.emergencyName);
+    formData.append("number", data.emergencyNumber);
 
     formData.append(
       "allergies",

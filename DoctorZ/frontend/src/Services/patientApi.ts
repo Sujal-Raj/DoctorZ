@@ -75,7 +75,7 @@ export interface LoginResponse {
   message: string;
   token: string;
   user: {
-    _id?: string; // ✅ Corrected from id to _id
+    _id: string;
     email: string;
     fullName?: string;
   };
