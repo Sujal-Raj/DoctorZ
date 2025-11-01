@@ -14,6 +14,7 @@ import clinicRoutes from "./routes/clinic.routes.js";
 import timeSlotsRoutes from "./routes/timeSlots.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import labRoutes from "./routes/lab.routes.js";
+import emrRoutes from "./routes/emr.routes.js";
 dbConnect();
 const PORT = 3000;
 app.use(cors({
@@ -36,6 +37,7 @@ app.use("/api/doctor", doctorRoutes);
 app.use("/api/availability", timeSlotsRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/lab", labRoutes);
+app.use("/api/emr", emrRoutes);
 app.listen(PORT, () => {
     console.log("Server running at " + PORT);
 });

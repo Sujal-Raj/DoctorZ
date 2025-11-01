@@ -5,18 +5,37 @@ import bcrypt from "bcryptjs";
 import timeSlotsModel from "../models/timeSlots.model.js";
 import { get } from "http";
 import jwt from "jsonwebtoken";
+import EMRModel from "../models/emr.model.js";
 const patientRegister = async (req, res) => {
     try {
         const body = req.body;
-        // console.log(body);
-        const { fullName, gender, dob, email, password, mobileNumber, Aadhar, abhaId } = body;
-        const { city, pincode } = body.address;
-        const { name, number } = body.emergencyContact;
+        const files = req.files;
+        const { fullName, gender, dob, email, password, mobileNumber, Aadhar, abhaId, doctorId } = body;
+        const city = body["address[city]"];
+        const pincode = body["address[pincode]"];
+        const emergencyName = body["emergencyContact[name]"];
+        const emergencyNumber = body["emergencyContact[number]"];
+        //  EMR FIELDS  ---
+        const allergies = JSON.parse(body.allergies || "[]");
+        const diseases = JSON.parse(body.diseases || "[]");
+        const pastSurgeries = JSON.parse(body.pastSurgeries || "[]");
+        const currentMedications = JSON.parse(body.currentMedications || "[]");
+        //uploaded report file paths
+        const reportUrls = files?.length > 0
+            ? files.map((file) => `/uploads/reports/${file.filename}`)
+            : [];
+        // --- VALIDATION ---
         if (!fullName || !gender || !dob || !mobileNumber || !Aadhar) {
-            return res.status(400).json(console.log("All required fields must be filled."));
+            return res.status(400).json({ message: "Required fields missing" });
         }
+        const existing = await patientModel.findOne({ email: email.toLowerCase() });
+        if (existing) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+        // --- PASSWORD HASH ---
         const hashedPassword = await bcrypt.hash(password, 10);
-        const patient = new patientModel({
+        // --- SAVE PATIENT ---
+        const patient = await patientModel.create({
             fullName,
             gender,
             dob,
@@ -25,24 +44,39 @@ const patientRegister = async (req, res) => {
             mobileNumber,
             Aadhar,
             abhaId,
-            address: {
-                city,
-                pincode
-            },
-            emergencyContact: {
-                name,
-                number
-            }
+            address: { city, pincode },
+            emergencyContact: { name: emergencyName, number: emergencyNumber },
+            emr: []
         });
-        await patient.save();
+        // --- CONDITION: CREATE EMR ONLY IF USER FILLED ANY MEDICAL FIELDS ---
+        const shouldCreateEMR = allergies.length > 0 ||
+            diseases.length > 0 ||
+            pastSurgeries.length > 0 ||
+            currentMedications.length > 0 ||
+            reportUrls.length > 0;
+        if (shouldCreateEMR) {
+            const emr = await EMRModel.create({
+                patientId: patient._id,
+                doctorId: doctorId || null, // doctor may not be selected at registration
+                allergies,
+                diseases,
+                pastSurgeries,
+                currentMedications,
+                reports: reportUrls
+            });
+            // Add EMR ID to patient.emr[]
+            patient.emr.push(emr._id);
+            await patient.save();
+        }
         return res.status(201).json({
-            message: "Patient Registered"
+            message: "Patient registered successfully",
+            patient,
         });
     }
     catch (error) {
-        console.log(error);
+        console.log("Registration Error:", error);
         return res.status(500).json({
-            message: "Something went wrong"
+            message: "Something went wrong",
         });
     }
 };
@@ -62,9 +96,8 @@ const patientLogin = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Invalid Password." });
         }
-        // ✅ JWT Token create
-        const token = jwt.sign({ id: patient._id, email: patient.email }, process.env.JWT_SECRET || "secret_key", // 🔒 env me rakho
-        { expiresIn: "1d" });
+        // JWT Token create
+        const token = jwt.sign({ id: patient._id, email: patient.email }, process.env.JWT_SECRET || "secret_key", { expiresIn: "1d" });
         return res.status(200).json({
             message: "Login Successful",
             token,
@@ -82,7 +115,6 @@ const patientLogin = async (req, res) => {
 const getPatientById = async (req, res) => {
     try {
         const { id } = req.params;
-        // console.log(id)
         const user = await patientModel.findById(id);
         if (!user) {
             return res.status(404).json({
@@ -120,41 +152,6 @@ const deleteUser = async (req, res) => {
         });
     }
 };
-// const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
-//   try {
-//     const { doctorId, date } = req.params;
-//     if (!doctorId || !date) {
-//       return res.status(400).json({
-//         message: "doctorId and date are required",
-//       });
-//     }
-//     // Convert incoming date string (YYYY-MM-DD) to start & end of day
-//     const startOfDay = new Date(date);
-//     startOfDay.setHours(0, 0, 0, 0);
-//     const endOfDay = new Date(date);
-//     endOfDay.setHours(23, 59, 59, 999);
-//     const slots = await timeSlotsModel.find({
-//       doctorId,
-//       date: { $gte: startOfDay, $lte: endOfDay },
-//     });
-//     if (!slots || slots.length === 0) {
-//       return res.status(200).json({
-//         message: "No slots found for this doctor on the specified date",
-//         slots: [],
-//       });
-//     }
-//     return res.status(200).json({
-//       message: "Slots fetched successfully",
-//       slots,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching slots", error);
-//     return res.status(500).json({
-//       message: "Failed to fetch slots",
-//       error: error instanceof Error ? error.message : error,
-//     });
-//   }
-// };
 const getAvailableSlotsByDoctorId = async (req, res) => {
     try {
         const { doctorId } = req.params;
@@ -171,7 +168,6 @@ const getAvailableSlotsByDoctorId = async (req, res) => {
                 availableData: [],
             });
         }
-        // ✅ Fix: Define type for slotsByMonth
         const slotsByMonth = {};
         slots.forEach(slot => {
             const d = new Date(slot.date);

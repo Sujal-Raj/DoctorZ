@@ -49,6 +49,8 @@ import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
 import DoctorAppointments from "./pages/DoctorAppointments";
 import { PackageDetails } from "./pages/PackageDetails";
 
+import AddEmr from "./pages/AddEmr";
+
 
           <Route
             path="/clinicDashboard/:clinicId"
@@ -104,6 +106,7 @@ const App: React.FC = () => {
             <Route path="/all-lab-test" element={<AllLabTest />} />
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
             <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
+            <Route path="/add-emr" element={<AddEmr />} />
           </Route>
 
           {/* Routes without navbar */}
@@ -171,7 +174,7 @@ const App: React.FC = () => {
           </Route>
         
           <Route path="/admin/login" element={<AdminLogin />}></Route>
-         
+          
         
         </Routes>
       </Router>
