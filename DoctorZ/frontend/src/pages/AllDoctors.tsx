@@ -8,16 +8,15 @@ import {
   Filter, 
   Search, 
   X, 
- 
- 
+   
   Clock,
   Award,
-  Shield,
+ 
   Calendar,
   Users,
-  Menu,
  
 } from "lucide-react";
+import SlidingBanner from "../components/SlidingBanner.js";
 
 // 🔹 Type Definitions
 interface DoctorForBooking {
@@ -233,100 +232,60 @@ const AllDoctor: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="p-2 rounded-lg bg-blue-50 text-blue-600"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <div className="flex items-center space-x-2">
-              <Stethoscope className="w-6 h-6 text-blue-600" />
-              <h1 className="text-lg font-bold text-gray-900">Find Doctors</h1>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setMobileFiltersOpen(true)}
-              className="relative p-2 rounded-lg bg-gray-50 text-gray-600"
-            >
-              <Filter className="w-5 h-5" />
-              {activeFilterCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+       <div className="lg:hidden w-full">
+    <SlidingBanner />
+  </div>
+      {/* 🔹 Mobile Header (Search + Filter + Sliding Banner below) */}
 
-        {/* Mobile Search Bar */}
-        <div className="px-4 pb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-              placeholder="Search doctors..."
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop Header */}
-      <div className="hidden lg:block bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between py-8">
-            <div className="flex items-center space-x-4 mb-6 lg:mb-0">
-              <div className="bg-blue-600 p-3 rounded-2xl shadow-lg">
-                <Stethoscope className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                  Find Your Doctor
-                </h1>
-                <p className="text-lg text-gray-600 mt-2 flex items-center">
-                  <Shield className="w-5 h-5 text-green-500 mr-2" />
-                  Trusted medical professionals at your service
-                </p>
+  <div className="lg:hidden p-3 flex items-center gap-2  border-gray-200">
+    <div className="flex-1 max-w-2xl ">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  value={search}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                  placeholder="Search by doctor name, specialization, or condition..."
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 text-lg"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
               </div>
             </div>
+    <button
+      onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+      className="p-2 rounded-full bg-blue-100 text-blue-600"
+    >
+      <Filter size={18} />
+    </button>
+  </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">{doctors.length}+</div>
-                <div className="text-sm text-gray-500">Verified Doctors</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">24/7</div>
-                <div className="text-sm text-gray-500">Available</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-600">99%</div>
-                <div className="text-sm text-gray-500">Satisfaction</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+ 
+ 
+
+
+
+     
+{/* Desktop Header (Sliding Banner) */}
+<div className="hidden lg:flex  justify-center">
+  <SlidingBanner />
+</div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 lg:py-8">
+      {/* <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 lg:py-8"> */}
+      <div
+  className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 lg:py-8 transition-all duration-300 ${
+    drawerOpen ? "blur-sm brightness-75" : ""
+  }`}
+>
+
         {/* Desktop Search and Filter Bar */}
-        <div className="hidden lg:block bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+        <div className=" hidden lg:block bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             {/* Search Input */}
             <div className="flex-1 max-w-2xl">
@@ -784,6 +743,9 @@ const AllDoctor: React.FC = () => {
           </div>
         </div>
       )}
+{drawerOpen && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300"></div>
+)}
 
       {/* Booking drawer */}
       <BookingDrawer
@@ -801,3 +763,4 @@ const AllDoctor: React.FC = () => {
 };
 
 export default AllDoctor;
+

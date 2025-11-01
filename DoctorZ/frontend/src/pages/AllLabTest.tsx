@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type TargetAndTransition } from "framer-motion";
 import api from "../Services/mainApi";
+import packageIcon from "../assets/package.webp";
 import {
   Search as SearchIcon,
   FlaskConical,
@@ -266,9 +267,10 @@ export default function LabTestsPage() {
                       style={{ minHeight: "180px" }}
                     >
                       <div className="flex items-start gap-3">
-                        <div className="p-2 border border-gray-200 rounded-md bg-gray-50">
-                          <FlaskConical className="text-[#106C89]" />
-                        </div>
+                     
+                    
+                          <img src={packageIcon} alt="Package" className="w-15 h-15" />
+                       
                         <div>
                           <h3 className="text-[16px] font-semibold text-[#121414] line-clamp-1">
                             {packageName}
