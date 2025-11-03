@@ -356,6 +356,7 @@ import AdminDoctor from "./pages/AdminDoctor";
 import AdminClinic from "./pages/AdminClinic";
 import AdminLab from "./pages/AdminLab";
 import UserDashboard from "./pages/UserDashboard";
+import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
 
 const App: React.FC = () => {
   return (
@@ -384,9 +385,10 @@ const App: React.FC = () => {
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
          
-              <Route path="/user-dashboard" element={<UserDashboard />} >
-               <Route path="user-profile/:id" element={<UserProfile />} />
-                  <Route path="user/add-emr/:id" element={<AddEmr />} />
+              <Route path="/user-dashboard/:id" element={<UserDashboard />} >
+              <Route index element={<UserProfile />} />
+               <Route path="user-profile" element={<UserProfile />} />
+                  <Route path="add-emr" element={<AddEmr />} />
               </Route>
           </Route>
 
@@ -405,6 +407,13 @@ const App: React.FC = () => {
 
           {/* Doctor Dashboard */}
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
+           <Route index element={<DoctorDashboardHome />} />
+          <Route
+               path="doctor-home-dashboard"
+               element={<DoctorDashboardHome/>}
+             />
+           
+             <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
             <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />

@@ -1,7 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode";
+
 import { createEMR } from "../Services/emrApi";
 import { useParams } from "react-router-dom";
 

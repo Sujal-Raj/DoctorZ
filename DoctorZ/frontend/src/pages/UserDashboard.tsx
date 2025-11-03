@@ -1,14 +1,35 @@
+
 // UserDashboard.jsx
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useParams, useNavigate } from "react-router-dom";
+
+
+// ✅ Lucide Icons
+import { User, CalendarDays, FilePlus2, Bell, LogOut } from "lucide-react";
+import { useEffect } from "react";
 import Cookies from "js-cookie";
 import {jwtDecode} from "jwt-decode";
 function UserDashboard() {
-  const token = Cookies.get("patientToken") || "";
-const decoded: any = token ? jwtDecode(token) : {};
-
-const patientId = decoded.id;
+ 
+const  patientId=useParams().id;
+const navigate=useNavigate();
 console.log("Patient ID from token:", patientId);
+ const token = Cookies.get("patientToken");
+  useEffect(() => {
+   
+    console.log("Token in Dashboard:", token);
+   
+    if (!token) {
+      navigate("/patient-login");
+      return;
+    }
 
+    try {
+      jwtDecode(token); // just to confirm token is valid
+    } catch (err) {
+      Cookies.remove("patientToken");
+      navigate("/patient-login");
+    }
+  }, [token, navigate]);
   return (
     <div className="flex h-screen w-full bg-gray-100 p-6 gap-6">
 
@@ -19,65 +40,66 @@ console.log("Patient ID from token:", patientId);
         <div className="w-24 h-24 bg-gray-300 rounded-full" />
 
         {/* Name & Email */}
-        <h2 className="mt-3 text-xl font-semibold">
-          Ritika Vishwakarma
-        </h2>
-        <p className="text-gray-600 text-sm">
-          ritika.vishwakarma29@gmail.com
-        </p>
+        <h2 className="mt-3 text-xl font-semibold"></h2>
+        <p className="text-gray-600 text-sm"></p>
 
         {/* Menu */}
         <div className="w-full mt-8 flex flex-col gap-3">
 
+          {/* ✅ Profile */}
           <NavLink
-            to={`user-profile/${patientId}`}
+            to="user-profile"
             className={({ isActive }) =>
               `py-3 px-4 rounded-lg flex items-center gap-3 ${
                 isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
               }`
             }
           >
-            <span>👤</span> My Profile
+            <User size={18} /> My Profile
           </NavLink>
 
+          {/* ✅ Appointment */}
           <NavLink
-            to="/user/appointments"
+            to={`/user/appointments/${patientId}`}
             className={({ isActive }) =>
               `py-3 px-4 rounded-lg flex items-center gap-3 ${
                 isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
               }`
             }
           >
-            <span>📅</span> Appointment
-          </NavLink>
-          
-           <NavLink
-            to={`user/add-emr/${patientId}`}
-            className={({ isActive }) =>
-              `py-3 px-4 rounded-lg flex items-center gap-3 ${
-                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <span>🔔</span> Add EMR
-          </NavLink>
-          <NavLink
-            to="/add-emr"
-            className={({ isActive }) =>
-              `py-3 px-4 rounded-lg flex items-center gap-3 ${
-                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <span>🔔</span> Notifications
+            <CalendarDays size={18} /> Appointment
           </NavLink>
 
+          {/* ✅ Add EMR */}
+          <NavLink
+            to="add-emr"
+            className={({ isActive }) =>
+              `py-3 px-4 rounded-lg flex items-center gap-3 ${
+                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+              }`
+            }
+          >
+            <FilePlus2 size={18} /> Add EMR
+          </NavLink>
 
+          {/* ✅ Notifications */}
+          <NavLink
+            to={`/user/notifications/${patientId}`}
+            className={({ isActive }) =>
+              `py-3 px-4 rounded-lg flex items-center gap-3 ${
+                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+              }`
+            }
+          >
+            <Bell size={18} /> Notifications
+          </NavLink>
+
+          {/* ✅ Logout */}
           <NavLink
             to="/logout"
             className="py-3 px-4 rounded-lg flex items-center gap-3 text-red-600 hover:bg-red-100"
           >
-            <span>🚪</span> Log Out
+            <LogOut size={18} /> Log Out
           </NavLink>
 
         </div>

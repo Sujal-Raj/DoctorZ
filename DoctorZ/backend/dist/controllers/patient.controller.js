@@ -94,7 +94,7 @@ const patientLogin = async (req, res) => {
             return res.status(400).json({ message: "Invalid Password." });
         }
         // JWT Token create
-        const token = jwt.sign({ id: patient._id, email: patient.email }, process.env.JWT_SECRET || "secret_key", { expiresIn: "1d" });
+        const token = jwt.sign({ id: patient._id, email: patient.email, name: patient.fullName }, process.env.JWT_SECRET || "secret_key", { expiresIn: "1d" });
         return res.status(200).json({
             message: "Login Successful",
             token,
