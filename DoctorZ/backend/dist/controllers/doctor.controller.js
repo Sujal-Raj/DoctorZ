@@ -14,6 +14,9 @@ const doctorRegister = async (req, res) => {
         const experience = Number(req.body.experience);
         const consultationFee = Number(req.body.fees);
         const Aadhar = Number(req.body.aadhar);
+        const Address = req.body.address;
+        const State = req.body.state;
+        const City = req.body.city;
         const dob = new Date(req.body.dob);
         const MobileNo = req.body.mobileNo;
         const email = req.body.email;
@@ -39,6 +42,9 @@ const doctorRegister = async (req, res) => {
             consultationFee,
             language: req.body.languages || "",
             Aadhar,
+            Address,
+            State,
+            City,
             DegreeCertificate: degreeCert,
             photo,
             signature,

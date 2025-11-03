@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import {jwtDecode} from "jwt-decode";
 import { createEMR } from "../Services/emrApi";
+import { useParams } from "react-router-dom";
 
 type EMRInputs = {
   allergies: string;
@@ -14,12 +15,12 @@ type EMRInputs = {
 
 const AddEmr: React.FC = () => {
 
-const token = Cookies.get("patientToken") || "";
-const decoded: any = token ? jwtDecode(token) : {};
+// const token = Cookies.get("patientToken") || "";
+// const decoded: any = token ? jwtDecode(token) : {};
 
-const patientId = decoded.id;
-console.log("Patient ID from token:", patientId);
-
+// const patientId = decoded.id;
+// console.log("Patient ID from token:", patientId);
+const patientId=useParams().id;
 
   const { register, handleSubmit, reset } = useForm<EMRInputs>();
 
@@ -69,7 +70,7 @@ console.log("Patient ID from token:", patientId);
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 flex justify-center items-start p-6">
+   
 
       <div className="w-full max-w-3xl bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-8">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
@@ -143,7 +144,7 @@ console.log("Patient ID from token:", patientId);
           </div>
         </form>
       </div>
-    </div>
+   
   );
 };
 

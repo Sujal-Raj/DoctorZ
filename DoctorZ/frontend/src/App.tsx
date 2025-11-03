@@ -355,6 +355,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminDoctor from "./pages/AdminDoctor";
 import AdminClinic from "./pages/AdminClinic";
 import AdminLab from "./pages/AdminLab";
+import UserDashboard from "./pages/UserDashboard";
 
 const App: React.FC = () => {
   return (
@@ -382,7 +383,11 @@ const App: React.FC = () => {
             <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
-            <Route path="/add-emr" element={<AddEmr />} />
+         
+              <Route path="/user-dashboard" element={<UserDashboard />} >
+               <Route path="user-profile/:id" element={<UserProfile />} />
+                  <Route path="user/add-emr/:id" element={<AddEmr />} />
+              </Route>
           </Route>
 
           {/* Clinic Dashboard */}
@@ -421,6 +426,7 @@ const App: React.FC = () => {
           </Route>
 
           {/* User & EMR */}
+        
           <Route path="/user-profile/:id" element={<UserProfile />} />
           <Route path="/emr/:id" element={<EMR />} />
         </Routes>

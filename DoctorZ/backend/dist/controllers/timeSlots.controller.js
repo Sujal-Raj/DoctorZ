@@ -112,4 +112,19 @@ export const updateSlot = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+export const getActiveSlots = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        // Get all time slots for doctor
+        const slots = await timeSlotsModel.find({ doctorId });
+        // Filter only those having at least 1 active slot
+        const filteredSlots = slots.filter((slot) => slot.slots.some((s) => s.isActive));
+        // Return only active ones
+        res.status(200).json(filteredSlots);
+    }
+    catch (error) {
+        console.error("Error fetching active slots:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 //# sourceMappingURL=timeSlots.controller.js.map

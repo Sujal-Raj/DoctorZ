@@ -8,13 +8,10 @@ import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
 const patientRegister = async (req, res) => {
     try {
+        console.log("Received body:", req.body);
         const body = req.body;
         const files = req.files;
-        const { fullName, gender, dob, email, password, mobileNumber, Aadhar, abhaId, doctorId } = body;
-        const city = body["address[city]"];
-        const pincode = body["address[pincode]"];
-        const emergencyName = body["emergencyContact[name]"];
-        const emergencyNumber = body["emergencyContact[number]"];
+        const { fullName, gender, dob, email, password, mobileNumber, aadhar, abhaId, doctorId, city, pincode, name, number, } = body;
         //  EMR FIELDS  ---
         const allergies = JSON.parse(body.allergies || "[]");
         const diseases = JSON.parse(body.diseases || "[]");
@@ -22,10 +19,10 @@ const patientRegister = async (req, res) => {
         const currentMedications = JSON.parse(body.currentMedications || "[]");
         //uploaded report file paths
         const reportUrls = files?.length > 0
-            ? files.map((file) => `/uploads/reports/${file.filename}`)
+            ? files.map((file) => `/uploads/${file.filename}`)
             : [];
         // --- VALIDATION ---
-        if (!fullName || !gender || !dob || !mobileNumber || !Aadhar) {
+        if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
             return res.status(400).json({ message: "Required fields missing" });
         }
         const existing = await patientModel.findOne({ email: email.toLowerCase() });
@@ -42,10 +39,10 @@ const patientRegister = async (req, res) => {
             email: email.toLowerCase(),
             password: hashedPassword,
             mobileNumber,
-            Aadhar,
+            aadhar,
             abhaId,
             address: { city, pincode },
-            emergencyContact: { name: emergencyName, number: emergencyNumber },
+            emergencyContact: { name, number },
             emr: []
         });
         // --- CONDITION: CREATE EMR ONLY IF USER FILLED ANY MEDICAL FIELDS ---
@@ -122,7 +119,8 @@ const getPatientById = async (req, res) => {
             });
         }
         return res.status(200).json({
-            message: "User Found"
+            message: "User Found",
+            user,
         });
     }
     catch (error) {
@@ -189,5 +187,21 @@ const getAvailableSlotsByDoctorId = async (req, res) => {
         });
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId };
+// In your patient controller file
+const updatePatient = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updated = await patientModel.findByIdAndUpdate(id, req.body, {
+            new: true,
+        });
+        if (!updated)
+            return res.status(404).json({ message: "User not found." });
+        return res.status(200).json({ message: "Profile updated", user: updated });
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Something went wrong." });
+    }
+};
+export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient };
 //# sourceMappingURL=patient.controller.js.map

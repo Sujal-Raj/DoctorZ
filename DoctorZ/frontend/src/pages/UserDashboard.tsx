@@ -1,115 +1,95 @@
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, Menu } from "lucide-react";
-import { useState, useEffect } from "react";
+// UserDashboard.jsx
+import { Outlet, NavLink } from "react-router-dom";
+import Cookies from "js-cookie";
+import {jwtDecode} from "jwt-decode";
+function UserDashboard() {
+  const token = Cookies.get("patientToken") || "";
+const decoded: any = token ? jwtDecode(token) : {};
 
-export default function UserDashboard() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const userId = localStorage.getItem("userId"); // you can store this after login
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    navigate("/patient-login");
-  };
-
-  // Responsive behavior
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) setIsSidebarOpen(false);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+const patientId = decoded.id;
+console.log("Patient ID from token:", patientId);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 text-gray-900 overflow-hidden">
-      {/* SEO Header */}
-      <header>
-        <title>User Dashboard | Manage Profile & EMR</title>
-        <meta
-          name="description"
-          content="Access your user dashboard to manage your profile and view your EMR (Electronic Medical Records)."
-        />
-      </header>
+    <div className="flex h-screen w-full bg-gray-100 p-6 gap-6">
 
-      {/* Mobile Navbar */}
-      <nav className="lg:hidden bg-gray-900 text-white flex items-center justify-between px-4 py-3 shadow-md fixed top-0 left-0 w-full z-50">
-        <h1 className="text-lg font-semibold tracking-wide">User Dashboard</h1>
-        <button
-          aria-label="Toggle menu"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="focus:outline-none"
-        >
-          <Menu size={24} />
-        </button>
-      </nav>
+      {/* LEFT CARD */}
+      <div className="w-80 bg-white rounded-xl shadow p-6 flex flex-col items-center">
+        
+        {/* Profile Image */}
+        <div className="w-24 h-24 bg-gray-300 rounded-full" />
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:static top-0 left-0 bg-gray-900 text-white w-64 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col justify-between shadow-lg
-        h-screen lg:h-auto pt-16 lg:pt-0 overflow-y-auto`}
-      >
-        <div className="p-4 flex flex-col">
-          <h2 className="text-2xl font-bold mb-6 hidden lg:block tracking-wide">
-            User Dashboard
-          </h2>
+        {/* Name & Email */}
+        <h2 className="mt-3 text-xl font-semibold">
+          Ritika Vishwakarma
+        </h2>
+        <p className="text-gray-600 text-sm">
+          ritika.vishwakarma29@gmail.com
+        </p>
 
-          <ul className="space-y-2">
-            {[
-              { path: "user-profile", label: "Profile", icon: <UserCircle className="mr-2" /> },
-              { path: "emr", label: "EMR", icon: <FileText className="mr-2" /> },
-            ].map((item) => (
-              <li key={item.path}>
-                <Link
-                  to={`/user-dashboard/${userId}/${item.path}`}
-                  className={`flex items-center p-2 rounded-md text-sm font-medium transition-all ${
-                    location.pathname.includes(item.path)
-                      ? "bg-gray-700 text-white"
-                      : "hover:bg-gray-800 text-gray-300"
-                  }`}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Menu */}
+        <div className="w-full mt-8 flex flex-col gap-3">
 
-        {/* Logout */}
-        <div className="border-t border-gray-700 p-4">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 p-2 w-full text-red-400 hover:bg-red-600 hover:text-white transition-all rounded-md"
-            aria-label="Logout"
+          <NavLink
+            to={`user-profile/${patientId}`}
+            className={({ isActive }) =>
+              `py-3 px-4 rounded-lg flex items-center gap-3 ${
+                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+              }`
+            }
           >
-            <LogOut size={18} /> Logout
-          </button>
+            <span>👤</span> My Profile
+          </NavLink>
+
+          <NavLink
+            to="/user/appointments"
+            className={({ isActive }) =>
+              `py-3 px-4 rounded-lg flex items-center gap-3 ${
+                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+              }`
+            }
+          >
+            <span>📅</span> Appointment
+          </NavLink>
+          
+           <NavLink
+            to={`user/add-emr/${patientId}`}
+            className={({ isActive }) =>
+              `py-3 px-4 rounded-lg flex items-center gap-3 ${
+                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+              }`
+            }
+          >
+            <span>🔔</span> Add EMR
+          </NavLink>
+          <NavLink
+            to="/add-emr"
+            className={({ isActive }) =>
+              `py-3 px-4 rounded-lg flex items-center gap-3 ${
+                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
+              }`
+            }
+          >
+            <span>🔔</span> Notifications
+          </NavLink>
+
+
+          <NavLink
+            to="/logout"
+            className="py-3 px-4 rounded-lg flex items-center gap-3 text-red-600 hover:bg-red-100"
+          >
+            <span>🚪</span> Log Out
+          </NavLink>
+
         </div>
-      </aside>
+      </div>
 
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm lg:hidden z-30"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      {/* RIGHT CARD */}
+      <div className="flex-1 bg-white rounded-xl shadow p-8 overflow-auto">
+        <Outlet />
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-4 lg:p-6 mt-14 lg:mt-0">
-        <section
-          aria-label="User Dashboard Content"
-          className="bg-white rounded-2xl shadow-sm p-4 lg:p-6 min-h-[80vh] transition-all"
-        >
-          <Outlet context={{ userId }} />
-        </section>
-      </main>
     </div>
   );
 }
+
+export default UserDashboard;

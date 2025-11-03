@@ -1,83 +1,9 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
 
-// // ✅ Define your User type
-// interface User {
-//   fullName: string;
-//   gender: string;
-//   dob: string;
-//   email: string;
-//   mobileNumber: number;
-//   Aadhar: number;
-//   address?: {
-//     city?: string;
-//     pincode?: number;
-//   };
-//   abhaId?: string;
-//   emergencyContact?: {
-//     name?: string;
-//     number?: number;
-//   };
-// }
-
-// // ✅ Define API response type
-// interface UserResponse {
-//   message: string;
-//   user: User;
-// }
-
-// function UserProfile() {
-//   const [user, setUser] = useState<User | null>(null);
-//   const [loading, setLoading] = useState(true);
-//   const userId = localStorage.getItem("userId");
-
-//   useEffect(() => {
-//     const fetchUserProfile = async () => {
-//       try {
-//         // ✅ Tell axios what type we expect
-//         const res = await axios.get<UserResponse>(
-//           `http://localhost:3000/api/patient/${userId}`
-//         );
-
-//         setUser(res.data.user);
-//       } catch (err) {
-//         console.error("Error fetching user profile:", err);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (userId) fetchUserProfile();
-//   }, [userId]);
-
-//   if (loading) return <div className="text-center mt-10">Loading profile...</div>;
-//   if (!user) return <div className="text-center mt-10 text-red-500">User not found.</div>;
-
-//   return (
-//     <div className="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md">
-//       <h2 className="text-2xl font-bold mb-6 text-gray-800">User Profile</h2>
-
-//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
-//         <p><strong>Full Name:</strong> {user.fullName}</p>
-//         <p><strong>Gender:</strong> {user.gender}</p>
-//         <p><strong>Date of Birth:</strong> {new Date(user.dob).toLocaleDateString()}</p>
-//         <p><strong>Email:</strong> {user.email}</p>
-//         <p><strong>Mobile:</strong> {user.mobileNumber}</p>
-//         <p><strong>Aadhar:</strong> {user.Aadhar}</p>
-//         <p><strong>City:</strong> {user.address?.city}</p>
-//         <p><strong>Pincode:</strong> {user.address?.pincode}</p>
-//         <p><strong>ABHA ID:</strong> {user.abhaId}</p>
-//         <p><strong>Emergency Contact:</strong> {user.emergencyContact?.name} ({user.emergencyContact?.number})</p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default UserProfile;
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import EMR from "../pages/EMR";
+import { useParams } from "react-router-dom";
 
 interface User {
   fullName: string;
@@ -107,14 +33,14 @@ function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<User | null>(null);
-
+  const patientId=useParams().id;
   const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const res = await axios.get<UserResponse>(
-          `http://localhost:3000/api/patient/${userId}`
+          `http://localhost:3000/api/patient/${patientId}`
         );
         setUser(res.data.user);
       } catch (err) {
@@ -157,7 +83,7 @@ function UserProfile() {
   const handleSave = async () => {
     try {
       const res = await axios.put<{ message: string; user: User }>(
-        `http://localhost:3000/api/patient/update/${userId}`,
+        `http://localhost:3000/api/patient/update/${patientId}`,
         editData
       );
       alert("Profile updated successfully!");
