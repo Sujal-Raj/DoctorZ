@@ -1,14 +1,11 @@
-
-
-
-import React, { useEffect, useMemo, useState } from "react";
-import { X, Video, Phone } from "lucide-react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { X, Video, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDayShort, formatDateNumber } from "../utils/date.js";
 import api from "../Services/mainApi.js";
 import { addMonths, startOfMonth, endOfMonth } from "date-fns";
-
 import AppointmentFormModal from "./AppointmentFormModal.js";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet";
 
 interface Slot {
   _id: string;
@@ -22,37 +19,27 @@ interface DoctorForBooking {
   photo?: string;
   specialization?: string;
   fees: number;
+  clinicAddress?: string;
 }
-
-type BookingDrawerVariant = "modal" | "sidebar";
 
 interface Props {
   doctor: DoctorForBooking | null;
   open: boolean;
   onClose: () => void;
   onBooked?: (bookingInfo: unknown) => void;
-  variant?: BookingDrawerVariant;
 }
 
-const BookingDrawer: React.FC<Props> = ({
-  doctor,
-  open,
-  onClose,
-  onBooked,
-  variant = "modal",
-}) => {
+const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) => {
   const [mode, setMode] = useState<"online" | "offline">("online");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookingLoading, setBookingLoading] = useState(false);
-  // const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showForm, setShowForm] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
 
-  const isModal = variant === "modal";
-
-  // Generate days of current month
   const days = useMemo(() => {
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
@@ -66,10 +53,9 @@ const BookingDrawer: React.FC<Props> = ({
   }, [currentMonth]);
 
   const formatDate = (date: Date) =>
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(date.getDate()).padStart(2, "0")}`;
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+      date.getDate()
+    ).padStart(2, "0")}`;
 
   useEffect(() => {
     if (!doctor) return;
@@ -83,27 +69,16 @@ const BookingDrawer: React.FC<Props> = ({
   useEffect(() => {
     const fetchSlots = async () => {
       if (!doctor || !selectedDate) return;
-
+      setLoadingSlots(true);
       const dateStr = formatDate(selectedDate);
       try {
-        const res = await api.get<{
-          message: string;
-          slots: Array<{
-            _id: string;
-            doctorId: string;
-            date: string;
-            slots: Slot[];
-          }>;
-        }>(`/api/patient/slots/${doctor._id}/${dateStr}`);
-
-        if (res.data.slots?.length > 0) {
-          setSlots(res.data.slots[0].slots);
-        } else {
-          setSlots([]);
-        }
+        const res = await api.get(`/api/patient/slots/${doctor._id}/${dateStr}`);
+        setSlots(res.data.slots?.[0]?.slots ?? []);
       } catch (err) {
         console.error("Failed to fetch slots", err);
         setSlots([]);
+      } finally {
+        setLoadingSlots(false);
       }
     };
     fetchSlots();
@@ -116,65 +91,53 @@ const BookingDrawer: React.FC<Props> = ({
     aadhar: string;
     contact: string;
   }) => {
-    const token = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("patientToken="))
-      ?.split("=")[1];
+    const token = document.cookie.split("; ").find((r) => r.startsWith("patientToken="))?.split("=")[1];
     const payloadBase64 = token?.split(".")[1];
     const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
     const userId = pay?.id;
 
     if (!token) {
-      alert("Please login to book an appointment.");
-      window.location.href = "/patient-login";
+      Swal.fire({
+        icon: "info",
+        title: "Login Required",
+        text: "Please login to book an appointment.",
+        confirmButtonText: "OK",
+      }).then(() => (window.location.href = "/patient-login"));
       return;
     }
 
     if (!doctor || !selectedDate || !selectedTime) {
-      alert("Invalid booking data.");
+      Swal.fire({ icon: "warning", title: "Incomplete Data", text: "Please select date & time." });
       return;
     }
 
     const selectedSlotId = slots.find((s) => s.time === selectedTime)?._id;
-
     setBookingLoading(true);
 
     const bookingPayload = {
       doctorId: doctor._id,
       userId,
       mode,
-      datetime: `${selectedDate
-        .toISOString()
-        .slice(0, 10)}T${selectedTime}:00Z`,
+      datetime: `${selectedDate.toISOString().slice(0, 10)}T${selectedTime}:00Z`,
       fees: doctor.fees ?? 0,
       slotId: selectedSlotId,
       patient: formData,
       createdAt: new Date().toISOString(),
     };
-    console.log(bookingPayload);
 
     try {
-      
       await api.post("/api/booking/book", bookingPayload);
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
-        title: "Appointment Booked!",
-        text: `Your appointment with Dr. ${doctor.fullName} has been booked successfully.`,
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      }).then(() => {
-        onBooked?.(bookingPayload);
-        setBookingLoading(false);
-        onClose();
+        title: "Appointment Confirmed!",
+        text: `Your appointment with Dr. ${doctor.fullName} is booked successfully.`,
       });
+      onBooked?.(bookingPayload);
+      onClose();
     } catch (err) {
       console.error("Booking error", err);
-      Swal.fire({
-        icon: "error",
-        title: "Booking Failed",
-        text: "Could not book appointment. Try again.",
-        confirmButtonColor: "#d33",
-      });
+      Swal.fire({ icon: "error", title: "Booking Failed", text: "Please try again later." });
+    } finally {
       setBookingLoading(false);
     }
   };
@@ -182,81 +145,80 @@ const BookingDrawer: React.FC<Props> = ({
   if (!doctor) return null;
 
   return (
-    <div
-      className={`${
-        isModal
-          ? "fixed inset-0 z-50 flex items-center justify-center"
-          : "w-full"
-      }`}
-    >
-      {/* {isModal && (
-        <div
-          className={`absolute inset-0 bg-black/50 transition-opacity ${
-            open ? "opacity-100" : "opacity-0"
-          }`}
-          onClick={() => !bookingLoading && onClose()}
-        />
-      )} */}
+    <>
+      <Helmet>
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "Physician",
+            "name": "${doctor.fullName}",
+            "medicalSpecialty": "${doctor.specialization ?? "General"}",
+            "image": "${doctor.photo ? `http://localhost:3000/uploads/${doctor.photo}` : ""}",
+            "priceRange": "${doctor.fees ?? "0"}"
+          }
+        `}</script>
+      </Helmet>
 
       <div
-        className={`relative bg-white rounded-xl shadow p-5 ${
-          isModal
-            ? "max-w-md mx-4 transform transition-all duration-300 " +
-              (open ? "scale-100 opacity-100" : "scale-95 opacity-0")
-            : ""
+        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ${
+          open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* Header */}
-        <div className="p-2 border-b flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {doctor.photo ? (
-              <img
-                src={`http://localhost:3000/uploads/${doctor?.photo}`}
-                alt={doctor.fullName}
-                className="h-28 w-28 rounded-full object-cover shadow mx-auto md:mx-0"
-              />
-            ) : (
-              <div className="h-12 w-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                {doctor.fullName.charAt(0)}
-              </div>
-            )}
-            <div>
-              <div className="font-semibold text-lg">{doctor.fullName}</div>
-              <div className="text-sm text-gray-500">
-                {doctor.specialization}
+        <div onClick={onClose} className="absolute inset-0 bg-black/40 backdrop" />
+
+        <aside
+          ref={sidebarRef}
+          className={`relative bg-white w-full sm:w-96 h-full shadow-2xl transform transition-transform duration-500 ease-in-out ${
+            open ? "translate-x-0" : "translate-x-full"
+          } rounded-l-2xl overflow-hidden`}
+        >
+          {/* Header */}
+          <header className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center gap-3">
+              {doctor.photo ? (
+                <img
+                  src={`http://localhost:3000/uploads/${doctor.photo}`}
+                  alt={doctor.fullName}
+                  className="h-14 w-14 rounded-full object-cover border border-gray-200"
+                />
+              ) : (
+                <div className="h-14 w-14 flex items-center justify-center rounded-full bg-[#28328C] text-white text-lg font-semibold">
+                  {doctor.fullName.charAt(0)}
+                </div>
+              )}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">{doctor.fullName}</h2>
+                <p className="text-sm text-gray-500">{doctor.specialization}</p>
               </div>
             </div>
-          </div>
-          {isModal && (
             <button
-              onClick={() => !bookingLoading && onClose()}
-              className="text-gray-600 hover:bg-gray-100 rounded p-2"
+              onClick={onClose}
+              className="text-gray-500 hover:bg-gray-200 rounded-full p-2 transition-colors"
             >
-              <X />
+              <X className="w-5 h-5" />
             </button>
-          )}
-        </div>
+          </header>
 
-        <div className="p-2 space-y-4 max-h-[80vh] overflow-y-auto">
-          <>
-            {/* Mode Selection */}
-            <div className="flex gap-3 mb-4">
+          {/* Content */}
+          <div className="p-5 space-y-5 overflow-y-auto h-[calc(100%-4rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            {/* Mode Buttons */}
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setMode("online")}
-                className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 border ${
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                   mode === "online"
-                    ? "bg-green-600 text-white border-green-600"
-                    : "bg-white text-gray-700"
+                    ? "bg-[#28328C] text-white shadow"
+                    : "bg-white text-gray-700 hover:border-[#28328C]/40"
                 }`}
               >
                 <Video className="w-4 h-4" /> Online
               </button>
               <button
                 onClick={() => setMode("offline")}
-                className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 border ${
+                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                   mode === "offline"
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700"
+                    ? "bg-[#28328C] text-white shadow"
+                    : "bg-white text-gray-700 hover:border-[#28328C]/40"
                 }`}
               >
                 <Phone className="w-4 h-4" /> Offline
@@ -264,33 +226,29 @@ const BookingDrawer: React.FC<Props> = ({
             </div>
 
             {/* Month Navigation */}
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center">
               <button
                 onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
-                className="px-2 py-1 border rounded"
+                className="p-2 rounded-full hover:bg-gray-100 border"
               >
-                Prev
+                <ChevronLeft className="w-4 h-4" />
               </button>
-              <div className="font-semibold">
-                {currentMonth.toLocaleString("default", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              </div>
+              <span className="text-sm font-semibold text-gray-700">
+                {currentMonth.toLocaleString("default", { month: "long", year: "numeric" })}
+              </span>
               <button
                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                className="px-2 py-1 border rounded"
+                className="p-2 rounded-full hover:bg-gray-100 border"
               >
-                Next
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Date Carousel */}
-            <div className="flex gap-2 mt-1 overflow-x-auto mb-4">
+            {/* Date Selection */}
+            <div className="flex gap-2 overflow-x-auto py-2">
               {days.map((d) => {
                 const key = formatDate(d);
                 const active = selectedDate && formatDate(selectedDate) === key;
-
                 return (
                   <button
                     key={key}
@@ -298,16 +256,14 @@ const BookingDrawer: React.FC<Props> = ({
                       setSelectedDate(d);
                       setSelectedTime(null);
                     }}
-                    className={`min-w-[72px] flex-shrink-0 rounded-lg p-3 text-center border ${
+                    className={`min-w-[72px] p-3 text-center rounded-lg border transition-all ${
                       active
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-800 hover:shadow"
+                        ? "bg-[#28328C] text-white shadow"
+                        : "bg-white text-gray-800 hover:shadow-sm"
                     }`}
                   >
-                    <div className="text-xs">{formatDayShort(d)}</div>
-                    <div className="text-lg font-semibold">
-                      {formatDateNumber(d)}
-                    </div>
+                    <div className="text-xs opacity-80">{formatDayShort(d)}</div>
+                    <div className="text-lg font-semibold">{formatDateNumber(d)}</div>
                   </button>
                 );
               })}
@@ -315,67 +271,70 @@ const BookingDrawer: React.FC<Props> = ({
 
             {/* Slots */}
             <div>
-              <div className="text-sm font-medium mb-2">Available Slots</div>
-              <div className="grid grid-cols-3 gap-2">
-                {slots.length === 0 ? (
-                  <div className="col-span-3 text-gray-500">
-                    No slots available
-                  </div>
-                ) : (
-                  slots.map((slot) => {
+              <h4 className="text-sm font-semibold mb-2 text-gray-700">Available Slots</h4>
+              {loadingSlots ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-10 rounded bg-gray-100 animate-pulse" />
+                  ))}
+                </div>
+              ) : slots.length === 0 ? (
+                <div className="text-gray-500 text-sm">No slots available for selected date.</div>
+              ) : (
+                <div className="grid grid-cols-3 gap-2">
+                  {slots.map((slot) => {
                     const isBooked = !slot.isActive;
+                    const selected = selectedTime === slot.time;
                     return (
                       <button
                         key={slot._id}
                         onClick={() => !isBooked && setSelectedTime(slot.time)}
-                        className={`relative p-2 rounded border text-sm w-full ${
-                          selectedTime === slot.time
-                            ? "bg-blue-600 text-white"
-                            : "bg-white text-gray-800 hover:shadow"
+                        disabled={isBooked}
+                        className={`p-2 rounded border text-sm transition-all ${
+                          selected
+                            ? "bg-[#28328C] text-white shadow"
+                            : "bg-white text-gray-800 hover:shadow-sm"
                         } ${
                           isBooked
-                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                             : ""
                         }`}
-                        disabled={isBooked}
                       >
                         {slot.time}
-                        {isBooked && (
-                          <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <span className="absolute w-[2px] h-full bg-red-600 rotate-45 origin-center"></span>
-                            <span className="absolute w-[2px] h-full bg-red-600 -rotate-45 origin-center"></span>
-                          </span>
-                        )}
                       </button>
                     );
-                  })
-                )}
-              </div>
+                  })}
+                </div>
+              )}
             </div>
+          </div>
 
-            {/* Continue Button */}
-            {selectedTime && (
+          {/* Sticky Bottom Button */}
+          {selectedTime && (
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
               <button
                 onClick={() => setShowForm(true)}
-                className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                className="w-full bg-[#28328C] text-white py-2 rounded-lg font-medium hover:bg-[#1e2675] transition-all"
               >
                 Continue
               </button>
-            )}
-          </>
+            </div>
+          )}
 
           <AppointmentFormModal
             open={showForm}
             onClose={() => setShowForm(false)}
             onSubmit={handleBook}
+            loading={bookingLoading}
           />
-        </div>
+        </aside>
       </div>
-    </div>
+    </>
   );
 };
 
-export default BookingDrawer;
+export default BookingSidebar;
+
 
 // import React, { useEffect, useMemo, useState } from "react";
 // import { X, Video, Phone } from "lucide-react";

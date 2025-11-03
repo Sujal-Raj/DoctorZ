@@ -12,6 +12,7 @@ import Layout from "../Layout";
 import Home from "./pages/Home";
 import AllClinic from "./pages/AllClinic";
 import AllDoctors from "./pages/AllDoctors";
+import DoctorSearchResults from "./pages/DoctorSearchResults";
 import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
 import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
 import AddDoctor from "./pages/AddDoctor";
@@ -158,6 +159,7 @@ const App: React.FC = () => {
             <Route path="/clinic-register" element={<RegisterClinic />} />
             <Route path="/all-clinics" element={<AllClinic />} />
             <Route path="/all-doctors" element={<AllDoctors />} />
+            <Route path="/search-results" element={<DoctorSearchResults />} />
             <Route path="/clinic-login" element={<LoginClinic />} />
             <Route path="/patient-login" element={<LoginPatient />} />
             <Route path="/patient-chat" element={<PatientChat />} />
