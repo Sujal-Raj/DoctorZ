@@ -5,7 +5,9 @@ import { registerDoctor } from "../../Services/doctorApi";
 import Cookies from "js-cookie";
 import * as jwt_decode from "jwt-decode";
 import api from "../../Services/client";
+
 import { useOutletContext } from "react-router-dom";
+// import { registerDoctor } from "../Services/doctorApi";
 
 type DoctorFormInputs = {
   fullName: string;
@@ -22,6 +24,9 @@ type DoctorFormInputs = {
   pan: string;
   specialization: string;
   password: string;
+  address: string;
+  state: string;
+  city: string;
 };
 
 interface ClinicContext {
@@ -89,6 +94,9 @@ const RegisterDoctor: React.FC = () => {
           <FormInput label="Languages Known" name="languages" register={register} placeholder="English, Hindi" />
           <FormInput label="Aadhar No" name="aadhar" register={register} placeholder="123456789012" />
           <FormInput label="PAN No" name="pan" register={register} placeholder="ABCDE1234F" />
+          <FormInput label="Address" name="address" register={register} placeholder="Risali" />
+          <FormInput label="State" name="state" register={register} placeholder="CG" />
+          <FormInput label="City" name="city" register={register} placeholder="Bhilai" />
 
           {/* File Uploads */}
           <FileUpload label="Degree Certificate" fileName={degreeName} setFile={setDegreeFile} setFileName={setDegreeName} accept="image/*,application/pdf" />

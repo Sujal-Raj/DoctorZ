@@ -16,6 +16,7 @@ export interface IPatient extends Document {
         name: string;
         number: number;
     };
+    emr: mongoose.Types.ObjectId[];
 }
 declare const patientModel: mongoose.Model<IPatient, {}, {}, {}, mongoose.Document<unknown, {}, IPatient, {}, mongoose.DefaultSchemaOptions> & IPatient & {
     _id: mongoose.Types.ObjectId;

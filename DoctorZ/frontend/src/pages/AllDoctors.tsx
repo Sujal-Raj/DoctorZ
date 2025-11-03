@@ -52,6 +52,7 @@ const AllDoctor: React.FC = () => {
     ?.split("=")[1];
   const payloadBase64 = token?.split(".")[1];
   const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const patientId = pay?.id;
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -276,7 +277,13 @@ const AllDoctor: React.FC = () => {
 </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 lg:py-8">
+      {/* <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 lg:py-8"> */}
+      <div
+  className={`max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 lg:py-8 transition-all duration-300 ${
+    drawerOpen ? "blur-sm brightness-75" : ""
+  }`}
+>
+
         {/* Desktop Search and Filter Bar */}
         <div className=" hidden lg:block bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
@@ -736,6 +743,9 @@ const AllDoctor: React.FC = () => {
           </div>
         </div>
       )}
+{drawerOpen && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300"></div>
+)}
 
       {/* Booking drawer */}
       <BookingDrawer
@@ -745,6 +755,7 @@ const AllDoctor: React.FC = () => {
         onBooked={(info: unknown) => {
           console.log("Booked:", info);
         }}
+        
         variant="modal"
       />
     </div>

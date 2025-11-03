@@ -1,5 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { registerPatient } from "../Services/patientApi";
+import "../index.css";
 
 type PatientFormInputs = {
   fullName: string;
@@ -14,263 +16,261 @@ type PatientFormInputs = {
   abhaId: string;
   emergencyName: string;
   emergencyNumber: string;
+  allergies: string;
+  diseases: string;
+  pastSurgeries: string;
+  currentMedications: string;
+  medicalReports?: FileList;
 };
 
 const RegisterPatient: React.FC = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<PatientFormInputs>();
+  const { register, handleSubmit } = useForm<PatientFormInputs>();
 
   const onSubmit = async (data: PatientFormInputs) => {
-  try {
-    const payload = {
-      fullName: data.fullName,
-      gender: data.gender,
-      dob: data.dob,
-      email: data.email,
-      password: data.password,
-      mobileNumber: data.mobileNumber,
-      Aadhar: data.aadhar,  // backend capital "Aadhar" expect kar raha hai
-      abhaId: data.abhaId,
-      address: {
-        city: data.city,
-        pincode: data.pincode,
-      },
-      emergencyContact: {
-        name: data.emergencyName,
-        number: data.emergencyNumber,
-      },
-    };
+    const formData = new FormData();
 
-    const res = await fetch("http://localhost:3000/api/patient/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    formData.append("fullName", data.fullName);
+    formData.append("gender", data.gender);
+    formData.append("dob", data.dob);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("mobileNumber", data.mobileNumber);
+    formData.append("aadhar", data.aadhar);
+    formData.append("abhaId", data.abhaId);
 
-    const result = await res.json();
-    console.log(" Patient Registered:", result);
-    alert("Patient registered successfully!");
-  } catch (err) {
-    console.error(" Error:", err);
-    alert("Something went wrong!");
-  }
-};
+    formData.append("city", data.city);
+    formData.append("pincode", data.pincode);
+    formData.append("name", data.emergencyName);
+    formData.append("number", data.emergencyNumber);
+
+    formData.append(
+      "allergies",
+      JSON.stringify(data.allergies?.split(",").map((s) => s.trim()) || [])
+    );
+    formData.append(
+      "diseases",
+      JSON.stringify(data.diseases?.split(",").map((s) => s.trim()) || [])
+    );
+
+    formData.append(
+      "pastSurgeries",
+      JSON.stringify(data.pastSurgeries?.split(",").map((s) => s.trim()) || [])
+    );
+
+    formData.append(
+      "currentMedications",
+      JSON.stringify(
+        data.currentMedications?.split(",").map((s) => s.trim()) || []
+      )
+    );
+
+    if (data.medicalReports?.length) {
+      Array.from(data.medicalReports).forEach((file) =>
+        formData.append("medicalReports", file)
+      );
+    }
+
+    await registerPatient(formData);
+    alert("✅ Registered Successfully!");
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
-      <div className="w-full max-w-4xl bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
-          🧑‍⚕️ Patient Registration
+    <div className="w-full  min-h-[100vh] bg-gradient-to-br from-blue-50 to-cyan-100 flex justify-center items-start pt-10 pb-20 px-4 overflow-hidden">
+      <div className="w-full max-w-4xl bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-5 md:p-10 ">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">
+          Patient Registration
         </h2>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
         >
           {/* Full Name */}
           <div>
-            <label className="block text-gray-700 font-medium">Full Name</label>
+            <label className="font-medium text-gray-700">Full Name</label>
             <input
-              {...register("fullName", { required: "Full name is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="John Doe"
+              placeholder="Ritika Sharma"
+              {...register("fullName")}
+              className="inputBox"
             />
-            {errors.fullName && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.fullName.message}
-              </p>
-            )}
           </div>
 
           {/* Gender */}
           <div>
-            <label className="block text-gray-700 font-medium">Gender</label>
-            <select
-              {...register("gender", { required: "Gender is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-            >
+            <label className="font-medium text-gray-700">Gender</label>
+            <select {...register("gender")} className="inputBox">
               <option value="">Select Gender</option>
               <option>Male</option>
               <option>Female</option>
               <option>Other</option>
             </select>
-            {errors.gender && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.gender.message}
-              </p>
-            )}
           </div>
 
           {/* DOB */}
           <div>
-            <label className="block text-gray-700 font-medium">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              {...register("dob", { required: "Date of Birth is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-            />
-            {errors.dob && (
-              <p className="text-red-500 text-sm mt-1">{errors.dob.message}</p>
-            )}
+            <label className="font-medium text-gray-700">Date of Birth</label>
+            <input type="date" {...register("dob")} className="inputBox" />
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-medium">Email</label>
+            <label className="font-medium text-gray-700">Email</label>
             <input
+              placeholder="example@gmail.com"
+              {...register("email")}
+              className="inputBox"
               type="email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: "Invalid email format",
-                },
-              })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="example@email.com"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-            )}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-gray-700 font-medium">Password</label>
+            <label className="font-medium text-gray-700">Password</label>
             <input
+              placeholder="Enter password"
               type="password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="••••••••"
+              {...register("password")}
+              className="inputBox"
             />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.password.message}
-              </p>
-            )}
           </div>
 
           {/* Mobile */}
           <div>
-            <label className="block text-gray-700 font-medium">
-              Mobile Number
-            </label>
+            <label className="font-medium text-gray-700">Mobile Number</label>
             <input
-              type="tel"
-              {...register("mobileNumber", {
-                required: "Mobile number is required",
-                pattern: { value: /^[0-9]{10}$/, message: "Must be 10 digits" },
-              })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
               placeholder="9876543210"
+              {...register("mobileNumber")}
+              className="inputBox"
             />
-            {errors.mobileNumber && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.mobileNumber.message}
-              </p>
-            )}
           </div>
 
           {/* Aadhar */}
           <div>
-            <label className="block text-gray-700 font-medium">Aadhar</label>
+            <label className="font-medium text-gray-700">Aadhar</label>
             <input
-              type="text"
-              {...register("aadhar", {
-                pattern: {
-                  value: /^[0-9]{12}$/,
-                  message: "Aadhar must be 12 digits",
-                },
-              })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="1234 5678 9101"
+              placeholder="123456789012"
+              {...register("aadhar")}
+              className="inputBox"
             />
-            {errors.aadhar && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.aadhar.message}
-              </p>
-            )}
           </div>
 
           {/* City */}
           <div>
-            <label className="block text-gray-700 font-medium">City</label>
+            <label className="font-medium text-gray-700">City</label>
             <input
+              placeholder="Bhilai"
               {...register("city")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="Delhi"
+              className="inputBox"
             />
           </div>
 
           {/* Pincode */}
           <div>
-            <label className="block text-gray-700 font-medium">Pincode</label>
+            <label className="font-medium text-gray-700">Pincode</label>
             <input
-              type="number"
+              placeholder="490001"
               {...register("pincode")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="110001"
+              className="inputBox"
             />
           </div>
 
-          {/* Abha ID */}
+          {/* ABHA */}
           <div>
-            <label className="block text-gray-700 font-medium">ABHA ID</label>
+            <label className="font-medium text-gray-700">ABHA ID</label>
             <input
+              placeholder="ABHA123456"
               {...register("abhaId")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="ABHA12345"
+              className="inputBox"
             />
           </div>
 
-          {/* Emergency Contact */}
+          {/* Allergies */}
           <div>
-            <label className="block text-gray-700 font-medium">
+            <label className="font-medium text-gray-700">
+              Allergies (Optional)
+            </label>
+            <input
+              placeholder="Dust, Peanuts"
+              {...register("allergies")}
+              className="inputBox"
+            />
+          </div>
+          {/* Diseases */}
+          <div>
+            <label className="font-medium text-gray-700">
+              Diseases (Optional)
+            </label>
+            <input
+              placeholder="Diabetes, Asthma"
+              {...register("diseases")}
+              className="inputBox"
+            />
+          </div>
+
+          {/* Past Surgeries */}
+          <div>
+            <label className="font-medium text-gray-700">
+              Past Surgeries (Optional)
+            </label>
+            <input
+              placeholder="Appendix Removal"
+              {...register("pastSurgeries")}
+              className="inputBox"
+            />
+          </div>
+
+          {/* Current Medications */}
+          <div>
+            <label className="font-medium text-gray-700">
+              Current Medications (Optional)
+            </label>
+            <input
+              placeholder="Paracetamol, Vitamin D"
+              {...register("currentMedications")}
+              className="inputBox"
+            />
+          </div>
+
+          {/* Medical Reports */}
+          <div className="md:col-span-2">
+            <label className="font-medium text-gray-700">
+              Medical Reports (Multiple)
+            </label>
+            <input
+              type="file"
+              multiple
+              {...register("medicalReports")}
+              className="mt-1 w-full"
+            />
+          </div>
+
+          {/* Emergency Name */}
+          <div>
+            <label className="font-medium text-gray-700">
               Emergency Contact Name
             </label>
             <input
+              placeholder="Rahul Sharma"
               {...register("emergencyName")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="Jane Doe"
+              className="inputBox"
             />
           </div>
 
+          {/* Emergency Number */}
           <div>
-            <label className="block text-gray-700 font-medium">
+            <label className="font-medium text-gray-700">
               Emergency Contact Number
             </label>
             <input
-              type="tel"
-              {...register("emergencyNumber", {
-                pattern: { value: /^[0-9]{10}$/, message: "Must be 10 digits" },
-              })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-blue-400"
-              placeholder="9876543210"
+              placeholder="9876541230"
+              {...register("emergencyNumber")}
+              className="inputBox"
             />
-            {errors.emergencyNumber && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.emergencyNumber.message}
-              </p>
-            )}
           </div>
 
-          {/* ✅ Submit Button */}
-          <div className="col-span-2 mt-6 text-center">
-            <button
-              type="submit"
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:bg-blue-700 transition-all"
-            >
+          {/* Submit */}
+          <div className="col-span-1 md:col-span-2 text-center mt-4">
+            <button className="px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition">
               Register Patient
             </button>
           </div>

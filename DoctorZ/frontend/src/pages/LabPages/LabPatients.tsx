@@ -393,7 +393,7 @@ const Patients: React.FC = memo(() => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [pageSize, setPageSize] = useState(10);
+  const pageSize = 10;
   const [page, setPage] = useState(1);
   const [darkMode, setDarkMode] = useState(false);
 

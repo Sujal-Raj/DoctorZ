@@ -6,55 +6,117 @@ import bcrypt from "bcryptjs";
 import timeSlotsModel from "../models/timeSlots.model.js";
 import { get } from "http";
 import jwt from "jsonwebtoken";
+import EMRModel from "../models/emr.model.js";
 
-const patientRegister = async (req:Request,res:Response)=>{
-    try {
-        const body = req.body;
-        // console.log(body);
-        const {fullName,gender,dob,email,password,mobileNumber,Aadhar,abhaId} = body;
-        const {city,pincode} = body.address;
-        const {name,number}= body.emergencyContact;
 
-        if(!fullName||!gender||!dob||!mobileNumber||!Aadhar){
-            return res.status(400).json(
-                console.log("All required fields must be filled.")
-            )
-        }
 
-        const hashedPassword = await bcrypt.hash(password,10)
+const patientRegister = async (req:Request, res:Response) => {
+  try {
+     console.log("Received body:", req.body);
+    const body = req.body;
+   
 
-        const patient = new patientModel({
-            fullName,
-            gender,
-            dob,
-            email : email.toLowerCase(),
-            password:hashedPassword,
-            mobileNumber,
-            Aadhar,
-            abhaId,
-            address:{
-                city,
-                pincode
-            },
-            emergencyContact:{
-                name,
-                number
-            }
-        })
+    const files = req.files as Express.Multer.File[];
 
-        await patient.save();
 
-        return res.status(201).json({
-            message:"Patient Registered"
-        })
+    const {
+      fullName,
+      gender,
+      dob,
+      email,
+      password,
+      mobileNumber,
+      aadhar,
+      abhaId,
+      doctorId,
+      city,
+      pincode,
+      name,
+      number,  
 
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            message:"Something went wrong"
-        })
+    } = body;
+
+   
+
+   
+
+    //  EMR FIELDS  ---
+    const allergies = JSON.parse(body.allergies || "[]");
+    const diseases = JSON.parse(body.diseases || "[]");
+    const pastSurgeries = JSON.parse(body.pastSurgeries || "[]");
+    const currentMedications = JSON.parse(body.currentMedications || "[]");
+
+    //uploaded report file paths
+    const reportUrls =
+      files?.length > 0
+        ? files.map((file) => `/uploads/${file.filename}`)
+        : [];
+
+    // --- VALIDATION ---
+    if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
+      return res.status(400).json({ message: "Required fields missing" });
     }
-}
+
+    const existing = await patientModel.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // --- PASSWORD HASH ---
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // --- SAVE PATIENT ---
+    const patient = await patientModel.create({
+      fullName,
+      gender,
+      dob,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      mobileNumber,
+      aadhar,
+      abhaId,
+      address: { city, pincode },
+      emergencyContact: { name,number },
+      emr: [] 
+    });
+
+    // --- CONDITION: CREATE EMR ONLY IF USER FILLED ANY MEDICAL FIELDS ---
+    const shouldCreateEMR =
+      allergies.length > 0 ||
+      diseases.length > 0 ||
+      pastSurgeries.length > 0 ||
+      currentMedications.length > 0 ||
+      reportUrls.length > 0;
+
+    if (shouldCreateEMR) {
+      const emr = await EMRModel.create({
+        patientId: patient._id,
+        doctorId: doctorId || null, // doctor may not be selected at registration
+        allergies,
+        diseases,
+        pastSurgeries,
+        currentMedications,
+        reports: reportUrls
+      });
+
+      // Add EMR ID to patient.emr[]
+      patient.emr.push(emr._id as mongoose.Types.ObjectId );
+      await patient.save();
+    }
+
+    return res.status(201).json({
+      message: "Patient registered successfully",
+      patient,
+    });
+
+  } catch (error) {
+    console.log("Registration Error:", error);
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 
 
 
@@ -79,10 +141,10 @@ const patientLogin = async(req: Request, res: Response)=>{
       return res.status(400).json({ message: "Invalid Password." });
     }
 
-    // ✅ JWT Token create
+    // JWT Token create
     const token = jwt.sign(
-      { id: patient._id, email: patient.email },
-      process.env.JWT_SECRET || "secret_key", // 🔒 env me rakho
+      { id: patient._id, email: patient.email,name:patient.fullName },
+      process.env.JWT_SECRET || "secret_key", 
       { expiresIn: "1d" }
     );
 
@@ -103,7 +165,7 @@ const patientLogin = async(req: Request, res: Response)=>{
 const getPatientById = async (req:Request,res:Response)=>{
     try {
         const {id} = req.params;
-        // console.log(id)
+       
 
         const user = await patientModel.findById(id);
 
@@ -114,8 +176,10 @@ const getPatientById = async (req:Request,res:Response)=>{
         }
 
         return res.status(200).json({
-            message:"User Found"
-        })
+            message:"User Found",
+            user,
+            
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -151,44 +215,63 @@ const deleteUser = async(req:Request,res:Response)=>{
 
 const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
   try {
-    const { doctorId, date } = req.params;
+    const { doctorId } = req.params;
 
-    if (!doctorId || !date) {
+    if (!doctorId) {
       return res.status(400).json({
-        message: "doctorId and date are required",
+        message: "doctorId is required",
       });
     }
 
-    // Convert incoming date string (YYYY-MM-DD) to start & end of day
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const slots = await timeSlotsModel.find({
-      doctorId,
-      date: { $gte: startOfDay, $lte: endOfDay },
-    });
+    // Find all slots for this doctor
+    const slots = await timeSlotsModel.find({ doctorId });
 
     if (!slots || slots.length === 0) {
       return res.status(200).json({
-        message: "No slots found for this doctor on the specified date",
-        slots: [],
+        message: "No slots found for this doctor",
+        availableData: [],
       });
     }
 
+    
+    const slotsByMonth: Record<string, any[]> = {};
+
+    slots.forEach(slot => {
+      const d = new Date(slot.date);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      if (!slotsByMonth[monthKey]) slotsByMonth[monthKey] = [];
+      slotsByMonth[monthKey].push(slot);
+    });
+
     return res.status(200).json({
-      message: "Slots fetched successfully",
-      slots,
+      message: "Available months and slots fetched successfully",
+      availableMonths: slotsByMonth,
     });
   } catch (error) {
-    console.error("Error fetching slots", error);
+    console.error("Error fetching available slots", error);
     return res.status(500).json({
-      message: "Failed to fetch slots",
+      message: "Failed to fetch available slots",
       error: error instanceof Error ? error.message : error,
     });
   }
 };
 
-export default {patientRegister,patientLogin,getPatientById,deleteUser,getAvailableSlotsByDoctorId};
+// In your patient controller file
+const updatePatient = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updated = await patientModel.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (!updated)
+      return res.status(404).json({ message: "User not found." });
+
+    return res.status(200).json({ message: "Profile updated", user: updated });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
+
+export default {patientRegister,patientLogin,getPatientById,deleteUser,getAvailableSlotsByDoctorId,updatePatient};

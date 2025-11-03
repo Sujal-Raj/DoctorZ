@@ -46,8 +46,15 @@ const patientSchema = new mongoose.Schema({
         number: {
             type: Number
         }
-    }
-});
+    },
+    emr: [
+        {
+            type: [mongoose.Schema.Types.ObjectId],
+            ref: "EMR",
+            default: []
+        },
+    ],
+}, { timestamps: true });
 const patientModel = mongoose.model("Patient", patientSchema, "Patient");
 export default patientModel;
 //# sourceMappingURL=patient.model.js.map
