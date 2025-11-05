@@ -1,7 +1,15 @@
 import api from "./mainApi";
 
-export const createEMR = async (formData: FormData) => {
-  const res = await api.post("/api/emr/createEmr", formData, {
+export interface EmrResponse {
+  _id: string;
+  patientId?: string;
+  doctorId?: string;
+  [key: string]: unknown;
+}
+
+
+export const createEMR = async (formData: FormData): Promise<EmrResponse>  => {
+  const res = await api.post<EmrResponse>("/api/emr/createEmr", formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
