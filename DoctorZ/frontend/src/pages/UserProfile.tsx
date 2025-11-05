@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import EMR from "../pages/EMR";
+// import EMR from "../pages/EMR";
 import { useParams } from "react-router-dom";
 
 interface User {
@@ -179,7 +179,7 @@ function UserProfile() {
       )}
     </div>
 
-      <EMR />
+      {/* <EMR /> */}
       </>
      
   );
