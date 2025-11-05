@@ -55,6 +55,9 @@ import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import { PackageDetails } from "./pages/PackageDetails";
+import UserDashboard from "./pages/UserPages/UserDashboard";
+import UserProfile from "./pages/UserPages/UserProfile";
+import AddEmr from "./pages/UserPages/AddEmr";
 
 
           <Route
@@ -111,6 +114,11 @@ const App: React.FC = () => {
             <Route path="/all-lab-test" element={<AllLabTest />} />
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
             <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
+             <Route path="/user-dashboard/:id" element={<UserDashboard />} >
+              <Route index element={<UserProfile />} />
+               <Route path="user-profile" element={<UserProfile />} />
+                  <Route path="add-emr" element={<AddEmr />} />
+              </Route>
           </Route>
 
           {/* Routes without navbar */}

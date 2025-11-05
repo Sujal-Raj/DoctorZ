@@ -284,8 +284,9 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
-import { registerPatient } from "../Services/patientApi";
-import "../index.css";
+
+import "../../index.css";
+import { registerPatient } from "../../Services/patientApi";
 
 type PatientFormInputs = {
   fullName: string;

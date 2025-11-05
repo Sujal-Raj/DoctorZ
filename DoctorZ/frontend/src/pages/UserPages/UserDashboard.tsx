@@ -8,8 +8,8 @@ import { User, CalendarDays, FilePlus2, Bell } from "lucide-react";
 import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { AuthContext } from "../Context/AuthContext";
-
+import { AuthContext } from "../../Context/AuthContext";
+import UserIcon from "../../assets/user.png";
 function UserDashboard() {
   const { user } = useContext(AuthContext);
   const patientId = useParams().id;
@@ -42,9 +42,9 @@ function UserDashboard() {
                           from-[#4C6EF5] to-[#5A4CF5] text-white p-6 relative">
 
          
-          <div className="flex items-center gap-3 mb-10">
+          <div className="flex items-center gap-3 mb-10 ">
             <img
-              src="https://i.pravatar.cc/100?img=12"
+              src={UserIcon}
               className="w-12 h-12 rounded-full"
             />
             <div>

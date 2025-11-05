@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 
-import { createEMR } from "../Services/emrApi";
+import { createEMR } from "../../Services/emrApi";
 import { useParams } from "react-router-dom";
 
 type EMRInputs = {

@@ -25,7 +25,7 @@ import timeSlotsRoutes from "./routes/timeSlots.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import labRoutes from "./routes/lab.routes.js";
 // dotenv.config();
-dbConnect();
+ dbConnect();
 const PORT = 3000;
 
 
@@ -128,3 +128,8 @@ server.listen(PORT,()=>{
     console.log("Socket also started");
 
 })
+
+
+
+
+
