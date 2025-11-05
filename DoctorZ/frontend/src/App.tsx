@@ -446,6 +446,9 @@ const App: React.FC = () => {
 =======
           <Route path="/emr/:id" element={<EMR />} />
           <Route path="/Emr/appointment" element={<EmrForAppoinment />} />
+<<<<<<< HEAD
+>>>>>>> 3ac197d9ada8a82dd5db94499f9ee1f72a9c31f3
+=======
 >>>>>>> 3ac197d9ada8a82dd5db94499f9ee1f72a9c31f3
         </Routes>
       </Router>
