@@ -1,54 +1,69 @@
+
+
+
 import React from "react";
 import { X } from "lucide-react";
 import AppointmentForm from "../pages/AppointmentForm";
 
-interface AppointmentFormProps {
+interface AppointmentFormModalProps {
+  open: boolean;
+  onClose: () => void;
   onSubmit: (data: {
     name: string;
     age: number;
     gender: "Male" | "Female" | "Other";
     aadhar: string;
     contact: string;
+    emrId?: string;
   }) => void;
+  doctorId?: string;
+  selectedDate?: string;
+  selectedTime?: string;
 }
 
-interface FormModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: AppointmentFormProps["onSubmit"];
-}
-
-const AppointmentFormModal: React.FC<FormModalProps> = ({ open, onClose, onSubmit }) => {
+const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
+  doctorId,
+  selectedDate,
+  selectedTime,
+}) => {
   if (!open) return null;
 
-  // Prevent modal content click from closing the modal
-  const handleContentClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-  };
+  const handleClick = (e: React.MouseEvent) => e.stopPropagation();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center ">
-      {/* Overlay */}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
-    className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-    onClick={onClose}
-  />
-      {/* Modal content */}
-      <div
-        className="relative bg-white rounded-xl shadow-lg p-6 w-full max-w-md mx-4 animate-fadeIn"
-        onClick={handleContentClick}
+        onClick={handleClick}
+        className="relative bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl mx-4"
       >
-        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
-          aria-label="Close"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
         >
-          <X size={20} />
+          <X size={22} />
         </button>
 
-       
-        <AppointmentForm onSubmit={onSubmit} />
+        <h2 className="text-xl font-semibold text-center mb-4 text-gray-800">
+          Book Your Appointment
+        </h2>
+
+        {/* Display Info */}
+        {(doctorId || selectedDate || selectedTime) && (
+          <div className="text-center text-sm text-gray-600 mb-4">
+            {doctorId && <p><strong>Doctor:</strong> {doctorId}</p>}
+            {selectedDate && <p><strong>Date:</strong> {selectedDate}</p>}
+            {selectedTime && <p><strong>Time:</strong> {selectedTime}</p>}
+          </div>
+        )}
+
+        <AppointmentForm onSubmit={onSubmit}  doctorId={doctorId}/>
       </div>
     </div>
   );

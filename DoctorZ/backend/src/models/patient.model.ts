@@ -7,7 +7,7 @@ export interface IPatient extends Document {
   email:string;
   password:string;
   mobileNumber:number;
-  Aadhar:number;
+  aadhar:number;
   address: {
     city: string;
     pincode: number;
@@ -47,7 +47,7 @@ const patientSchema = new mongoose.Schema<IPatient>({
         type:Number,
         required:true,
     },
-    Aadhar:{
+    aadhar:{
         type:Number,
     },
     address:{

@@ -33,6 +33,7 @@ const emrSchema = new mongoose.Schema<IEMR>(
     allergies: {
       type: [String],
       default: [],
+      
     },
 
     diseases: {

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Menu,
@@ -12,13 +12,21 @@ import {
   UserPlus,
 } from "lucide-react";
 import { AuthContext } from "../Context/AuthContext.js";
-
+import Cookies from "js-cookie";
+import {jwtDecode} from "jwt-decode";
 const Navbar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { isLoggedIn, user, logout } = useContext(AuthContext);
+  console.log("Navbar Context — isLoggedIn:", isLoggedIn, "user:", user);
   const location = useLocation();
   console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
 
+const token = Cookies.get("patientToken") || "";
+const decoded: any = token ? jwtDecode(token) : {};
+
+const patientId = decoded.id;
+console.log("Patient ID from token:", patientId);
+const navigate=useNavigate();
   return (
     <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
@@ -128,9 +136,7 @@ const Navbar: React.FC = () => {
               <div className="flex items-center gap-4">
                 {/* ✅ Profile Link */}
                 <Link
-                  to={`/user-profile/${
-                    user?.id || localStorage.getItem("userId")
-                  }`}
+                  to={`/user-dashboard/${patientId}`}
                   className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200 transition"
                 >
                   <User size={18} /> Profile
@@ -140,7 +146,10 @@ const Navbar: React.FC = () => {
                 <button
                   onClick={() => {
                     logout();
+                    Cookies.remove("patientToken");
+
                     alert("You have been logged out.");
+                    navigate("/patient-login");
                   }}
                   className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition"
                 >
