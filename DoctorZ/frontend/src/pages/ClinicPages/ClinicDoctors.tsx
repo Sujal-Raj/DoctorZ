@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
-import api from "../Services/mainApi";
+import api from "../../Services/mainApi";
 
 interface Doctor {
   _id: string;

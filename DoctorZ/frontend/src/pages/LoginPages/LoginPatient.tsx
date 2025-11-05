@@ -2,9 +2,10 @@
 // src/pages/LoginPatient.tsx
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { loginPatient } from "../Services/patientApi";
-import { AuthContext } from "../Context/AuthContext";
+import api from "../../Services/client";
+import Cookies from "js-cookie";
+import { loginPatient } from "../../Services/patientApi";
+import { AuthContext } from "../../Context/AuthContext"; // ✅ Import AuthContext
 
 export default function LoginPatient() {
   const [email, setEmail] = useState("");

@@ -1,370 +1,94 @@
-//   import React from "react";
-//   import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
-
-//   // Pages
-//   import RegisterPatient from "./pages/RegisterPatient";
-//   import RegisterDoctor from "./pages/RegisterDoctor";
-//   import RegisterClinic from "./pages/RegisterClinic";
-//   import { AuthProvider } from "../src/Context/AuthContext"; // <-- adjust path as needed
-
-// import LoginClinic from "./pages/LoginClinic";
-// import Layout from "../Layout";
-// import Home from "./pages/Home";
-// import AllClinic from "./pages/AllClinic";
-// import AllDoctors from "./pages/AllDoctors";
-// import { ClinicDashboard } from "./pages/ClinicDashboard";
-// import ClinicDoctors from "./pages/ClinicDoctors";
-// import AddDoctor from "./pages/AddDoctor";
-// import TimeSlots from "./pages/TimeSlots";
-// import DoctorLogin from "./pages/DoctorLogin";
-// import DoctorDashboard from "./pages/DoctorDashboard";
-// import DoctorProfile from "./pages/DoctorProfile";
-// import ClinicProfile from "./pages/ClinicProfile";
-// import LoginPatient from "./pages/LoginPatient";
-// import AllPatient from "./pages/AllPatient";
-// import PatientChat from "./pages/PatientChat";
-// import DoctorChat from "./pages/DoctorChat";
-// import ViewDoctorProfile from "./pages/ViewDoctorProfile";
-// import RegisterLab from "./pages/RegisterLab";
-// import LoginLab from "./pages/LoginLab";
-// import AdminLab from "./pages/AdminLab";
-// import AllLabTest from "./pages/AllLabTest";
-// import LabTestDetails from "./pages/LabTestDetails";
-// import Patients from "./pages/LabPatients";
-// import LabTests from "./pages/LabTests";
-// import LabProfile from "./pages/LabProfile";
-// import LabDashboard from "./pages/LabDashboard";
-
-// import AdminDashboard from "./pages/AdminDashboard";
-// import EditDoctorProfile from "./components/EditDoctorProfile";
-// import AdminDoctor from "./pages/AdminDoctor";
-// import AdminClinic from "./pages/AdminClinic";
-// import AdminLogin from "./pages/AdminLogin";
-
-//   import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
-//   import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
-//   import AllClinicPatients from "./pages/AllClinicPatients";
-//   import ClinicDetails from "./pages/ClinicDetails";
-//   // import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
-//   // import DoctorAppointments from "./pages/DoctorAppointments";
- 
-//   import UserProfile from "./pages/UserProfile";
-//   import EMR from "./pages/EMR";
-//   import { PackageDetails } from "./pages/PackageDetails";
-
-// import AddEmr from "./pages/AddEmr";
-
-
-//             <Route
-//               path="/clinicDashboard/:clinicId"
-//               element={<ClinicDashboard />} 
-//             >
-//               <Route
-//                 index
-//                 element={<ClinicHomeDashboard/>}
-//               />
-//               <Route path="clinic-profile" element={<ClinicProfile/>} />
-              
-//               <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
-//               <Route
-//                 path="all-clinic-doctors/:drId/availability"
-//                 element={<TimeSlots />}
-//               />
-//               <Route path="add-doctor" element={<AddDoctor />} />
-//               <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-//               <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-//             </Route>
-
-//   //           <Route path="/doctor/login" element={<DoctorLogin />} />
-
-//   //           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
-//   //            <Route index element={<DoctorHomeDashboard />} />
-//   //             <Route
-//   //               path="doctor-home-dashboard"
-//   //               element={<DoctorHomeDashboard/>}
-//   //             />
-//   //             <Route path="doctorProfile" element={<DoctorProfile />} />
-//   //             <Route path="time-slots" element={<TimeSlots />} />
-//   //             <Route path="appointments" element={<DoctorAppointments />} />
-//   //             <Route path="patients" element={<AllPatient />} />
-//   //             <Route path="settings" element={<p>Settings Page</p>} />
-//   //           </Route>
-
-//   //           <Route path="/patient-login" element={<LoginPatient />} />
-//   //           <Route path="/patient-chat" element={<PatientChat />} />
-//   //           <Route path="/doctor-chat" element={<DoctorChat />} />
-//   //           <Route
-//   //             path="/view-doctor-profile/:drId"
-//   //             element={<ViewDoctorProfile />}
-//   //           />
-//   //           <Route path="clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
-//   //           <Route path="/lab-register" element={<RegisterLab />} />
-//   //           <Route path="/lab-login" element={<LoginLab />} />
-//   //           <Route path="/admin-lab" element={<AdminLab />} />
-//   //           <Route path="all-lab-test" element={<AllLabTest />} />
-//   //           <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
-              
-//   //         </Routes>
-//   //       </div>
-//   //     </>
-//   //   );
-//   // };
-
-//   const App: React.FC = () => {
-//     return (
-//       <AuthProvider>
-//         {" "}
-//         {/* <-- Wrap the app here */}
-//         <Router>
-//           <Routes>
-//             {/* Layout route that conditionally shows Navbar */}
-//             <Route element={<Layout />}>
-//               <Route path="/" element={<Home />} />
-//               <Route path="/patient-register" element={<RegisterPatient />} />
-//               <Route path="/doctor-register" element={<RegisterDoctor />} />
-//               <Route path="/clinic-register" element={<RegisterClinic />} />
-//               <Route path="/all-clinics" element={<AllClinic />} />
-//               <Route path="/all-doctors" element={<AllDoctors />} />
-//               <Route path="/clinic-login" element={<LoginClinic />} />
-//               <Route path="/patient-login" element={<LoginPatient />} />
-//               <Route path="/patient-chat" element={<PatientChat />} />
-//               <Route path="/doctor-chat" element={<DoctorChat />} />
-//               <Route path="/doctor/login" element={<DoctorLogin />} />
-//               <Route path="/clinic/:id" element={<ClinicDetails/>}/>
-              
-//               <Route
-//                 path="/view-doctor-profile/:drId"
-//                 element={<ViewDoctorProfile />}
-//               />
-//               <Route path="/lab-register" element={<RegisterLab />} />
-//               <Route path="/lab-login" element={<LoginLab />} />
-//               <Route path="/admin-lab" element={<AdminLab />} />
-//               <Route path="/all-lab-test" element={<AllLabTest />} />
-//               <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
-//               <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
-//             </Route>
-
-            
-           
-              
-//               <Route path="/user-profile/:id" element={<UserProfile />} />
-//               <Route path="/emr/:id" element={<EMR />} />
-              
-           
-
-//             {/* Routes without navbar */}
-
-//             <Route
-//               path="/clinicDashboard/:clinicId"
-//               element={<ClinicDashboard />}
-//             >
-//               <Route
-//                 index
-//                 element={<ClinicHomeDashboard/>}
-//               />
-//               <Route
-//                 path="clinic-home-dashboard"
-//                 element={<ClinicHomeDashboard/>}/>
-        
-//               <Route path="clinic-profile" element={<ClinicProfile />} />
-//               <Route path="doctorProfile" element={<DoctorProfile />} />
-//               <Route
-//                 path="all-clinic-doctors/:drId/availability"
-//                 element={<TimeSlots />}
-//               />
-//               <Route path="add-doctor" element={<AddDoctor />} />
-//               <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-//               <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
-              
-//               <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-//             </Route>
-            
-//             <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
-//             <Route
-//               index
-//               element={<ClinicHomeDashboard/>}
-//             />
-//             <Route path="clinic-profile" element={<ClinicProfile/>} />
-            
-//             <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
-//             <Route
-//               path="all-clinic-doctors/:drId/availability"
-//               element={<TimeSlots />}
-//             />
-//             <Route path="add-doctor" element={<AddDoctor />} />
-//             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-//             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-//           </Route>
-
-
-
-// const App: React.FC = () => {
-//   return (
-//     <AuthProvider>
-//       {" "}
-//       {/* <-- Wrap the app here */}
-//       <Router>
-//         <Routes>
-//           {/* Layout route that conditionally shows Navbar */}
-//           <Route element={<Layout />}>
-        
-//             <Route path="/" element={<Home />} />
-//             <Route path="/patient-register" element={<RegisterPatient />} />
-//             <Route path="/doctor-register" element={<RegisterDoctor />} />
-//             <Route path="/clinic-register" element={<RegisterClinic />} />
-//             <Route path="/all-clinics" element={<AllClinic />} />
-//             <Route path="/all-doctors" element={<AllDoctors />} />
-//             <Route path="/clinic-login" element={<LoginClinic />} />
-//             <Route path="/patient-login" element={<LoginPatient />} />
-//             <Route path="/patient-chat" element={<PatientChat />} />
-//             <Route path="/doctor-chat" element={<DoctorChat />} />
-//             <Route path="/doctor/login" element={<DoctorLogin />} />
-//              <Route path="/clinic/:id" element={<ClinicDetails/>}/>
-//             <Route
-//               path="/view-doctor-profile/:drId"
-//               element={<ViewDoctorProfile />}
-//             />
-//             <Route path="/lab-register" element={<RegisterLab />} />
-//             <Route path="/lab-login" element={<LoginLab />} />
-//             <Route path="/admin-lab" element={<AdminLab />} />
-//             <Route path="/all-lab-test" element={<AllLabTest />} />
-//             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
-//             <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
-//             <Route path="/add-emr" element={<AddEmr />} />
-//           </Route>
-
-//           {/* Routes without navbar */}
-
-//           <Route
-//             path="/clinicDashboard/:clinicId"
-//             element={<ClinicDashboard />}
-//           >
-//              <Route
-//               index
-//               element={<ClinicHomeDashboard/>}
-//             />
-//              <Route
-//               path="clinic-home-dashboard"
-//                element={<ClinicHomeDashboard/>}/>
-       
-//             <Route path="clinic-profile" element={<ClinicProfile />} />
-//             <Route path="doctorProfile" element={<DoctorProfile />} />
-//             <Route
-//               path="all-clinic-doctors/:drId/availability"
-//               element={<TimeSlots />}
-//             />
-//             <Route path="add-doctor" element={<AddDoctor />} />
-//             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-//              <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
-            
-//             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-//           </Route>
-          
-//               <Route path="patients" element={<AllPatient />} />
-              
-//                 <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
-//             </Route>
-//             <Route path="/adminDashboard" element={<AdminDashboard />}>
-//               <Route path="admin-lab" element={<AdminLab />} />
-//               <Route path="admin-doctor" element={<AdminDoctor />} />
-              
-//               <Route path="admin-clinic" element={<AdminClinic />} />
-//             </Route>
-
-//           <Route path="/lab-dashboard" element={<LabDashboard />}>
-//             {" "}
-//             <Route
-//               index
-//               element={
-//                 <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
-//               }
-//             />
-//             <Route path="patients" element={<Patients />} />
-//             <Route path="tests" element={<LabTests />} />
-//             <Route path="profile" element={<LabProfile />} />
-//           </Route>
-        
-//           <Route path="/admin/login" element={<AdminLogin />}></Route>
-          
-        
-//         </Routes>
-//       </Router>
-//     </AuthProvider>
-//   );
-// };
-
-//   export default App;
-
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
-// Context
-import { AuthProvider } from "./Context/AuthContext";
+// Pages
+import RegisterPatient from "./pages/RegisterPages/RegisterPatient";
+import RegisterDoctor from "./pages/RegisterPages/RegisterDoctor";
+import RegisterClinic from "./pages/RegisterPages/RegisterClinic";
+import { AuthProvider } from "../src/Context/AuthContext"; // <-- adjust path as needed
 
-// Layout & Pages
+import LoginClinic from "./pages/LoginPages/LoginClinic";
 import Layout from "../Layout";
 import Home from "./pages/Home";
-import RegisterPatient from "./pages/RegisterPatient";
-import RegisterDoctor from "./pages/RegisterDoctor";
-import RegisterClinic from "./pages/RegisterClinic";
-import LoginClinic from "./pages/LoginClinic";
-import LoginPatient from "./pages/LoginPatient";
-import DoctorLogin from "./pages/DoctorLogin";
-import RegisterLab from "./pages/RegisterLab";
-import LoginLab from "./pages/LoginLab";
-import AdminLogin from "./pages/AdminLogin";
-
-// Common
 import AllClinic from "./pages/AllClinic";
 import AllDoctors from "./pages/AllDoctors";
-import ViewDoctorProfile from "./pages/ViewDoctorProfile";
-import ClinicDetails from "./pages/ClinicDetails";
-import UserProfile from "./pages/UserProfile";
-
-import AddEmr from "./pages/AddEmr";
-import PatientChat from "./pages/PatientChat";
-import DoctorChat from "./pages/DoctorChat";
-
-// Clinic
-import { ClinicDashboard } from "./pages/ClinicDashboard";
-import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
-import ClinicProfile from "./pages/ClinicProfile";
-import ClinicDoctors from "./pages/ClinicDoctors";
+import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
+import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
-import AllClinicPatients from "./pages/AllClinicPatients";
-import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
-
-// Doctor
-import DoctorDashboard from "./pages/DoctorDashboard";
-import DoctorProfile from "./pages/DoctorProfile";
-import EditDoctorProfile from "./components/EditDoctorProfile";
+import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
+import DoctorDashboard from "./pages/DoctorPages/DoctorDashboard";
+import DoctorProfile from "./pages/DoctorPages/DoctorProfile";
+import ClinicProfile from "./pages/ClinicPages/ClinicProfile";
+import LoginPatient from "./pages/LoginPages/LoginPatient";
 import AllPatient from "./pages/AllPatient";
-
-// Lab
-import LabDashboard from "./pages/LabDashboard";
-import Patients from "./pages/LabPatients";
-import LabTests from "./pages/LabTests";
-import LabProfile from "./pages/LabProfile";
+import PatientChat from "./pages/PatientChat";
+import DoctorChat from "./pages/DoctorPages/DoctorChat";
+import ViewDoctorProfile from "./pages/ViewDoctorProfile";
+import RegisterLab from "./pages/RegisterPages/RegisterLab";
+import LoginLab from "./pages/LoginPages/LoginLab";
+import AdminLab from "./pages/AdminPages/AdminLab";
 import AllLabTest from "./pages/AllLabTest";
-import LabTestDetails from "./pages/LabTestDetails";
+import LabTestDetails from "./pages/LabPages/LabTestDetails";
+import Patients from "./pages/LabPages/LabPatients";
+import LabTests from "./pages/LabPages/LabTests";
+import LabProfile from "./pages/LabPages/LabProfile";
+import LabDashboard from "./pages/LabPages/LabDashboard";
+// import AppointmentForm from "./pages/AppointmentForm";
+// import DoctorAppointments from "./pages/DoctorAppointments";
+// import AllClinicPatients from "./pages/AllClinicPatients";
+// import DoctorHomeDashboard from "./pages/DoctorHomeDashboard";
+// import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
+// import ClinicDoctorProfile from "./pages/ClinicDoctorProfile";
+import AdminDashboard from "./pages/AdminPages/AdminDashboard";
+import EditDoctorProfile from "./components/EditDoctorProfile";
+import AdminDoctor from "./pages/AdminPages/AdminDoctor";
+import AdminClinic from "./pages/AdminPages/AdminClinic";
+import AdminLogin from "./pages/AdminPages/AdminLogin";
+
+// import Navbar from "./components/Navbar";
+// import { ToastContainer } from "react-toastify";
+import ClinicHomeDashboard from "./pages/ClinicPages/ClinicHomeDashboard";
+import ClinicDoctorProfile from "./pages/ClinicPages/ClinicDoctorProfile";
+import AllClinicPatients from "./pages/AllClinicPatients";
+import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
+import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
+import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import { PackageDetails } from "./pages/PackageDetails";
 
-// Admin
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminDoctor from "./pages/AdminDoctor";
-import AdminClinic from "./pages/AdminClinic";
-import AdminLab from "./pages/AdminLab";
-import UserDashboard from "./pages/UserDashboard";
-import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
+
+          <Route
+            path="/clinicDashboard/:clinicId"
+            element={<ClinicDashboard />} 
+          >
+             <Route
+              index
+              element={<ClinicHomeDashboard/>}
+            />
+            <Route path="clinic-profile" element={<ClinicProfile/>} />
+            
+            <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
+            <Route
+              path="all-clinic-doctors/:drId/availability"
+              element={<TimeSlots />}
+            />
+            <Route path="add-doctor" element={<AddDoctor />} />
+            <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
+            <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
+          </Route>
+
+
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
+      {" "}
+      {/* <-- Wrap the app here */}
       <Router>
         <Routes>
-          {/* Layout routes (with navbar) */}
+          {/* Layout route that conditionally shows Navbar */}
           <Route element={<Layout />}>
+        
             <Route path="/" element={<Home />} />
             <Route path="/patient-register" element={<RegisterPatient />} />
             <Route path="/doctor-register" element={<RegisterDoctor />} />
@@ -373,69 +97,88 @@ const App: React.FC = () => {
             <Route path="/all-doctors" element={<AllDoctors />} />
             <Route path="/clinic-login" element={<LoginClinic />} />
             <Route path="/patient-login" element={<LoginPatient />} />
-            <Route path="/doctor/login" element={<DoctorLogin />} />
-            <Route path="/lab-register" element={<RegisterLab />} />
-            <Route path="/lab-login" element={<LoginLab />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/clinic/:id" element={<ClinicDetails />} />
-            <Route path="/view-doctor-profile/:drId" element={<ViewDoctorProfile />} />
             <Route path="/patient-chat" element={<PatientChat />} />
             <Route path="/doctor-chat" element={<DoctorChat />} />
-            <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
-            <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
+            <Route path="/doctor/login" element={<DoctorLogin />} />
+             <Route path="/clinic/:id" element={<ClinicDetails/>}/>
+            <Route
+              path="/view-doctor-profile/:drId"
+              element={<ViewDoctorProfile />}
+            />
+            <Route path="/lab-register" element={<RegisterLab />} />
+            <Route path="/lab-login" element={<LoginLab />} />
+            <Route path="/admin-lab" element={<AdminLab />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
-         
-              <Route path="/user-dashboard/:id" element={<UserDashboard />} >
-              <Route index element={<UserProfile />} />
-               <Route path="user-profile" element={<UserProfile />} />
-                  <Route path="add-emr" element={<AddEmr />} />
-              </Route>
+            <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
+            <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
           </Route>
 
-          {/* Clinic Dashboard */}
-          <Route path="/clinicDashboard/:clinicId" element={<ClinicDashboard />}>
-            <Route index element={<ClinicHomeDashboard />} />
-            <Route path="clinic-home-dashboard" element={<ClinicHomeDashboard />} />
+          {/* Routes without navbar */}
+
+          <Route
+            path="/clinicDashboard/:clinicId"
+            element={<ClinicDashboard />}
+          >
+             <Route
+              index
+              element={<ClinicHomeDashboard/>}
+            />
+             <Route
+              path="clinic-home-dashboard"
+               element={<ClinicHomeDashboard/>}/>
+       
             <Route path="clinic-profile" element={<ClinicProfile />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
-            <Route path="all-clinic-doctors/:drId/availability" element={<TimeSlots />} />
+            <Route
+              path="all-clinic-doctors/:drId/availability"
+              element={<TimeSlots />}
+            />
             <Route path="add-doctor" element={<AddDoctor />} />
             <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-            <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
-            <Route path="all-clinic-patients" element={<AllClinicPatients />} />
+             <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
+            
+            <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
           </Route>
-
-          {/* Doctor Dashboard */}
+          
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
-           <Route index element={<DoctorDashboardHome />} />
           <Route
-               path="doctor-home-dashboard"
-               element={<DoctorDashboardHome/>}
-             />
-           
-             <Route path="time-slots" element={<TimeSlots />} />
-            <Route path="patients" element={<AllPatient />} />
-            <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
+             index
+              element={<DoctorDashboardHome/>}
+            />
+             <Route
+              path="doctor-home-dashboard"
+              element={<DoctorDashboardHome/>}
+            />
+            <Route path="appointments" element={<DoctorAppointments />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
+            <Route path="time-slots" element={<TimeSlots />} />
+         
+            <Route path="patients" element={<AllPatient />} />
+            
+              <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
           </Route>
-
-          {/* Admin Dashboard */}
           <Route path="/adminDashboard" element={<AdminDashboard />}>
             <Route path="admin-lab" element={<AdminLab />} />
             <Route path="admin-doctor" element={<AdminDoctor />} />
+            
             <Route path="admin-clinic" element={<AdminClinic />} />
           </Route>
 
-          {/* Lab Dashboard */}
           <Route path="/lab-dashboard" element={<LabDashboard />}>
-            <Route index element={<h1 className="text-2xl font-bold">Welcome to Dashboard</h1>} />
+            {" "}
+            <Route
+              index
+              element={
+                <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
+              }
+            />
             <Route path="patients" element={<Patients />} />
             <Route path="tests" element={<LabTests />} />
             <Route path="profile" element={<LabProfile />} />
           </Route>
-
-       
         
+          <Route path="/admin/login" element={<AdminLogin />}></Route>
+         
         
         </Routes>
       </Router>

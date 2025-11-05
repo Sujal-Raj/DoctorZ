@@ -162,6 +162,8 @@ export const bookAppointment = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
+    const roomId = `room_${doctorId}_${userId}_${Date.now()}`;
+
     // check if slot already booked
     const existingBooking = await BookingModel.findOne({ slotId, datetime, status: "booked" });
     if (existingBooking) {
@@ -178,6 +180,7 @@ export const bookAppointment = async (req: Request, res: Response) => {
       mode,
       fees,
       status: "booked",
+      roomId,
     });
 
     await booking.save();
@@ -191,6 +194,7 @@ export const bookAppointment = async (req: Request, res: Response) => {
     return res.status(201).json({
       message: "Appointment booked successfully",
       booking,
+      roomId,
     });
   } catch (err) {
     console.error("Booking error:", err);

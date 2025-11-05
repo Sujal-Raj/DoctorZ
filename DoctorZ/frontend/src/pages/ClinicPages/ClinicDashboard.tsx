@@ -1,6 +1,6 @@
 
 import { Outlet } from "react-router-dom";
-import ClinicSidebar from "../components/ClinicSidebar";
+import ClinicSidebar from "../../components/ClinicSidebar";
 import { useParams } from "react-router-dom";
 
 export const ClinicDashboard = () => {

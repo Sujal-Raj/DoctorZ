@@ -798,9 +798,11 @@
 import React, { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../Services/mainApi";
-import { Phone, MapPin, Mail, Clock, Search } from "lucide-react";
-import clinicImage from "../assets/clinic.jpg";
+import api from "../../Services/mainApi";
+import { Phone, MapPin, Mail, Clock, Award, Search } from "lucide-react";
+// import api from "../Services/mainApi";
+// import { Phone, MapPin, Mail, Clock, Search } from "lucide-react";
+import clinicImage from "../../assets/clinic.jpg";
 
 // ---------- Types ----------
 interface Doctor {

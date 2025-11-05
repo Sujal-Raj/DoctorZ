@@ -1,9 +1,13 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { registerDoctor } from "../../Services/doctorApi";
+import Cookies from "js-cookie";
+import * as jwt_decode from "jwt-decode";
+import api from "../../Services/client";
 
 import { useOutletContext } from "react-router-dom";
-import { registerDoctor } from "../Services/doctorApi";
+// import { registerDoctor } from "../Services/doctorApi";
 
 type DoctorFormInputs = {
   fullName: string;
