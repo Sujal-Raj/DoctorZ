@@ -14,11 +14,7 @@ type EMRInputs = {
 
 const AddEmr: React.FC = () => {
 
-// const token = Cookies.get("patientToken") || "";
-// const decoded: any = token ? jwtDecode(token) : {};
 
-// const patientId = decoded.id;
-// console.log("Patient ID from token:", patientId);
 const patientId=useParams().id;
 
   const { register, handleSubmit, reset } = useForm<EMRInputs>();
@@ -71,7 +67,7 @@ const patientId=useParams().id;
   return (
    
 
-      <div className="w-full bg-white/80 backdrop-blur-xl rounded-lg shadow-xl p-8">
+      <div className="w-full bg-white backdrop-blur-xl rounded-lg shadow-xl p-8">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
           Add Medical Record (EMR)
         </h2>

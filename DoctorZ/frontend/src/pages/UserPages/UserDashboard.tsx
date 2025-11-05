@@ -34,7 +34,7 @@ function UserDashboard() {
 
       {/* ✅ Responsive Wrapper */}
       <div className="flex w-full md:w-[90%] max-w-7xl 
-                      bg-white md:rounded-3xl md:shadow-xl 
+                      bg-white md:rounded-lg md:shadow-xl 
                       overflow-hidden md:flex-row flex-col">
 
         {/* ✅ SIDEBAR — hidden on mobile */}
@@ -97,7 +97,7 @@ function UserDashboard() {
         </aside>
 
         {/* ✅ CONTENT AREA */}
-        <main className="flex-1 p-4 md:p-10 bg-white md:bg-[#dadde1]">
+        <main className="flex-1 p-3 md:p-0 bg-gray-100 md:bg-[#dadde1]">
           <Outlet />
         </main>
       </div>
@@ -106,3 +106,7 @@ function UserDashboard() {
 }
 
 export default UserDashboard;
+
+
+
+

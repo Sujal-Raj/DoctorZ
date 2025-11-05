@@ -336,7 +336,7 @@ function UserProfile() {
     );
 
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-lg p-10 shadow-lg">
+    <div className="max-w-5xl mx-auto bg-white  p-10 shadow-lg">
       
       {/* ✅ HEADER */}
       <div className="flex justify-between items-center mb-10">
