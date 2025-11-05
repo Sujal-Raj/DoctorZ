@@ -1,3 +1,287 @@
+// import React from "react";
+// import { useForm } from "react-hook-form";
+// import { registerPatient } from "../Services/patientApi";
+// import "../index.css";
+
+// type PatientFormInputs = {
+//   fullName: string;
+//   gender: string;
+//   dob: string;
+//   email: string;
+//   password: string;
+//   mobileNumber: string;
+//   aadhar: string;
+//   city: string;
+//   pincode: string;
+//   abhaId: string;
+//   emergencyName: string;
+//   emergencyNumber: string;
+//   allergies: string;
+//   diseases: string;
+//   pastSurgeries: string;
+//   currentMedications: string;
+//   medicalReports?: FileList;
+// };
+
+// const RegisterPatient: React.FC = () => {
+//   const { register, handleSubmit } = useForm<PatientFormInputs>();
+
+//   const onSubmit = async (data: PatientFormInputs) => {
+//     const formData = new FormData();
+
+//     formData.append("fullName", data.fullName);
+//     formData.append("gender", data.gender);
+//     formData.append("dob", data.dob);
+//     formData.append("email", data.email);
+//     formData.append("password", data.password);
+//     formData.append("mobileNumber", data.mobileNumber);
+//     formData.append("aadhar", data.aadhar);
+//     formData.append("abhaId", data.abhaId);
+
+//     formData.append("city", data.city);
+//     formData.append("pincode", data.pincode);
+//     formData.append("name", data.emergencyName);
+//     formData.append("number", data.emergencyNumber);
+
+//     formData.append(
+//       "allergies",
+//       JSON.stringify(data.allergies?.split(",").map((s) => s.trim()) || [])
+//     );
+//     formData.append(
+//       "diseases",
+//       JSON.stringify(data.diseases?.split(",").map((s) => s.trim()) || [])
+//     );
+
+//     formData.append(
+//       "pastSurgeries",
+//       JSON.stringify(data.pastSurgeries?.split(",").map((s) => s.trim()) || [])
+//     );
+
+//     formData.append(
+//       "currentMedications",
+//       JSON.stringify(
+//         data.currentMedications?.split(",").map((s) => s.trim()) || []
+//       )
+//     );
+
+//     if (data.medicalReports?.length) {
+//       Array.from(data.medicalReports).forEach((file) =>
+//         formData.append("medicalReports", file)
+//       );
+//     }
+
+//     await registerPatient(formData);
+//     alert("✅ Registered Successfully!");
+//   };
+
+//   return (
+//     <div className="w-full  min-h-[100vh] bg-gradient-to-br from-blue-50 to-cyan-100 flex justify-center items-start pt-10 pb-20 px-4 overflow-hidden">
+//       <div className="w-full max-w-4xl bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-5 md:p-10 ">
+//         <h2 className="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">
+//           Patient Registration
+//         </h2>
+
+//         <form
+//           onSubmit={handleSubmit(onSubmit)}
+//           className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
+//         >
+//           {/* Full Name */}
+//           <div>
+//             <label className="font-medium text-gray-700">Full Name</label>
+//             <input
+//               placeholder="Ritika Sharma"
+//               {...register("fullName")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Gender */}
+//           <div>
+//             <label className="font-medium text-gray-700">Gender</label>
+//             <select {...register("gender")} className="inputBox">
+//               <option value="">Select Gender</option>
+//               <option>Male</option>
+//               <option>Female</option>
+//               <option>Other</option>
+//             </select>
+//           </div>
+
+//           {/* DOB */}
+//           <div>
+//             <label className="font-medium text-gray-700">Date of Birth</label>
+//             <input type="date" {...register("dob")} className="inputBox" />
+//           </div>
+
+//           {/* Email */}
+//           <div>
+//             <label className="font-medium text-gray-700">Email</label>
+//             <input
+//               placeholder="example@gmail.com"
+//               {...register("email")}
+//               className="inputBox"
+//               type="email"
+//             />
+//           </div>
+
+//           {/* Password */}
+//           <div>
+//             <label className="font-medium text-gray-700">Password</label>
+//             <input
+//               placeholder="Enter password"
+//               type="password"
+//               {...register("password")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Mobile */}
+//           <div>
+//             <label className="font-medium text-gray-700">Mobile Number</label>
+//             <input
+//               placeholder="9876543210"
+//               {...register("mobileNumber")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Aadhar */}
+//           <div>
+//             <label className="font-medium text-gray-700">Aadhar</label>
+//             <input
+//               placeholder="123456789012"
+//               {...register("aadhar")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* City */}
+//           <div>
+//             <label className="font-medium text-gray-700">City</label>
+//             <input
+//               placeholder="Bhilai"
+//               {...register("city")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Pincode */}
+//           <div>
+//             <label className="font-medium text-gray-700">Pincode</label>
+//             <input
+//               placeholder="490001"
+//               {...register("pincode")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* ABHA */}
+//           <div>
+//             <label className="font-medium text-gray-700">ABHA ID</label>
+//             <input
+//               placeholder="ABHA123456"
+//               {...register("abhaId")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Allergies */}
+//           <div>
+//             <label className="font-medium text-gray-700">
+//               Allergies (Optional)
+//             </label>
+//             <input
+//               placeholder="Dust, Peanuts"
+//               {...register("allergies")}
+//               className="inputBox"
+//             />
+//           </div>
+//           {/* Diseases */}
+//           <div>
+//             <label className="font-medium text-gray-700">
+//               Diseases (Optional)
+//             </label>
+//             <input
+//               placeholder="Diabetes, Asthma"
+//               {...register("diseases")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Past Surgeries */}
+//           <div>
+//             <label className="font-medium text-gray-700">
+//               Past Surgeries (Optional)
+//             </label>
+//             <input
+//               placeholder="Appendix Removal"
+//               {...register("pastSurgeries")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Current Medications */}
+//           <div>
+//             <label className="font-medium text-gray-700">
+//               Current Medications (Optional)
+//             </label>
+//             <input
+//               placeholder="Paracetamol, Vitamin D"
+//               {...register("currentMedications")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Medical Reports */}
+//           <div className="md:col-span-2">
+//             <label className="font-medium text-gray-700">
+//               Medical Reports (Multiple)
+//             </label>
+//             <input
+//               type="file"
+//               multiple
+//               {...register("medicalReports")}
+//               className="mt-1 w-full"
+//             />
+//           </div>
+
+//           {/* Emergency Name */}
+//           <div>
+//             <label className="font-medium text-gray-700">
+//               Emergency Contact Name
+//             </label>
+//             <input
+//               placeholder="Rahul Sharma"
+//               {...register("emergencyName")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Emergency Number */}
+//           <div>
+//             <label className="font-medium text-gray-700">
+//               Emergency Contact Number
+//             </label>
+//             <input
+//               placeholder="9876541230"
+//               {...register("emergencyNumber")}
+//               className="inputBox"
+//             />
+//           </div>
+
+//           {/* Submit */}
+//           <div className="col-span-1 md:col-span-2 text-center mt-4">
+//             <button className="px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition">
+//               Register Patient
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default RegisterPatient;
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { registerPatient } from "../Services/patientApi";
@@ -14,21 +298,28 @@ type PatientFormInputs = {
   city: string;
   pincode: string;
   abhaId: string;
+
   emergencyName: string;
   emergencyNumber: string;
+
   allergies: string;
   diseases: string;
   pastSurgeries: string;
   currentMedications: string;
   medicalReports?: FileList;
+
 };
 
 const RegisterPatient: React.FC = () => {
   const { register, handleSubmit } = useForm<PatientFormInputs>();
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
+
 
   const onSubmit = async (data: PatientFormInputs) => {
     const formData = new FormData();
+console.log("FILES SELECTED BY USER:", selectedFiles);
 
+    // Basic info
     formData.append("fullName", data.fullName);
     formData.append("gender", data.gender);
     formData.append("dob", data.dob);
@@ -36,13 +327,15 @@ const RegisterPatient: React.FC = () => {
     formData.append("password", data.password);
     formData.append("mobileNumber", data.mobileNumber);
     formData.append("aadhar", data.aadhar);
-    formData.append("abhaId", data.abhaId);
-
     formData.append("city", data.city);
     formData.append("pincode", data.pincode);
+    formData.append("abhaId", data.abhaId);
+
+    // Emergency
     formData.append("name", data.emergencyName);
     formData.append("number", data.emergencyNumber);
 
+    // Medical Record fields → Convert to array
     formData.append(
       "allergies",
       JSON.stringify(data.allergies?.split(",").map((s) => s.trim()) || [])
@@ -51,12 +344,10 @@ const RegisterPatient: React.FC = () => {
       "diseases",
       JSON.stringify(data.diseases?.split(",").map((s) => s.trim()) || [])
     );
-
     formData.append(
       "pastSurgeries",
       JSON.stringify(data.pastSurgeries?.split(",").map((s) => s.trim()) || [])
     );
-
     formData.append(
       "currentMedications",
       JSON.stringify(
@@ -64,19 +355,26 @@ const RegisterPatient: React.FC = () => {
       )
     );
 
-    if (data.medicalReports?.length) {
-      Array.from(data.medicalReports).forEach((file) =>
-        formData.append("medicalReports", file)
-      );
-    }
+    // File Uploads
+    
+  
+    selectedFiles.forEach((file) => {
+  formData.append("medicalReports", file);
+   
+});
+   for (let pair of formData.entries()) {
+  console.log(pair[0], pair[1]);
+}
+
+
 
     await registerPatient(formData);
     alert("✅ Registered Successfully!");
   };
 
   return (
-    <div className="w-full  min-h-[100vh] bg-gradient-to-br from-blue-50 to-cyan-100 flex justify-center items-start pt-10 pb-20 px-4 overflow-hidden">
-      <div className="w-full max-w-4xl bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-5 md:p-10 ">
+    <div className="w-full min-h-[100vh] bg-gradient-to-br from-blue-50 to-cyan-100 flex justify-center items-start pt-10 pb-20 px-4">
+      <div className="w-full max-w-4xl bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-5 md:p-10">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">
           Patient Registration
         </h2>
@@ -85,17 +383,16 @@ const RegisterPatient: React.FC = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full"
         >
-          {/* Full Name */}
+          {/* ✅ Normal Details */}
           <div>
             <label className="font-medium text-gray-700">Full Name</label>
             <input
-              placeholder="Ritika Sharma"
               {...register("fullName")}
               className="inputBox"
+              placeholder="Ritika Sharma"
             />
           </div>
 
-          {/* Gender */}
           <div>
             <label className="font-medium text-gray-700">Gender</label>
             <select {...register("gender")} className="inputBox">
@@ -106,169 +403,204 @@ const RegisterPatient: React.FC = () => {
             </select>
           </div>
 
-          {/* DOB */}
           <div>
             <label className="font-medium text-gray-700">Date of Birth</label>
             <input type="date" {...register("dob")} className="inputBox" />
           </div>
 
-          {/* Email */}
           <div>
             <label className="font-medium text-gray-700">Email</label>
             <input
-              placeholder="example@gmail.com"
               {...register("email")}
               className="inputBox"
-              type="email"
+              placeholder="example@gmail.com"
             />
           </div>
 
-          {/* Password */}
           <div>
             <label className="font-medium text-gray-700">Password</label>
             <input
-              placeholder="Enter password"
               type="password"
               {...register("password")}
               className="inputBox"
+              placeholder="Enter password"
             />
           </div>
 
-          {/* Mobile */}
           <div>
             <label className="font-medium text-gray-700">Mobile Number</label>
             <input
-              placeholder="9876543210"
               {...register("mobileNumber")}
               className="inputBox"
+              placeholder="9876543210"
             />
           </div>
 
-          {/* Aadhar */}
           <div>
             <label className="font-medium text-gray-700">Aadhar</label>
             <input
-              placeholder="123456789012"
               {...register("aadhar")}
               className="inputBox"
+              placeholder="123456789012"
             />
           </div>
 
-          {/* City */}
           <div>
             <label className="font-medium text-gray-700">City</label>
             <input
-              placeholder="Bhilai"
               {...register("city")}
               className="inputBox"
+              placeholder="Bhilai"
             />
           </div>
 
-          {/* Pincode */}
           <div>
             <label className="font-medium text-gray-700">Pincode</label>
             <input
-              placeholder="490001"
               {...register("pincode")}
               className="inputBox"
+              placeholder="490001"
             />
           </div>
 
-          {/* ABHA */}
           <div>
             <label className="font-medium text-gray-700">ABHA ID</label>
             <input
-              placeholder="ABHA123456"
               {...register("abhaId")}
               className="inputBox"
+              placeholder="ABHA123456"
             />
           </div>
 
-          {/* Allergies */}
-          <div>
-            <label className="font-medium text-gray-700">
-              Allergies (Optional)
-            </label>
-            <input
-              placeholder="Dust, Peanuts"
-              {...register("allergies")}
-              className="inputBox"
-            />
-          </div>
-          {/* Diseases */}
-          <div>
-            <label className="font-medium text-gray-700">
-              Diseases (Optional)
-            </label>
-            <input
-              placeholder="Diabetes, Asthma"
-              {...register("diseases")}
-              className="inputBox"
-            />
-          </div>
-
-          {/* Past Surgeries */}
-          <div>
-            <label className="font-medium text-gray-700">
-              Past Surgeries (Optional)
-            </label>
-            <input
-              placeholder="Appendix Removal"
-              {...register("pastSurgeries")}
-              className="inputBox"
-            />
-          </div>
-
-          {/* Current Medications */}
-          <div>
-            <label className="font-medium text-gray-700">
-              Current Medications (Optional)
-            </label>
-            <input
-              placeholder="Paracetamol, Vitamin D"
-              {...register("currentMedications")}
-              className="inputBox"
-            />
-          </div>
-
-          {/* Medical Reports */}
-          <div className="md:col-span-2">
-            <label className="font-medium text-gray-700">
-              Medical Reports (Multiple)
-            </label>
-            <input
-              type="file"
-              multiple
-              {...register("medicalReports")}
-              className="mt-1 w-full"
-            />
-          </div>
-
-          {/* Emergency Name */}
           <div>
             <label className="font-medium text-gray-700">
               Emergency Contact Name
             </label>
             <input
-              placeholder="Rahul Sharma"
               {...register("emergencyName")}
               className="inputBox"
+              placeholder="Rahul Sharma"
             />
           </div>
 
-          {/* Emergency Number */}
           <div>
             <label className="font-medium text-gray-700">
               Emergency Contact Number
             </label>
             <input
-              placeholder="9876541230"
               {...register("emergencyNumber")}
               className="inputBox"
+              placeholder="9876541230"
             />
           </div>
 
-          {/* Submit */}
+          {/* ✅ SECTION DIVIDER */}
+          <div className="md:col-span-2 mt-6">
+            <div className="w-full h-px bg-gray-300 my-4"></div>
+            <h3 className="text-xl font-semibold text-blue-700 mb-4">
+              Medical Records
+            </h3>
+          </div>
+
+          {/* ✅ Medical fields */}
+          <div>
+            <label className="font-medium text-gray-700">Allergies</label>
+            <input
+              {...register("allergies")}
+              className="inputBox"
+              placeholder="Dust, Peanuts"
+            />
+          </div>
+
+          <div>
+            <label className="font-medium text-gray-700">Diseases</label>
+            <input
+              {...register("diseases")}
+              className="inputBox"
+              placeholder="Asthma, Diabetes"
+            />
+          </div>
+
+          <div>
+            <label className="font-medium text-gray-700">Past Surgeries</label>
+            <input
+              {...register("pastSurgeries")}
+              className="inputBox"
+              placeholder="Appendix Removal"
+            />
+          </div>
+
+          <div>
+            <label className="font-medium text-gray-700">
+              Current Medications
+            </label>
+            <input
+              {...register("currentMedications")}
+              className="inputBox"
+              placeholder="Paracetamol, Vitamin D"
+            />
+          </div>
+
+          {/* ✅ Dropbox-Style File Upload */}
+          <div className="md:col-span-2">
+            <label className="font-medium text-gray-700">
+              Upload Medical Reports
+            </label>
+
+            <div
+              className="
+                mt-2 border-2 border-dashed border-blue-300 rounded-xl p-6 
+                bg-blue-50/30 hover:bg-blue-50 transition cursor-pointer
+                flex flex-col items-center justify-center text-center
+                relative
+              "
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 text-blue-500 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M3 16l5-5 4 4 8-8" />
+                <path d="M14 7h7v7" />
+              </svg>
+
+              <p className="text-gray-600 font-medium">
+                Drag & Drop files here
+              </p>
+              <p className="text-gray-400 text-sm">or click to browse</p>
+             
+              
+<input
+  type="file"
+  multiple
+  accept="image/*,application/pdf"
+  {...register("medicalReports")}
+  onChange={(e) => {
+    const files = Array.from(e.target.files || []);
+    console.log("Selected:", files);
+    setSelectedFiles(files);
+  }}
+  className="absolute inset-0 opacity-0 cursor-pointer"
+/>
+
+
+            </div>
+           
+          </div>
+           {selectedFiles.length > 0 && (
+              <ul className="mt-3 space-y-1 text-gray-700 text-sm">
+                {selectedFiles.map((file, index) => (
+                  <li key={index} className="flex items-center gap-2">
+                    📄 {file.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+          {/* ✅ Submit */}
           <div className="col-span-1 md:col-span-2 text-center mt-4">
             <button className="px-6 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition">
               Register Patient

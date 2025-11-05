@@ -71,7 +71,7 @@ const patientId=useParams().id;
   return (
    
 
-      <div className="w-full max-w-3xl bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-8">
+      <div className="w-full bg-white/80 backdrop-blur-xl rounded-lg shadow-xl p-8">
         <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
           Add Medical Record (EMR)
         </h2>

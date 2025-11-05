@@ -1,115 +1,106 @@
 
-// UserDashboard.jsx
+
+
+
+
 import { Outlet, NavLink, useParams, useNavigate } from "react-router-dom";
-
-
-// ✅ Lucide Icons
-import { User, CalendarDays, FilePlus2, Bell, LogOut } from "lucide-react";
-import { useEffect } from "react";
+import { User, CalendarDays, FilePlus2, Bell } from "lucide-react";
+import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "../Context/AuthContext";
+
 function UserDashboard() {
- 
-const  patientId=useParams().id;
-const navigate=useNavigate();
-console.log("Patient ID from token:", patientId);
- const token = Cookies.get("patientToken");
+  const { user } = useContext(AuthContext);
+  const patientId = useParams().id;
+  const navigate = useNavigate();
+  const token = Cookies.get("patientToken");
+  console.log("Patient ID from params:", user);
   useEffect(() => {
-   
-    console.log("Token in Dashboard:", token);
-   
     if (!token) {
       navigate("/patient-login");
       return;
     }
-
     try {
-      jwtDecode(token); // just to confirm token is valid
+      jwtDecode(token);
     } catch (err) {
       Cookies.remove("patientToken");
       navigate("/patient-login");
     }
   }, [token, navigate]);
+
   return (
-    <div className="flex h-screen w-full bg-gray-100 p-6 gap-6">
+    <div className="w-full flex justify-center bg-gray-100 py-4 md:py-10">
 
-      {/* LEFT CARD */}
-      <div className="w-80 bg-white rounded-xl shadow p-6 flex flex-col items-center">
-        
-        {/* Profile Image */}
-        <div className="w-24 h-24 bg-gray-300 rounded-full" />
+      {/* ✅ Responsive Wrapper */}
+      <div className="flex w-full md:w-[90%] max-w-7xl 
+                      bg-white md:rounded-3xl md:shadow-xl 
+                      overflow-hidden md:flex-row flex-col">
 
-        {/* Name & Email */}
-        <h2 className="mt-3 text-xl font-semibold"></h2>
-        <p className="text-gray-600 text-sm"></p>
+        {/* ✅ SIDEBAR — hidden on mobile */}
+        <aside className="hidden md:block w-72 bg-gradient-to-b 
+                          from-[#4C6EF5] to-[#5A4CF5] text-white p-6 relative">
 
-        {/* Menu */}
-        <div className="w-full mt-8 flex flex-col gap-3">
+         
+          <div className="flex items-center gap-3 mb-10">
+            <img
+              src="https://i.pravatar.cc/100?img=12"
+              className="w-12 h-12 rounded-full"
+            />
+            <div>
+              <h2 className="text-sm font-semibold">{user?.name}</h2>
+              <p className="text-xs text-blue-100">{user?.email}</p>
+            </div>
+          </div>
 
-          {/* ✅ Profile */}
-          <NavLink
-            to="user-profile"
-            className={({ isActive }) =>
-              `py-3 px-4 rounded-lg flex items-center gap-3 ${
-                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <User size={18} /> My Profile
-          </NavLink>
+          <nav className="flex flex-col gap-3">
+            <NavLink
+              to="user-profile"
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-4 py-3 rounded-lg transition 
+                 ${isActive ? "bg-white text-indigo-700 shadow-md" : "text-blue-100 hover:bg-white/10"}`
+              }
+            >
+              <User size={18} /> My Profile
+            </NavLink>
 
-          {/* ✅ Appointment */}
-          <NavLink
-            to={`/user/appointments/${patientId}`}
-            className={({ isActive }) =>
-              `py-3 px-4 rounded-lg flex items-center gap-3 ${
-                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <CalendarDays size={18} /> Appointment
-          </NavLink>
+            <NavLink
+              to={`/user/appointments/${patientId}`}
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-4 py-3 rounded-lg transition 
+                 ${isActive ? "bg-white text-indigo-700 shadow-md" : "text-blue-100 hover:bg-white/10"}`
+              }
+            >
+              <CalendarDays size={18} /> Appointment
+            </NavLink>
 
-          {/* ✅ Add EMR */}
-          <NavLink
-            to="add-emr"
-            className={({ isActive }) =>
-              `py-3 px-4 rounded-lg flex items-center gap-3 ${
-                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <FilePlus2 size={18} /> Add EMR
-          </NavLink>
+            <NavLink
+              to="add-emr"
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-4 py-3 rounded-lg transition 
+                 ${isActive ? "bg-white text-indigo-700 shadow-md" : "text-blue-100 hover:bg-white/10"}`
+              }
+            >
+              <FilePlus2 size={18} /> Add EMR
+            </NavLink>
 
-          {/* ✅ Notifications */}
-          <NavLink
-            to={`/user/notifications/${patientId}`}
-            className={({ isActive }) =>
-              `py-3 px-4 rounded-lg flex items-center gap-3 ${
-                isActive ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <Bell size={18} /> Notifications
-          </NavLink>
+            <NavLink
+              to={`/user/notifications/${patientId}`}
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-4 py-3 rounded-lg transition 
+                 ${isActive ? "bg-white text-indigo-700 shadow-md" : "text-blue-100 hover:bg-white/10"}`
+              }
+            >
+              <Bell size={18} /> Notifications
+            </NavLink>
+          </nav>
+        </aside>
 
-          {/* ✅ Logout */}
-          <NavLink
-            to="/logout"
-            className="py-3 px-4 rounded-lg flex items-center gap-3 text-red-600 hover:bg-red-100"
-          >
-            <LogOut size={18} /> Log Out
-          </NavLink>
-
-        </div>
+        {/* ✅ CONTENT AREA */}
+        <main className="flex-1 p-4 md:p-10 bg-white md:bg-[#dadde1]">
+          <Outlet />
+        </main>
       </div>
-
-      {/* RIGHT CARD */}
-      <div className="flex-1 bg-white rounded-xl shadow p-8 overflow-auto">
-        <Outlet />
-      </div>
-
     </div>
   );
 }

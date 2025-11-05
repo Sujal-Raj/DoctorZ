@@ -320,7 +320,7 @@ import AllDoctors from "./pages/AllDoctors";
 import ViewDoctorProfile from "./pages/ViewDoctorProfile";
 import ClinicDetails from "./pages/ClinicDetails";
 import UserProfile from "./pages/UserProfile";
-import EMR from "./pages/EMR";
+
 import AddEmr from "./pages/AddEmr";
 import PatientChat from "./pages/PatientChat";
 import DoctorChat from "./pages/DoctorChat";
@@ -434,10 +434,9 @@ const App: React.FC = () => {
             <Route path="profile" element={<LabProfile />} />
           </Route>
 
-          {/* User & EMR */}
+       
         
-          <Route path="/user-profile/:id" element={<UserProfile />} />
-          <Route path="/emr/:id" element={<EMR />} />
+        
         </Routes>
       </Router>
     </AuthProvider>

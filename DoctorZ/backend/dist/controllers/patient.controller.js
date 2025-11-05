@@ -80,10 +80,12 @@ const patientRegister = async (req, res) => {
 const patientLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log("Login Email:", email);
         if (!email || !password) {
             return res.status(400).json({ message: "Email and Password are required." });
         }
         const patient = await patientModel.findOne({ email: email.toLowerCase() });
+        console.log("Found Patient:", patient);
         if (!patient) {
             return res.status(400).json({ message: "Invalid Credentials." });
         }
