@@ -12,8 +12,19 @@ import Layout from "../Layout";
 import Home from "./pages/Home";
 import AllClinic from "./pages/AllClinic";
 import AllDoctors from "./pages/AllDoctors";
-import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
-import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
+import ViewDoctorProfile from "./pages/ViewDoctorProfile";
+import ClinicDetails from "./pages/ClinicDetails";
+import UserProfile from "./pages/UserProfile";
+import EMR from "./pages/EMR";
+import AddEmr from "./pages/AddEmr";
+import PatientChat from "./pages/PatientChat";
+import DoctorChat from "./pages/DoctorChat";
+
+// Clinic
+import { ClinicDashboard } from "./pages/ClinicDashboard";
+import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
+import ClinicProfile from "./pages/ClinicProfile";
+import ClinicDoctors from "./pages/ClinicDoctors";
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
 import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
@@ -55,32 +66,14 @@ import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import { PackageDetails } from "./pages/PackageDetails";
-import UserDashboard from "./pages/UserPages/UserDashboard";
-import UserProfile from "./pages/UserPages/UserProfile";
-import AddEmr from "./pages/UserPages/AddEmr";
 
-
-          <Route
-            path="/clinicDashboard/:clinicId"
-            element={<ClinicDashboard />} 
-          >
-             <Route
-              index
-              element={<ClinicHomeDashboard/>}
-            />
-            <Route path="clinic-profile" element={<ClinicProfile/>} />
-            
-            <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
-            <Route
-              path="all-clinic-doctors/:drId/availability"
-              element={<TimeSlots />}
-            />
-            <Route path="add-doctor" element={<AddDoctor />} />
-            <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-            <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-          </Route>
-
-
+// Admin
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminDoctor from "./pages/AdminDoctor";
+import AdminClinic from "./pages/AdminClinic";
+import AdminLab from "./pages/AdminLab";
+import UserDashboard from "./pages/UserDashboard";
+import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
 
 const App: React.FC = () => {
   return (
@@ -147,24 +140,22 @@ const App: React.FC = () => {
             
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
           </Route>
-          
+
+          {/* Doctor Dashboard */}
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
+           <Route index element={<DoctorDashboardHome />} />
           <Route
-             index
-              element={<DoctorDashboardHome/>}
-            />
-             <Route
-              path="doctor-home-dashboard"
-              element={<DoctorDashboardHome/>}
-            />
-            <Route path="appointments" element={<DoctorAppointments />} />
-            <Route path="doctorProfile" element={<DoctorProfile />} />
-            <Route path="time-slots" element={<TimeSlots />} />
-         
+               path="doctor-home-dashboard"
+               element={<DoctorDashboardHome/>}
+             />
+           
+             <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
-            
-              <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
+            <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
+            <Route path="doctorProfile" element={<DoctorProfile />} />
           </Route>
+
+          {/* Admin Dashboard */}
           <Route path="/adminDashboard" element={<AdminDashboard />}>
             <Route path="admin-lab" element={<AdminLab />} />
             <Route path="admin-doctor" element={<AdminDoctor />} />
@@ -188,6 +179,8 @@ const App: React.FC = () => {
           <Route path="/admin/login" element={<AdminLogin />}></Route>
          
         
+          <Route path="/user-profile/:id" element={<UserProfile />} />
+          <Route path="/emr/:id" element={<EMR />} />
         </Routes>
       </Router>
     </AuthProvider>
