@@ -9,15 +9,12 @@ import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
 
 
-
-const patientRegister = async (req:Request, res:Response) => {
+const patientRegister = async (req: Request, res: Response) => {
   try {
-     console.log("Received body:", req.body);
+    console.log("Received body:", req.body);
     const body = req.body;
-   
 
     const files = req.files as Express.Multer.File[];
-
 
     const {
       fullName,
@@ -33,39 +30,36 @@ const patientRegister = async (req:Request, res:Response) => {
       pincode,
       name,
       number,  
-
+      relation   // ✅ Add this if user adds family/self record
     } = body;
 
-   
-
-   
-
-    //  EMR FIELDS  ---
+    // EMR fields
     const allergies = JSON.parse(body.allergies || "[]");
     const diseases = JSON.parse(body.diseases || "[]");
     const pastSurgeries = JSON.parse(body.pastSurgeries || "[]");
     const currentMedications = JSON.parse(body.currentMedications || "[]");
 
-    //uploaded report file paths
+    // Report URLs
     const reportUrls =
       files?.length > 0
         ? files.map((file) => `/uploads/${file.filename}`)
         : [];
 
-    // --- VALIDATION ---
+    // Required validation
     if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
+    // Check if email exists
     const existing = await patientModel.findOne({ email: email.toLowerCase() });
     if (existing) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    // --- PASSWORD HASH ---
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // --- SAVE PATIENT ---
+    // Create Patient
     const patient = await patientModel.create({
       fullName,
       gender,
@@ -76,11 +70,11 @@ const patientRegister = async (req:Request, res:Response) => {
       aadhar,
       abhaId,
       address: { city, pincode },
-      emergencyContact: { name,number },
-      emr: [] 
+      emergencyContact: { name, number },
+      emrs: []            
     });
 
-    // --- CONDITION: CREATE EMR ONLY IF USER FILLED ANY MEDICAL FIELDS ---
+    // Should we create EMR?
     const shouldCreateEMR =
       allergies.length > 0 ||
       diseases.length > 0 ||
@@ -90,17 +84,26 @@ const patientRegister = async (req:Request, res:Response) => {
 
     if (shouldCreateEMR) {
       const emr = await EMRModel.create({
-        patientId: patient._id,
-        doctorId: doctorId || null, // doctor may not be selected at registration
+        name: fullName,          // ✅ Store self name
+        aadhar: aadhar,          // ✅ Store patient's aadhar
+   patientId: patient._id,
+     // ✅ Link to patient
+        doctorId: doctorId || null,
         allergies,
         diseases,
         pastSurgeries,
         currentMedications,
-        reports: reportUrls
+        reports: reportUrls,
       });
 
-      // Add EMR ID to patient.emr[]
-      patient.emr.push(emr._id as mongoose.Types.ObjectId );
+      // ✅ Store FULL EMR OBJECT in patient.emrs[]
+      patient.emrs.push({
+        name: fullName,
+        aadhar: aadhar,
+        relation: relation || "self",
+        emrId: emr._id as mongoose.Types.ObjectId
+      });
+
       await patient.save();
     }
 
@@ -119,16 +122,19 @@ const patientRegister = async (req:Request, res:Response) => {
 
 
 
-
 const patientLogin = async(req: Request, res: Response)=>{
   try {
     const { email, password } = req.body;
+    console.log("Login Email:", email);
+
+
 
     if (!email || !password) {
       return res.status(400).json({ message: "Email and Password are required." });
     }
 
     const patient = await patientModel.findOne({ email:email.toLowerCase() });
+    console.log("Found Patient:", patient);
     if (!patient) {
       
       return res.status(400).json({ message: "Invalid Credentials." });

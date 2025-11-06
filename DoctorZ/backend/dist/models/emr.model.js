@@ -10,6 +10,18 @@ const emrSchema = new mongoose.Schema({
         ref: "Doctor",
         default: null,
     },
+    name: {
+        type: String,
+        default: "",
+    },
+    relation: {
+        type: String,
+        default: "self",
+    },
+    aadhar: {
+        type: Number,
+        default: null,
+    },
     allergies: {
         type: [String],
         default: [],

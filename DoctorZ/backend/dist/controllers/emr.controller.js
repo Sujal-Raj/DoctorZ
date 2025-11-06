@@ -4,7 +4,7 @@ export const createEMR = async (req, res) => {
     try {
         const body = req.body;
         const files = req.files;
-        const { patientId } = body;
+        const { patientId, doctorId } = body;
         if (!patientId) {
             return res.status(400).json({ message: "Patient ID is required" });
         }
@@ -19,6 +19,7 @@ export const createEMR = async (req, res) => {
         // ✅ Create new EMR
         const emr = await EMRModel.create({
             patientId,
+            doctorId,
             allergies,
             diseases,
             pastSurgeries,
@@ -57,6 +58,27 @@ export const getEMRByPatientId = async (req, res) => {
     catch (error) {
         console.log("Error fetching EMR:", error);
         return res.status(500).json({ message: "Error fetching EMR data" });
+    }
+};
+// ✅ Get EMR by emrId
+export const getEMRById = async (req, res) => {
+    try {
+        const { emrId } = req.params;
+        if (!emrId) {
+            return res.status(400).json({ message: "EMR ID is required" });
+        }
+        const emr = await EMRModel.findById(emrId);
+        if (!emr) {
+            return res.status(404).json({ message: "EMR not found" });
+        }
+        return res.status(200).json({
+            message: "EMR fetched successfully",
+            data: emr,
+        });
+    }
+    catch (error) {
+        console.error("Error fetching EMR by ID:", error);
+        return res.status(500).json({ message: "Error fetching EMR" });
     }
 };
 //# sourceMappingURL=emr.controller.js.map

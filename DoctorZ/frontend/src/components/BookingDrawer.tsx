@@ -98,7 +98,9 @@ const BookingDrawer: React.FC<Props> = ({
     const fetchAvailableMonths = async () => {
       if (!doctor) return;
       try {
-        const res = await api.get<ApiResponse>(`/api/patient/slots/${doctor._id}`);
+        const res = await api.get<ApiResponse>(
+          `/api/patient/slots/${doctor._id}`
+        );
 
         const availableMonthsData: Record<string, AvailableData[]> =
           (res.data.availableMonths as Record<string, AvailableData[]>) || {};
@@ -118,12 +120,16 @@ const BookingDrawer: React.FC<Props> = ({
             setCurrentMonth(firstDate);
 
             // clone slots to avoid shared references
-            const clonedSlots = (firstAvailable.slots || []).map((s) => ({ ...s }));
+            const clonedSlots = (firstAvailable.slots || []).map((s) => ({
+              ...s,
+            }));
             setSelectedDate(firstDate);
             setSlots(clonedSlots);
 
             setSelectedTime(null);
-            setSelectedKey(new Date(firstAvailable.date).toISOString().slice(0, 10));
+            setSelectedKey(
+              new Date(firstAvailable.date).toISOString().slice(0, 10)
+            );
           }
         }
       } catch (err) {
@@ -172,7 +178,9 @@ const BookingDrawer: React.FC<Props> = ({
       doctorId: doctor._id,
       userId,
       mode,
-      datetime: `${selectedDate.toISOString().slice(0, 10)}T${selectedTime}:00Z`,
+      datetime: `${selectedDate
+        .toISOString()
+        .slice(0, 10)}T${selectedTime}:00Z`,
       fees: doctor.fees ?? 0,
       slotId: selectedSlotId,
       patient: formData,
@@ -215,7 +223,9 @@ const BookingDrawer: React.FC<Props> = ({
   return (
     <div
       className={`${
-        isModal ? "fixed inset-0 z-50 flex items-center justify-center" : "w-full"
+        isModal
+          ? "fixed inset-0 z-50 flex items-center justify-center"
+          : "w-full"
       }`}
     >
       <div
@@ -242,11 +252,16 @@ const BookingDrawer: React.FC<Props> = ({
             )}
             <div>
               <div className="font-semibold text-lg">{doctor.fullName}</div>
-              <div className="text-sm text-gray-500">{doctor.specialization}</div>
+              <div className="text-sm text-gray-500">
+                {doctor.specialization}
+              </div>
             </div>
           </div>
           {isModal && (
-            <button onClick={() => !bookingLoading && onClose()} className="text-gray-600 hover:bg-gray-100 rounded p-2">
+            <button
+              onClick={() => !bookingLoading && onClose()}
+              className="text-gray-600 hover:bg-gray-100 rounded p-2"
+            >
               <X />
             </button>
           )}
@@ -259,7 +274,9 @@ const BookingDrawer: React.FC<Props> = ({
               <button
                 onClick={() => setMode("online")}
                 className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 border ${
-                  mode === "online" ? "bg-green-600 text-white border-green-600" : "bg-white text-gray-700"
+                  mode === "online"
+                    ? "bg-green-600 text-white border-green-600"
+                    : "bg-white text-gray-700"
                 }`}
               >
                 <Video className="w-4 h-4" /> Online
@@ -267,7 +284,9 @@ const BookingDrawer: React.FC<Props> = ({
               <button
                 onClick={() => setMode("offline")}
                 className={`flex-1 px-4 py-2 rounded-lg flex items-center justify-center gap-2 border ${
-                  mode === "offline" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-700"
+                  mode === "offline"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-700"
                 }`}
               >
                 <Phone className="w-4 h-4" /> Offline
@@ -280,8 +299,12 @@ const BookingDrawer: React.FC<Props> = ({
                 const prev = addMonths(currentMonth, -1);
                 const next = addMonths(currentMonth, 1);
 
-                const prevKey = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, "0")}`;
-                const nextKey = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, "0")}`;
+                const prevKey = `${prev.getFullYear()}-${String(
+                  prev.getMonth() + 1
+                ).padStart(2, "0")}`;
+                const nextKey = `${next.getFullYear()}-${String(
+                  next.getMonth() + 1
+                ).padStart(2, "0")}`;
 
                 const hasPrev = !!availableMonths[prevKey];
                 const hasNext = !!availableMonths[nextKey];
@@ -300,13 +323,18 @@ const BookingDrawer: React.FC<Props> = ({
                         setSlots([]);
                       }}
                       disabled={!hasPrev}
-                      className={`px-2 py-1 border rounded ${!hasPrev ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`px-2 py-1 border rounded ${
+                        !hasPrev ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       Prev
                     </button>
 
                     <div className="font-semibold">
-                      {currentMonth.toLocaleString("default", { month: "long", year: "numeric" })}
+                      {currentMonth.toLocaleString("default", {
+                        month: "long",
+                        year: "numeric",
+                      })}
                     </div>
 
                     {/* Next Button: only change month — do NOT auto-select slots */}
@@ -321,7 +349,9 @@ const BookingDrawer: React.FC<Props> = ({
                         setSlots([]);
                       }}
                       disabled={!hasNext}
-                      className={`px-2 py-1 border rounded ${!hasNext ? "opacity-50 cursor-not-allowed" : ""}`}
+                      className={`px-2 py-1 border rounded ${
+                        !hasNext ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                     >
                       Next
                     </button>
@@ -356,11 +386,15 @@ const BookingDrawer: React.FC<Props> = ({
                         setSlots(source.map((s) => ({ ...s })));
                       }}
                       className={`min-w-[72px] flex-shrink-0 rounded-lg p-3 text-center border ${
-                        active ? "bg-blue-600 text-white" : "bg-white text-gray-800 hover:shadow"
+                        active
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-800 hover:shadow"
                       }`}
                     >
                       <div className="text-xs">{formatDayShort(d)}</div>
-                      <div className="text-lg font-semibold">{formatDateNumber(d)}</div>
+                      <div className="text-lg font-semibold">
+                        {formatDateNumber(d)}
+                      </div>
                     </button>
                   );
                 })}
@@ -371,7 +405,9 @@ const BookingDrawer: React.FC<Props> = ({
               <div className="text-sm font-medium mb-2">Available Slots</div>
               <div className="grid grid-cols-3 gap-2">
                 {slots.length === 0 ? (
-                  <div className="col-span-3 text-gray-500">No slots available</div>
+                  <div className="col-span-3 text-gray-500">
+                    No slots available
+                  </div>
                 ) : (
                   slots.map((slot) => {
                     const isBooked = !slot.isActive;
@@ -380,8 +416,14 @@ const BookingDrawer: React.FC<Props> = ({
                         key={slot._id}
                         onClick={() => !isBooked && setSelectedTime(slot.time)}
                         className={`relative p-2 rounded border text-sm w-full ${
-                          selectedTime === slot.time ? "bg-blue-600 text-white" : "bg-white text-gray-800 hover:shadow"
-                        } ${isBooked ? "bg-gray-200 text-gray-400 cursor-not-allowed" : ""}`}
+                          selectedTime === slot.time
+                            ? "bg-blue-600 text-white"
+                            : "bg-white text-gray-800 hover:shadow"
+                        } ${
+                          isBooked
+                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                            : ""
+                        }`}
                         disabled={isBooked}
                       >
                         {slot.time}
@@ -400,13 +442,25 @@ const BookingDrawer: React.FC<Props> = ({
 
             {/* Continue Button */}
             {selectedTime && (
-              <button onClick={() => setShowForm(true)} className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              <button
+                onClick={() => setShowForm(true)}
+                className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              >
                 Continue
               </button>
             )}
           </>
 
-          <AppointmentFormModal open={showForm} onClose={() => setShowForm(false)} onSubmit={handleBook} />
+          <AppointmentFormModal
+            open={showForm}
+            onClose={() => setShowForm(false)}
+            onSubmit={handleBook}
+            doctorId={doctor._id}
+            selectedDate={
+              selectedDate ? selectedDate.toISOString().slice(0, 10) : ""
+            }
+            selectedTime={selectedTime || ""}
+          />
         </div>
       </div>
     </div>

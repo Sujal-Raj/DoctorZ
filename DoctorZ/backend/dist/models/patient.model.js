@@ -24,7 +24,7 @@ const patientSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    Aadhar: {
+    aadhar: {
         type: Number,
     },
     address: {
@@ -47,11 +47,15 @@ const patientSchema = new mongoose.Schema({
             type: Number
         }
     },
-    emr: [
+    emrs: [
         {
-            type: [mongoose.Schema.Types.ObjectId],
-            ref: "EMR",
-            default: []
+            name: { type: String },
+            aadhar: { type: Number },
+            relation: { type: String },
+            emrId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "EMR",
+            },
         },
     ],
 }, { timestamps: true });
