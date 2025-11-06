@@ -55,6 +55,9 @@ import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import { PackageDetails } from "./pages/PackageDetails";
+import UserDashboard from "./pages/UserDashboard";
+import UserProfile from "./pages/UserProfile";
+import AddEmr from "./pages/AddEmr";
 
 
           <Route
@@ -109,9 +112,16 @@ const App: React.FC = () => {
             <Route path="/lab-login" element={<LoginLab />} />
             <Route path="/admin-lab" element={<AdminLab />} />
             <Route path="/all-lab-test" element={<AllLabTest />} />
+            <Route path="/user-dashboard/:id" element={<UserDashboard />} ></Route>
+            <Route index element={<UserProfile />} />
+               <Route path="user-profile" element={<UserProfile />} />
+                  <Route path="add-emr" element={<AddEmr />} />
+              </Route>
+               <Route path="/doctor-chat/:roomId" element={<DoctorChat />} />
+          {/* </Route> */}
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
             <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
-          </Route>
+          {/* </Route> */}
 
           {/* Routes without navbar */}
 
@@ -141,6 +151,7 @@ const App: React.FC = () => {
           </Route>
           
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
+           {/* <Route path="/doctor-chat/:roomId" element={<DoctorChat />} /> */}
           <Route
              index
               element={<DoctorDashboardHome/>}
@@ -154,6 +165,7 @@ const App: React.FC = () => {
             <Route path="time-slots" element={<TimeSlots />} />
          
             <Route path="patients" element={<AllPatient />} />
+             {/* <Route path="/doctor-chat/:roomId" element={<DoctorChat />} /> */}
             
               <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
           </Route>
