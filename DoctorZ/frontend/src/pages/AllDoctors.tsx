@@ -744,9 +744,8 @@ const AllDoctor: React.FC = () => {
         onClose={handleCloseDrawer}
         onBooked={(info: unknown) => {
           console.log("Booked:", info);
-        }}
-        variant="modal"
-      />
+        } }
+        variant="modal" roomId={undefined}      />
     </div>
   );
 };

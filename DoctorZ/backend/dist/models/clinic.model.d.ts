@@ -13,6 +13,7 @@ export interface IClinic extends Document {
     operatingHours: string;
     clinicLicenseNumber: string;
     registrationCertificate?: string;
+    clinicImage?: string;
     aadharNumber: number;
     panNumber: string;
     staffName: string;

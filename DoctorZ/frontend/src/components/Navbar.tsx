@@ -65,13 +65,13 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
               to={to}
               className={`font-semibold transition relative group ${
                 location.pathname === to
-                  ? "text-blue-600"
-                  : "text-black hover:text-blue-600"
+                  ? "text-[#0c213e]"
+                  : "text-black hover:text-[#0c213e]"
               }`}
             >
               {label}
               <span
-                className={`absolute bottom-0 left-0 h-0.5 bg-blue-600 transition-all duration-300 ${
+                className={`absolute bottom-0 left-0 h-0.5 bg-[#0c213e] transition-all duration-300 ${
                   location.pathname === to ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               ></span>
@@ -85,7 +85,7 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
               <button
   className="
     relative overflow-hidden
-    bg-gradient-to-r from-blue-600 to-indigo-600
+    bg-[#0c213e]
     text-white font-medium
     px-5 py-2.5
     rounded-lg shadow-md
@@ -202,8 +202,8 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
     relative overflow-hidden
     flex items-center justify-center 
     px-6 py-2.5 rounded-lg
-    font-medium text-blue-600
-    bg-white border border-blue-500
+    font-medium text-[#0c213e]
+    bg-white border border-[#0c213e]
     shadow-sm
     transition-all duration-300 ease-out
     hover:bg-blue-50 hover:shadow-md
@@ -215,7 +215,7 @@ console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
   "
 >
   <span className="relative z-10 flex items-center gap-2">
-    <LogIn size={18} className="text-blue-600" /> Login
+    <LogIn size={18} className="text-[#0c213e]" /> Login
   </span>
 
   {/* soft shine on hover */}
