@@ -92,7 +92,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, doctorId })
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-5 p-6 bg-white rounded-2xl shadow-lg w-full max-w-sm"
+      className="relative bg-white rounded-2xl shadow-lg p-6 w-full max-w-lg mx-4 max-h-[90vh] "
     >
       <h1 className="text-2xl font-semibold text-gray-800 text-center mb-3">
         Appointment Form
@@ -186,7 +186,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, doctorId })
 
       {/* 🔹 Embedded EMR Form */}
       <div className="border-t border-gray-200 pt-4 mt-4">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">EMR Details</h2>
+
         <EmrForAppointment
           ref={emrRef}
           doctorId={localDoctorId}

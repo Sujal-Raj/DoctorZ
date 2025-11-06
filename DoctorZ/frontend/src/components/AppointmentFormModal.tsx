@@ -26,8 +26,8 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
   onClose,
   onSubmit,
   doctorId,
-  selectedDate,
-  selectedTime,
+  // selectedDate,
+  // selectedTime,
 }) => {
   if (!open) return null;
 
@@ -41,7 +41,7 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
         onClick={handleClick}
-        className="relative bg-white rounded-2xl shadow-lg p-6 w-full max-w-2xl mx-4"
+        className="relative bg-white rounded-2xl shadow-lg p-6 w-full max-w-lg mx-4 max-h-[80vh]  overflow-y-auto"
       >
         <button
           onClick={onClose}
@@ -54,14 +54,14 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
           Book Your Appointment
         </h2>
 
-        {/* Display Info */}
+        {/* Display Info
         {(doctorId || selectedDate || selectedTime) && (
           <div className="text-center text-sm text-gray-600 mb-4">
             {doctorId && <p><strong>Doctor:</strong> {doctorId}</p>}
             {selectedDate && <p><strong>Date:</strong> {selectedDate}</p>}
             {selectedTime && <p><strong>Time:</strong> {selectedTime}</p>}
           </div>
-        )}
+        )} */}
 
         <AppointmentForm onSubmit={onSubmit}  doctorId={doctorId}/>
       </div>

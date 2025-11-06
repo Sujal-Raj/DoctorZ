@@ -36,9 +36,9 @@ interface Props {
   doctor: DoctorForBooking | null;
   open: boolean;
   onClose: () => void;
-  onBooked?: (bookingInfo: unknown,roomId:unknown) => void;
+  onBooked?: (bookingInfo: unknown, roomId: unknown) => void;
   variant?: BookingDrawerVariant;
-  roomId:unknown
+  roomId: unknown;
 }
 
 const BookingDrawer: React.FC<Props> = ({
@@ -182,19 +182,32 @@ const BookingDrawer: React.FC<Props> = ({
         .toISOString()
         .slice(0, 10)}T${selectedTime}:00Z`,
       fees: doctor.fees ?? 0,
+      status: "booked", // ✅ required field
+      emrId: null,
       slotId: selectedSlotId,
       patient: formData,
       createdAt: new Date().toISOString(),
     };
-    console.log(bookingPayload);
+    console.log(" booking payload", bookingPayload);
+
+    console.log({
+      doctorId: doctor?._id,
+      userId,
+      slotId: selectedSlotId,
+      selectedTime,
+      datetime: `${selectedDate
+        .toISOString()
+        .slice(0, 10)}T${selectedTime}:00Z`,
+    });
 
     try {
-      
-      const response = await api.post<{ roomId?: string }>("/api/booking/book", bookingPayload);
+      const response = await api.post<{ roomId?: string }>(
+        "/api/booking/book",
+        bookingPayload
+      );
       console.log(response.data);
       const { roomId } = response.data;
-      console.log(roomId)
-      await api.post("/api/booking/book", bookingPayload);
+
       Swal.fire({
         icon: "success",
         title: "Appointment Booked!",
@@ -202,7 +215,7 @@ const BookingDrawer: React.FC<Props> = ({
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
       }).then(() => {
-        onBooked?.(bookingPayload,roomId);
+        onBooked?.(bookingPayload, roomId);
         setBookingLoading(false);
         onClose();
       });
