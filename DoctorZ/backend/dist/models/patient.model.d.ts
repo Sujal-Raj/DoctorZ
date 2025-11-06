@@ -6,7 +6,7 @@ export interface IPatient extends Document {
     email: string;
     password: string;
     mobileNumber: number;
-    Aadhar: number;
+    aadhar: number;
     address: {
         city: string;
         pincode: number;
@@ -16,7 +16,12 @@ export interface IPatient extends Document {
         name: string;
         number: number;
     };
-    emr: mongoose.Types.ObjectId[];
+    emrs: {
+        name: string;
+        aadhar: number;
+        relation: string;
+        emrId: mongoose.Types.ObjectId;
+    }[];
 }
 declare const patientModel: mongoose.Model<IPatient, {}, {}, {}, mongoose.Document<unknown, {}, IPatient, {}, mongoose.DefaultSchemaOptions> & IPatient & {
     _id: mongoose.Types.ObjectId;

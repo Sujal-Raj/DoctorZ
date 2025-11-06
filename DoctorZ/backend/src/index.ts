@@ -24,6 +24,7 @@ import clinicRoutes from "./routes/clinic.routes.js";
 import timeSlotsRoutes from "./routes/timeSlots.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import labRoutes from "./routes/lab.routes.js";
+import emrRoutes from "./routes/emr.routes.js";
 // dotenv.config();
  dbConnect();
 const PORT = 3000;
@@ -121,7 +122,7 @@ app.use("/api/doctor",doctorRoutes)
 app.use("/api/availability",timeSlotsRoutes)
 app.use("/api/booking",bookingRoutes)
 app.use("/api/lab", labRoutes);
-
+app.use("/api/emr",emrRoutes)
 
 server.listen(PORT,()=>{
     console.log("Server running at " + PORT);

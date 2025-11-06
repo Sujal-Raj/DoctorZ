@@ -81,24 +81,24 @@ export const getEMRByPatientId = async (req: Request, res: Response) => {
 
 
 // ✅ Get EMR by emrId
-// export const getEMRById = async (req: Request, res: Response) => {
-//   try {
-//     const { emrId } = req.params;
-//     if (!emrId) {
-//       return res.status(400).json({ message: "EMR ID is required" });
-//     }
+export const getEMRById = async (req: Request, res: Response) => {
+  try {
+    const { emrId } = req.params;
+    if (!emrId) {
+      return res.status(400).json({ message: "EMR ID is required" });
+    }
 
-//     const emr = await EMRModel.findById(emrId);
-//     if (!emr) {
-//       return res.status(404).json({ message: "EMR not found" });
-//     }
+    const emr = await EMRModel.findById(emrId);
+    if (!emr) {
+      return res.status(404).json({ message: "EMR not found" });
+    }
 
-//     return res.status(200).json({
-//       message: "EMR fetched successfully",
-//       data: emr,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching EMR by ID:", error);
-//     return res.status(500).json({ message: "Error fetching EMR" });
-//   }
-// };
+    return res.status(200).json({
+      message: "EMR fetched successfully",
+      data: emr,
+    });
+  } catch (error) {
+    console.error("Error fetching EMR by ID:", error);
+    return res.status(500).json({ message: "Error fetching EMR" });
+  }
+};

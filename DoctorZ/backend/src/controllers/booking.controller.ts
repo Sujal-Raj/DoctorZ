@@ -242,7 +242,7 @@ export const bookAppointment = async (req: Request, res: Response) => {
       fees,
       emrId: emrId?._id,
       status: "booked",
-      roomId,
+    
     });
 
     await booking.save();
@@ -256,7 +256,7 @@ export const bookAppointment = async (req: Request, res: Response) => {
     return res.status(201).json({
       message: "Appointment booked successfully",
       booking,
-      roomId,
+    
     });
   } catch (err) {
     console.error("Booking error:", err);

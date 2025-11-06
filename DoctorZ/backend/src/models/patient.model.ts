@@ -17,7 +17,12 @@ export interface IPatient extends Document {
     name:string;
     number:number;
   },
-  emr: mongoose.Types.ObjectId[];
+    emrs: {
+    name: string;
+    aadhar: number;
+    relation: string;
+    emrId: mongoose.Types.ObjectId;
+  }[];
 
 }
 
@@ -71,13 +76,19 @@ const patientSchema = new mongoose.Schema<IPatient>({
             type:Number
         }
     },
-     emr: [
+     emrs: [
       {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "EMR",
-        default:[]
+        name: { type: String },
+        aadhar: { type: Number },
+        relation: { type: String },
+
+        emrId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "EMR",
+        },
       },
     ],
+   
    
   
 },

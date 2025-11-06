@@ -13,18 +13,11 @@ import Home from "./pages/Home";
 import AllClinic from "./pages/AllClinic";
 import AllDoctors from "./pages/AllDoctors";
 import ViewDoctorProfile from "./pages/ViewDoctorProfile";
-import ClinicDetails from "./pages/ClinicDetails";
-import UserProfile from "./pages/UserProfile";
-import EMR from "./pages/EMR";
-import AddEmr from "./pages/AddEmr";
-import PatientChat from "./pages/PatientChat";
-import DoctorChat from "./pages/DoctorChat";
+
 
 // Clinic
-import { ClinicDashboard } from "./pages/ClinicDashboard";
-import ClinicHomeDashboard from "./pages/ClinicHomeDashboard";
-import ClinicProfile from "./pages/ClinicProfile";
-import ClinicDoctors from "./pages/ClinicDoctors";
+
+
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
 import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
@@ -33,12 +26,10 @@ import DoctorProfile from "./pages/DoctorPages/DoctorProfile";
 import ClinicProfile from "./pages/ClinicPages/ClinicProfile";
 import LoginPatient from "./pages/LoginPages/LoginPatient";
 import AllPatient from "./pages/AllPatient";
-import PatientChat from "./pages/PatientChat";
-import DoctorChat from "./pages/DoctorPages/DoctorChat";
-import ViewDoctorProfile from "./pages/ViewDoctorProfile";
+
 import RegisterLab from "./pages/RegisterPages/RegisterLab";
 import LoginLab from "./pages/LoginPages/LoginLab";
-import AdminLab from "./pages/AdminPages/AdminLab";
+
 import AllLabTest from "./pages/AllLabTest";
 import LabTestDetails from "./pages/LabPages/LabTestDetails";
 import Patients from "./pages/LabPages/LabPatients";
@@ -64,16 +55,18 @@ import ClinicDoctorProfile from "./pages/ClinicPages/ClinicDoctorProfile";
 import AllClinicPatients from "./pages/AllClinicPatients";
 import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
-import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
+
 import { PackageDetails } from "./pages/PackageDetails";
+import AdminLab from "./pages/AdminPages/AdminLab";
+import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
+import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
+import UserProfile from "./pages/UserPages/UserProfile";
+import UserDashboard from "./pages/UserPages/UserDashboard";
+import AddEmr from "./pages/UserPages/AddEmr";
+import DoctorChat from "./pages/DoctorPages/DoctorChat";
+import PatientChat from "./pages/PatientChat";
 
 // Admin
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminDoctor from "./pages/AdminDoctor";
-import AdminClinic from "./pages/AdminClinic";
-import AdminLab from "./pages/AdminLab";
-import UserDashboard from "./pages/UserDashboard";
-import DoctorDashboardHome from "./pages/DoctorHomeDashboard";
 
 const App: React.FC = () => {
   return (
@@ -179,8 +172,7 @@ const App: React.FC = () => {
           <Route path="/admin/login" element={<AdminLogin />}></Route>
          
         
-          <Route path="/user-profile/:id" element={<UserProfile />} />
-          <Route path="/emr/:id" element={<EMR />} />
+       
         </Routes>
       </Router>
     </AuthProvider>
