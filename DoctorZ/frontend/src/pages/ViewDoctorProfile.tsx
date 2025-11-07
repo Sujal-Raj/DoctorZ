@@ -180,21 +180,20 @@
 // };
 
 // export default ViewDoctorProfile;
-
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
   GraduationCap,
-  MessageCircleMore,
+  MessageCircle,
   Stethoscope,
   ChevronDown,
   ChevronUp,
   Phone,
 } from "lucide-react";
+import { Helmet } from "react-helmet";
 import BookingDrawer from "../components/BookingDrawer";
-import Doctor from "../assets/Doctor.jpeg";
+import DefaultDoctor from "../assets/Doctor.jpeg";
 
 interface Doctor {
   _id: string;
@@ -209,13 +208,11 @@ interface Doctor {
 }
 
 const ViewDoctorProfile: React.FC = () => {
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<"overview" | "education" | "faq">(
-    "overview"
-  );
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const { drId } = useParams<{ drId: string }>();
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const faqs = [
     "Where does the doctor practice?",
@@ -231,7 +228,6 @@ const ViewDoctorProfile: React.FC = () => {
 
   useEffect(() => {
     if (!drId) return;
-
     const fetchDoctor = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -240,177 +236,194 @@ const ViewDoctorProfile: React.FC = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDoctor(res.data.doctor);
-      } catch (err) {
-        console.error("Error fetching doctor profile:", err);
+      } catch (error) {
+        console.error("Error fetching doctor:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchDoctor();
   }, [drId]);
 
-  if (loading) return <p className="p-8">Loading...</p>;
-  if (!doctor) return <p className="p-8 text-red-600">Doctor not found.</p>;
+  if (loading) return <p className="p-10 text-center text-gray-600">Loading doctor profile...</p>;
+  if (!doctor) return <p className="p-10 text-center text-red-600">Doctor not found.</p>;
+
+  // ✅ Handle Doctor Image (backend or default)
+  const doctorImage =
+    doctor.photo && doctor.photo.startsWith("http")
+      ? doctor.photo
+      : doctor.photo
+      ? `http://localhost:3000/${doctor.photo}`
+      : DefaultDoctor;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Hero Section */}
-      <div className="relative h-90  bg-cover bg-center   mt-0 md:mt-0 overflow-hidden mb-0">
-        <img
-          src={Doctor}
-          alt="doctor banner"
-          className="absolute inset-0 w-full h-full object-cover" 
+    <>
+      {/* ✅ SEO Optimization */}
+      <Helmet>
+        <title>{`Dr. ${doctor.fullName} | ${doctor.specialization} | Book Appointment`}</title>
+        <meta
+          name="description"
+          content={`Consult Dr. ${doctor.fullName}, a leading ${doctor.specialization} with ${doctor.experience} years of experience. Book appointments online.`}
         />
-         <div className="absolute inset-0 bg-black/5 backdrop-blur-sm"></div>
+        <meta
+          name="keywords"
+          content={`${doctor.fullName}, ${doctor.specialization}, online doctor, book doctor, healthcare`}
+        />
+      </Helmet>
 
-        <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white bg-black/40">
-          <h1 className="text-3xl md:text-4xl font-bold">{doctor.fullName}</h1>
-          <p className="text-lg">{doctor.specialization}</p>
-          <div className="flex flex-wrap justify-center gap-4 mt-3 text-sm">
-            <span>{doctor.experience} years experience</span>
-            <span className="flex items-center gap-1">
-              <MessageCircleMore size={16} /> {doctor.language}
-            </span>
-          </div>
-          <button className="mt-4 bg-white text-blue-600 px-4 py-2 rounded-full font-medium flex items-center gap-2 hover:bg-blue-500  hover:text-white">
-            <Phone size={18} /> Call Now
-          </button>
-        </div>
-      </div>
-
-      {/* Tabs Section */}
-      <div className=" shadow-sm mt-4">
-        <div className="flex justify-center space-x-6 text-gray-600">
-          <button
-            className={`py-3 border-b-2 ${
-              activeTab === "overview"
-                ? "border-blue-600 text-blue-600 font-semibold"
-                : "border-transparent hover:text-blue-600"
-            }`}
-            onClick={() => setActiveTab("overview")}
-          >
-            Overview
-          </button>
-          <button
-            className={`py-3 border-b-2 ${
-              activeTab === "education"
-                ? "border-blue-600 text-blue-600 font-semibold"
-                : "border-transparent hover:text-blue-600"
-            }`}
-            onClick={() => setActiveTab("education")}
-          >
-            Education
-          </button>
-          <button
-            className={`py-3 border-b-2 ${
-              activeTab === "faq"
-                ? "border-blue-600 text-blue-600 font-semibold"
-                : "border-transparent hover:text-blue-600"
-            }`}
-            onClick={() => setActiveTab("faq")}
-          >
-            FAQs
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-4xl mx-auto w-full p-6">
-        {activeTab === "overview" && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold text-blue-700 mb-2">
-              About {doctor.fullName}
-            </h2>
-            <p className="text-gray-700 leading-relaxed">
-              Dr. {doctor.fullName} is a highly qualified{" "}
-              <strong>{doctor.specialization}</strong> with{" "}
-              {doctor.experience} years of experience. Fluent in{" "}
-              {doctor.language}, the doctor provides patient-centric care
-              and professional consultation. Book an appointment for expert
-              medical advice and quality healthcare.
-            </p>
-            <div className="mt-6">
-              <h3 className="font-semibold text-gray-800 mb-1">
-                Consultation Fee:
-              </h3>
-              <p className="text-gray-700">₹{doctor.consultationFee}</p>
-            </div>
-
-            {/* Booking Section */}
-            <div className="mt-8">
-              <h2 className="text-gray-800 mb-2 font-semibold text-lg">
-                Pick a time slot
-              </h2>
-              <BookingDrawer
-                doctor={{
-                  _id: doctor._id,
-                  fullName: doctor.fullName,
-                  photo: doctor.photo,
-                  specialization: doctor.specialization,
-                  fees: doctor.consultationFee,
-                }}
-                open={true}
-                onClose={() => {}}
-                variant="sidebar"
+      {/* ✅ Main Page */}
+      <main className="min-h-screen bg-gray-50 py-10 px-4 md:px-10">
+        <section className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+          {/* ✅ Top Profile Section */}
+          <div className="flex flex-col md:flex-row items-center md:items-start p-6 md:p-10 gap-10 bg-gradient-to-r from-[#28328C]/10 to-white">
+            <div className="relative">
+              <img
+                src={doctorImage}
+                alt={`Dr. ${doctor.fullName}`}
+                className="w-48 h-48 md:w-64 md:h-64 object-cover rounded-2xl shadow-md border-4 border-[#28328C]/20"
               />
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#28328C] text-white text-sm px-4 py-1 rounded-full">
+                {doctor.specialization}
+              </div>
+            </div>
+
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-3xl font-bold text-[#28328C]">
+                Dr. {doctor.fullName}
+              </h1>
+              <p className="mt-2 text-gray-700 font-medium">
+                {doctor.qualification}
+              </p>
+
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-4 text-gray-600">
+                <span className="bg-gray-100 px-4 py-1 rounded-full text-sm">
+                  {doctor.experience} Years Experience
+                </span>
+                <span className="flex items-center gap-1 bg-gray-100 px-4 py-1 rounded-full text-sm">
+                  <MessageCircle size={16} /> {doctor.language}
+                </span>
+              </div>
+
+              <p className="mt-5 text-gray-700 leading-relaxed max-w-2xl mx-auto md:mx-0">
+                Dr. {doctor.fullName} is a dedicated and highly experienced{" "}
+                {doctor.specialization}, known for patient-centered care and
+                advanced clinical expertise. Committed to improving healthcare
+                outcomes through compassion and professionalism.
+              </p>
+
+              <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-3">
+                <button
+                  aria-label="Call Doctor"
+                  className="bg-white border border-[#28328C] text-[#28328C] hover:bg-[#28328C] hover:text-white transition px-6 py-2 rounded-full flex items-center gap-2 font-semibold shadow-sm"
+                >
+                  <Phone size={18} /> Call Now
+                </button>
+                <button
+                  onClick={() => setIsBookingOpen(true)}
+                  aria-label="Book Appointment"
+                  className="bg-[#28328C] hover:bg-[#1f266e] text-white px-6 py-2 rounded-full font-semibold transition shadow-sm"
+                >
+                  Book Appointment
+                </button>
+              </div>
             </div>
           </div>
-        )}
 
-        {activeTab === "education" && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center gap-2 mb-3">
-              <GraduationCap size={24} className="text-blue-600" />
-              <h3 className="text-lg font-bold text-gray-800">Education</h3>
-            </div>
-            <p className="ml-7 text-gray-700">{doctor.qualification}</p>
+          {/* ✅ Details Section */}
+          <div className="p-6 md:p-10 space-y-10">
+            {/* About Doctor */}
+            <section>
+              <h2 className="text-2xl font-semibold text-[#28328C] mb-3">
+                About Dr. {doctor.fullName}
+              </h2>
+              <p className="text-gray-700 leading-relaxed">
+                With over {doctor.experience} years of professional experience,
+                Dr. {doctor.fullName} specializes in {doctor.specialization}.
+                Fluent in {doctor.language}, the doctor provides expert
+                consultation and personalized medical guidance to all patients.
+              </p>
+              <div className="mt-4 bg-gray-50 border-l-4 border-[#28328C] px-4 py-3 rounded">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Consultation Fee:
+                </h3>
+                <p className="text-[#28328C] font-bold text-xl">
+                  ₹{doctor.consultationFee}
+                </p>
+              </div>
+            </section>
 
-            <hr className="my-4 border-gray-300" />
+            {/* Education Section */}
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <GraduationCap size={24} className="text-[#28328C]" />
+                <h2 className="text-2xl font-semibold text-[#28328C]">
+                  Education
+                </h2>
+              </div>
+              <p className="text-gray-700 ml-7">{doctor.qualification}</p>
+            </section>
 
-            <div className="flex items-center gap-2 mb-3">
-              <Stethoscope size={24} className="text-blue-600" />
-              <h3 className="text-lg font-bold text-gray-800">
-                Medical Registration
-              </h3>
-            </div>
-            <p className="ml-7 text-gray-700">
-              {doctor.MedicalRegistrationNumber || "Not available"}
-            </p>
-          </div>
-        )}
+            {/* Medical Registration */}
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <Stethoscope size={24} className="text-[#28328C]" />
+                <h2 className="text-2xl font-semibold text-[#28328C]">
+                  Medical Registration
+                </h2>
+              </div>
+              <p className="text-gray-700 ml-7">
+                {doctor.MedicalRegistrationNumber || "Not available"}
+              </p>
+            </section>
 
-        {activeTab === "faq" && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">FAQs</h3>
-            <div className="divide-y divide-gray-300">
-              {faqs.map((question, index) => (
-                <div key={index} className="py-3">
-                  <button
-                    className="w-full flex justify-between items-center text-left text-sm font-medium text-gray-800 hover:text-blue-600 transition-colors"
-                    onClick={() =>
-                      setOpenFAQ(openFAQ === index ? null : index)
-                    }
-                  >
-                    {question}
-                    {openFAQ === index ? (
-                      <ChevronUp size={18} />
-                    ) : (
-                      <ChevronDown size={18} />
+            {/* FAQs */}
+            <section>
+              <h2 className="text-2xl font-semibold text-[#28328C] mb-4">
+                Frequently Asked Questions
+              </h2>
+              <div className="divide-y divide-gray-200 rounded-lg border border-gray-100">
+                {faqs.map((question, index) => (
+                  <div key={index} className="py-3 px-4">
+                    <button
+                      onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                      className="w-full flex justify-between items-center text-left text-gray-800 font-medium hover:text-[#28328C] transition"
+                    >
+                      {question}
+                      {openFAQ === index ? (
+                        <ChevronUp size={18} />
+                      ) : (
+                        <ChevronDown size={18} />
+                      )}
+                    </button>
+                    {openFAQ === index && (
+                      <p className="mt-2 text-gray-600 text-sm leading-relaxed">
+                        This is a sample answer. Replace it with real FAQ data.
+                      </p>
                     )}
-                  </button>
-                  {openFAQ === index && (
-                    <p className="mt-2 text-gray-600 text-sm">
-                      This is a placeholder answer for now.
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
+        </section>
+
+        {/* ✅ Booking Sidebar */}
+        {doctor && (
+          <BookingDrawer
+            doctor={{
+              _id: doctor._id,
+              fullName: doctor.fullName,
+              photo: doctor.photo,
+              specialization: doctor.specialization,
+              fees: doctor.consultationFee,
+            }}
+            open={isBookingOpen}
+            onClose={() => setIsBookingOpen(false)}
+            variant="sidebar"
+          />
         )}
-      </div>
-    </div>
+      </main>
+    </>
   );
 };
 
