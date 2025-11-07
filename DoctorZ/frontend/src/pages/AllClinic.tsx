@@ -393,7 +393,7 @@ setClinics(enhancedClinics);
   className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
 >
   {/* Clinic Image */}
-  <div className="absolute left-6 top-6">
+  <div className="absolute left-6 top-3">
     <div className="relative">
       <img
         src={
@@ -407,7 +407,7 @@ setClinics(enhancedClinics);
         className="w-20 h-20 object-cover rounded-lg border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-300"
       />
       {/* Verified Badge (optional) */}
-      <div className="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1">
+      <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
         <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
         </svg>
@@ -415,32 +415,137 @@ setClinics(enhancedClinics);
     </div>
   </div>
 
-  <div className="pl-32 pr-6 py-6">
-    {/* Clinic Name and Basic Info */}
-    <div className="mb-3">
-      <h2 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
-        {clinic.clinicName}
-      </h2>
-      <div className="flex items-center gap-2 mt-1">
-        <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-        </svg>
-        <p className="text-sm text-gray-600">
-          {clinic.district}, {clinic.state}
-        </p>
-      </div>
+<div className="pl-8 pr-6 py-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+  {/* Clinic Name and Location */}
+  <div className="mb-4 ml-20">
+    <h2 className="text-2xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300">
+      {clinic.clinicName}
+    </h2>
+    <div className="flex items-center text-gray-500 text-sm">
+      <svg
+        className="w-4 h-4 mr-1 text-blue-500"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fillRule="evenodd"
+          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+          clipRule="evenodd"
+        />
+      </svg>
+      <span>
+        {clinic.district}, {clinic.state}
+      </span>
     </div>
-
-    {/* Specialities */}
-    <div className="mb-4">
-      <p className="text-sm text-gray-700 leading-relaxed">
-        {clinic.specialities?.join(", ") || "General Practice"}
-      </p>
-    </div>
-
-    {/* Rating and Stats */}
-   
   </div>
+
+  {/* Divider Line */}
+  <hr className="border-gray-200 my-3" />
+
+  {/* Operating Hours */}
+  <div className="mb-3 flex items-center text-gray-700">
+    {/* <svg
+      className="w-5 h-5 text-green-600 mr-2"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg> */}
+    <p className="text-sm font-medium">
+      <span className="text-gray-600">Hours:</span> {clinic.operatingHours || "Not Available"}
+    </p>
+  </div>
+
+  {/* Contact Info */}
+  <div className="space-y-2 mb-3 text-gray-700">
+    <div className="flex items-center">
+      {/* <svg
+        className="w-5 h-5 text-blue-500 mr-2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.518 4.55a1 1 0 01-.272 1.054l-2.12 2.12a11.042 11.042 0 005.657 5.657l2.12-2.12a1 1 0 011.054-.272l4.55 1.518A1 1 0 0121 18.72V22a2 2 0 01-2 2h-1C9.716 24 3 17.284 3 9V8a2 2 0 012-2z"
+        />
+      </svg> */}
+      <p className="text-sm">{clinic.phone || "Phone not available"}</p>
+    </div>
+
+    <div className="flex items-center">
+      {/* <svg
+        className="w-5 h-5 text-purple-500 mr-2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16 12H8m8 0a4 4 0 10-8 0 4 4 0 008 0zm0 0v5m-8-5v5m0 0H4m16 0h-4"
+        />
+      </svg> */}
+      <p className="text-sm">{clinic.email || "Email not available"}</p>
+    </div>
+  </div>
+
+  {/* Specialities */}
+  <div className="mt-4 mb-4">
+    <h3 className="text-sm font-semibold text-gray-800 mb-2">Medical Specialities</h3>
+    <p className="text-sm text-gray-600">
+      {clinic.specialities?.join(", ") || "General Practice"}
+    </p>
+  </div>
+
+  {/* Verified Status and Action Button */}
+  <div className="flex flex-col space-y-3 mt-6">
+    {/* Verified Badge */}
+    <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-2 px-4">
+      <svg
+        className="w-4 h-4 text-green-600 mr-2"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fillRule="evenodd"
+          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+          clipRule="evenodd"
+        />
+      </svg>
+      <span className="text-sm font-medium text-green-700">Verified Healthcare Provider</span>
+    </div>
+
+    {/* Action Button */}
+    <button className="w-full bg-[#0c213e] hover:bg-[#1a365d] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center">
+      <span>Check Availability</span>
+      <svg
+        className="w-4 h-4 ml-2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
+
+
 </div>
               ))}
             </div>
