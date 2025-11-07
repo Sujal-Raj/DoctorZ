@@ -1,9 +1,10 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import {
   GraduationCap,
-  MessageCircleMore,
+  MessageCircle,
   Stethoscope,
   ChevronDown,
   ChevronUp,
@@ -16,8 +17,9 @@ import {
   Shield,
   CheckCircle,
 } from "lucide-react";
+import { Helmet } from "react-helmet";
 import BookingDrawer from "../components/BookingDrawer";
-import Doctor from "../assets/Doctor.jpeg";
+import DefaultDoctor from "../assets/Doctor.jpeg";
 
 interface Doctor {
   _id: string;
@@ -40,6 +42,10 @@ const ViewDoctorProfile: React.FC = () => {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const [isBookingDrawerOpen, setIsBookingDrawerOpen] = useState(false);
   const { drId } = useParams<{ drId: string }>();
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   const faqs = [
     {
@@ -70,7 +76,6 @@ const ViewDoctorProfile: React.FC = () => {
 
   useEffect(() => {
     if (!drId) return;
-
     const fetchDoctor = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -79,13 +84,12 @@ const ViewDoctorProfile: React.FC = () => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDoctor(res.data.doctor);
-      } catch (err) {
-        console.error("Error fetching doctor profile:", err);
+      } catch (error) {
+        console.error("Error fetching doctor:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchDoctor();
   }, [drId]);
 
