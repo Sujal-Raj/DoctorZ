@@ -6,103 +6,13 @@ import timeSlotsModel from "../models/timeSlots.model.js";
 import { get } from "http";
 import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
-// const patientRegister = async (req:Request, res:Response) => {
-//   try {
-//      console.log("Received body:", req.body);
-//     const body = req.body;
-//     const files = req.files as Express.Multer.File[];
-//     const {
-//       fullName,
-//       gender,
-//       dob,
-//       email,
-//       password,
-//       mobileNumber,
-//       aadhar,
-//       abhaId,
-//       doctorId,
-//       city,
-//       pincode,
-//       name,
-//       number,  
-//     } = body;
-//     //  EMR FIELDS  ---
-//     const allergies = JSON.parse(body.allergies || "[]");
-//     const diseases = JSON.parse(body.diseases || "[]");
-//     const pastSurgeries = JSON.parse(body.pastSurgeries || "[]");
-//     const currentMedications = JSON.parse(body.currentMedications || "[]");
-//     //uploaded report file paths
-//     const reportUrls =
-//       files?.length > 0
-//         ? files.map((file) => `/uploads/${file.filename}`)
-//         : [];
-//     // --- VALIDATION ---
-//     if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
-//       return res.status(400).json({ message: "Required fields missing" });
-//     }
-//     const existing = await patientModel.findOne({ email: email.toLowerCase() });
-//     if (existing) {
-//       return res.status(400).json({ message: "Email already exists" });
-//     }
-//     // --- PASSWORD HASH ---
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     // --- SAVE PATIENT ---
-//     const patient = await patientModel.create({
-//       fullName,
-//       gender,
-//       dob,
-//       email: email.toLowerCase(),
-//       password: hashedPassword,
-//       mobileNumber,
-//       aadhar,
-//       abhaId,
-//       address: { city, pincode },
-//       emergencyContact: { name,number },
-//    emrs: []  
-//     });
-//     // --- CONDITION: CREATE EMR ONLY IF USER FILLED ANY MEDICAL FIELDS ---
-//     const shouldCreateEMR =
-//       allergies.length > 0 ||
-//       diseases.length > 0 ||
-//       pastSurgeries.length > 0 ||
-//       currentMedications.length > 0 ||
-//       reportUrls.length > 0;
-//     if (shouldCreateEMR) {
-//       const emr = await EMRModel.create({
-//         patientId: patient._id,
-//         doctorId: doctorId || null, // doctor may not be selected at registration
-//         allergies,
-//         diseases,
-//         pastSurgeries,
-//         currentMedications,
-//         reports: reportUrls
-//       });
-//       // Add EMR ID to patient.emr[]
-//        patient.emrs.push({
-//         name: fullName,
-//         aadhar: aadhar,
-//         emrId: emr._id
-//       });
-//       await patient.save();
-//     }
-//     return res.status(201).json({
-//       message: "Patient registered successfully",
-//       patient,
-//     });
-//   } catch (error) {
-//     console.log("Registration Error:", error);
-//     return res.status(500).json({
-//       message: "Something went wrong",
-//     });
-//   }
-// };
+import Booking from "../models/booking.model.js";
 const patientRegister = async (req, res) => {
     try {
         console.log("Received body:", req.body);
         const body = req.body;
         const files = req.files;
-        const { fullName, gender, dob, email, password, mobileNumber, aadhar, abhaId, doctorId, city, pincode, name, number, relation // ✅ Add this if user adds family/self record
-         } = body;
+        const { fullName, gender, dob, email, password, mobileNumber, aadhar, abhaId, doctorId, city, pincode, name, number, } = body;
         // EMR fields
         const allergies = JSON.parse(body.allergies || "[]");
         const diseases = JSON.parse(body.diseases || "[]");
@@ -135,7 +45,6 @@ const patientRegister = async (req, res) => {
             abhaId,
             address: { city, pincode },
             emergencyContact: { name, number },
-            emrs: [] // ✅ Important change (was emr: [])
         });
         // Should we create EMR?
         const shouldCreateEMR = allergies.length > 0 ||
@@ -147,7 +56,6 @@ const patientRegister = async (req, res) => {
             const emr = await EMRModel.create({
                 name: fullName, // ✅ Store self name
                 aadhar: aadhar, // ✅ Store patient's aadhar
-                patientId: patient._id,
                 // ✅ Link to patient
                 doctorId: doctorId || null,
                 allergies,
@@ -155,13 +63,6 @@ const patientRegister = async (req, res) => {
                 pastSurgeries,
                 currentMedications,
                 reports: reportUrls,
-            });
-            // ✅ Store FULL EMR OBJECT in patient.emrs[]
-            patient.emrs.push({
-                name: fullName,
-                aadhar: aadhar,
-                relation: relation || "self",
-                emrId: emr._id
             });
             await patient.save();
         }
@@ -305,5 +206,21 @@ const updatePatient = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong." });
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient };
+const getBookedDoctor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const doctor = await Booking.find({ userId: id }).populate('doctorId');
+        return res.status(200).json({
+            message: "Doctors fetched successfully",
+            doctor
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong."
+        });
+    }
+};
+export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor };
 //# sourceMappingURL=patient.controller.js.map

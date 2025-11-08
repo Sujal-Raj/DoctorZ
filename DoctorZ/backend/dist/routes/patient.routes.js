@@ -20,5 +20,6 @@ router.delete("/:id", patientController.deleteUser);
 router.put("/update/:id", patientController.updatePatient);
 // router.get("/slots/:doctorId/:date",patientController.getAvailableSlotsByDoctorId);
 router.get("/slots/:doctorId", patientController.getAvailableSlotsByDoctorId);
+router.get("/appointments/doctors/:id", patientController.getBookedDoctor);
 export default router;
 //# sourceMappingURL=patient.routes.js.map
