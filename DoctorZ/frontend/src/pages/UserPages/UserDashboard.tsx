@@ -65,7 +65,7 @@ function UserDashboard() {
             </NavLink>
 
             <NavLink
-              to={`/user/appointments/${patientId}`}
+              to="appointments"
               className={({ isActive }) =>
                 `flex items-center gap-2 px-4 py-3 rounded-lg transition 
                  ${isActive ? "bg-white text-indigo-700 shadow-md" : "text-blue-100 hover:bg-white/10"}`

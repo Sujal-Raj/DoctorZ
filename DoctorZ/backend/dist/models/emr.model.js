@@ -1,10 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 const emrSchema = new mongoose.Schema({
-    patientId: {
-        type: Schema.Types.ObjectId,
-        ref: "Patient",
-        required: true,
-    },
     doctorId: {
         type: Schema.Types.ObjectId,
         ref: "Doctor",
@@ -13,10 +8,6 @@ const emrSchema = new mongoose.Schema({
     name: {
         type: String,
         default: "",
-    },
-    relation: {
-        type: String,
-        default: "self",
     },
     aadhar: {
         type: Number,
