@@ -43,33 +43,106 @@ import EMRModel from "../models/emr.model.js";
 //   }
 // };
 // ✅ Book appointment
+// export const bookAppointment = async (req: Request, res: Response) => {
+//   try {
+//     const { patient, doctorId, slotId, datetime, mode, fees, userId, emrId } = req.body;
+//     if (!patient || !doctorId || !slotId || !datetime || !mode || !userId) {
+//       return res.status(400).json({ message: "Missing required fields" });
+//     }
+//     // ✅ Step 1: Check if this Aadhar already has an active booking
+//     const existingAadharBooking = await BookingModel.findOne({
+//       "patient.aadhar": patient.aadhar,
+//       status: "booked", // only check currently booked appointments
+//     });
+//     if (existingAadharBooking) {
+//       return res.status(400).json({
+//         message: "An appointment already exists for this Aadhar number.",
+//       });
+//     }
+//     // ✅ Step 2: Check if slot is already booked
+//     const existingBooking = await BookingModel.findOne({
+//       slotId,
+//       datetime,
+//       status: "booked",
+//     });
+//     if (existingBooking) {
+//       return res.status(400).json({ message: "This slot is already booked" });
+//     }
+//     // ✅ Step 3: Create new booking
+//     const booking = new BookingModel({
+//       userId,
+//       patient,
+//       doctorId,
+//       slotId,
+//       datetime,
+//       mode,
+//       fees,
+//       emrId,
+//       status: "booked",
+//     });
+//     await booking.save();
+//     // ✅ Step 4: Mark slot inactive
+//     await timeSlotsModel.updateOne(
+//       { "slots._id": slotId },
+//       { $set: { "slots.$.isActive": false } }
+//     );
+//     return res.status(201).json({
+//       message: "Appointment booked successfully",
+//       booking,
+//     });
+//   } catch (err) {
+//     console.error("Booking error:", err);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 export const bookAppointment = async (req, res) => {
     try {
-        const { patient, doctorId, slotId, datetime, mode, fees, userId, emrId } = req.body;
+        const { patient, doctorId, slotId, datetime, mode, fees, userId, allergies = [], diseases = [], pastSurgeries = [], currentMedications = [], reports = [] } = req.body;
         if (!patient || !doctorId || !slotId || !datetime || !mode || !userId) {
             return res.status(400).json({ message: "Missing required fields" });
         }
-        // ✅ Step 1: Check if this Aadhar already has an active booking
+        // ✅ Check if patient already has booking today
         const existingAadharBooking = await BookingModel.findOne({
             "patient.aadhar": patient.aadhar,
-            status: "booked", // only check currently booked appointments
+            status: "booked"
         });
         if (existingAadharBooking) {
             return res.status(400).json({
-                message: "An appointment already exists for this Aadhar number.",
+                message: "An appointment already exists for this Aadhar number."
             });
         }
-        // ✅ Step 2: Check if slot is already booked
-        const existingBooking = await BookingModel.findOne({
+        // ✅ Check if slot already booked
+        const existingSlot = await BookingModel.findOne({
             slotId,
             datetime,
             status: "booked",
         });
-        if (existingBooking) {
+        if (existingSlot) {
             return res.status(400).json({ message: "This slot is already booked" });
         }
-        // ✅ Step 3: Create new booking
-        const booking = new BookingModel({
+        // ✅ Create EMR if medical fields exist
+        let newEmr = null;
+        const hasMedicalData = allergies.length > 0 ||
+            diseases.length > 0 ||
+            pastSurgeries.length > 0 ||
+            currentMedications.length > 0 ||
+            reports.length > 0;
+        if (hasMedicalData) {
+            newEmr = await EMRModel.create({
+                patientId: userId,
+                doctorId,
+                name: patient.name,
+                relation: "self",
+                aadhar: patient.aadhar,
+                allergies,
+                diseases,
+                pastSurgeries,
+                currentMedications,
+                reports,
+            });
+        }
+        // ✅ Create Booking
+        const booking = await BookingModel.create({
             userId,
             patient,
             doctorId,
@@ -77,15 +150,15 @@ export const bookAppointment = async (req, res) => {
             datetime,
             mode,
             fees,
-            emrId: emrId?._id,
+            emrId: newEmr?._id || null,
             status: "booked",
         });
-        await booking.save();
-        // ✅ Step 4: Mark slot inactive
+        // ✅ Mark slot inactive
         await timeSlotsModel.updateOne({ "slots._id": slotId }, { $set: { "slots.$.isActive": false } });
         return res.status(201).json({
             message: "Appointment booked successfully",
             booking,
+            emr: newEmr,
         });
     }
     catch (err) {

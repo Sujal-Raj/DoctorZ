@@ -5,7 +5,8 @@ export const createEMR = async (req, res) => {
         const body = req.body;
         const files = req.files;
         const { patientId, doctorId } = body;
-        if (!patientId) {
+        const patient = await patientModel.findById(patientId);
+        if (!patient) {
             return res.status(400).json({ message: "Patient ID is required" });
         }
         // Arrays
@@ -18,17 +19,13 @@ export const createEMR = async (req, res) => {
             : [];
         // ✅ Create new EMR
         const emr = await EMRModel.create({
-            patientId,
+            aadhar: patient.aadhar,
             doctorId,
             allergies,
             diseases,
             pastSurgeries,
             currentMedications,
             reports: reportUrls,
-        });
-        // ✅ Push EMR ID into patient.emr[]
-        await patientModel.findByIdAndUpdate(patientId, {
-            $push: { emr: emr._id },
         });
         return res.status(201).json({
             message: "EMR created successfully",
