@@ -23,9 +23,6 @@ const bookingSchema = new Schema({
         default: "booked",
         required: true,
     },
-    roomId: {
-        type: String,
-    }
 }, { timestamps: true });
 const Booking = mongoose.model("Booking", bookingSchema);
 export default Booking;

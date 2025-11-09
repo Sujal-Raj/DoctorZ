@@ -22,6 +22,7 @@ export interface IBooking extends Document {
   status: "booked" | "cancelled" | "completed";
   createdAt: Date;
   updatedAt: Date;
+ 
 }
 
 const bookingSchema = new Schema<IBooking>(
@@ -57,6 +58,7 @@ const bookingSchema = new Schema<IBooking>(
       default: "booked",
       required: true,
     },
+    
   },
   { timestamps: true }
 );

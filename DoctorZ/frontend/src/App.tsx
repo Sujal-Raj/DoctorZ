@@ -65,6 +65,8 @@ import UserDashboard from "./pages/UserPages/UserDashboard";
 import AddEmr from "./pages/UserPages/AddEmr";
 import DoctorChat from "./pages/DoctorPages/DoctorChat";
 import PatientChat from "./pages/PatientChat";
+import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
+import PatientAppointments from "./pages/UserPages/PatientAppointments";
 
 // Admin
 
@@ -104,6 +106,7 @@ const App: React.FC = () => {
               <Route index element={<UserProfile />} />
                <Route path="user-profile" element={<UserProfile />} />
                   <Route path="add-emr" element={<AddEmr />} />
+                  <Route path="appointments" element={<PatientAppointments/>}/>
               </Route>
           </Route>
 
@@ -141,7 +144,7 @@ const App: React.FC = () => {
                path="doctor-home-dashboard"
                element={<DoctorDashboardHome/>}
              />
-           
+             <Route path="appointments" element={<DoctorAppointments/>} />
              <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
             <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />

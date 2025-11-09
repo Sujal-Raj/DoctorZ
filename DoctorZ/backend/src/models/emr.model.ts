@@ -1,10 +1,10 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IEMR extends Document {
-  patientId: mongoose.Types.ObjectId;
+
   doctorId: mongoose.Types.ObjectId;
    name?: string;
-   relation?: string;
+  
     aadhar?: number;
   allergies?: string[];
   diseases?: string[];
@@ -19,11 +19,7 @@ export interface IEMR extends Document {
 
 const emrSchema = new mongoose.Schema<IEMR>(
   {
-    patientId: {
-      type: Schema.Types.ObjectId,
-      ref: "Patient",
-      required: true,
-    },
+   
 
     doctorId: {
       type: Schema.Types.ObjectId,
@@ -35,10 +31,7 @@ const emrSchema = new mongoose.Schema<IEMR>(
       type: String,
       default: "",
     },
-    relation: {
-      type: String,
-      default: "self",
-    },
+   
     aadhar: {
       type: Number,
       default: null,

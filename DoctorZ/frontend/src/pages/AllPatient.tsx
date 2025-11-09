@@ -27,15 +27,16 @@ interface Booking {
 // ---------------- Component ----------------
 const AllPatient: React.FC = () => {
   const navigate = useNavigate();
-  const { doctorId } = useParams<{ doctorId: string }>();
+  const { drId } = useParams<{ drId: string }>();
+  console.log("🚀 Doctor ID from params:", drId);
   const [patients, setPatients] = useState<Patient[]>([]);
 
   useEffect(() => {
     const fetchBookings = async () => {
-      if (!doctorId) return;
+      if (!drId) return;
       try {
         const res = await api.get<{ bookings: Booking[] }>(
-          `/api/booking/doctor/${doctorId}`
+          `/api/booking/doctor/${drId}`
         );
 
         // ✅ Type-safe filtering without `any`
@@ -50,7 +51,7 @@ const AllPatient: React.FC = () => {
     };
 
     fetchBookings();
-  }, [doctorId]);
+  }, [drId]);
 
   return (
     <div className="w-full p-4 sm:p-5 md:p-6 overflow-x-auto rounded-lg font-[Poppins]">
@@ -102,7 +103,7 @@ const AllPatient: React.FC = () => {
                       <button
                         onClick={() =>
                           navigate(
-                            `/doctordashboard/${doctorId}/patientEMR/${patient.emrId}`
+                            `/doctordashboard/${drId}/patientEMR/${patient.emrId}`
                           )
                         }
                         className="px-2 sm:px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs sm:text-sm text-center"

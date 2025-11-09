@@ -46,18 +46,7 @@ const patientSchema = new mongoose.Schema({
         number: {
             type: Number
         }
-    },
-    emrs: [
-        {
-            name: { type: String },
-            aadhar: { type: Number },
-            relation: { type: String },
-            emrId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "EMR",
-            },
-        },
-    ],
+    }
 }, { timestamps: true });
 const patientModel = mongoose.model("Patient", patientSchema, "Patient");
 export default patientModel;

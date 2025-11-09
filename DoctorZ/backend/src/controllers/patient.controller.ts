@@ -7,6 +7,7 @@ import timeSlotsModel from "../models/timeSlots.model.js";
 import { get } from "http";
 import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
+import Booking from "../models/booking.model.js";
 
 
 const patientRegister = async (req: Request, res: Response) => {
@@ -30,7 +31,7 @@ const patientRegister = async (req: Request, res: Response) => {
       pincode,
       name,
       number,  
-      relation   // ✅ Add this if user adds family/self record
+     
     } = body;
 
     // EMR fields
@@ -71,7 +72,7 @@ const patientRegister = async (req: Request, res: Response) => {
       abhaId,
       address: { city, pincode },
       emergencyContact: { name, number },
-      emrs: []            
+              
     });
 
     // Should we create EMR?
@@ -86,7 +87,7 @@ const patientRegister = async (req: Request, res: Response) => {
       const emr = await EMRModel.create({
         name: fullName,          // ✅ Store self name
         aadhar: aadhar,          // ✅ Store patient's aadhar
-   patientId: patient._id,
+  
      // ✅ Link to patient
         doctorId: doctorId || null,
         allergies,
@@ -96,13 +97,7 @@ const patientRegister = async (req: Request, res: Response) => {
         reports: reportUrls,
       });
 
-      // ✅ Store FULL EMR OBJECT in patient.emrs[]
-      patient.emrs.push({
-        name: fullName,
-        aadhar: aadhar,
-        relation: relation || "self",
-        emrId: emr._id as mongoose.Types.ObjectId
-      });
+  
 
       await patient.save();
     }
@@ -277,7 +272,23 @@ const updatePatient = async (req: Request, res: Response) => {
     console.error(err);
     return res.status(500).json({ message: "Something went wrong." });
   }
-};
+}
 
+const getBookedDoctor =async(req:Request,res:Response)=>{
+    try {
+        const {id} = req.params;
+        const doctor = await Booking.find({userId:id}).populate('doctorId');
 
-export default {patientRegister,patientLogin,getPatientById,deleteUser,getAvailableSlotsByDoctorId,updatePatient};
+        return res.status(200).json({
+            message:"Doctors fetched successfully",
+            doctor
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ 
+            message: "Something went wrong." 
+        });
+    }
+}
+
+export default {patientRegister,patientLogin,getPatientById,deleteUser,getAvailableSlotsByDoctorId,updatePatient,getBookedDoctor};
