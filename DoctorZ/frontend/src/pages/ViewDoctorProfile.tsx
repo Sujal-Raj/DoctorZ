@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import {
   GraduationCap,
   MessageCircleMore,
   Stethoscope,
   ChevronDown,
-  ChevronUp,
+  
   Phone,
   Star,
   Clock,
@@ -15,9 +17,11 @@ import {
   Calendar,
   Shield,
   CheckCircle,
+  Heart,
 } from "lucide-react";
 import BookingDrawer from "../components/BookingDrawer";
 import Doctor from "../assets/Doctor.jpeg";
+import api from "../Services/mainApi";
 
 interface Doctor {
   _id: string;
@@ -30,9 +34,15 @@ interface Doctor {
   MedicalRegistrationNumber?: string;
   photo?: string;
 }
+interface FavouriteStatusResponse {
+  isFavourite: boolean;
+}
+
 
 const ViewDoctorProfile: React.FC = () => {
   const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [isFavourite, setIsFavourite] = useState(false);
+
   const [loading, setLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<"overview" | "education" | "faq">("overview");
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
@@ -66,17 +76,32 @@ const ViewDoctorProfile: React.FC = () => {
     },
   ];
 
+
+  const fetchFavouriteStatus = async (patientId: string) => {
+    try {
+      const favRes = await api.get<FavouriteStatusResponse>(`/api/patient/isFavourite/${patientId}/${drId}`);
+      setIsFavourite(favRes.data.isFavourite);
+    } catch (error) {
+      console.error("Error fetching favourite status:", error);
+    }
+  };
+
   useEffect(() => {
     if (!drId) return;
 
     const fetchDoctor = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = Cookies.get("patientToken");
         const res = await axios.get<{ doctor: Doctor }>(
           `http://localhost:3000/api/doctor/${drId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDoctor(res.data.doctor);
+         if (token) {
+          const decoded: any = jwtDecode(token);
+          const patientId = decoded.id;
+          await fetchFavouriteStatus(patientId);
+        }
       } catch (err) {
         console.error("Error fetching doctor profile:", err);
       } finally {
@@ -86,6 +111,8 @@ const ViewDoctorProfile: React.FC = () => {
 
     fetchDoctor();
   }, [drId]);
+
+ 
 
   if (loading) {
     return (
@@ -103,10 +130,37 @@ const ViewDoctorProfile: React.FC = () => {
     );
   }
 
+
+
+  const handleFavouriteToggle = async () => {
+    const token = Cookies.get("patientToken");
+
+    // ✅ Login check first
+    if (!token) {
+      alert("Please login to mark favourite doctors.");
+      return;
+    }
+
+    try {
+      const decoded: any = jwtDecode(token);
+      const patientId = decoded.id;
+
+      // ✅ Toggle favourite UI
+      setIsFavourite(!isFavourite);
+
+      // ✅ Toggle on backend
+      await api.post(`/api/patient/favourite-doctor/${patientId}`, {
+        doctorId: doctor?._id,
+      });
+    } catch (err) {
+      console.error("Error toggling favourite doctor", err);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Enhanced Hero Section */}
-      <div className="relative bg-[#0c213e] text-white"> // 
+      <div className="relative bg-[#0c213e] text-white"> 
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-6xl mx-auto px-4 py-12">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8">
@@ -133,6 +187,20 @@ const ViewDoctorProfile: React.FC = () => {
                   <h1 className="text-3xl lg:text-4xl font-bold mb-2">Dr. {doctor.fullName}</h1>
                   <p className="text-xl text-blue-100 font-medium">{doctor.specialization}</p>
                 </div>
+               <div 
+  onClick={handleFavouriteToggle}
+  className="cursor-pointer flex items-center justify-center lg:justify-start gap-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition"
+>
+  <Heart 
+    className={`${isFavourite ? "text-red-500" : "text-gray-300"}`} 
+    size={20} 
+    fill={isFavourite ? "currentColor" : "none"} 
+  />
+  <span className="font-semibold">
+    {isFavourite ? "Added to favourites" : "Mark as favourite"}
+  </span>
+</div>
+
                 <div className="mt-4 lg:mt-0 flex items-center justify-center lg:justify-start gap-2 bg-white/20 px-4 py-2 rounded-full">
                   <Star className="text-yellow-300" size={20} fill="currentColor" />
                   <span className="font-semibold">4.8/5</span>

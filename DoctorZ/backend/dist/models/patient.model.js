@@ -46,7 +46,9 @@ const patientSchema = new mongoose.Schema({
         number: {
             type: Number
         }
-    }
+    },
+    favouriteDoctors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" }],
+    favouriteClinics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Clinic" }],
 }, { timestamps: true });
 const patientModel = mongoose.model("Patient", patientSchema, "Patient");
 export default patientModel;
