@@ -19,6 +19,7 @@ export interface IClinic extends Document {
   operatingHours: string;
   clinicLicenseNumber: string;
   registrationCertificate?: string;
+  clinicImage?: string;  
 
   aadharNumber: number;
   panNumber: string;
@@ -60,6 +61,7 @@ const clinicSchema = new mongoose.Schema<IClinic>({
   ],
   clinicLicenseNumber: { type: String, required: true },
   registrationCertificate: { type: String },
+  clinicImage: { type: String },
 
   panNumber: { type: String, required: true },
   operatingHours: { type: String, required: true },

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerClinic } from "../../Services/mainClinicApi";  // Adjust path as needed
+import axios from "axios";
 
 type ClinicFormInputs = {
   clinicName: string;
@@ -19,16 +19,16 @@ type ClinicFormInputs = {
   staffName: string;
   staffEmail: string;
   staffPassword: string;
-  staffId: string;
-  registrationCert?: FileList;
 };
 
 const RegisterClinic: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<ClinicFormInputs>();
-  const [certName, setCertName] = useState<string>("No file selected");
   const [registrationFile, setRegistrationFile] = useState<File | null>(null);
+  const [registrationName, setRegistrationName] = useState("No file selected");
+  const [clinicImageFile, setClinicImageFile] = useState<File | null>(null);
+  const [clinicImageName, setClinicImageName] = useState("No file selected");
 
-  // Utility to generate alphanumeric ID
+  // Generate Staff ID
   const generateStaffID = (length = 8) => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let id = "";
@@ -39,35 +39,41 @@ const RegisterClinic: React.FC = () => {
   };
 
   const onSubmit = async (data: ClinicFormInputs) => {
-    const staffId = generateStaffID(8);
-    console.log("Generated Staff ID:", staffId);
-
+    const staffId = generateStaffID();
+    
+console.log("Registration File:", registrationFile);
+console.log("Clinic Image File:", clinicImageFile);
     try {
-      await registerClinic({
-        clinicName: data.clinicName || "",
-        clinicType: data.clinicType || "",
-        specialities: data.specialities.split(",").map(s => s.trim()),
-        address: data.address || "",
-        state: data.state || "",
-        district: data.district || "",
-        pincode: data.pincode || "",
-        contact: data.contact || "",
-        email: data.email || "",
-        operatingHours: data.operatingHours || "",
-        licenseNo: data.licenseNo || "",
-        ownerAadhar: data.ownerAadhar || "",
-        ownerPan: data.ownerPan || "",
-        staffName: data.staffName || "",
-        staffEmail: data.staffEmail || "",
-        staffPassword: data.staffPassword || "",
-        staffId,
-        registrationCert: registrationFile || undefined,
+      const formData = new FormData();
+      formData.append("clinicName", data.clinicName);
+      formData.append("clinicType", data.clinicType);
+      formData.append("specialities", data.specialities);
+      formData.append("address", data.address);
+      formData.append("state", data.state);
+      formData.append("district", data.district);
+      formData.append("pincode", data.pincode);
+      formData.append("contact", data.contact);
+      formData.append("email", data.email);
+      formData.append("operatingHours", data.operatingHours);
+      formData.append("licenseNo", data.licenseNo);
+      formData.append("ownerAadhar", data.ownerAadhar);
+      formData.append("ownerPan", data.ownerPan);
+      formData.append("staffName", data.staffName);
+      formData.append("staffEmail", data.staffEmail);
+      formData.append("staffPassword", data.staffPassword);
+      formData.append("staffId", staffId);
+
+      if (registrationFile) formData.append("registrationCert", registrationFile);
+      if (clinicImageFile) formData.append("clinicImage", clinicImageFile);
+
+      await axios.post("http://localhost:3000/api/clinic/register", formData, {
+      
       });
 
-      alert("Your clinic details have been sent for admin approval. You’ll receive login access once approved.");
+      alert("Clinic registered! Staff ID has been sent to the staff email.");
     } catch (err) {
+      console.error(err);
       alert("Something went wrong!");
-      console.error("Error:", err);
     }
   };
 
@@ -148,9 +154,9 @@ const RegisterClinic: React.FC = () => {
             <input type="email" {...register("email")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="clinic@email.com" />
           </div>
 
-          {/* Opening Hours */}
+          {/* Operating Hours */}
           <div>
-            <label className="block text-gray-700 font-medium">Opening Hours</label>
+            <label className="block text-gray-700 font-medium">Operating Hours</label>
             <input {...register("operatingHours")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="9 AM - 6 PM" />
           </div>
 
@@ -200,12 +206,30 @@ const RegisterClinic: React.FC = () => {
                 accept="image/*,application/pdf"
                 className="hidden"
                 onChange={(e) => {
-                  setCertName(e.target.files?.[0]?.name || "No file selected");
                   setRegistrationFile(e.target.files?.[0] || null);
+                  setRegistrationName(e.target.files?.[0]?.name || "No file selected");
                 }}
               />
             </label>
-            <p className="mt-2 text-sm text-gray-500">{certName}</p>
+            <p className="mt-2 text-sm text-gray-500">{registrationName}</p>
+          </div>
+
+          {/* Clinic Image */}
+          <div>
+            <label className="block text-gray-700 font-medium">Clinic Image</label>
+            <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-purple-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-purple-700 transition-all">
+              Upload Image
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  setClinicImageFile(e.target.files?.[0] || null);
+                  setClinicImageName(e.target.files?.[0]?.name || "No file selected");
+                }}
+              />
+            </label>
+            <p className="mt-2 text-sm text-gray-500">{clinicImageName}</p>
           </div>
 
           {/* Submit Button */}
