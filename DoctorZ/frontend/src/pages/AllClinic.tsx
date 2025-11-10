@@ -6,6 +6,8 @@ import {
   Calendar,
   Stethoscope,
   Search as SearchIcon,
+  Menu,
+  X,
 } from "lucide-react";
 import { Helmet } from "react-helmet";
 
@@ -60,6 +62,9 @@ const ClinicSearchResults: React.FC = () => {
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
 
+  // Mobile filter sidebar state
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+
   // ✅ Add random mock data for demo only
   const enhanceClinicsWithMockData = (clinics: Clinic[]): Clinic[] =>
     clinics.map((clinic) => ({
@@ -73,12 +78,11 @@ const ClinicSearchResults: React.FC = () => {
     const fetchClinics = async () => {
       setLoading(true);
       try {
-       const response = await axios.get(API);
-console.log("✅ API response:", response.data);
-const data = response.data as Clinic[];
-const enhancedClinics = enhanceClinicsWithMockData(data || []);
-setClinics(enhancedClinics);
-
+        const response = await axios.get(API);
+        console.log("✅ API response:", response.data);
+        const data = response.data as Clinic[];
+        const enhancedClinics = enhanceClinicsWithMockData(data || []);
+        setClinics(enhancedClinics);
       } catch (err) {
         console.error("❌ Error fetching clinics:", err);
       } finally {
@@ -176,7 +180,19 @@ setClinics(enhancedClinics);
     });
   };
 
-  const specialityOptions = [
+  const clearFilters = () => {
+    setSpecialty("");
+    setLocationValue("");
+    setDate("");
+    setModeHospital(true);
+    setModeOnline(true);
+    setExpFilters([]);
+    setFeeFilters([]);
+    setLanguageFilters([]);
+    setTypeFilters([]);
+  };
+
+  const specialityOptions: string[] = [
     "Dental",
     "Dermatology",
     "Pediatrics",
@@ -197,179 +213,114 @@ setClinics(enhancedClinics);
         />
       </Helmet>
 
-      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* === FILTERS === */}
-        <aside className="lg:col-span-3 sticky top-24 self-start z-30">
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-5 hover:shadow-lg transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
-              <button
-                onClick={() => {
-                  setSpecialty("");
-                  setLocationValue("");
-                  setDate("");
-                  setModeHospital(true);
-                  setModeOnline(true);
-                  setExpFilters([]);
-                  setFeeFilters([]);
-                  setLanguageFilters([]);
-                  setTypeFilters([]);
-                }}
-                className="text-sm text-teal-700 hover:underline"
-              >
-                Clear All
-              </button>
-            </div>
-
-            {/* Mode */}
-            <div className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Mode of Consult
-                </h4>
-                <label className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                  <input
-                    type="checkbox"
-                    checked={modeHospital}
-                    onChange={() => setModeHospital((s) => !s)}
-                    className="accent-teal-600"
-                  />
-                  Hospital Visit
-                </label>
-                <label className="flex items-center gap-2 text-sm text-gray-600">
-                  <input
-                    type="checkbox"
-                    checked={modeOnline}
-                    onChange={() => setModeOnline((s) => !s)}
-                    className="accent-teal-600"
-                  />
-                  Online Consult
-                </label>
+      {/* Mobile Filter Overlay */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
+          <div className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white shadow-xl overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
+                <button
+                  onClick={() => setShowMobileFilters(false)}
+                  className="p-2 text-gray-500 hover:text-gray-700"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              {/* Clinic Type */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Clinic Type
-                </h4>
-                {["Government", "Private"].map((type) => (
-                  <label
-                    key={type}
-                    className="flex items-center gap-2 text-sm text-gray-600 mb-1"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={typeFilters.includes(type)}
-                      onChange={() => toggleFilter(setTypeFilters, type)}
-                      className="accent-teal-600"
-                    />
-                    {type}
-                  </label>
-                ))}
-              </div>
-
-              {/* Specialities */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Specialities
-                </h4>
-                {specialityOptions.map((spec) => (
-                  <label
-                    key={spec}
-                    className="flex items-center gap-2 text-sm text-gray-600 mb-1"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={specialty === spec}
-                      onChange={() =>
-                        setSpecialty(specialty === spec ? "" : spec)
-                      }
-                      className="accent-teal-600"
-                    />
-                    {spec}
-                  </label>
-                ))}
-              </div>
-
-              {/* Experience */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Experience (Years Operating)
-                </h4>
-                {["0-5", "6-10", "11-15", "15+"].map((exp) => (
-                  <label
-                    key={exp}
-                    className="flex items-center gap-2 text-sm text-gray-600 mb-1"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={expFilters.includes(exp)}
-                      onChange={() => toggleFilter(setExpFilters, exp)}
-                      className="accent-teal-600"
-                    />
-                    {exp}
-                  </label>
-                ))}
-              </div>
+              {/* Mobile Filter Content */}
+              <MobileFilterPanel
+                modeHospital={modeHospital}
+                setModeHospital={setModeHospital}
+                modeOnline={modeOnline}
+                setModeOnline={setModeOnline}
+                typeFilters={typeFilters}
+                toggleFilter={toggleFilter}
+                setTypeFilters={setTypeFilters}
+                specialty={specialty}
+                setSpecialty={setSpecialty}
+                specialityOptions={specialityOptions}
+                expFilters={expFilters}
+                setExpFilters={setExpFilters}
+                clearFilters={clearFilters}
+                onClose={() => setShowMobileFilters(false)}
+              />
             </div>
           </div>
+        </div>
+      )}
+
+      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+        {/* === FILTERS - Desktop === */}
+        <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
+          <FilterPanel
+            modeHospital={modeHospital}
+            setModeHospital={setModeHospital}
+            modeOnline={modeOnline}
+            setModeOnline={setModeOnline}
+            typeFilters={typeFilters}
+            toggleFilter={toggleFilter}
+            setTypeFilters={setTypeFilters}
+            specialty={specialty}
+            setSpecialty={setSpecialty}
+            specialityOptions={specialityOptions}
+            expFilters={expFilters}
+            setExpFilters={setExpFilters}
+            clearFilters={clearFilters}
+          />
         </aside>
 
         {/* === MAIN CONTENT === */}
         <main className="lg:col-span-7">
           {/* Header */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 {specialty ? `Find ${specialty} Clinics` : "Available Clinics"}
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 {filtered.length} clinics found
               </p>
             </div>
+            
+            {/* Mobile Filter Button */}
+            <button
+              onClick={() => setShowMobileFilters(true)}
+              className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <Menu className="w-4 h-4" />
+              Filters
+            </button>
           </div>
 
           {/* Search bar */}
           <div className="bg-white border border-gray-200 rounded-lg p-3 mb-4 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-              <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5">
-                <Stethoscope className="w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Specialty"
-                  className="w-full outline-none text-gray-700"
-                  value={specialty}
-                  onChange={(e) => setSpecialty(e.target.value)}
-                />
-              </div>
-
-              <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5">
-                <MapPin className="w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Location"
-                  className="w-full outline-none text-gray-700"
-                  value={locationValue}
-                  onChange={(e) => setLocationValue(e.target.value)}
-                />
-              </div>
-
-              <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                <input
-                  type="date"
-                  className="w-full outline-none text-gray-700"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
-              </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <SearchInput
+                icon={<Stethoscope className="w-4 h-4 text-gray-400" />}
+                placeholder="Specialty"
+                value={specialty}
+                onChange={setSpecialty}
+              />
+              <SearchInput
+                icon={<MapPin className="w-4 h-4 text-gray-400" />}
+                placeholder="Location"
+                value={locationValue}
+                onChange={setLocationValue}
+              />
+              <SearchInput
+                icon={<Calendar className="w-4 h-4 text-gray-400" />}
+                type="date"
+                value={date}
+                onChange={setDate}
+              />
               <button
                 onClick={handleSearch}
-                className="flex items-center justify-center gap-2 bg-[#0c213e] hover:bg-[#1f2770] text-white font-medium rounded-lg px-4 py-1.5"
+                className="flex items-center justify-center gap-2 bg-[#28328C] hover:bg-[#1a365d] text-white font-medium rounded-lg px-4 py-2 sm:py-1.5 text-sm sm:text-base"
               >
                 <SearchIcon className="w-4 h-4" />
-                Search
+                <span className="sm:hidden">Search</span>
+                <span className="hidden sm:inline">Search</span>
               </button>
             </div>
           </div>
@@ -387,166 +338,7 @@ setClinics(enhancedClinics);
           ) : (
             <div className="space-y-4">
               {currentClinics.map((clinic) => (
-              <div
-  key={clinic._id}
-  onClick={() => navigate(`/clinic/${clinic._id}`)}
-  className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
->
-  {/* Clinic Image */}
-  <div className="absolute left-6 top-3">
-    <div className="relative">
-      <img
-        src={
-          clinic.clinicImage
-            ? clinic.clinicImage.startsWith("http")
-              ? clinic.clinicImage
-              : `http://localhost:3000/uploads/${clinic.clinicImage}`
-            : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-        }
-        alt={clinic.clinicName}
-        className="w-20 h-20 object-cover rounded-lg border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-300"
-      />
-      {/* Verified Badge (optional) */}
-      <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
-        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-        </svg>
-      </div>
-    </div>
-  </div>
-
-<div className="pl-8 pr-6 py-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
-  {/* Clinic Name and Location */}
-  <div className="mb-4 ml-20">
-    <h2 className="text-2xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300">
-      {clinic.clinicName}
-    </h2>
-    <div className="flex items-center text-gray-500 text-sm">
-      <svg
-        className="w-4 h-4 mr-1 text-blue-500"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path
-          fillRule="evenodd"
-          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-          clipRule="evenodd"
-        />
-      </svg>
-      <span>
-        {clinic.district}, {clinic.state}
-      </span>
-    </div>
-  </div>
-
-  {/* Divider Line */}
-  <hr className="border-gray-200 my-3" />
-
-  {/* Operating Hours */}
-  <div className="mb-3 flex items-center text-gray-700">
-    {/* <svg
-      className="w-5 h-5 text-green-600 mr-2"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg> */}
-    <p className="text-sm font-medium">
-      <span className="text-gray-600">Hours:</span> {clinic.operatingHours || "Not Available"}
-    </p>
-  </div>
-
-  {/* Contact Info */}
-  <div className="space-y-2 mb-3 text-gray-700">
-    <div className="flex items-center">
-      {/* <svg
-        className="w-5 h-5 text-blue-500 mr-2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.518 4.55a1 1 0 01-.272 1.054l-2.12 2.12a11.042 11.042 0 005.657 5.657l2.12-2.12a1 1 0 011.054-.272l4.55 1.518A1 1 0 0121 18.72V22a2 2 0 01-2 2h-1C9.716 24 3 17.284 3 9V8a2 2 0 012-2z"
-        />
-      </svg> */}
-      <p className="text-sm">{clinic.phone || "Phone not available"}</p>
-    </div>
-
-    <div className="flex items-center">
-      {/* <svg
-        className="w-5 h-5 text-purple-500 mr-2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M16 12H8m8 0a4 4 0 10-8 0 4 4 0 008 0zm0 0v5m-8-5v5m0 0H4m16 0h-4"
-        />
-      </svg> */}
-      <p className="text-sm">{clinic.email || "Email not available"}</p>
-    </div>
-  </div>
-
-  {/* Specialities */}
-  <div className="mt-4 mb-4">
-    <h3 className="text-sm font-semibold text-gray-800 mb-2">Medical Specialities</h3>
-    <p className="text-sm text-gray-600">
-      {clinic.specialities?.join(", ") || "General Practice"}
-    </p>
-  </div>
-
-  {/* Verified Status and Action Button */}
-  <div className="flex flex-col space-y-3 mt-6">
-    {/* Verified Badge */}
-    <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-2 px-4">
-      <svg
-        className="w-4 h-4 text-green-600 mr-2"
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path
-          fillRule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clipRule="evenodd"
-        />
-      </svg>
-      <span className="text-sm font-medium text-green-700">Verified Healthcare Provider</span>
-    </div>
-
-    {/* Action Button */}
-    <button className="w-full bg-[#0c213e] hover:bg-[#1a365d] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center">
-      <span>Check Availability</span>
-      <svg
-        className="w-4 h-4 ml-2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M14 5l7 7m0 0l-7 7m7-7H3"
-        />
-      </svg>
-    </button>
-  </div>
-</div>
-
-
-</div>
+                <ClinicCard key={clinic._id} clinic={clinic} navigate={navigate} />
               ))}
             </div>
           )}
@@ -554,12 +346,12 @@ setClinics(enhancedClinics);
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center mt-5">
-              <div className="inline-flex gap-1.5">
+              <div className="inline-flex gap-1 flex-wrap justify-center">
                 {Array.from({ length: totalPages }).map((_, i) => (
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-1.5 rounded-md border text-sm ${
+                    className={`px-2.5 sm:px-3 py-1.5 rounded-md border text-xs sm:text-sm min-w-[2.5rem] ${
                       currentPage === i + 1
                         ? "bg-teal-700 text-white border-teal-700"
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
@@ -573,8 +365,8 @@ setClinics(enhancedClinics);
           )}
         </main>
 
-        {/* === Help Card === */}
-        <aside className="lg:col-span-2 hidden lg:block">
+        {/* === Help Card - Desktop === */}
+        <aside className="lg:col-span-2 hidden lg:block sticky top-24 self-start">
           <div className="bg-[#08263a] text-white rounded-lg p-4 shadow-md">
             <h3 className="font-semibold text-base mb-2">
               Need help finding the right clinic?
@@ -584,15 +376,518 @@ setClinics(enhancedClinics);
             </p>
             <a
               href="tel:+918040245807"
-              className="inline-block mt-3 bg-white text-[#08263a] font-medium px-3 py-1.5 rounded"
+              className="inline-block mt-3 bg-white text-[#08263a] font-medium px-3 py-1.5 rounded text-sm hover:bg-gray-100 transition-colors"
             >
               Call Now
             </a>
           </div>
         </aside>
+
+        {/* Mobile Help Card */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#08263a] text-white p-4 shadow-lg z-40">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Need help finding a clinic?</p>
+              <p className="text-xs opacity-90">Call +91-8040245807</p>
+            </div>
+            <a
+              href="tel:+918040245807"
+              className="bg-white text-[#08263a] font-medium px-4 py-2 rounded text-sm hover:bg-gray-100 transition-colors"
+            >
+              Call Now
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
+
+/* 🔹 Reusable Components */
+
+const SearchInput = ({ icon, placeholder, value, onChange, type = "text" }: any) => (
+  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 sm:py-1.5 bg-white">
+    {icon}
+    <input
+      type={type}
+      placeholder={placeholder}
+      className="w-full outline-none text-gray-700 text-sm sm:text-base"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  </div>
+);
+
+const FilterPanel = ({
+  modeHospital,
+  setModeHospital,
+  modeOnline,
+  setModeOnline,
+  typeFilters,
+  toggleFilter,
+  specialty,
+  setSpecialty,
+  specialityOptions,
+  expFilters,
+  setExpFilters,
+  clearFilters,
+}: any) => (
+  <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-5 hover:shadow-lg transition-all duration-300">
+    <div className="flex items-center justify-between mb-4">
+      <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
+      <button onClick={clearFilters} className="text-sm text-teal-700 hover:underline">
+        Clear All
+      </button>
+    </div>
+
+    <div className="space-y-4">
+      {/* Mode */}
+      <div>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Mode of Consult</h4>
+        <label className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+          <input
+            type="checkbox"
+            checked={modeHospital}
+            onChange={() => setModeHospital((s: boolean) => !s)}
+            className="accent-teal-600"
+          />
+          Hospital Visit
+        </label>
+        <label className="flex items-center gap-2 text-sm text-gray-600">
+          <input
+            type="checkbox"
+            checked={modeOnline}
+            onChange={() => setModeOnline((s: boolean) => !s)}
+            className="accent-teal-600"
+          />
+          Online Consult
+        </label>
+      </div>
+
+      {/* Clinic Type */}
+      <div>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Clinic Type</h4>
+        {["Government", "Private"].map((type) => (
+          <label
+            key={type}
+            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+          >
+            <input
+              type="checkbox"
+              checked={typeFilters.includes(type)}
+              onChange={() => toggleFilter(setExpFilters, type)}
+              className="accent-teal-600"
+            />
+            {type}
+          </label>
+        ))}
+      </div>
+
+      {/* Specialities */}
+      <div>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Specialities</h4>
+        {specialityOptions.map((spec: string) => (
+          <label
+            key={spec}
+            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+          >
+            <input
+              type="checkbox"
+              checked={specialty === spec}
+              onChange={() => setSpecialty(specialty === spec ? "" : spec)}
+              className="accent-teal-600"
+            />
+            {spec}
+          </label>
+        ))}
+      </div>
+
+      {/* Experience */}
+      <div>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">
+          Experience (Years Operating)
+        </h4>
+        {["0-5", "6-10", "11-15", "15+"].map((exp) => (
+          <label
+            key={exp}
+            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+          >
+            <input
+              type="checkbox"
+              checked={expFilters.includes(exp)}
+              onChange={() => toggleFilter(setExpFilters, exp)}
+              className="accent-teal-600"
+            />
+            {exp}
+          </label>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const MobileFilterPanel = ({
+  modeHospital,
+  setModeHospital,
+  modeOnline,
+  setModeOnline,
+  typeFilters,
+  toggleFilter,
+  setTypeFilters,
+  specialty,
+  setSpecialty,
+  specialityOptions,
+  expFilters,
+  setExpFilters,
+  clearFilters,
+  onClose,
+}: any) => (
+  <div className="space-y-6">
+    {/* Mode */}
+    <div>
+      <h4 className="text-sm font-medium text-gray-700 mb-2">Mode of Consult</h4>
+      <label className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+        <input
+          type="checkbox"
+          checked={modeHospital}
+          onChange={() => setModeHospital((s: boolean) => !s)}
+          className="accent-teal-600"
+        />
+        Hospital Visit
+      </label>
+      <label className="flex items-center gap-2 text-sm text-gray-600">
+        <input
+          type="checkbox"
+          checked={modeOnline}
+          onChange={() => setModeOnline((s: boolean) => !s)}
+          className="accent-teal-600"
+        />
+        Online Consult
+      </label>
+    </div>
+
+    {/* Clinic Type */}
+    <div>
+      <h4 className="text-sm font-medium text-gray-700 mb-2">Clinic Type</h4>
+      {["Government", "Private"].map((type) => (
+        <label
+          key={type}
+          className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+        >
+          <input
+            type="checkbox"
+            checked={typeFilters.includes(type)}
+            onChange={() => toggleFilter(setTypeFilters, type)}
+            className="accent-teal-600"
+          />
+          {type}
+        </label>
+      ))}
+    </div>
+
+    {/* Specialities */}
+    <div>
+      <h4 className="text-sm font-medium text-gray-700 mb-2">Specialities</h4>
+      {specialityOptions.map((spec: string) => (
+        <label
+          key={spec}
+          className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+        >
+          <input
+            type="checkbox"
+            checked={specialty === spec}
+            onChange={() => setSpecialty(specialty === spec ? "" : spec)}
+            className="accent-teal-600"
+          />
+          {spec}
+        </label>
+      ))}
+    </div>
+
+    {/* Experience */}
+    <div>
+      <h4 className="text-sm font-medium text-gray-700 mb-2">
+        Experience (Years Operating)
+      </h4>
+      {["0-5", "6-10", "11-15", "15+"].map((exp) => (
+        <label
+          key={exp}
+          className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+        >
+          <input
+            type="checkbox"
+            checked={expFilters.includes(exp)}
+            onChange={() => toggleFilter(setExpFilters, exp)}
+            className="accent-teal-600"
+          />
+          {exp}
+        </label>
+      ))}
+    </div>
+
+    {/* Mobile Filter Actions */}
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+      <div className="flex gap-3">
+        <button
+          onClick={clearFilters}
+          className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg font-medium"
+        >
+          Clear All
+        </button>
+        <button
+          onClick={onClose}
+          className="flex-1 py-2 px-4 bg-teal-600 text-white rounded-lg font-medium"
+        >
+          Apply Filters
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const ClinicCard = ({ clinic, navigate }: any) => (
+  // <div
+  //   onClick={() => navigate(`/clinic/${clinic._id}`)}
+  //   className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
+  // >
+  //   {/* Clinic Image - Responsive */}
+  //   <div className="absolute left-3 sm:left-6 top-3">
+  //     <div className="relative">
+  //       <img
+  //         src={
+  //           clinic.clinicImage
+  //             ? clinic.clinicImage.startsWith("http")
+  //               ? clinic.clinicImage
+  //               : `http://localhost:3000/uploads/${clinic.clinicImage}`
+  //             : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+  //         }
+  //         alt={clinic.clinicName}
+  //         className="w-42 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-300"
+  //       />
+  //       {/* Verified Badge */}
+  //       <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
+  //         <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+  //           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+  //         </svg>
+  //       </div>
+  //     </div>
+  //   </div>
+
+  //   <div className="pl-20 sm:pl-28 pr-4 sm:pr-6 py-4 sm:py-6">
+  //     {/* Clinic Name and Location */}
+  //     <div className="mb-3 sm:mb-4">
+  //       <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300 line-clamp-1">
+  //         {clinic.clinicName}
+  //       </h2>
+  //       <div className="flex items-center text-gray-500 text-xs sm:text-sm">
+  //         <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-blue-500 flex-shrink-0" />
+  //         <span className="line-clamp-1">
+  //           {clinic.district}, {clinic.state}
+  //         </span>
+  //       </div>
+  //     </div>
+
+  //     {/* Divider Line */}
+  //     <hr className="border-gray-200 my-2 sm:my-3" />
+
+  //     {/* Operating Hours */}
+  //     <div className="mb-2 sm:mb-3 flex items-center text-gray-700">
+  //       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-gray-400 flex-shrink-0" />
+  //       <p className="text-xs sm:text-sm">
+  //         <span className="text-gray-600">Hours:</span> {clinic.operatingHours || "Not Available"}
+  //       </p>
+  //     </div>
+
+  //     {/* Contact Info */}
+  //     <div className="space-y-1 sm:space-y-2 mb-2 sm:mb-3 text-gray-700">
+  //       <div className="flex items-center text-xs sm:text-sm">
+  //         <span className="text-gray-600 mr-2">Phone:</span>
+  //         <span className="line-clamp-1">{clinic.phone || "Not available"}</span>
+  //       </div>
+  //       <div className="flex items-center text-xs sm:text-sm">
+  //         <span className="text-gray-600 mr-2">Email:</span>
+  //         <span className="line-clamp-1">{clinic.email || "Not available"}</span>
+  //       </div>
+  //     </div>
+
+  //     {/* Specialities */}
+  //     <div className="mt-3 sm:mt-4 mb-3 sm:mb-4">
+  //       <h3 className="text-xs sm:text-sm font-semibold text-gray-800 mb-1">Medical Specialities</h3>
+  //       <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+  //         {clinic.specialities?.join(", ") || "General Practice"}
+  //       </p>
+  //     </div>
+
+  //     {/* Verified Status and Action Button */}
+  //     <div className="flex flex-col space-y-2 sm:space-y-3 mt-4 sm:mt-6">
+  //       {/* Verified Badge */}
+  //       <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4">
+  //         <svg
+  //           className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 mr-1 sm:mr-2 flex-shrink-0"
+  //           fill="currentColor"
+  //           viewBox="0 0 20 20"
+  //         >
+  //           <path
+  //             fillRule="evenodd"
+  //             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+  //             clipRule="evenodd"
+  //           />
+  //         </svg>
+  //         <span className="text-xs sm:text-sm font-medium text-green-700">Verified Healthcare Provider</span>
+  //       </div>
+
+  //       {/* Action Button */}
+  //       <button className="w-full bg-[#0c213e] hover:bg-[#1a365d] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base">
+  //         <span>Check Availability</span>
+  //         <svg
+  //           className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 flex-shrink-0"
+  //           fill="none"
+  //           stroke="currentColor"
+  //           strokeWidth="2"
+  //           viewBox="0 0 24 24"
+  //         >
+  //           <path
+  //             strokeLinecap="round"
+  //             strokeLinejoin="round"
+  //             d="M14 5l7 7m0 0l-7 7m7-7H3"
+  //           />
+  //         </svg>
+  //       </button>
+  //     </div>
+  //   </div>
+  // </div>
+
+  <div
+  onClick={() => navigate(`/clinic/${clinic._id}`)}
+  className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
+>
+  {/* Clinic Image - Larger Size */}
+  <div className="absolute left-3 sm:left-6 top-3">
+    <div className="relative">
+      <img
+        src={
+          clinic.clinicImage
+            ? clinic.clinicImage.startsWith("http")
+              ? clinic.clinicImage
+              : `http://localhost:3000/uploads/${clinic.clinicImage}`
+            : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+        }
+        alt={clinic.clinicName}
+        className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-300"
+      />
+      {/* Verified Badge */}
+      <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
+        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div className="pl-32 sm:pl-40 pr-4 sm:pr-6 py-4 sm:py-6">
+    {/* Clinic Name and Location - VERTICAL */}
+    <div className="mb-3 sm:mb-4">
+      <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300 line-clamp-1">
+        {clinic.clinicName}
+      </h2>
+      <div className="flex items-center text-gray-500 text-xs sm:text-sm mb-1">
+        <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-blue-500 flex-shrink-0" />
+        <span className="line-clamp-1">
+          {clinic.district}, {clinic.state}
+        </span>
+      </div>
+      {/* Operating Hours - VERTICAL under location */}
+      <div className="flex items-center text-gray-700 text-xs sm:text-sm">
+        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-gray-400 flex-shrink-0" />
+        <span className="text-gray-600 mr-1">Hours:</span>
+        <span className="line-clamp-1">{clinic.operatingHours || "Not Available"}</span>
+      </div>
+    </div>
+
+    {/* Divider Line */}
+    <hr className="border-gray-200 my-2 sm:my-3" />
+
+    {/* Contact Info - HORIZONTAL layout */}
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3 sm:mb-4">
+      {/* Phone - Always visible */}
+      <div className="flex-1">
+        <div className="flex items-center text-xs sm:text-sm text-gray-700 mb-1">
+          <span className="text-gray-600 mr-2">Phone:</span>
+          <span className="line-clamp-1">{clinic.phone || "Not available"}</span>
+        </div>
+      </div>
+      
+      {/* Email - HORIZONTAL with phone on larger screens */}
+      <div className="flex-1">
+        <div className="flex items-center text-xs sm:text-sm text-gray-700 mb-1">
+          <span className="text-gray-600 mr-2">Email:</span>
+          <span className="line-clamp-1">{clinic.email || "Not available"}</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Specialities - HORIZONTAL layout with email on larger screens */}
+    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3 sm:mb-4">
+      {/* Specialities */}
+      <div className="flex-1">
+        <h3 className="text-xs sm:text-sm font-semibold text-gray-800 mb-1">Medical Specialities</h3>
+        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+          {clinic.specialities?.join(", ") || "General Practice"}
+        </p>
+      </div>
+      
+      {/* Additional info can go here if needed */}
+      <div className="flex-1 hidden sm:block">
+        {/* Empty space for balance or add additional info */}
+      </div>
+    </div>
+
+ 
+
+    {/* Verified Status and Action Button */}
+    <div className="flex flex-col space-y-2 sm:space-y-3 mt-4 sm:mt-6">
+      {/* Verified Badge */}
+      <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4">
+        <svg
+          className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 mr-1 sm:mr-2 flex-shrink-0"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fillRule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clipRule="evenodd"
+          />
+        </svg>
+        <span className="text-xs sm:text-sm font-medium text-green-700">Verified Healthcare Provider</span>
+      </div>
+
+      {/* Action Button */}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent navigation when button is clicked
+          // Add your availability check logic here
+        }}
+        className="w-full bg-[#28328C] ] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base"
+      >
+        <span>Check Availability</span>
+        <svg
+          className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M14 5l7 7m0 0l-7 7m7-7H3"
+          />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+);
 
 export default ClinicSearchResults;
