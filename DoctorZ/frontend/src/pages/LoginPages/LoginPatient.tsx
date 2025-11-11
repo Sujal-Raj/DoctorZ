@@ -2,8 +2,7 @@
 // src/pages/LoginPatient.tsx
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../Services/client";
-import Cookies from "js-cookie";
+
 import { loginPatient } from "../../Services/patientApi";
 import { AuthContext } from "../../Context/AuthContext"; // ✅ Import AuthContext
 
@@ -21,7 +20,11 @@ export default function LoginPatient() {
     try {
       const res = await loginPatient({ email, password });
  login(res.token);
-     
+     if (res.user) {
+      localStorage.setItem("user", JSON.stringify(res.user));
+      console.log("👤 Logged-in user:", res.user);
+      localStorage.setItem("userId", res.user._id);
+    }
 
       alert("Login successful");
 

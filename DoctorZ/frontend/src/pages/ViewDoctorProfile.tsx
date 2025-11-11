@@ -567,9 +567,8 @@ const ViewDoctorProfile: React.FC = () => {
                   fees: doctor.consultationFee,
                 }}
                 open={true}
-                onClose={() => {}}
-                variant="sidebar"
-              />
+                onClose={() => { } }
+                variant="sidebar" roomId={undefined}              />
             </div>
 
             {/* 🔸 SECONDARY SECTION – About Doctor */}

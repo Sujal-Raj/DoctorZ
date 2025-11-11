@@ -1,9 +1,11 @@
+
+
+
 import React, { useEffect, useMemo, useState } from "react";
 import { X, Video, Phone } from "lucide-react";
 import { formatDayShort, formatDateNumber } from "../utils/date.js";
 import api from "../Services/mainApi.js";
-import { addMonths, startOfMonth, endOfMonth } from "date-fns";
-
+import {  startOfMonth, endOfMonth } from "date-fns";
 import AppointmentFormModal from "./AppointmentFormModal.js";
 import Swal from "sweetalert2";
 
@@ -25,6 +27,7 @@ interface AvailableData {
   date: string;
   slots: Slot[];
 }
+
 interface ApiResponse {
   message?: string;
   availableMonths?: Record<string, AvailableData[]>;
@@ -50,7 +53,9 @@ const BookingDrawer: React.FC<Props> = ({
 }) => {
   const [mode, setMode] = useState<"online" | "offline">("online");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null); // ✅ stores full slot object
   const [bookingLoading, setBookingLoading] = useState(false);
 
   const [slots, setSlots] = useState<Slot[]>([]);
@@ -76,22 +81,17 @@ const BookingDrawer: React.FC<Props> = ({
     return arr;
   }, [currentMonth]);
 
-  // --- FIX 1: Build a normalized dateMap using ISO date keys (YYYY-MM-DD)
   const dateMap = useMemo(() => {
     const map: Record<string, Slot[]> = {};
-
     Object.values(availableMonths).forEach((monthArr) => {
       monthArr.forEach((entry) => {
-        // normalize entry date using ISO to avoid timezone mismatches
         const key = new Date(entry.date).toISOString().slice(0, 10);
         map[key] = entry.slots;
       });
     });
-
     return map;
   }, [availableMonths]);
 
-  // --- FIX 2: Use an ISO-normalized formatDate so it matches dateMap keys
   const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 
   useEffect(() => {
@@ -101,13 +101,10 @@ const BookingDrawer: React.FC<Props> = ({
         const res = await api.get<ApiResponse>(
           `/api/patient/slots/${doctor._id}`
         );
-
         const availableMonthsData: Record<string, AvailableData[]> =
-          (res.data.availableMonths as Record<string, AvailableData[]>) || {};
-
+          res.data.availableMonths || {};
         setAvailableMonths(availableMonthsData);
 
-        // ✅ Auto-select first available date globally (only once after fetch)
         const allMonths = Object.keys(availableMonthsData).sort();
         if (allMonths.length > 0) {
           const firstMonthKey = allMonths[0];
@@ -116,20 +113,10 @@ const BookingDrawer: React.FC<Props> = ({
             const firstAvailable = monthData[0];
             const firstDate = new Date(firstAvailable.date);
 
-            // update month and selected date/slots (initial load)
             setCurrentMonth(firstDate);
-
-            // clone slots to avoid shared references
-            const clonedSlots = (firstAvailable.slots || []).map((s) => ({
-              ...s,
-            }));
             setSelectedDate(firstDate);
-            setSlots(clonedSlots);
-
-            setSelectedTime(null);
-            setSelectedKey(
-              new Date(firstAvailable.date).toISOString().slice(0, 10)
-            );
+            setSlots((firstAvailable.slots || []).map((s) => ({ ...s })));
+            setSelectedKey(firstDate.toISOString().slice(0, 10));
           }
         }
       } catch (err) {
@@ -140,9 +127,6 @@ const BookingDrawer: React.FC<Props> = ({
 
     fetchAvailableMonths();
   }, [doctor]);
-
-  // NOTE: removed the month-driven effect that auto-selected first day every time currentMonth changed.
-  // That autoset was causing overwrites after user clicks. We intentionally do NOT auto-select slots on month change.
 
   const handleBook = async (formData: {
     name: string;
@@ -165,47 +149,33 @@ const BookingDrawer: React.FC<Props> = ({
       return;
     }
 
-    if (!doctor || !selectedDate || !selectedTime) {
+    if (!doctor || !selectedDate || !selectedSlot) {
       alert("Invalid booking data.");
       return;
     }
-
-    const selectedSlotId = slots.find((s) => s.time === selectedTime)?._id;
 
     setBookingLoading(true);
 
     const bookingPayload = {
       doctorId: doctor._id,
       userId,
+      slot: selectedSlot.time,
+      slotId: selectedSlot._id, // ✅ use actual slotId
+      dateTime: selectedDate.toISOString().slice(0, 10),
       mode,
-      datetime: `${selectedDate
-        .toISOString()
-        .slice(0, 10)}T${selectedTime}:00Z`,
+      status: "booked",
       fees: doctor.fees ?? 0,
-      status: "booked", // ✅ required field
-      emrId: null,
-      slotId: selectedSlotId,
       patient: formData,
-      createdAt: new Date().toISOString(),
     };
-    console.log(" booking payload", bookingPayload);
 
-    console.log({
-      doctorId: doctor?._id,
-      userId,
-      slotId: selectedSlotId,
-      selectedTime,
-      datetime: `${selectedDate
-        .toISOString()
-        .slice(0, 10)}T${selectedTime}:00Z`,
-    });
+    console.log("📦 Booking payload:", bookingPayload);
 
     try {
       const response = await api.post<{ roomId?: string }>(
         "/api/booking/book",
         bookingPayload
       );
-      console.log(response.data);
+      
       const { roomId } = response.data;
 
       Swal.fire({
@@ -306,74 +276,7 @@ const BookingDrawer: React.FC<Props> = ({
               </button>
             </div>
 
-            {/* Month Navigation */}
-            <div className="flex justify-between items-center mb-2">
-              {(() => {
-                const prev = addMonths(currentMonth, -1);
-                const next = addMonths(currentMonth, 1);
-
-                const prevKey = `${prev.getFullYear()}-${String(
-                  prev.getMonth() + 1
-                ).padStart(2, "0")}`;
-                const nextKey = `${next.getFullYear()}-${String(
-                  next.getMonth() + 1
-                ).padStart(2, "0")}`;
-
-                const hasPrev = !!availableMonths[prevKey];
-                const hasNext = !!availableMonths[nextKey];
-
-                return (
-                  <>
-                    {/* Prev Button: only change month — do NOT auto-select slots */}
-                    <button
-                      onClick={() => {
-                        if (!hasPrev) return;
-                        setCurrentMonth(prev);
-                        // clear selection when month changes (optional)
-                        setSelectedKey(null);
-                        setSelectedDate(null);
-                        setSelectedTime(null);
-                        setSlots([]);
-                      }}
-                      disabled={!hasPrev}
-                      className={`px-2 py-1 border rounded ${
-                        !hasPrev ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                    >
-                      Prev
-                    </button>
-
-                    <div className="font-semibold">
-                      {currentMonth.toLocaleString("default", {
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </div>
-
-                    {/* Next Button: only change month — do NOT auto-select slots */}
-                    <button
-                      onClick={() => {
-                        if (!hasNext) return;
-                        setCurrentMonth(next);
-                        // clear selection when month changes (optional)
-                        setSelectedKey(null);
-                        setSelectedDate(null);
-                        setSelectedTime(null);
-                        setSlots([]);
-                      }}
-                      disabled={!hasNext}
-                      className={`px-2 py-1 border rounded ${
-                        !hasNext ? "opacity-50 cursor-not-allowed" : ""
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </>
-                );
-              })()}
-            </div>
-
-            {/* Date Carousel */}
+            {/* Dates */}
             <div className="flex gap-2 mt-1 overflow-x-auto mb-4">
               {days
                 .filter((d: Date) => {
@@ -389,14 +292,10 @@ const BookingDrawer: React.FC<Props> = ({
                       key={key}
                       onClick={() => {
                         const dateKey = formatDate(d);
-
                         setSelectedDate(d);
                         setSelectedKey(dateKey);
                         setSelectedTime(null);
-
-                        // --- FIX 3: clone slots when setting so downstream changes don't mutate shared arrays
-                        const source = dateMap[dateKey] || [];
-                        setSlots(source.map((s) => ({ ...s })));
+                        setSlots((dateMap[dateKey] || []).map((s) => ({ ...s })));
                       }}
                       className={`min-w-[72px] flex-shrink-0 rounded-lg p-3 text-center border ${
                         active
@@ -427,16 +326,17 @@ const BookingDrawer: React.FC<Props> = ({
                     return (
                       <button
                         key={slot._id}
-                        onClick={() => !isBooked && setSelectedTime(slot.time)}
+                        onClick={() => {
+                          if (!isBooked) {
+                            setSelectedTime(slot.time);
+                            setSelectedSlot(slot); // ✅ set full slot object
+                          }
+                        }}
                         className={`relative p-2 rounded border text-sm w-full ${
-                          selectedTime === slot.time
+                          selectedSlot?._id === slot._id
                             ? "bg-blue-600 text-white"
                             : "bg-white text-gray-800 hover:shadow"
-                        } ${
-                          isBooked
-                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                            : ""
-                        }`}
+                        } ${isBooked ? "bg-gray-200 text-gray-400" : ""}`}
                         disabled={isBooked}
                       >
                         {slot.time}
@@ -454,7 +354,7 @@ const BookingDrawer: React.FC<Props> = ({
             </div>
 
             {/* Continue Button */}
-            {selectedTime && (
+            {selectedSlot && (
               <button
                 onClick={() => setShowForm(true)}
                 className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
@@ -472,7 +372,11 @@ const BookingDrawer: React.FC<Props> = ({
             selectedDate={
               selectedDate ? selectedDate.toISOString().slice(0, 10) : ""
             }
-            selectedTime={selectedTime || ""}
+            selectedTime={selectedSlot?.time || ""}
+            selectedSlot={selectedSlot || undefined} 
+            
+            // ✅ send full slot object
+            
           />
         </div>
       </div>
