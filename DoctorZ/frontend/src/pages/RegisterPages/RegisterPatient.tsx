@@ -2,6 +2,9 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Helmet } from "react-helmet";
+import Swal from "sweetalert2";
+import { Upload, FileText } from "lucide-react";
 
 import "../../index.css";
 import { registerPatient } from "../../Services/patientApi";
@@ -33,6 +36,26 @@ const RegisterPatient: React.FC = () => {
   const { register, handleSubmit } = useForm<PatientFormInputs>();
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
 
+
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [idFile, setIdFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [idPreview, setIdPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setPreview: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    const selectedFile = e.target.files?.[0];
+    setFile(selectedFile || null);
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setPreview(URL.createObjectURL(selectedFile));
+    } else {
+      setPreview(null);
+    }
+  };
 
   const onSubmit = async (data: PatientFormInputs) => {
     const formData = new FormData();
@@ -189,7 +212,6 @@ console.log("FILES SELECTED BY USER:", selectedFiles);
               className="inputBox"
               placeholder="ABHA123456"
             />
-          </div>
 
           <div>
             <label className="font-medium text-gray-700">

@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import { useState } from "react";
+import { Eye, EyeOff, Upload, FileText } from "lucide-react";
+import Swal from "sweetalert2";
+import { registerClinic } from "../../Services/mainClinicApi";
 
 type ClinicFormInputs = {
   clinicName: string;
@@ -22,225 +25,353 @@ type ClinicFormInputs = {
 };
 
 const RegisterClinic: React.FC = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<ClinicFormInputs>();
-  const [registrationFile, setRegistrationFile] = useState<File | null>(null);
-  const [registrationName, setRegistrationName] = useState("No file selected");
-  const [clinicImageFile, setClinicImageFile] = useState<File | null>(null);
-  const [clinicImageName, setClinicImageName] = useState("No file selected");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ClinicFormInputs>();
 
-  // Generate Staff ID
+  const [certFile, setCertFile] = useState<File | null>(null);
+  const [certPreview, setCertPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const generateStaffID = (length = 8) => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let id = "";
-    for (let i = 0; i < length; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
+    return Array.from({ length }, () =>
+      chars.charAt(Math.floor(Math.random() * chars.length))
+    ).join("");
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCertFile(file);
+      if (file.type.startsWith("image/")) {
+        setCertPreview(URL.createObjectURL(file));
+      } else {
+        setCertPreview(null);
+      }
     }
-    return id;
   };
 
   const onSubmit = async (data: ClinicFormInputs) => {
+    setLoading(true);
     const staffId = generateStaffID();
-    
-console.log("Registration File:", registrationFile);
-console.log("Clinic Image File:", clinicImageFile);
+
     try {
-      const formData = new FormData();
-      formData.append("clinicName", data.clinicName);
-      formData.append("clinicType", data.clinicType);
-      formData.append("specialities", data.specialities);
-      formData.append("address", data.address);
-      formData.append("state", data.state);
-      formData.append("district", data.district);
-      formData.append("pincode", data.pincode);
-      formData.append("contact", data.contact);
-      formData.append("email", data.email);
-      formData.append("operatingHours", data.operatingHours);
-      formData.append("licenseNo", data.licenseNo);
-      formData.append("ownerAadhar", data.ownerAadhar);
-      formData.append("ownerPan", data.ownerPan);
-      formData.append("staffName", data.staffName);
-      formData.append("staffEmail", data.staffEmail);
-      formData.append("staffPassword", data.staffPassword);
-      formData.append("staffId", staffId);
-
-      if (registrationFile) formData.append("registrationCert", registrationFile);
-      if (clinicImageFile) formData.append("clinicImage", clinicImageFile);
-
-      await axios.post("http://localhost:3000/api/clinic/register", formData, {
-      
+      await registerClinic({
+        ...data,
+        specialities: data.specialities
+          ? data.specialities.split(",").map((s) => s.trim())
+          : [],
+        staffId,
+        registrationCert: certFile || undefined,
       });
 
-      alert("Clinic registered! Staff ID has been sent to the staff email.");
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong!");
+      Swal.fire({
+        icon: "success",
+        title: "Clinic Registered!",
+        text: "Your registration has been submitted for admin approval.",
+        confirmButtonColor: "#28328C",
+      });
+
+      reset();
+      setCertFile(null);
+      setCertPreview(null);
+    } catch (err: any) {
+      console.error("❌ Error submitting form:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: err?.response?.data?.message || "Something went wrong. Try again.",
+        confirmButtonColor: "#28328C",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-100 p-6">
-      <div className="w-full max-w-4xl bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl p-8">
-        <h2 className="text-3xl font-bold text-center text-purple-700 mb-6">🏥 Clinic Registration</h2>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Clinic Name */}
-          <div>
-            <label className="block text-gray-700 font-medium">Clinic Name</label>
-            <input
-              {...register("clinicName", { required: "Clinic name is required" })}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-purple-400"
-              placeholder="ABC Clinic"
-            />
-            {errors.clinicName && <p className="text-red-500 text-sm mt-1">{errors.clinicName.message}</p>}
-          </div>
-
-          {/* Clinic Type */}
-          <div>
-            <label className="block text-gray-700 font-medium">Clinic Type</label>
-            <input
-              {...register("clinicType")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-purple-400"
-              placeholder="Private / Govt"
-            />
-          </div>
-
-          {/* Speciality */}
-          <div>
-            <label className="block text-gray-700 font-medium">Speciality</label>
-            <input
-              {...register("specialities")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-purple-400"
-              placeholder="Cardiology"
-            />
-          </div>
-
-          {/* Address */}
-          <div>
-            <label className="block text-gray-700 font-medium">Address</label>
-            <input
-              {...register("address")}
-              className="mt-2 w-full rounded-xl border border-gray-300 p-3 shadow-sm focus:ring-2 focus:ring-purple-400"
-              placeholder="123, Street, City"
-            />
-          </div>
-
-          {/* State */}
-          <div>
-            <label className="block text-gray-700 font-medium">State</label>
-            <input {...register("state")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="Delhi" />
-          </div>
-
-          {/* District */}
-          <div>
-            <label className="block text-gray-700 font-medium">District</label>
-            <input {...register("district")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="New Delhi" />
-          </div>
-
-          {/* Pincode */}
-          <div>
-            <label className="block text-gray-700 font-medium">Pincode</label>
-            <input {...register("pincode")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="110001" />
-          </div>
-
-          {/* Contact */}
-          <div>
-            <label className="block text-gray-700 font-medium">Contact Number</label>
-            <input {...register("contact")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="9876543210" />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-gray-700 font-medium">Email</label>
-            <input type="email" {...register("email")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="clinic@email.com" />
-          </div>
-
-          {/* Operating Hours */}
-          <div>
-            <label className="block text-gray-700 font-medium">Operating Hours</label>
-            <input {...register("operatingHours")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="9 AM - 6 PM" />
-          </div>
-
-          {/* License No */}
-          <div>
-            <label className="block text-gray-700 font-medium">License No</label>
-            <input {...register("licenseNo")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="CLN12345" />
-          </div>
-
-          {/* Owner Aadhar */}
-          <div>
-            <label className="block text-gray-700 font-medium">Owner Aadhar</label>
-            <input {...register("ownerAadhar")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="123456789012" />
-          </div>
-
-          {/* Owner PAN */}
-          <div>
-            <label className="block text-gray-700 font-medium">Owner PAN</label>
-            <input {...register("ownerPan")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="ABCDE1234F" />
-          </div>
-
-          {/* Staff Name */}
-          <div>
-            <label className="block text-gray-700 font-medium">Staff Name</label>
-            <input {...register("staffName")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="Staff Name" />
-          </div>
-
-          {/* Staff Email */}
-          <div>
-            <label className="block text-gray-700 font-medium">Staff Email</label>
-            <input {...register("staffEmail")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="staff@email.com" />
-          </div>
-
-          {/* Staff Password */}
-          <div>
-            <label className="block text-gray-700 font-medium">Staff Password</label>
-            <input type="password" {...register("staffPassword")} className="mt-2 w-full rounded-xl border p-3 shadow-sm focus:ring-2 focus:ring-purple-400" placeholder="********" />
-          </div>
-
-          {/* Registration Certificate */}
-          <div>
-            <label className="block text-gray-700 font-medium">Registration Certificate</label>
-            <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-purple-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-purple-700 transition-all">
-              Upload File
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                className="hidden"
-                onChange={(e) => {
-                  setRegistrationFile(e.target.files?.[0] || null);
-                  setRegistrationName(e.target.files?.[0]?.name || "No file selected");
-                }}
-              />
-            </label>
-            <p className="mt-2 text-sm text-gray-500">{registrationName}</p>
-          </div>
-
-          {/* Clinic Image */}
-          <div>
-            <label className="block text-gray-700 font-medium">Clinic Image</label>
-            <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-purple-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-purple-700 transition-all">
-              Upload Image
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  setClinicImageFile(e.target.files?.[0] || null);
-                  setClinicImageName(e.target.files?.[0]?.name || "No file selected");
-                }}
-              />
-            </label>
-            <p className="mt-2 text-sm text-gray-500">{clinicImageName}</p>
-          </div>
-
-          {/* Submit Button */}
-          <div className="col-span-2 mt-6 text-center">
-            <button type="submit" className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl shadow-lg hover:bg-purple-700 transition-all">
-              Register Clinic
-            </button>
-          </div>
-        </form>
-      </div>
+  const InputField = ({
+    id,
+    label,
+    type = "text",
+    placeholder,
+    registerField,
+    error,
+  }: {
+    id: string;
+    label: string;
+    type?: string;
+    placeholder?: string;
+    registerField: any;
+    error?: string;
+  }) => (
+    <div className="relative">
+      <label
+        htmlFor={id}
+        className="block text-sm font-semibold text-gray-700 mb-1"
+      >
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        {...registerField}
+        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] transition-all"
+      />
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
+  );
+
+  return (
+    <>
+      <Helmet>
+        <title>Clinic Registration | Health Connect Portal</title>
+        <meta
+          name="description"
+          content="Register your clinic with Health Connect Portal to manage patients, appointments, and staff efficiently."
+        />
+      </Helmet>
+
+      {/* ✅ White page background */}
+      <main className="min-h-screen bg-white flex items-center justify-center p-4">
+        {/* ✅ Smaller card */}
+        <section className="w-full max-w-4xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-extrabold text-[#28328C]">
+              🏥 Register Your Clinic
+            </h1>
+            <p className="mt-2 text-gray-600 text-sm md:text-base">
+              Submit your details for verification and onboarding.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800"
+            encType="multipart/form-data"
+          >
+            {/* --- Clinic Info --- */}
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2">
+              Clinic Information
+            </h2>
+
+            <InputField
+              id="clinicName"
+              label="Clinic Name"
+              placeholder="ABC Health Clinic"
+              registerField={register("clinicName", {
+                required: "Clinic name is required",
+              })}
+              error={errors.clinicName?.message}
+            />
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Clinic Type
+              </label>
+              <select
+                {...register("clinicType", {
+                  required: "Clinic type is required",
+                })}
+                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C] transition-all"
+              >
+                <option value="">Select Clinic Type</option>
+                <option value="Private">Private</option>
+                <option value="Government">Government</option>
+              </select>
+              {errors.clinicType && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.clinicType.message}
+                </p>
+              )}
+            </div>
+
+            <InputField
+              id="specialities"
+              label="Specialities"
+              placeholder="Cardiology, Pediatrics"
+              registerField={register("specialities")}
+            />
+            <InputField
+              id="address"
+              label="Address"
+              placeholder="123 Street, City"
+              registerField={register("address")}
+            />
+            <InputField
+              id="state"
+              label="State"
+              placeholder="Maharashtra"
+              registerField={register("state")}
+            />
+            <InputField
+              id="district"
+              label="District"
+              placeholder="Mumbai"
+              registerField={register("district")}
+            />
+            <InputField
+              id="pincode"
+              label="Pincode"
+              placeholder="400001"
+              type="number"
+              registerField={register("pincode")}
+            />
+            <InputField
+              id="contact"
+              label="Contact Number"
+              placeholder="9876543210"
+              registerField={register("contact")}
+            />
+            <InputField
+              id="email"
+              label="Email"
+              type="email"
+              placeholder="clinic@example.com"
+              registerField={register("email")}
+            />
+            <InputField
+              id="operatingHours"
+              label="Operating Hours"
+              placeholder="9 AM - 6 PM"
+              registerField={register("operatingHours")}
+            />
+
+            {/* --- Owner Info --- */}
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pt-4 pb-2">
+              Owner Details
+            </h2>
+
+            <InputField
+              id="licenseNo"
+              label="License No"
+              placeholder="CLN12345"
+              registerField={register("licenseNo")}
+            />
+            <InputField
+              id="ownerAadhar"
+              label="Owner Aadhar"
+              placeholder="123456789012"
+              type="number"
+              registerField={register("ownerAadhar")}
+            />
+            <InputField
+              id="ownerPan"
+              label="Owner PAN"
+              placeholder="ABCDE1234F"
+              registerField={register("ownerPan")}
+            />
+
+            {/* --- Staff Info --- */}
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pt-4 pb-2">
+              Staff Details
+            </h2>
+
+            <InputField
+              id="staffName"
+              label="Staff Name"
+              placeholder="John Doe"
+              registerField={register("staffName")}
+            />
+            <InputField
+              id="staffEmail"
+              label="Staff Email"
+              type="email"
+              placeholder="staff@clinic.com"
+              registerField={register("staffEmail")}
+            />
+
+            {/* --- Password --- */}
+            <div className="relative">
+              <label
+                htmlFor="staffPassword"
+                className="block text-sm font-semibold text-gray-700 mb-1"
+              >
+                Staff Password
+              </label>
+              <input
+                id="staffPassword"
+                type={showPassword ? "text" : "password"}
+                placeholder="********"
+                {...register("staffPassword", {
+                  required: "Password is required",
+                })}
+                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 pr-10 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C] transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-8 text-gray-500 hover:text-[#28328C]"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+              {errors.staffPassword && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.staffPassword.message}
+                </p>
+              )}
+            </div>
+
+            {/* --- File Upload --- */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Registration Certificate
+              </label>
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <label className="flex items-center justify-center w-full sm:w-1/2 h-28 border-2 border-dashed border-[#28328C]/40 rounded-lg cursor-pointer hover:bg-[#28328C]/5 transition">
+                  <Upload className="text-[#28328C] mr-2" size={20} />
+                  <span className="text-gray-600 text-sm">
+                    {certFile ? "Change File" : "Upload Certificate"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
+
+                {certFile && (
+                  <div className="border border-[#28328C]/30 rounded-lg p-2 bg-gray-50 shadow-sm flex items-center justify-center w-28 h-28">
+                    {certPreview ? (
+                      <img
+                        src={certPreview}
+                        alt="Preview"
+                        className="object-cover w-full h-full rounded-md"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center text-gray-600 text-xs text-center">
+                        <FileText size={20} />
+                        <p className="mt-1 truncate">{certFile.name}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* --- Submit --- */}
+            <div className="md:col-span-2 text-center mt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-8 py-2.5 text-white text-base font-semibold rounded-lg shadow-md transition-all duration-300 ${
+                  loading
+                    ? "bg-[#3a49c9] cursor-not-allowed"
+                    : "bg-[#28328C] hover:bg-[#1f2775] hover:scale-[1.02]"
+                }`}
+              >
+                {loading ? "Submitting..." : "Register Clinic"}
+              </button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </>
   );
 };
 

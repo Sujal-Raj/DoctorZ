@@ -67,6 +67,7 @@ import DoctorChat from "./pages/DoctorPages/DoctorChat";
 import PatientChat from "./pages/PatientChat";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import PatientAppointments from "./pages/UserPages/PatientAppointments";
+import DoctorSearchResults from "./pages/DoctorSearchResults";
 
 // Admin
 
@@ -82,10 +83,11 @@ const App: React.FC = () => {
         
             <Route path="/" element={<Home />} />
             <Route path="/patient-register" element={<RegisterPatient />} />
-            <Route path="/doctor-register" element={<RegisterDoctor />} />
+            <Route path="/doctor-register" element={<RegisterDoc />} />
             <Route path="/clinic-register" element={<RegisterClinic />} />
             <Route path="/all-clinics" element={<AllClinic />} />
-            <Route path="/all-doctors" element={<AllDoctors />} />
+            {/* <Route path="/all-doctors" element={<AllDoctors />} /> */}
+            <Route path="/search-results" element={<DoctorSearchResults />} />
             <Route path="/clinic-login" element={<LoginClinic />} />
             <Route path="/patient-login" element={<LoginPatient />} />
             <Route path="/patient-chat" element={<PatientChat />} />
