@@ -1,89 +1,154 @@
 
 
-import React, { useRef, useState, useEffect } from "react";
-import EmrForAppointment from "./EmrForAppoinment";
-import type { EmrHandle } from "./EmrForAppoinment";
+import React, { useState } from "react";
+import { createEMR } from "../Services/emrApi";
+import { bookAppointment } from "../Services/bookingApi";
+import { useNavigate } from "react-router-dom";
+
+interface TimeSlot {
+  _id: string;
+  time: string;
+  isActive: boolean;
+}
+
 
 interface AppointmentFormProps {
-  onSubmit: (data: {
+  doctorId?: string;
+  selectedDate?: string;
+  selectedTime?: string;
+  selectedSlot?:TimeSlot;
+  onClose: () => void;
+  
+  onSubmit?: (formData: {
     name: string;
     age: number;
     gender: "Male" | "Female" | "Other";
     aadhar: string;
     contact: string;
-    emrId?: string;
-  }) => void;
-  doctorId?: string; // can be passed from modal
+  }) => Promise<void>;
 }
 
-const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, doctorId }) => {
-  const emrRef = useRef<EmrHandle>(null);
-
+const AppointmentForm: React.FC<AppointmentFormProps> = ({
+  doctorId,
+  selectedDate,
+  selectedTime,
+  selectedSlot,
+  onClose,
+}) => {
+  const [relation, setRelation] = useState<"self" | "relative">("self");
+  
   const [name, setName] = useState("");
   const [age, setAge] = useState<number | "">("");
   const [gender, setGender] = useState<"Male" | "Female" | "Other">("Male");
   const [aadhar, setAadhar] = useState("");
   const [contact, setContact] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const [localDoctorId, setLocalDoctorId] = useState<string>("");
-  const [patientId, setPatientId] = useState<string | null>(null);
+  // EMR fields
+  const [allergies, setAllergies] = useState("");
+  const [diseases, setDiseases] = useState("");
+  const [pastSurgeries, setPastSurgeries] = useState("");
+  const [currentMedications, setCurrentMedications] = useState("");
 
-  useEffect(() => {
-    // Prefer doctorId prop if passed from modal
-    if (doctorId) {
-      setLocalDoctorId(doctorId);
-      console.log("✅ Using doctorId from props:", doctorId);
-    } else {
-      const storedDoctorId = localStorage.getItem("doctorId");
-      if (storedDoctorId) {
-        setLocalDoctorId(storedDoctorId);
-        console.log("✅ Loaded doctorId from localStorage:", storedDoctorId);
-      } else {
-        alert("Doctor ID missing. Please login again.");
-      }
-    }
-
-    const storedPatientId = localStorage.getItem("userId");
-    if (storedPatientId) setPatientId(storedPatientId);
-  }, [doctorId]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleBook = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!name || !age || !aadhar || !contact) {
-      setMessage("⚠️ Please fill all required fields.");
-      return;
-    }
+    setLoading(true);
 
     try {
-      setLoading(true);
-      setMessage(null);
+      // ✅ Get logged-in user from localStorage
+      const storedUser = localStorage.getItem("user");
+      const user = storedUser ? JSON.parse(storedUser) : null;
 
-      // 🔹 Create EMR first (from child component)
-      const emrData = (await emrRef.current?.submitEmr()) || null;
-      const emrId = emrData?._id;
+      console.log("👤 Logged-in user:", user);
 
-      // 🔹 Pass patient + EMR data to parent (BookingDrawer or similar)
-      onSubmit({
+      if (!user || !user._id) {
+        alert("⚠️ Please login before booking an appointment.");
+        setLoading(false);
+        return;
+      }
+
+      if (!selectedSlot || !selectedSlot._id) {
+        alert("⚠️ Please select a valid time slot before booking.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Prepare patient data
+      let patientData = {
         name,
         age: Number(age),
         gender,
-        aadhar,
+        aadhar: Number(aadhar),
         contact,
-        emrId,
-      });
+      };
 
-      // Reset fields
-      setName("");
-      setAge("");
-      setGender("Male");
-      setAadhar("");
-      setContact("");
+      if (relation === "self") {
+        patientData = {
+          name: user.name,
+          age: user.age ,
+          gender: user.gender,
+          aadhar: Number(user.aadhar),
+          contact: user.contact,
+        };
+      }
+
+      
+      // ✅ Prepare booking payload
+      const bookingPayload = {
+        doctorId,
+        userId: user._id,
+        slot: selectedTime,
+        slotId : selectedSlot._id, // ✅ connect to TimeSlot model
+        dateTime: selectedDate,
+        patient: patientData,
+        mode: "online", // or "offline" as per your backend
+        fees: 500, // example fixed fee; adjust if needed
+      };
+      
+      console.log("📦 Booking payload:", bookingPayload);
+
+
+      if(relation==="relative"){
+        // ✅ Prepare EMR JSON data
+      const emrData = {
+        doctorId,
+        patientId: user._id,
+        aadhar: patientData.aadhar || 0,
+        allergies: allergies
+          ? allergies.split(",").map((a) => a.trim())
+          : [],
+        diseases: diseases
+          ? diseases.split(",").map((d) => d.trim())
+          : [],
+        pastSurgeries: pastSurgeries
+          ? pastSurgeries.split(",").map((p) => p.trim())
+          : [],
+        currentMedications: currentMedications
+          ? currentMedications.split(",").map((m) => m.trim())
+          : [],
+      };
+
+      console.log("📦 EMR payload being sent:", emrData);
+
+      // ✅ Create EMR
+      const emrRes = await createEMR(emrData);
+      console.log("🩺 EMR Created:", emrRes);
+
+      }
+
+      // ✅ Book appointment
+      const bookingRes = await bookAppointment(bookingPayload);
+      console.log("📅 Appointment booked:", bookingRes.data);
+
+      
+      alert("✅ Appointment and EMR created successfully!");
+      navigate("/all-doctors");
+
+      onClose();
     } catch (err) {
-      console.error("❌ Error submitting appointment:", err);
-      setMessage("❌ Something went wrong while submitting.");
+      console.error("❌ Error:", err);
+      alert("Failed to create EMR or book appointment.");
     } finally {
       setLoading(false);
     }
@@ -91,122 +156,140 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, doctorId })
 
   return (
     <form
-      onSubmit={handleSubmit}
-      className="space-y-5 p-6 bg-white rounded-2xl shadow-lg w-full max-w-sm"
+      onSubmit={handleBook}
+      className="space-y-4 p-4 bg-white rounded-lg shadow-md"
     >
-      <h1 className="text-2xl font-semibold text-gray-800 text-center mb-3">
-        Appointment Form
-      </h1>
-
-      {message && (
-        <div
-          className={`p-2 text-center rounded ${
-            message.includes("⚠️")
-              ? "bg-yellow-100 text-yellow-800"
-              : message.includes("❌")
-              ? "bg-red-100 text-red-700"
-              : "bg-green-100 text-green-700"
-          }`}
-        >
-          {message}
-        </div>
-      )}
-
-      {/* Patient details section */}
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-600">
-          Patient Name
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter patient name"
-          required
-        />
-      </div>
-
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-600">Age</label>
-        <input
-          type="number"
-          value={age}
-          onChange={(e) =>
-            setAge(e.target.value ? Number(e.target.value) : "")
-          }
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter age"
-          required
-        />
-      </div>
-
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-600">Gender</label>
+      {/* Relation selector */}
+      <div>
+        <label className="font-medium">Booking for:</label>
         <select
-          value={gender}
-          onChange={(e) =>
-            setGender(e.target.value as "Male" | "Female" | "Other")
-          }
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={relation}
+          onChange={(e) => setRelation(e.target.value as "self" | "relative")}
+          className="border p-2 rounded w-full"
         >
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
+          <option value="self">Self</option>
+          <option value="relative">Relative</option>
         </select>
       </div>
 
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-600">
-          Aadhar Number
-        </label>
-        <input
-          type="text"
-          value={aadhar}
-          onChange={(e) => setAadhar(e.target.value)}
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter Aadhar number"
-          required
-        />
-      </div>
+      {/* Relative Fields */}
+      {relation === "relative" && (
+        <>
+          <div>
+            <label>Name:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="border p-2 rounded w-full"
+              required
+            />
+          </div>
 
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-600">
-          Contact Number
-        </label>
-        <input
-          type="text"
-          value={contact}
-          onChange={(e) => setContact(e.target.value)}
-          className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter contact number"
-          required
-        />
-      </div>
+          <div>
+            <label>Age:</label>
+            <input
+              type="number"
+              value={age}
+              onChange={(e) => setAge(Number(e.target.value))}
+              className="border p-2 rounded w-full"
+              required
+            />
+          </div>
 
-      {/* 🔹 Embedded EMR Form */}
-      <div className="border-t border-gray-200 pt-4 mt-4">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">EMR Details</h2>
-        <EmrForAppointment
-          ref={emrRef}
-          doctorId={localDoctorId}
-          patientId={patientId}
-        />
-      </div>
+          <div>
+            <label>Gender:</label>
+            <select
+              value={gender}
+              onChange={(e) =>
+                setGender(e.target.value as "Male" | "Female" | "Other")
+              }
+              className="border p-2 rounded w-full"
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Aadhaar Number:</label>
+            <input
+              type="text"
+              value={aadhar}
+              onChange={(e) => setAadhar(e.target.value)}
+              className="border p-2 rounded w-full"
+              required
+            />
+          </div>
+
+          <div>
+            <label>Contact:</label>
+            <input
+              type="text"
+              value={contact}
+              onChange={(e) => setContact(e.target.value)}
+              className="border p-2 rounded w-full"
+              required
+            />
+          </div>
+
+          <h1 className="text-2xl font-semibold mt-4 mb-2">
+            Add EMR (optional)
+          </h1>
+
+          <div>
+            <label>Allergies (comma separated):</label>
+            <input
+              type="text"
+              value={allergies}
+              onChange={(e) => setAllergies(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+          </div>
+
+          <div>
+            <label>Diseases (comma separated):</label>
+            <input
+              type="text"
+              value={diseases}
+              onChange={(e) => setDiseases(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+          </div>
+
+          <div>
+            <label>Past Surgeries (comma separated):</label>
+            <input
+              type="text"
+              value={pastSurgeries}
+              onChange={(e) => setPastSurgeries(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+          </div>
+
+          <div>
+            <label>Current Medications (comma separated):</label>
+            <input
+              type="text"
+              value={currentMedications}
+              onChange={(e) => setCurrentMedications(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+          </div>
+        </>
+      )}
 
       <button
         type="submit"
         disabled={loading}
-        className={`w-full py-3 rounded-lg font-medium text-lg transition ${
-          loading
-            ? "bg-gray-400 text-white"
-            : "bg-blue-600 text-white hover:bg-blue-700"
-        }`}
+        className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
-        {loading ? "Submitting..." : "Submit"}
+        {loading ? "Processing..." : "Book Appointment"}
       </button>
     </form>
   );
 };
 
 export default AppointmentForm;
+

@@ -121,29 +121,42 @@ export const bookAppointment = async (req:Request, res:Response) => {
     const {
       patient,
       doctorId,
+      slot,
       slotId,
-      datetime,
+      dateTime,
       mode,
       fees,
       userId,
-      allergies = [],
-      diseases = [],
-      pastSurgeries = [],
-      currentMedications = [],
-      reports = []
     } = req.body;
 
-    if (!patient || !doctorId || !slotId || !datetime || !mode || !userId) {
+      console.log("📦 Booking Received:", req.body);
+      console.log("📦 Booking Received:", req.body);
+console.log("Types:", {
+  doctorId: typeof doctorId,
+  userId: typeof userId,
+  slot: typeof slot,
+  dateTime: typeof dateTime,
+  mode: typeof mode,
+  fees: typeof fees,
+  patient: typeof patient
+});
+
+
+
+
+    if (!patient || !doctorId || !slot || !dateTime || !mode || !userId || !fees) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
     // ✅ Check if patient already has booking today
     const existingAadharBooking = await BookingModel.findOne({
       "patient.aadhar": patient.aadhar,
+      dateTime,
       status: "booked"
     });
 
     if (existingAadharBooking) {
+        console.log("❌ Duplicate booking found:", existingAadharBooking);
       return res.status(400).json({
         message: "An appointment already exists for this Aadhar number."
       });
@@ -151,8 +164,8 @@ export const bookAppointment = async (req:Request, res:Response) => {
 
     // ✅ Check if slot already booked
     const existingSlot = await BookingModel.findOne({
-      slotId,
-      datetime,
+      slot,
+      dateTime,
       status: "booked",
     });
 
@@ -160,47 +173,28 @@ export const bookAppointment = async (req:Request, res:Response) => {
       return res.status(400).json({ message: "This slot is already booked" });
     }
 
-    // ✅ Create EMR if medical fields exist
-    let newEmr = null;
-
-    const hasMedicalData =
-      allergies.length > 0 ||
-      diseases.length > 0 ||
-      pastSurgeries.length > 0 ||
-      currentMedications.length > 0 ||
-      reports.length > 0;
-
-    if (hasMedicalData) {
-      newEmr = await EMRModel.create({
-        patientId: userId,
-        doctorId,
-        name: patient.name,
-        relation: "self",
-        aadhar: patient.aadhar,
-        allergies,
-        diseases,
-        pastSurgeries,
-        currentMedications,
-        reports,
-      });
-    }
+   // ✅ Create EMR record automatically before booking
+    const newEmr = await EMRModel.create({
+       aadhar: patient.aadhar,
+      doctorId,
+    });
 
     // ✅ Create Booking
     const booking = await BookingModel.create({
       userId,
       patient,
       doctorId,
+      slot,
       slotId,
-      datetime,
+      dateTime:new Date(dateTime),
       mode,
       fees,
-      emrId: newEmr?._id || null,
       status: "booked",
     });
 
     // ✅ Mark slot inactive
     await timeSlotsModel.updateOne(
-      { "slots._id": slotId },
+      { "slots._id": slotId},
       { $set: { "slots.$.isActive": false } }
     );
 
@@ -208,6 +202,7 @@ export const bookAppointment = async (req:Request, res:Response) => {
       message: "Appointment booked successfully",
       booking,
       emr: newEmr,
+      
     });
   } catch (err) {
     console.error("Booking error:", err);
@@ -281,7 +276,7 @@ export const getBookingsByDoctor = async (req: Request, res: Response) => {
 
         return {
           ...b,
-          slot: b.slotId || null,
+          slot: b.slot || null,
           emr: emrData || [], // include EMR records for this patient
         };
       })

@@ -7,17 +7,31 @@ export const createEMR = async (req: Request, res: Response) => {
     const body = req.body;
     const files = req.files as Express.Multer.File[];
 
+        console.log("📩 Received EMR body:", body);
+
+
     const { patientId, doctorId} = body;
     const patient = await patientModel.findById(patientId);
     if (!patient) {
       return res.status(400).json({ message: "Patient ID is required" });
     }
 
+    // ✅ Safely parse arrays
+    const safeParse = (value: any): string[] => {
+      try {
+        if (!value) return [];
+        if (Array.isArray(value)) return value; // already array
+        return JSON.parse(value);
+      } catch {
+        return []; // fallback if JSON.parse fails
+      }
+    };
+
     // Arrays
-    const allergies = JSON.parse(body.allergies || "[]");
-    const diseases = JSON.parse(body.diseases || "[]");
-    const pastSurgeries = JSON.parse(body.pastSurgeries || "[]");
-    const currentMedications = JSON.parse(body.currentMedications || "[]");
+    const allergies = safeParse(body.allergies || "[]");
+    const diseases = safeParse(body.diseases || "[]");
+    const pastSurgeries = safeParse(body.pastSurgeries || "[]");
+    const currentMedications = safeParse(body.currentMedications || "[]");
 
     const reportUrls =
       files?.length > 0
@@ -26,7 +40,7 @@ export const createEMR = async (req: Request, res: Response) => {
 
     // ✅ Create new EMR
     const emr = await EMRModel.create({
-      aadhar: patient.aadhar, 
+      aadhar: body.aadhar, 
       doctorId,
       allergies,
       diseases,
