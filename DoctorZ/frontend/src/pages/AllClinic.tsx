@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import {
   MapPin,
   Calendar,
@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { Helmet } from "react-helmet";
+import api from "../Services/mainApi";
 
 type SearchState = {
   location?: string;
@@ -43,7 +44,7 @@ interface ClinicResponse {
   message: string;
 }
 
-const API = "http://localhost:3000/api/clinic/getClinic";
+const API = "/api/clinic/getClinic";
 
 const ClinicSearchResults: React.FC = () => {
   const { state } = useLocation();
@@ -82,7 +83,7 @@ const ClinicSearchResults: React.FC = () => {
     const fetchClinics = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(API);
+        const response = await api.get(API);
         console.log("✅ API response:", response.data);
         const data = response.data as Clinic[];
         const enhancedClinics = enhanceClinicsWithMockData(data || []);
@@ -650,117 +651,7 @@ const MobileFilterPanel = ({
 );
 
 const ClinicCard = ({ clinic, navigate }: any) => (
-  // <div
-  //   onClick={() => navigate(`/clinic/${clinic._id}`)}
-  //   className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
-  // >
-  //   {/* Clinic Image - Responsive */}
-  //   <div className="absolute left-3 sm:left-6 top-3">
-  //     <div className="relative">
-  //       <img
-  //         src={
-  //           clinic.clinicImage
-  //             ? clinic.clinicImage.startsWith("http")
-  //               ? clinic.clinicImage
-  //               : `http://localhost:3000/uploads/${clinic.clinicImage}`
-  //             : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-  //         }
-  //         alt={clinic.clinicName}
-  //         className="w-42 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-300"
-  //       />
-  //       {/* Verified Badge */}
-  //       <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
-  //         <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-  //           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-  //         </svg>
-  //       </div>
-  //     </div>
-  //   </div>
-
-  //   <div className="pl-20 sm:pl-28 pr-4 sm:pr-6 py-4 sm:py-6">
-  //     {/* Clinic Name and Location */}
-  //     <div className="mb-3 sm:mb-4">
-  //       <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300 line-clamp-1">
-  //         {clinic.clinicName}
-  //       </h2>
-  //       <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-  //         <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-blue-500 flex-shrink-0" />
-  //         <span className="line-clamp-1">
-  //           {clinic.district}, {clinic.state}
-  //         </span>
-  //       </div>
-  //     </div>
-
-  //     {/* Divider Line */}
-  //     <hr className="border-gray-200 my-2 sm:my-3" />
-
-  //     {/* Operating Hours */}
-  //     <div className="mb-2 sm:mb-3 flex items-center text-gray-700">
-  //       <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-gray-400 flex-shrink-0" />
-  //       <p className="text-xs sm:text-sm">
-  //         <span className="text-gray-600">Hours:</span> {clinic.operatingHours || "Not Available"}
-  //       </p>
-  //     </div>
-
-  //     {/* Contact Info */}
-  //     <div className="space-y-1 sm:space-y-2 mb-2 sm:mb-3 text-gray-700">
-  //       <div className="flex items-center text-xs sm:text-sm">
-  //         <span className="text-gray-600 mr-2">Phone:</span>
-  //         <span className="line-clamp-1">{clinic.phone || "Not available"}</span>
-  //       </div>
-  //       <div className="flex items-center text-xs sm:text-sm">
-  //         <span className="text-gray-600 mr-2">Email:</span>
-  //         <span className="line-clamp-1">{clinic.email || "Not available"}</span>
-  //       </div>
-  //     </div>
-
-  //     {/* Specialities */}
-  //     <div className="mt-3 sm:mt-4 mb-3 sm:mb-4">
-  //       <h3 className="text-xs sm:text-sm font-semibold text-gray-800 mb-1">Medical Specialities</h3>
-  //       <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
-  //         {clinic.specialities?.join(", ") || "General Practice"}
-  //       </p>
-  //     </div>
-
-  //     {/* Verified Status and Action Button */}
-  //     <div className="flex flex-col space-y-2 sm:space-y-3 mt-4 sm:mt-6">
-  //       {/* Verified Badge */}
-  //       <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4">
-  //         <svg
-  //           className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 mr-1 sm:mr-2 flex-shrink-0"
-  //           fill="currentColor"
-  //           viewBox="0 0 20 20"
-  //         >
-  //           <path
-  //             fillRule="evenodd"
-  //             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-  //             clipRule="evenodd"
-  //           />
-  //         </svg>
-  //         <span className="text-xs sm:text-sm font-medium text-green-700">Verified Healthcare Provider</span>
-  //       </div>
-
-  //       {/* Action Button */}
-  //       <button className="w-full bg-[#0c213e] hover:bg-[#1a365d] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base">
-  //         <span>Check Availability</span>
-  //         <svg
-  //           className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 flex-shrink-0"
-  //           fill="none"
-  //           stroke="currentColor"
-  //           strokeWidth="2"
-  //           viewBox="0 0 24 24"
-  //         >
-  //           <path
-  //             strokeLinecap="round"
-  //             strokeLinejoin="round"
-  //             d="M14 5l7 7m0 0l-7 7m7-7H3"
-  //           />
-  //         </svg>
-  //       </button>
-  //     </div>
-  //   </div>
-  // </div>
-
+ 
   <div
   onClick={() => navigate(`/clinic/${clinic._id}`)}
   className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"

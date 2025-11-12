@@ -39,7 +39,7 @@ interface SlotsAPIResponse {
   };
 }
 
-const BookingSidebar: React.FC<Props> = ({
+const BookingDrawer: React.FC<Props> = ({
   doctor,
   open,
   onClose,
@@ -501,4 +501,4 @@ const BookingSidebar: React.FC<Props> = ({
   );
 };
 
-export default BookingSidebar;
+export default BookingDrawer;

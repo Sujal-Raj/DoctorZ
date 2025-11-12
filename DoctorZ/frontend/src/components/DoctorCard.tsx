@@ -1,287 +1,11 @@
-// import React, { useContext } from "react";
-// import { MapPin, Video, Briefcase, Phone } from "lucide-react";
-// import { useNavigate } from "react-router-dom";
-// import { AuthContext } from "../Context/AuthContext";
 
-// export interface Doctor {
-//   _id: string;
-//   fullName: string;
-//   specialization: string;
-//   qualification?: string;
-//   experience: string;
-//   consultationFee: number;
-//   language?: string;
-//   MedicalRegistrationNumber?: string;
-//   location?: string;
-//   city?: string;
-//   photo?: string;
-//   rating?: number;
-//   gender?: string;
-// }
-
-// interface Props {
-//   doctor: Doctor;
-//   onConsult: (doctor: Doctor) => void;
-// }
-
-// const DoctorCard: React.FC<Props> = ({ doctor, onConsult }) => {
-//   const navigate = useNavigate();
-//   const { isLoggedIn } = useContext(AuthContext);
-
-//   const handleConsultClick = (e: React.MouseEvent) => {
-//     e.stopPropagation();
-//     if (!isLoggedIn) {
-//       const confirmed = window.confirm(
-//         "You need to be logged in to consult. Do you want to login or register now?"
-//       );
-//       if (confirmed) navigate("/patient-login");
-//       return;
-//     }
-//     onConsult(doctor);
-//   };
-
-//   const handleCardClick = () => {
-//     navigate(`/view-doctor-profile/${doctor._id}`);
-//   };
-
-//   return (
-//     <article
-//       onClick={handleCardClick}
-//       className="group bg-white border border-gray-400 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 hover:-translate-y-0.5 transition-all cursor-pointer overflow-hidden w-full"
-//     >
-//       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 p-4 sm:p-5">
-//         {/* Doctor Photo */}
-//         <div className="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-start">
-//           {doctor.photo ? (
-//             <img
-//               src={`http://localhost:3000/uploads/${doctor.photo}`}
-//               alt={`Dr. ${doctor.fullName}`}
-//               loading="lazy"
-//               className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-lg object-cover border border-gray-200"
-//             />
-//           ) : (
-//             <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-36 lg:h-36 rounded-lg bg-[#28328C] text-white flex items-center justify-center text-xl sm:text-2xl font-bold">
-//               {doctor.fullName.charAt(0)}
-//             </div>
-//           )}
-//         </div>
-
-//         {/* Doctor Info */}
-//         <div className="flex flex-col justify-between flex-1 min-w-0 w-full">
-//           {/* Name & Specialization */}
-//           <div className="text-center sm:text-left">
-//             <h2 className="text-lg sm:text-xl md:text-xl font-bold text-gray-900 break-words">
-//               Dr. {doctor.fullName}
-//             </h2>
-//             <p className="text-[#28328C] text-sm sm:text-base font-medium mt-1 break-words">
-//               {doctor.specialization}
-//             </p>
-
-//             {/* Experience */}
-//             <div className="flex justify-center sm:justify-start items-center gap-2 mt-2">
-//               <span className="flex items-center gap-1 text-xs font-semibold bg-[#28328C]/10 text-[#28328C] px-3 py-1 rounded-full">
-//                 <Briefcase className="w-3.5 h-3.5" /> {doctor.experience} yrs experience
-//               </span>
-//             </div>
-
-//             {/* City + Location */}
-//             <div className="flex justify-center sm:justify-start items-center gap-1 text-gray-600 text-sm mt-3">
-//               <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-//               <span className="text-center sm:text-left break-words">
-//                 {doctor.location
-//                   ? `${doctor.location}${doctor.city ? `, ${doctor.city}` : ""}`
-//                   : doctor.city || "—"}
-//               </span>
-//             </div>
-//           </div>
-
-//           {/* Fee & Consult Buttons */}
-//           <div className="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-5 gap-3 w-full">
-//             {/* Fee */}
-//             <div className="text-center sm:text-left w-full sm:w-auto">
-//               <p className="text-lg font-semibold text-gray-900">
-//                 ₹{doctor.consultationFee}
-//               </p>
-//               <p className="text-xs text-gray-500">Consultation Fee</p>
-//             </div>
-
-//             {/* Buttons */}
-//             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-//               <button
-//                 onClick={handleConsultClick}
-//                 className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 bg-white text-[#28328C] border border-[#28328C] hover:bg-[#28328C]/10 text-sm rounded-lg font-medium shadow-sm transition-all w-full sm:w-auto"
-//               >
-//                 <Phone className="w-4 h-4" />
-//                 <span className="hidden xs:inline">Contact Clinic</span>
-//                 <span className="xs:hidden">Contact</span>
-//               </button>
-
-//               <button
-//                 onClick={handleConsultClick}
-//                 className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 bg-[#28328C] hover:bg-[#1f286f] text-white text-sm rounded-lg font-medium shadow-sm border border-[#1f286f] transition-all w-full sm:w-auto"
-//               >
-//                 <Video className="w-4 h-4" />
-//                 <span className="hidden xs:inline">Schedule Appointment</span>
-//                 <span className="xs:hidden">Schedule</span>
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </article>
-//   );
-// };
-
-// export default DoctorCard;
-
-
-
-
-
-
-
-
-
-// import React, { useContext } from "react";
-// import { MapPin, Video, Briefcase, Phone } from "lucide-react";
-// import { useNavigate } from "react-router-dom";
-// import { AuthContext } from "../Context/AuthContext";
-
-// export interface Doctor {
-//   _id: string;
-//   fullName: string;
-//   specialization: string;
-//   qualification?: string;
-//   experience: string;
-//   consultationFee: number;
-//   language?: string;
-//   MedicalRegistrationNumber?: string;
-//   location?: string;
-//   city?: string;
-//   photo?: string;
-//   rating?: number;
-//   gender?: string;
-// }
-
-// interface Props {
-//   doctor: Doctor;
-//   onConsult: (doctor: Doctor) => void;
-// }
-
-// const DoctorCard: React.FC<Props> = ({ doctor, onConsult }) => {
-//   const navigate = useNavigate();
-//   const { isLoggedIn } = useContext(AuthContext);
-
-//   const handleConsultClick = (e: React.MouseEvent) => {
-//     e.stopPropagation();
-//     if (!isLoggedIn) {
-//       const confirmed = window.confirm(
-//         "You need to be logged in to consult. Do you want to login or register now?"
-//       );
-//       if (confirmed) navigate("/patient-login");
-//       return;
-//     }
-//     onConsult(doctor);
-//   };
-
-//   const handleCardClick = () => {
-//     navigate(`/view-doctor-profile/${doctor._id}`);
-//   };
-
-//   return (
-//     <article
-//       onClick={handleCardClick}
-//       className="group bg-white border border-gray-400 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 hover:-translate-y-0.5 transition-all cursor-pointer overflow-hidden"
-//     >
-//       <div className="flex items-center gap-6 p-5">
-//         {/* Doctor Photo */}
-//         <div className="flex-shrink-0">
-//           {doctor.photo ? (
-//             <img
-//               src={`http://localhost:3000/uploads/${doctor.photo}`}
-//               alt={`Dr. ${doctor.fullName}`}
-//               loading="lazy"
-//               className="w-40 h-42 rounded-lg object-cover border border-gray-200"
-//             />
-//           ) : (
-//             <div className="w-28 h-28 rounded-lg bg-[#28328C] text-white flex items-center justify-center text-2xl font-bold">
-//               {doctor.fullName.charAt(0)}
-//             </div>
-//           )}
-//         </div>
-
-//         {/* Doctor Info */}
-//         <div className="flex flex-col justify-between flex-1 min-w-0">
-//           {/* Name & Specialization */}
-//           <div>
-//             <h2 className="text-lg sm:text-xl font-bold text-gray-900 truncate">
-//               Dr. {doctor.fullName}
-//             </h2>
-//             <p className="text-[#28328C] text-sm sm:text-base font-medium mt-1 truncate">
-//               {doctor.specialization}
-//             </p>
-
-//             {/* Experience */}
-//             <div className="flex items-center gap-2 mt-2">
-//               <span className="flex items-center gap-1 text-xs font-semibold bg-[#28328C]/10 text-[#28328C] px-3 py-1 rounded-full">
-//                 <Briefcase className="w-3.5 h-3.5" /> {doctor.experience} yrs experience
-//               </span>
-//             </div>
-
-//             {/* City + Location */}
-//             <div className="flex items-center gap-1 text-gray-600 text-sm mt-3">
-//               <MapPin className="w-4 h-4 text-gray-500" />
-//               <span>
-//                 {doctor.location
-//                   ? `${doctor.location}${doctor.city ? `, ${doctor.city}` : ""}`
-//                   : doctor.city || "—"}
-//               </span>
-//             </div>
-//           </div>
-
-//           {/* Fee & Consult Buttons */}
-//           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 sm:mt-5 gap-3 w-full">
-//             {/* Fee */}
-//             <div className="text-center sm:text-left w-full sm:w-auto">
-//               <p className="text-lg font-semibold text-gray-900">
-//                 ₹{doctor.consultationFee}
-//               </p>
-//               <p className="text-xs text-gray-500">Consultation Fee</p>
-//             </div>
-
-//             {/* Buttons vertically stacked */}
-//             <div className="flex flex-col gap-2 w-full sm:w-auto">
-//               <button
-//                 onClick={handleConsultClick}
-//                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-[#28328C] border border-[#28328C] hover:bg-[#28328C]/10 text-sm rounded-lg font-medium shadow-sm transition-all w-full"
-//               >
-//                 <Phone className="w-4 h-4" /> Contact Clinic
-//               </button>
-
-//               <button
-//                 onClick={handleConsultClick}
-//                 className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#28328C] hover:bg-[#1f286f] text-white text-sm rounded-lg font-medium shadow-sm border border-[#1f286f] transition-all w-full"
-//               >
-//                 <Video className="w-4 h-4" /> Schedule Appointment
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </article>
-//   );
-// };
-
-// export default DoctorCard;
-
-
-
-
-
-import React, { useContext } from "react";
-import { MapPin, Video, Briefcase, Phone } from "lucide-react";
+import React, { useContext, useEffect, useState } from "react";
+import { MapPin, Video, Briefcase, Phone, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import api from "../Services/mainApi";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 export interface Doctor {
   _id: string;
@@ -302,11 +26,63 @@ export interface Doctor {
 interface Props {
   doctor: Doctor;
   onConsult: (doctor: Doctor) => void;
+  onFavouriteToggle?: (doctorId: string, isFavourite: boolean) => void; // ✅ Add this line
 }
 
-const DoctorCard: React.FC<Props> = ({ doctor, onConsult }) => {
+interface DecodedToken {
+  id: string;
+}
+
+const DoctorCard: React.FC<Props> = ({ doctor, onConsult,onFavouriteToggle }) => {
   const navigate = useNavigate();
   const { isLoggedIn } = useContext(AuthContext);
+  const [isFavourite, setIsFavourite] = useState<boolean>(false);
+
+  // ✅ Get patient ID from token safely
+  const token = Cookies.get("patientToken");
+  const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
+
+  // ✅ Fetch favourite status when logged in
+  useEffect(() => {
+    const fetchFavouriteStatus = async () => {
+      if (!isLoggedIn || !patientId) return;
+      try {
+        const res = await api.get<{ isFavourite: boolean }>(
+          `api/patient/isFavourite/${patientId}/${doctor._id}`
+        );
+        setIsFavourite(res.data.isFavourite);
+      } catch (error) {
+        console.error("Error checking favourite:", error);
+      }
+    };
+    fetchFavouriteStatus();
+  }, [doctor._id, isLoggedIn, patientId]);
+
+  // ✅ Toggle favourite status
+  const handleFavouriteToggle = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isLoggedIn || !patientId) {
+      const confirmed = window.confirm(
+        "You need to be logged in to add favourite doctors. Login now?"
+      );
+      if (confirmed) navigate("/patient-login");
+      return;
+    }
+
+    try {
+      const res = await api.post<{ isFavourite: boolean }>(
+        `api/patient/favourite-doctor/${patientId}`,
+        { doctorId: doctor._id }
+      );
+      setIsFavourite(res.data.isFavourite);
+       // ✅ parent ko update bhejna
+    if (typeof onFavouriteToggle === "function") {
+      onFavouriteToggle(doctor._id, res.data.isFavourite);
+    }
+    } catch (error) {
+      console.error("Error toggling favourite:", error);
+    }
+  };
 
   const handleConsultClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -324,103 +100,99 @@ const DoctorCard: React.FC<Props> = ({ doctor, onConsult }) => {
     navigate(`/view-doctor-profile/${doctor._id}`);
   };
 
-  // Fixed location display logic
   const getLocationText = () => {
-    if (doctor.location && doctor.city) {
-      return `${doctor.location}, ${doctor.city}`;
-    } else if (doctor.location) {
-      return doctor.location;
-    } else if (doctor.city) {
-      return doctor.city;
-    } else {
-      return "—";
-    }
+    if (doctor.location && doctor.city) return `${doctor.location}, ${doctor.city}`;
+    if (doctor.location) return doctor.location;
+    if (doctor.city) return doctor.city;
+    return "—";
   };
 
   return (
-<article
-  onClick={handleCardClick}
-  className="group bg-white border border-gray-400 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 hover:-translate-y-0.5 transition-all cursor-pointer overflow-hidden"
->
-  <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 p-4 md:p-5">
-    {/* Doctor Photo - Now horizontally aligned with title */}
-    <div className="flex-shrink-0 flex items-start">
-      {doctor.photo ? (
-        <img
-          src={`http://localhost:3000/uploads/${doctor.photo}`}
-          alt={`Dr. ${doctor.fullName}`}
-          loading="lazy"
-          className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover border border-gray-200"
+    <article
+      onClick={handleCardClick}
+      className="group bg-white border border-gray-400 rounded-xl shadow-sm hover:shadow-md hover:border-gray-400 hover:-translate-y-0.5 transition-all cursor-pointer overflow-hidden relative"
+    >
+      {/* ❤️ Favourite icon */}
+      <button
+        onClick={handleFavouriteToggle}
+        className="absolute top-3 right-3 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition"
+      >
+        <Heart
+        
+          className={`w-5 h-5 ${
+            isFavourite ? "fill-red-500 text-red-500" : "text-gray-400"
+          }`}
         />
-      ) : (
-        <div className="w-32 h-32 md:w-40 md:h-40 rounded-lg bg-[#28328C] text-white flex items-center justify-center text-2xl font-bold">
-          {doctor.fullName.charAt(0)}
-        </div>
-      )}
-    </div>
+      </button>
 
-    {/* Doctor Info - Now aligned horizontally with image */}
-    <div className="flex flex-col justify-between w-full md:flex-1 md:min-w-0">
-      {/* Name & Specialization - Now aligned with image */}
-      <div className="text-left">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900 break-words">
-          Dr. {doctor.fullName}
-        </h2>
-        <p className="text-[#28328C] text-sm md:text-base font-medium mt-1 break-words">
-          {doctor.specialization}
-        </p>
-
-        {/* Experience - Left aligned */}
-        <div className="flex items-center gap-2 mt-2">
-          <span className="flex items-center gap-1 text-xs font-semibold bg-[#28328C]/10 text-[#28328C] px-3 py-1 rounded-full">
-            <Briefcase className="w-3.5 h-3.5" /> {doctor.experience} yrs experience
-          </span>
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 p-4 md:p-5">
+        <div className="flex-shrink-0 flex items-start">
+          {doctor.photo ? (
+            <img
+              src={`http://localhost:3000/uploads/${doctor.photo}`}
+              alt={`Dr. ${doctor.fullName}`}
+              loading="lazy"
+              className="w-32 h-32 md:w-40 md:h-40 rounded-lg object-cover border border-gray-200"
+            />
+          ) : (
+            <div className="w-32 h-32 md:w-40 md:h-40 rounded-lg bg-[#28328C] text-white flex items-center justify-center text-2xl font-bold">
+              {doctor.fullName.charAt(0)}
+            </div>
+          )}
         </div>
 
-        {/* City + Location - Left aligned */}
-        <div className="flex items-center gap-1 text-gray-600 text-sm mt-3">
-          <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-          <span>
-            {getLocationText()}
-          </span>
+        <div className="flex flex-col justify-between w-full md:flex-1 md:min-w-0">
+          <div className="text-left">
+            <h2 className="text-lg md:text-xl font-bold text-gray-900 break-words">
+              Dr. {doctor.fullName}
+            </h2>
+            <p className="text-[#28328C] text-sm md:text-base font-medium mt-1 break-words">
+              {doctor.specialization}
+            </p>
+
+            <div className="flex items-center gap-2 mt-2">
+              <span className="flex items-center gap-1 text-xs font-semibold bg-[#28328C]/10 text-[#28328C] px-3 py-1 rounded-full">
+                <Briefcase className="w-3.5 h-3.5" /> {doctor.experience} yrs experience
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1 text-gray-600 text-sm mt-3">
+              <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              <span>{getLocationText()}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-between items-center mt-4 gap-3 w-full">
+            <div className="text-left w-full md:w-auto">
+              <p className="text-lg font-semibold text-gray-900">
+                ₹{doctor.consultationFee}
+              </p>
+              <p className="text-xs text-gray-500">Consultation Fee</p>
+            </div>
+
+            <div className="flex flex-col gap-2 w-full md:w-auto">
+              <button
+                onClick={handleConsultClick}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-[#28328C] border border-[#28328C] hover:bg-[#28328C]/10 text-sm rounded-lg font-medium shadow-sm transition-all"
+              >
+                <Phone className="w-4 h-4" />
+                <span>Contact Clinic</span>
+              </button>
+
+              <button
+                onClick={handleConsultClick}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#28328C] hover:bg-[#1f286f] text-white text-sm rounded-lg font-medium shadow-sm border border-[#1f286f] transition-all"
+              >
+                <Video className="w-4 h-4" />
+                <span>Schedule Appointment</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Fee & Consult Buttons - Stacked on mobile, row on desktop */}
-      <div className="flex flex-col md:flex-row justify-between items-center md:items-center mt-4 md:mt-2 gap-3 w-full">
-        {/* Fee - Left aligned */}
-        <div className="text-left w-full md:w-auto">
-          <p className="text-lg font-semibold text-gray-900">
-            ₹{doctor.consultationFee}
-          </p>
-          <p className="text-xs text-gray-500">Consultation Fee</p>
-        </div>
-
-        {/* Buttons - Full width stacked on mobile, auto width on desktop */}
-        <div className="flex flex-col gap-2 w-full md:w-auto">
-          {/* Contact Clinic Button */}
-          <button
-            onClick={handleConsultClick}
-            className="inline-flex items-center justify-center gap-2 px-4 md:px-5 py-2.5 bg-white text-[#28328C] border border-[#28328C] hover:bg-[#28328C]/10 text-sm rounded-lg font-medium shadow-sm transition-all w-full md:w-auto"
-          >
-            <Phone className="w-4 h-4" /> 
-            <span>Contact Clinic</span>
-          </button>
-
-          {/* Schedule Appointment Button */}
-          <button
-            onClick={handleConsultClick}
-            className="inline-flex items-center justify-center gap-2 px-4 md:px-5 py-2.5 bg-[#28328C] hover:bg-[#1f286f] text-white text-sm rounded-lg font-medium shadow-sm border border-[#1f286f] transition-all w-full md:w-auto"
-          >
-            <Video className="w-4 h-4" /> 
-            <span>Schedule Appointment</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</article>
+    </article>
   );
 };
 
 export default DoctorCard;
+
