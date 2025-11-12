@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { Types } from 'mongoose';
+import mongoose from "mongoose";
+import { Types } from "mongoose";
 export interface IDoctor extends Document {
     doctorId: string;
     fullName: string;
@@ -15,6 +15,9 @@ export interface IDoctor extends Document {
     experience: number;
     consultationFee: number;
     language: string;
+    Address: string;
+    State: string;
+    City: string;
     Aadhar: number;
     signature: string;
     photo: string;

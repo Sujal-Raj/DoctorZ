@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 // Pages
 import RegisterPatient from "./pages/RegisterPages/RegisterPatient";
-import RegisterDoctor from "./pages/RegisterPages/RegisterDoctor";
+import { RegisterDoctor } from "./pages/RegisterPages/RegisterDoctor";
 import RegisterClinic from "./pages/RegisterPages/RegisterClinic";
 import { AuthProvider } from "../src/Context/AuthContext"; // <-- adjust path as needed
 
@@ -12,9 +12,12 @@ import Layout from "../Layout";
 import Home from "./pages/Home";
 import AllClinic from "./pages/AllClinic";
 // import AllDoctors from "./pages/AllDoctors";
-import DoctorSearchResults from "./pages/DoctorSearchResults";
-import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
-import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
+import ViewDoctorProfile from "./pages/ViewDoctorProfile";
+
+
+// Clinic
+
+
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
 import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
@@ -23,12 +26,10 @@ import DoctorProfile from "./pages/DoctorPages/DoctorProfile";
 import ClinicProfile from "./pages/ClinicPages/ClinicProfile";
 import LoginPatient from "./pages/LoginPages/LoginPatient";
 import AllPatient from "./pages/AllPatient";
-import PatientChat from "./pages/PatientChat";
-import DoctorChat from "./pages/DoctorPages/DoctorChat";
-import ViewDoctorProfile from "./pages/ViewDoctorProfile";
+
 import RegisterLab from "./pages/RegisterPages/RegisterLab";
 import LoginLab from "./pages/LoginPages/LoginLab";
-import AdminLab from "./pages/AdminPages/AdminLab";
+
 import AllLabTest from "./pages/AllLabTest";
 import LabTestDetails from "./pages/LabPages/LabTestDetails";
 import Patients from "./pages/LabPages/LabPatients";
@@ -54,31 +55,21 @@ import ClinicDoctorProfile from "./pages/ClinicPages/ClinicDoctorProfile";
 import AllClinicPatients from "./pages/AllClinicPatients";
 import ClinicDetails from "./pages/ClinicPages/ClinicDetails";
 import DoctorDashboardHome from "./pages/DoctorPages/DoctorHomeDashboard";
-import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
+
 import { PackageDetails } from "./pages/PackageDetails";
+import AdminLab from "./pages/AdminPages/AdminLab";
+import ClinicDoctors from "./pages/ClinicPages/ClinicDoctors";
+import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
+import UserProfile from "./pages/UserPages/UserProfile";
+import UserDashboard from "./pages/UserPages/UserDashboard";
+import AddEmr from "./pages/UserPages/AddEmr";
+import DoctorChat from "./pages/DoctorPages/DoctorChat";
+import PatientChat from "./pages/PatientChat";
+import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
+import PatientAppointments from "./pages/UserPages/PatientAppointments";
+import DoctorSearchResults from "./pages/DoctorSearchResults";
 
-
-          <Route
-            path="/clinicDashboard/:clinicId"
-            element={<ClinicDashboard />} 
-          >
-             <Route
-              index
-              element={<ClinicHomeDashboard/>}
-            />
-            <Route path="clinic-profile" element={<ClinicProfile/>} />
-            
-            <Route path="all-clinic-doctors/:drId/doctorProfile" element={<DoctorProfile />} />
-            <Route
-              path="all-clinic-doctors/:drId/availability"
-              element={<TimeSlots />}
-            />
-            <Route path="add-doctor" element={<AddDoctor />} />
-            <Route path="all-clinic-doctors" element={<ClinicDoctors />} />
-            <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-          </Route>
-
-
+// Admin
 
 const App: React.FC = () => {
   return (
@@ -113,6 +104,12 @@ const App: React.FC = () => {
             <Route path="/all-lab-test" element={<AllLabTest />} />
             <Route path="/lab-test-details/:id" element={<LabTestDetails />} />
             <Route path="/lab-package-details/:packageId" element={<PackageDetails />} />
+             <Route path="/user-dashboard/:id" element={<UserDashboard />} >
+              <Route index element={<UserProfile />} />
+               <Route path="user-profile" element={<UserProfile />} />
+                  <Route path="add-emr" element={<AddEmr />} />
+                  <Route path="appointments" element={<PatientAppointments/>}/>
+              </Route>
           </Route>
 
           {/* Routes without navbar */}
@@ -141,24 +138,22 @@ const App: React.FC = () => {
             
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
           </Route>
-          
+
+          {/* Doctor Dashboard */}
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
+           <Route index element={<DoctorDashboardHome />} />
           <Route
-             index
-              element={<DoctorDashboardHome/>}
-            />
-             <Route
-              path="doctor-home-dashboard"
-              element={<DoctorDashboardHome/>}
-            />
-            <Route path="appointments" element={<DoctorAppointments />} />
-            <Route path="doctorProfile" element={<DoctorProfile />} />
-            <Route path="time-slots" element={<TimeSlots />} />
-         
+               path="doctor-home-dashboard"
+               element={<DoctorDashboardHome/>}
+             />
+             <Route path="appointments" element={<DoctorAppointments/>} />
+             <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
-            
-              <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
+            <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
+            <Route path="doctorProfile" element={<DoctorProfile />} />
           </Route>
+
+          {/* Admin Dashboard */}
           <Route path="/adminDashboard" element={<AdminDashboard />}>
             <Route path="admin-lab" element={<AdminLab />} />
             <Route path="admin-doctor" element={<AdminDoctor />} />
@@ -182,6 +177,7 @@ const App: React.FC = () => {
           <Route path="/admin/login" element={<AdminLogin />}></Route>
          
         
+       
         </Routes>
       </Router>
     </AuthProvider>

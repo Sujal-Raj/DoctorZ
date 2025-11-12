@@ -2,8 +2,6 @@
 // import timeSlotsModel from "../models/timeSlots.model.js";
 // import { generateTimeSlots } from "../utils/slotGenerator.js";
 
-
-
 // export const createTimeSlot = async (req: Request, res: Response) => {
 //   try {
 //     const { doctorId, dates, workingHours } = req.body;
@@ -16,7 +14,7 @@
 //       const existingSlot = await timeSlotsModel.findOne({
 //         doctorId,
 //         date: new Date(date),
-        
+
 //       });
 
 //       if (existingSlot) {
@@ -27,25 +25,20 @@
 //       availability.push({
 //         doctorId,
 //         date: new Date(date),
-        
+
 //         slots,
 //       });
 //     }
 
-  
-
-
-
 //     if (availability.length > 0) {
 //       await timeSlotsModel.insertMany(availability);
 //     }
-  
 
 //     return res.status(200).json({
 //       success: true,
 //       message: "Time slots processed successfully",
 //       createdDates: availability.map((a) => a.date.toISOString().split("T")[0]),
-     
+
 //       alreadyExistDates,
 //     });
 //   } catch (error) {
@@ -88,11 +81,9 @@
 //   }
 // };
 
-
 import type { Request, Response } from "express";
 import timeSlotsModel from "../models/timeSlots.model.js";
 import { generateTimeSlots } from "../utils/slotGenerator.js";
-
 
 // export const createTimeSlot = async (req: Request, res: Response) => {
 //   try {
@@ -109,7 +100,6 @@ import { generateTimeSlots } from "../utils/slotGenerator.js";
 //         date: new Date(date),
 //       });
 
-     
 //     if (existingSlot) {
 //       return res.status(200).json({
 //         success: false,
@@ -140,18 +130,13 @@ import { generateTimeSlots } from "../utils/slotGenerator.js";
 //   }
 // };
 
-
-
-
-
 export const createTimeSlot = async (req: Request, res: Response) => {
   try {
-
-     console.log("Request Body:", req.body);
+    console.log("Request Body:", req.body);
     const { doctorId, dates, workingHours } = req.body;
     const slots = generateTimeSlots(workingHours.start, workingHours.end);
 
-        console.log("Generated Slots:", slots); 
+    console.log("Generated Slots:", slots);
 
     const availability: any[] = [];
     const alreadyExistDates: string[] = [];
@@ -176,7 +161,7 @@ export const createTimeSlot = async (req: Request, res: Response) => {
 
     if (availability.length > 0) {
       await timeSlotsModel.insertMany(availability);
-           console.log("Inserted Availability:", availability); 
+      console.log("Inserted Availability:", availability);
     }
 
     return res.status(200).json({
@@ -222,5 +207,25 @@ export const updateSlot = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error updating slot:", error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getActiveSlots = async (req: Request, res: Response) => {
+  try {
+    const { doctorId } = req.params;
+
+    // Get all time slots for doctor
+    const slots = await timeSlotsModel.find({ doctorId });
+
+    // Filter only those having at least 1 active slot
+    const filteredSlots = slots.filter((slot) =>
+      slot.slots.some((s) => s.isActive)
+    );
+
+    // Return only active ones
+    res.status(200).json(filteredSlots);
+  } catch (error) {
+    console.error("Error fetching active slots:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

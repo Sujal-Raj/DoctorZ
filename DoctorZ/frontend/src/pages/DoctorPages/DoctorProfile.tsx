@@ -1,7 +1,7 @@
 
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 interface Doctor {
   _id: string;
@@ -29,7 +29,8 @@ const DoctorProfile: React.FC = () => {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [formData, setFormData] = useState<Partial<Doctor>>({});
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-
+ const { doctorId } = useParams<{ doctorId: string }>();
+ console.log("🚀 Doctor ID from params:", doctorId);
   useEffect(() => {
     const fetchDoctor = async () => {
       try {

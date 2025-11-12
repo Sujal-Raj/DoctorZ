@@ -38,6 +38,10 @@ interface Clinic {
   patientCount?: number;
   establishedYear?: number;
 }
+interface ClinicResponse {
+  clinic: Clinic[];
+  message: string;
+}
 
 const API = "http://localhost:3000/api/clinic/getClinic";
 
@@ -78,11 +82,12 @@ const ClinicSearchResults: React.FC = () => {
     const fetchClinics = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(API);
-        console.log("✅ API response:", response.data);
-        const data = response.data as Clinic[];
-        const enhancedClinics = enhanceClinicsWithMockData(data || []);
-        setClinics(enhancedClinics);
+       const response = await axios.get<ClinicResponse>(API);
+console.log("✅ API response:", response.data);
+const data = response.data.clinic as Clinic[];
+const enhancedClinics = enhanceClinicsWithMockData(data || []);
+setClinics(enhancedClinics);
+
       } catch (err) {
         console.error("❌ Error fetching clinics:", err);
       } finally {

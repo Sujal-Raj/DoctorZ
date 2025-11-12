@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
-import { Types } from 'mongoose';
+import mongoose from "mongoose";
+import { Types } from "mongoose";
 const doctorSchema = new mongoose.Schema({
     doctorId: { type: String, default: null, required: false },
     fullName: {
         type: String,
-        required: true
+        required: true,
     },
     gender: {
         type: String,
-        required: true
+        required: true,
     },
     dob: {
         type: Date,
@@ -48,6 +48,18 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    Address: {
+        type: String,
+        required: true,
+    },
+    State: {
+        type: String,
+        required: true,
+    },
+    City: {
+        type: String,
+        require: true,
+    },
     Aadhar: {
         type: Number,
         required: true,
@@ -60,11 +72,13 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         // required:true,
     },
-    clinic: [{
+    clinic: [
+        {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Clinic',
-        }],
-    status: { type: String, default: "pending" }
+            ref: "Clinic",
+        },
+    ],
+    status: { type: String, default: "pending" },
 });
 const doctorModel = mongoose.model("Doctor", doctorSchema, "Doctor");
 export default doctorModel;
