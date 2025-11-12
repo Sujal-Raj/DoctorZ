@@ -147,7 +147,7 @@ const ClinicDetails: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* ---------- Hero Section ---------- */}
-      <section className="relative h-[460px] overflow-hidden shadow-lg">
+      <section className="relative h-[380px] overflow-hidden shadow-lg">
         <div className="absolute inset-0">
     {/* <img
       src={clinicImage}
@@ -170,20 +170,20 @@ const ClinicDetails: React.FC = () => {
 
 
 
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-6">
+        <div className="relative z-10 flex flex-col items-end justify-center h-full text-center text-white px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-2">
               <span className="text-sm font-medium">{clinic.clinicType}</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">
+            <h1 className="md:text-3xl lg:text-4xl font-bold mb-2">
               {clinic.clinicName}
             </h1>
-            <p className="text-xl font-light max-w-2xl mx-auto">
+            <p className="text-lg font-medium max-w-2xl mx-auto">
               Providing exceptional neurological care with compassion and
               expertise
             </p>
 
-            <div className="flex flex-wrap justify-center gap-8 mt-8 text-base">
+            <div className="flex flex-wrap justify-center gap-8 mt-5 text-base">
               <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
                 <MapPin size={20} className="text-blue-200" />
                 <span>{clinic.district}</span>
@@ -198,15 +198,15 @@ const ClinicDetails: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4 mt-10">
+            <div className="flex flex-wrap justify-center gap-4 mt-8">
               <a
                 href={`tel:${clinic.phone}`}
-                className="inline-flex items-center gap-2 bg-white text-[#0c213e] hover:bg-indigo-50 px-6 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                className="inline-flex items-center gap-2 bg-white text-[#0c213e] hover:bg-indigo-50 px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1"
               >
                 <Phone size={18} />
                 Call Now
               </a>
-              <button className="inline-flex items-center gap-2 bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-3 rounded-full font-semibold transition-all duration-300">
+              <button className="inline-flex items-center gap-2 bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-2 rounded-full font-semibold transition-all duration-300">
                 <MapPin size={18} />
                 Booking
               </button>
@@ -240,7 +240,7 @@ const ClinicDetails: React.FC = () => {
       </div>
 
       {/* ---------- Tab Content ---------- */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="max-w-[1500px] mx-auto px-4 py-6">
         {/* Overview */}
         {activeTab === "overview" && (
           <div className="w-full mx-auto">
@@ -268,7 +268,7 @@ const ClinicDetails: React.FC = () => {
                       About {clinic.clinicName}
                     </h2>
                   </div>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                  <p className="text-gray-700 text-lg  mb-6">
                     Welcome to{" "}
                     <span className="font-semibold text-[#0c213e]">
                       {clinic.clinicName}
@@ -285,7 +285,7 @@ const ClinicDetails: React.FC = () => {
                     , delivering comprehensive diagnostic, therapeutic, and
                     rehabilitative services.
                   </p>
-                  <p className="text-gray-700 text-lg leading-relaxed mb-8">
+                  <p className="text-gray-700 text-lg  mb-8">
                     Our team of board-certified neurologists and healthcare
                     professionals utilizes state-of-the-art technology and
                     evidence-based practices to provide personalized treatment
@@ -803,7 +803,7 @@ const ClinicDetails: React.FC = () => {
 
         {/* Services */}
         {activeTab === "services" && (
-          <div className="max-w-6xl mx-auto">
+          <div className="w-full mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
                 Our Specialized Services
@@ -814,7 +814,7 @@ const ClinicDetails: React.FC = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {[
                 {
                   title: "Neurological Consultations",
