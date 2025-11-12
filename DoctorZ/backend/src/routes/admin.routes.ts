@@ -35,9 +35,10 @@ router.put("/lab/:id/approve", approveLab);
 
 // Reject lab
 router.put("/lab/:id/reject", rejectLab);
-
+      
 //get clinic
 router.get("/clinics/pending", getPendingClinics);
 router.put("/clinic/:id/approve", approveClinic);
 router.put("/clinic/:id/reject", rejectClinic);
 export default router;
+    

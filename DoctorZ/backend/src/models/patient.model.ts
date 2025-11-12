@@ -12,11 +12,14 @@ export interface IPatient extends Document {
     city: string;
     pincode: number;
   };
+    profilePhoto?:string;
   abhaId:string;
   emergencyContact:{
     name:string;
     number:number;
   }
+  favouriteDoctors?: mongoose.Types.ObjectId[]; // Array of favorite doctor IDs
+  favouriteClinics?: mongoose.Types.ObjectId[]; // Array of favorite clinic IDs
 }
 
 
@@ -40,6 +43,9 @@ const patientSchema = new mongoose.Schema<IPatient>({
     password:{
         type:String,
         required:true
+    },
+    profilePhoto:{
+        type:String,
     },
     mobileNumber:{
         type:Number,
@@ -68,9 +74,10 @@ const patientSchema = new mongoose.Schema<IPatient>({
         number:{
             type:Number
         }
-    }
+    },
    
-   
+   favouriteDoctors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" }],
+   favouriteClinics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Clinic" }],
    
   
 },

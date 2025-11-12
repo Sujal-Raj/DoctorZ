@@ -1,31 +1,21 @@
 // 📁 src/pages/LoginLab.tsx
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { loginLab } from "../../Services/labApi"; // ✅ import from labApi
-
-// import { loginLab } from "../Services/labApi";
-
-interface LabLoginResponse {
-  token: string;
-  lab: {
-    _id: string;
-    labId: string;
-    name: string;
-    email: string;
-  };
-  message: string;
-}
+import { Helmet } from "react-helmet";
+import { Eye, EyeOff } from "lucide-react";
+import { loginLab } from "../../Services/labApi";
 
 export default function LoginLab() {
   const [labId, setLabId] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!labId || !password) {
       Swal.fire({
         title: "Missing Info!",
-        text: "Please enter both Login ID and Password.",
+        text: "Please enter both Lab ID and Password.",
         icon: "warning",
         confirmButtonText: "Ok",
       });
@@ -34,17 +24,16 @@ export default function LoginLab() {
 
     try {
       setLoading(true);
+      const response = await loginLab(labId, password);
 
-      const response = await loginLab(labId, password); // ✅ using API function
-
-      if (response.status === 200 && response.data.token) {
+      if (response.status === 200 && response.data?.token) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("labId", response.data.lab._id);
         localStorage.setItem("labName", response.data.lab.name);
 
         Swal.fire({
           title: "Login Successful!",
-          text: `Welcome ${response.data.lab.name}! Redirecting to your dashboard...`,
+          text: `Welcome ${response.data.lab.name}! Redirecting...`,
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
@@ -53,6 +42,8 @@ export default function LoginLab() {
         setTimeout(() => {
           window.location.href = "/lab-dashboard";
         }, 1500);
+      } else {
+        throw new Error("Invalid credentials");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -60,7 +51,7 @@ export default function LoginLab() {
         title: "Login Failed!",
         text: "Invalid credentials or your lab is not approved yet.",
         icon: "error",
-        confirmButtonText: "Ok",
+        confirmButtonText: "Try Again",
       });
     } finally {
       setLoading(false);
@@ -68,52 +59,122 @@ export default function LoginLab() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 px-4 py-10">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-100 p-8">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Lab Login
-        </h1>
+    <>
+      {/* ✅ SEO Optimization */}
+      <Helmet>
+        <title>Lab Login | DoctorZ Healthcare</title>
+        <meta
+          name="description"
+          content="Login to your DoctorZ Lab account to manage diagnostic tests, reports, and patients efficiently."
+        />
+        <meta
+          name="keywords"
+          content="Lab Login, DoctorZ Healthcare, Diagnostics, Medical Reports"
+        />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
 
-        <p className="text-center text-gray-500 mb-6 text-sm">
-          Use your{" "}
-          <span className="font-semibold text-blue-600">Login ID</span> provided
-          after admin approval.
-        </p>
-
-        <div className="space-y-4">
-          <input
-            type="text"
-            placeholder="Login ID"
-            value={labId}
-            onChange={(e) => setLabId(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-50"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-50"
-          />
-        </div>
-
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className={`mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition ${
-            loading ? "opacity-70 cursor-not-allowed" : ""
-          }`}
+      {/* ✅ Centered Modern Layout */}
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-40">
+        <div
+          className="w-[90%] max-w-md bg-white rounded-2xl shadow-lg border border-[#dfe3f7] p-8 sm:p-10 text-center transition-all duration-300"
+          aria-label="Lab Login Section"
         >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#000000] mb-3">
+            Lab Login
+          </h1>
+          <p className="text-gray-500 text-sm sm:text-base mb-6">
+            Use your{" "}
+            <span className="font-semibold text-[#28328C]">Lab ID</span> and
+            password to access your{" "}
+            <span className="font-semibold text-[#28328C]">
+              dashboard and reports
+            </span>
+            .
+          </p>
 
-        <p className="text-center text-gray-600 mt-6">
-          Don’t have an account?{" "}
-          <a href="/lab-register" className="text-blue-500 hover:underline">
-            Register
-          </a>
-        </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin();
+            }}
+            className="space-y-5 text-left"
+          >
+            {/* Lab ID Field */}
+            <div>
+              <label
+                htmlFor="labId"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Lab ID
+              </label>
+              <input
+                id="labId"
+                type="text"
+                placeholder="Enter your Lab ID"
+                value={labId}
+                onChange={(e) => setLabId(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#28328C] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
+                required
+              />
+            </div>
+
+            {/* Password Field */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#28328C] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-[#28328C] focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} strokeWidth={1.8} />
+                  ) : (
+                    <Eye size={20} strokeWidth={1.8} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Login Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full bg-[#28328C] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+
+          <p className="text-center text-gray-600 mt-6 text-sm sm:text-base">
+            Don’t have an account?{" "}
+            <a
+              href="/lab-register"
+              className="text-[#28328C] font-medium hover:underline hover:text-[#1f2870]"
+            >
+              Register
+            </a>
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

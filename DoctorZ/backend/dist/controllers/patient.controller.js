@@ -11,7 +11,14 @@ const patientRegister = async (req, res) => {
     try {
         console.log("Received body:", req.body);
         const body = req.body;
-        const files = req.files;
+        // const files = req.files as Express.Multer.File[];
+        const photoFile = req.files && req.files.photo
+            ? req.files.photo[0]
+            : null;
+        const medicalReports = req.files && req.files.medicalReports
+            ? req.files.medicalReports
+            : [];
+        const profilePhotoUrl = photoFile ? `/uploads/${photoFile.filename}` : "";
         const { fullName, gender, dob, email, password, mobileNumber, aadhar, abhaId, doctorId, city, pincode, name, number, } = body;
         // EMR fields
         const allergies = JSON.parse(body.allergies || "[]");
@@ -19,9 +26,7 @@ const patientRegister = async (req, res) => {
         const pastSurgeries = JSON.parse(body.pastSurgeries || "[]");
         const currentMedications = JSON.parse(body.currentMedications || "[]");
         // Report URLs
-        const reportUrls = files?.length > 0
-            ? files.map((file) => `/uploads/${file.filename}`)
-            : [];
+        const reportUrls = medicalReports.map((file) => `/uploads/${file.filename}`);
         // Required validation
         if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
             return res.status(400).json({ message: "Required fields missing" });
@@ -45,6 +50,7 @@ const patientRegister = async (req, res) => {
             abhaId,
             address: { city, pincode },
             emergencyContact: { name, number },
+            profilePhoto: profilePhotoUrl,
         });
         // Should we create EMR?
         const shouldCreateEMR = allergies.length > 0 ||
@@ -222,5 +228,58 @@ const getBookedDoctor = async (req, res) => {
         });
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor };
+const addFavouriteDoctor = async (req, res) => {
+    try {
+        const { id } = req.params; // patientId
+        const { doctorId } = req.body;
+        const patient = await patientModel.findById(id);
+        if (!patient) {
+            return res.status(404).json({ message: "Patient not found." });
+        }
+        if (!patient.favouriteDoctors) {
+            patient.favouriteDoctors = [];
+        }
+        // ✅ Check if already favourite
+        const isAlreadyFavourite = patient.favouriteDoctors?.includes(doctorId);
+        if (isAlreadyFavourite) {
+            // ✅ Remove from favourites
+            patient.favouriteDoctors = patient.favouriteDoctors.filter((favId) => favId.toString() !== doctorId);
+            await patient.save();
+            return res.json({
+                message: "Removed from favourites",
+                isFavourite: false,
+            });
+        }
+        // ✅ Add to favourites
+        patient.favouriteDoctors?.push(new mongoose.Types.ObjectId(doctorId));
+        await patient.save();
+        return res.status(200).json({
+            message: "Doctor added to favourites.",
+            isFavourite: true, // ✅ Missing earlier!
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong.",
+            error,
+        });
+    }
+};
+const isFavouriteDoctor = async (req, res) => {
+    try {
+        const { patientId, doctorId } = req.params;
+        const patient = await patientModel.findById(patientId);
+        if (!patient) {
+            return res.status(404).json({ message: "Patient not found." });
+        }
+        // ✅ Convert stored ObjectId → string
+        const isFavourite = patient.favouriteDoctors?.some((favId) => favId.toString() === doctorId);
+        return res.json({ isFavourite });
+    }
+    catch (error) {
+        return res.status(500).json({ isFavourite: false });
+    }
+};
+export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor };
 //# sourceMappingURL=patient.controller.js.map

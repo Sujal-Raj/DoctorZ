@@ -24,6 +24,7 @@
     "react-day-picker": "^9.11.0",
     "react-dom": "^19.1.1",
     "react-helmet": "^6.1.0",
+    "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.62.0",
     "react-icons": "^5.5.0",
     "react-is": "^19.2.0",
@@ -31,6 +32,7 @@
     "react-toastify": "^11.0.5",
     "recharts": "^3.2.1",
     "sweetalert2": "^11.23.0",
+    "swiper": "^12.0.3",
     "tailwindcss": "^4.1.13"
   },
   "devDependencies": {
@@ -39,6 +41,7 @@
     "@types/date-fns": "^2.5.3",
     "@types/js-cookie": "^3.0.6",
     "@types/jwt-decode": "^2.2.1",
+    "@types/node": "^24.9.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.1.7",
     "@types/react-helmet": "^6.1.11",

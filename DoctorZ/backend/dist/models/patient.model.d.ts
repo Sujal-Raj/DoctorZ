@@ -11,11 +11,14 @@ export interface IPatient extends Document {
         city: string;
         pincode: number;
     };
+    profilePhoto?: string;
     abhaId: string;
     emergencyContact: {
         name: string;
         number: number;
     };
+    favouriteDoctors?: mongoose.Types.ObjectId[];
+    favouriteClinics?: mongoose.Types.ObjectId[];
 }
 declare const patientModel: mongoose.Model<IPatient, {}, {}, {}, mongoose.Document<unknown, {}, IPatient, {}, mongoose.DefaultSchemaOptions> & IPatient & {
     _id: mongoose.Types.ObjectId;

@@ -39,6 +39,8 @@ interface Appointment {
 interface TotalPatientsResponse {
   totalPatients: number;
 }
+import Cookies from "js-cookie";
+
 
 const DoctorDashboardHome: React.FC = () => {
   const [doctor, setDoctor] = useState<Doctor | null>(null);
@@ -48,7 +50,7 @@ const DoctorDashboardHome: React.FC = () => {
   const [todaysAppointments, setTodaysAppointments] = useState<number>(0);
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+const token = Cookies.get("doctorToken");
   const doctorId = localStorage.getItem("doctorId");
 
   useEffect(() => {
@@ -72,7 +74,7 @@ const DoctorDashboardHome: React.FC = () => {
   // Fetch doctor details
   useEffect(() => {
     if (!token || !doctorId) {
-      navigate("/doctor/login");
+      navigate("/doctor-login");
       return;
     }
 
