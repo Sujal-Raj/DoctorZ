@@ -1,289 +1,200 @@
-// import React, { useState, useContext } from "react";
+
+
+
+
+// import  { useState, useContext } from "react";
 // import { Link, useLocation, useNavigate } from "react-router-dom";
-// import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 // import {
 //   Menu,
 //   X,
 //   User,
 //   LogOut,
 //   LogIn,
-//   Stethoscope,
-//   Hospital,
-//   UserPlus,
+ 
 // } from "lucide-react";
-// import { AuthContext } from "../Context/AuthContext.js";
 // import Cookies from "js-cookie";
-// import {jwtDecode} from "jwt-decode";
-// const Navbar: React.FC = () => {
+// import { jwtDecode, type JwtPayload } from "jwt-decode";
+// import { AuthContext } from "../Context/AuthContext";
+// import RightSidebar from "./RightSidebar";
+
+
+// const Navbar = () => {
+//   interface MyTokenPayload extends JwtPayload {
+//   id: string;     // ✅ your custom field
+//   name?: string;  // (optional)
+//   email?: string; // (optional)
+// }
+
 //   const [mobileOpen, setMobileOpen] = useState(false);
-//   const { isLoggedIn, user, logout } = useContext(AuthContext);
-//   console.log("Navbar Context — isLoggedIn:", isLoggedIn, "user:", user);
+//   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+//   const { isLoggedIn, logout } = useContext(AuthContext);
 //   const location = useLocation();
-//   console.log("Navbar Rendered — isLoggedIn:", isLoggedIn, "user:", user);
+//   const navigate = useNavigate();
 
-// const token = Cookies.get("patientToken") || "";
-// const decoded: any = token ? jwtDecode(token) : {};
+//   const token = Cookies.get("patientToken") || "";
+//   const decoded = token ? jwtDecode<MyTokenPayload>(token) : null;
+//   const patientId = decoded?.id;
 
-// const patientId = decoded.id;
-// console.log("Patient ID from token:", patientId);
-// const navigate=useNavigate();
 //   return (
-//     <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50 border-b border-gray-200">
-//       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-//         <Link
-//           to="/"
-//           className="flex items-center gap-2 text-2xl font-bold text-blue-700 hover:text-blue-800 transition"
-//         >
-//           🏥 <span>DoctorZ</span>
-//           <span className="hidden md:inline text-sm text-gray-500 font-medium">
-//             | Smart Healthcare
-//           </span>
-//         </Link>
+//     <>
+//       {/* NAVBAR */}
+//       <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50">
+//         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
 
-//         <div className="hidden md:flex items-center gap-8">
+//           {/* Logo */}
 //           <Link
 //             to="/"
-//             className={`font-medium transition ${
-//               location.pathname === "/"
-//                 ? "text-blue-600"
-//                 : "text-gray-700 hover:text-blue-600"
-//             }`}
+//             className="flex items-center gap-2 text-2xl font-bold text-blue-700 hover:text-blue-800"
 //           >
-//             Home
-//           </Link>
-//           <Link
-//             to="/all-doctors"
-//             className={`font-medium transition ${
-//               location.pathname === "/all-doctors"
-//                 ? "text-blue-600"
-//                 : "text-gray-700 hover:text-blue-600"
-//             }`}
-//           >
-//             Find Doctors
-//           </Link>
-//           <Link
-//             to="/all-clinics"
-//             className={`font-medium transition ${
-//               location.pathname === "/all-clinics"
-//                 ? "text-blue-600"
-//                 : "text-gray-700 hover:text-blue-600"
-//             }`}
-//           >
-//             Find Clinics
-//           </Link>
-//           <Link
-//             to="/all-lab-test"
-//             className={`font-medium transition ${
-//               location.pathname === "/all-lab-test"
-//                 ? "text-blue-600"
-//                 : "text-gray-700 hover:text-blue-600"
-//             }`}
-//           >
-//             Lab Tests
+//             🏥 <span>DoctorZ</span>
+//             <span className="hidden md:inline text-sm text-gray-500 font-medium">
+//               | Smart Healthcare
+//             </span>
 //           </Link>
 
-//           {/* Show Registration only if not logged in */}
-//           {!isLoggedIn && (
-//             <DropdownMenu.Root>
-//               <DropdownMenu.Trigger asChild>
-//                 <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition flex items-center gap-2">
-//                   Registration
-//                 </button>
-//               </DropdownMenu.Trigger>
-//               <DropdownMenu.Content
-//                 sideOffset={8}
-//                 className="bg-white rounded-xl shadow-xl border border-gray-100 w-56 overflow-hidden"
+//           {/* Desktop Menu */}
+//           <div className="hidden md:flex items-center gap-8">
+
+//             <Link to="/" className={`${location.pathname === "/" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+//               Home
+//             </Link>
+
+//             <Link to="/search-results" className={`${location.pathname === "/all-doctors" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+//               Find Doctors
+//             </Link>
+
+//             <Link to="/all-clinics" className={`${location.pathname === "/all-clinics" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+//               Find Clinics
+//             </Link>
+
+//             <Link to="/all-lab-test" className={`${location.pathname === "/all-lab-test" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+//               Lab Tests
+//             </Link>
+
+//             {/* If Not Logged In */}
+//             {!isLoggedIn && (
+//               <Link
+//                 to="/patient-register"
+//                 className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:from-blue-700 hover:to-indigo-700"
 //               >
-//                 <DropdownMenu.Item asChild>
-//                   <Link
-//                     to="/patient-register"
-//                     className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-//                   >
-//                     <UserPlus size={18} className="text-indigo-600" /> Patient
-//                   </Link>
-//                 </DropdownMenu.Item>
-//                 <DropdownMenu.Item asChild>
-//                   <Link
-//                     to="/doctor-register"
-//                     className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-//                   >
-//                     <Stethoscope size={18} className="text-blue-600" /> Doctor
-//                   </Link>
-//                 </DropdownMenu.Item>
-//                 <DropdownMenu.Item asChild>
-//                   <Link
-//                     to="/clinic-register"
-//                     className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-//                   >
-//                     <Hospital size={18} className="text-green-600" /> Clinic
-//                   </Link>
-//                 </DropdownMenu.Item>
-//                 <DropdownMenu.Item asChild>
-//                   <Link
-//                     to="/lab-register"
-//                     className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-blue-50 transition"
-//                   >
-//                     <Hospital size={18} className="text-green-600" /> Lab
-//                   </Link>
-//                 </DropdownMenu.Item>
-//               </DropdownMenu.Content>
-//             </DropdownMenu.Root>
-//           )}
+//                 Registration
+//               </Link>
+//             )}
 
-//           {/* Login or Logout */}
-//           <div>
+//             {/* Login / Profile */}
 //             {isLoggedIn ? (
 //               <div className="flex items-center gap-4">
-//                 {/* ✅ Profile Link */}
-//                 <Link
-//                   to={`/user-dashboard/${patientId}`}
-//                   className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200 transition"
+
+//                 {/* ✅ PROFILE → Opens Sidebar */}
+//                 <button
+//                   onClick={() => setSidebarOpen(true)}
+//                   className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200"
 //                 >
 //                   <User size={18} /> Profile
-//                 </Link>
+//                 </button>
 
-//                 {/* ✅ Logout Button */}
+//                 {/* ✅ LOGOUT */}
 //                 <button
 //                   onClick={() => {
 //                     logout();
 //                     Cookies.remove("patientToken");
-
-//                     alert("You have been logged out.");
 //                     navigate("/patient-login");
 //                   }}
-//                   className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100 transition"
+//                   className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100"
 //                 >
 //                   <LogOut size={18} /> Logout
 //                 </button>
 //               </div>
 //             ) : (
-//               <DropdownMenu.Root>
-//                 <DropdownMenu.Trigger asChild>
-//                   <button className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition flex items-center gap-2">
-//                     <LogIn size={18} /> Login
-//                   </button>
-//                 </DropdownMenu.Trigger>
-//                 <DropdownMenu.Content
-//                   sideOffset={8}
-//                   className="bg-white rounded-xl shadow-xl border border-gray-100 w-56 overflow-hidden"
-//                 >
-//                   <DropdownMenu.Item asChild>
-//                     <Link
-//                       to="/patient-login"
-//                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
-//                     >
-//                       <User size={18} className="text-indigo-600" /> Patient
-//                       Login
-//                     </Link>
-//                   </DropdownMenu.Item>
-//                   <DropdownMenu.Item asChild>
-//                     <Link
-//                       to="/doctor/login"
-//                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
-//                     >
-//                       <Stethoscope size={18} className="text-blue-600" /> Doctor
-//                       Login
-//                     </Link>
-//                   </DropdownMenu.Item>
-//                   <DropdownMenu.Item asChild>
-//                     <Link
-//                       to="/clinic-login"
-//                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
-//                     >
-//                       <Hospital size={18} className="text-green-600" /> Clinic
-//                       Login
-//                     </Link>
-//                   </DropdownMenu.Item>
-//                   <DropdownMenu.Item asChild>
-//                     <Link
-//                       to="/lab-login"
-//                       className="flex items-center gap-2 px-4 py-3 text-gray-700 hover:bg-green-50 transition"
-//                     >
-//                       <Hospital size={18} className="text-green-600" /> Lab
-//                       Login
-//                     </Link>
-//                   </DropdownMenu.Item>
-//                 </DropdownMenu.Content>
-//               </DropdownMenu.Root>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Mobile menu toggle */}
-//         <button
-//           className="md:hidden text-gray-700"
-//           onClick={() => setMobileOpen(!mobileOpen)}
-//         >
-//           {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-//         </button>
-//       </div>
-
-//       {/* Mobile Menu */}
-//       {mobileOpen && (
-//         <div className="md:hidden bg-white shadow-md border-t border-gray-200">
-//           <div className="flex flex-col px-6 py-4 space-y-4">
-//             <Link to="/" onClick={() => setMobileOpen(false)}>
-//               Home
-//             </Link>
-//             <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>
-//               Find Doctors
-//             </Link>
-//             <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>
-//               Find Clinics
-//             </Link>
-//             <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>
-//               Lab Tests
-//             </Link>
-
-//             {!isLoggedIn && (
-//               <>
-//                 <Link
-//                   to="/patient-register"
-//                   onClick={() => setMobileOpen(false)}
-//                 >
-//                   Patient Registration
-//                 </Link>
-//                 <Link
-//                   to="/doctor-register"
-//                   onClick={() => setMobileOpen(false)}
-//                 >
-//                   Doctor Registration
-//                 </Link>
-//                 <Link
-//                   to="/clinic-register"
-//                   onClick={() => setMobileOpen(false)}
-//                 >
-//                   Clinic Registration
-//                 </Link>
-//                 <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
-//                   Lab Registration
-//                 </Link>
-//               </>
-//             )}
-
-//             {isLoggedIn ? (
-//               <button
-//                 onClick={() => {
-//                   logout();
-//                   setMobileOpen(false);
-//                 }}
-//                 className="text-red-600 font-medium hover:text-red-700 transition flex items-center gap-2"
-//               >
-//                 <LogOut size={18} /> Logout
-//               </button>
-//             ) : (
 //               <Link
-//                 to="/login"
-//                 className="text-green-600 font-medium hover:text-green-700 transition flex items-center gap-2"
-//                 onClick={() => setMobileOpen(false)}
+//                 to="/patient-login"
+//                 className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 flex items-center gap-2"
 //               >
 //                 <LogIn size={18} /> Login
 //               </Link>
 //             )}
 //           </div>
+
+//           {/* Mobile Menu Icon */}
+//           <button className="md:hidden text-gray-700" onClick={() => setMobileOpen(!mobileOpen)}>
+//             {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+//           </button>
 //         </div>
-//       )}
-//     </nav>
+
+//         {/* MOBILE MENU */}
+//         {mobileOpen && (
+//           <div className="md:hidden bg-white shadow-md border-t">
+//             <div className="flex flex-col px-6 py-4 space-y-4">
+
+//               <Link to="/" onClick={() => setMobileOpen(false)}>Home</Link>
+//               <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>Find Doctors</Link>
+//               <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>Find Clinics</Link>
+//               <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>Lab Tests</Link>
+
+//               {!isLoggedIn && (
+//                 <>
+//                   <Link to="/patient-register" onClick={() => setMobileOpen(false)}>
+//                     Patient Registration
+//                   </Link>
+//                   <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>
+//                     Doctor Registration
+//                   </Link>
+//                   <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>
+//                     Clinic Registration
+//                   </Link>
+//                   <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
+//                     Lab Registration
+//                   </Link>
+//                 </>
+//               )}
+
+//               {/* ✅ MOBILE PROFILE BUTTON */}
+//               {isLoggedIn && (
+//                 <button
+//                   onClick={() => {
+//                     setSidebarOpen(true);
+//                     setMobileOpen(false);
+//                   }}
+//                   className="flex items-center gap-2"
+//                 >
+//                   <User size={18} /> Profile
+//                 </button>
+//               )}
+
+//               {/* ✅ MOBILE LOGOUT */}
+//               {isLoggedIn ? (
+//                 <button
+//                   onClick={() => {
+//                     logout();
+//                     setMobileOpen(false);
+//                   }}
+//                   className="text-red-600 flex items-center gap-2"
+//                 >
+//                   <LogOut size={18} /> Logout
+//                 </button>
+//               ) : (
+//                 <Link
+//                   to="/patient-login"
+//                   onClick={() => setMobileOpen(false)}
+//                   className="text-green-600 flex items-center gap-2"
+//                 >
+//                   <LogIn size={18} /> Login
+//                 </Link>
+//               )}
+
+//             </div>
+//           </div>
+//         )}
+//       </nav>
+
+//       {/* ✅ RIGHT SIDEBAR */}
+//       <RightSidebar
+//         open={sidebarOpen}
+//         onClose={() => setSidebarOpen(false)}
+//         patientId={patientId}
+//       />
+//     </>
 //   );
 // };
 
@@ -292,7 +203,7 @@
 
 
 
-import  { useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu,
@@ -300,23 +211,24 @@ import {
   User,
   LogOut,
   LogIn,
- 
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { jwtDecode, type JwtPayload } from "jwt-decode";
 import { AuthContext } from "../Context/AuthContext";
 import RightSidebar from "./RightSidebar";
 
-
 const Navbar = () => {
   interface MyTokenPayload extends JwtPayload {
-  id: string;     // ✅ your custom field
-  name?: string;  // (optional)
-  email?: string; // (optional)
-}
+    id: string;
+  }
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const { isLoggedIn, logout } = useContext(AuthContext);
   const location = useLocation();
@@ -331,7 +243,6 @@ const Navbar = () => {
       {/* NAVBAR */}
       <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-
           {/* Logo */}
           <Link
             to="/"
@@ -345,38 +256,144 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-
-            <Link to="/" className={`${location.pathname === "/" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+            <Link
+              to="/"
+              className={`${
+                location.pathname === "/"
+                  ? "text-blue-600"
+                  : "text-gray-700 hover:text-blue-600"
+              } font-medium`}
+            >
               Home
             </Link>
 
-            <Link to="/all-doctors" className={`${location.pathname === "/all-doctors" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+            <Link
+              to="/search-results"
+              className="text-gray-700 hover:text-blue-600 font-medium"
+            >
               Find Doctors
             </Link>
 
-            <Link to="/all-clinics" className={`${location.pathname === "/all-clinics" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+            <Link
+              to="/all-clinics"
+              className="text-gray-700 hover:text-blue-600 font-medium"
+            >
               Find Clinics
             </Link>
 
-            <Link to="/all-lab-test" className={`${location.pathname === "/all-lab-test" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
+            <Link
+              to="/all-lab-test"
+              className="text-gray-700 hover:text-blue-600 font-medium"
+            >
               Lab Tests
             </Link>
 
-            {/* If Not Logged In */}
+            {/* ✅ NOT LOGGED IN → REGISTER DROPDOWN */}
             {!isLoggedIn && (
-              <Link
-                to="/patient-register"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:from-blue-700 hover:to-indigo-700"
+              <div
+                className="relative"
+                onMouseEnter={() => setShowRegister(true)}
+                onMouseLeave={() => setShowRegister(false)}
               >
-                Registration
-              </Link>
+                <button className="bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                  Register{" "}
+                  {showRegister ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </button>
+
+                <div
+                  className={`absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl py-3 transition-all ${
+                    showRegister
+                      ? "opacity-100 visible"
+                      : "opacity-0 invisible"
+                  }`}
+                >
+                  <Link
+                    to="/patient-register"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    <User size={16} className="text-blue-600" /> Patient
+                  </Link>
+                  <Link
+                    to="/doctor-register"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    🩺 Doctor
+                  </Link>
+                  <Link
+                    to="/clinic-register"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    🏥 Clinic
+                  </Link>
+                  <Link
+                    to="/lab-register"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    🔬 Lab
+                  </Link>
+                </div>
+              </div>
             )}
 
-            {/* Login / Profile */}
-            {isLoggedIn ? (
-              <div className="flex items-center gap-4">
+            {/* ✅ NOT LOGGED IN → LOGIN DROPDOWN */}
+            {!isLoggedIn && (
+              <div
+                className="relative"
+                onMouseEnter={() => setShowLogin(true)}
+                onMouseLeave={() => setShowLogin(false)}
+              >
+                <button className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                  Login{" "}
+                  {showLogin ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </button>
 
-                {/* ✅ PROFILE → Opens Sidebar */}
+                <div
+                  className={`absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-xl py-3 transition-all ${
+                    showLogin ? "opacity-100 visible" : "opacity-0 invisible"
+                  }`}
+                >
+                  <Link
+                    to="/patient-login"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    <LogIn size={16} className="text-green-600" /> Patient Login
+                  </Link>
+
+                  <Link
+                    to="/doctor-login"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    🩺 Doctor Login
+                  </Link>
+
+                  <Link
+                    to="/clinic-login"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    🏥 Clinic Login
+                  </Link>
+
+                  <Link
+                    to="/lab-login"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                  >
+                    🔬 Lab Login
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* ✅ LOGGED IN → PROFILE + LOGOUT */}
+            {isLoggedIn && (
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => setSidebarOpen(true)}
                   className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200"
@@ -384,7 +401,6 @@ const Navbar = () => {
                   <User size={18} /> Profile
                 </button>
 
-                {/* ✅ LOGOUT */}
                 <button
                   onClick={() => {
                     logout();
@@ -396,86 +412,110 @@ const Navbar = () => {
                   <LogOut size={18} /> Logout
                 </button>
               </div>
-            ) : (
-              <Link
-                to="/patient-login"
-                className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 flex items-center gap-2"
-              >
-                <LogIn size={18} /> Login
-              </Link>
             )}
           </div>
 
           {/* Mobile Menu Icon */}
-          <button className="md:hidden text-gray-700" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button
+            className="md:hidden text-gray-700"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
             {mobileOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
-        {/* MOBILE MENU */}
-        {mobileOpen && (
-          <div className="md:hidden bg-white shadow-md border-t">
-            <div className="flex flex-col px-6 py-4 space-y-4">
+        {/* ✅ MOBILE MENU */}
+{mobileOpen && (
+  <div className="md:hidden bg-white shadow-md border-t">
+    <div className="flex flex-col px-6 py-4 space-y-4">
 
-              <Link to="/" onClick={() => setMobileOpen(false)}>Home</Link>
-              <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>Find Doctors</Link>
-              <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>Find Clinics</Link>
-              <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>Lab Tests</Link>
+      <Link to="/" onClick={() => setMobileOpen(false)}>
+        Home
+      </Link>
 
-              {!isLoggedIn && (
-                <>
-                  <Link to="/patient-register" onClick={() => setMobileOpen(false)}>
-                    Patient Registration
-                  </Link>
-                  <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>
-                    Doctor Registration
-                  </Link>
-                  <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>
-                    Clinic Registration
-                  </Link>
-                  <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
-                    Lab Registration
-                  </Link>
-                </>
-              )}
+      <Link to="/search-results" onClick={() => setMobileOpen(false)}>
+        Find Doctors
+      </Link>
 
-              {/* ✅ MOBILE PROFILE BUTTON */}
-              {isLoggedIn && (
-                <button
-                  onClick={() => {
-                    setSidebarOpen(true);
-                    setMobileOpen(false);
-                  }}
-                  className="flex items-center gap-2"
-                >
-                  <User size={18} /> Profile
-                </button>
-              )}
+      <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>
+        Find Clinics
+      </Link>
 
-              {/* ✅ MOBILE LOGOUT */}
-              {isLoggedIn ? (
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileOpen(false);
-                  }}
-                  className="text-red-600 flex items-center gap-2"
-                >
-                  <LogOut size={18} /> Logout
-                </button>
-              ) : (
-                <Link
-                  to="/patient-login"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-green-600 flex items-center gap-2"
-                >
-                  <LogIn size={18} /> Login
-                </Link>
-              )}
+      <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>
+        Lab Tests
+      </Link>
 
-            </div>
-          </div>
-        )}
+    
+      {!isLoggedIn && (
+        <>
+          {/* ✅ REGISTER OPTIONS */}
+          <p className="mt-2 font-semibold text-gray-700">Register</p>
+
+          <Link to="/patient-register" onClick={() => setMobileOpen(false)}>
+            Patient Registration
+          </Link>
+
+          <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>
+            Doctor Registration
+          </Link>
+
+          <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>
+            Clinic Registration
+          </Link>
+
+          <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
+            Lab Registration
+          </Link>
+
+          {/* ✅ LOGIN OPTIONS */}
+          <p className="mt-4 font-semibold text-gray-700">Login</p>
+
+          <Link to="/patient-login" onClick={() => setMobileOpen(false)}>
+            Patient Login
+          </Link>
+
+          <Link to="/doctor-login" onClick={() => setMobileOpen(false)}>
+            Doctor Login
+          </Link>
+
+          <Link to="/clinic-login" onClick={() => setMobileOpen(false)}>
+            Clinic Login
+          </Link>
+
+          <Link to="/lab-login" onClick={() => setMobileOpen(false)}>
+            Lab Login
+          </Link>
+        </>
+      )}
+
+      {/* ✅ IF LOGGED IN → SHOW PROFILE + LOGOUT */}
+      {isLoggedIn && (
+        <>
+          <button
+            onClick={() => {
+              setSidebarOpen(true);
+              setMobileOpen(false);
+            }}
+            className="flex items-center gap-2"
+          >
+            <User size={18} /> Profile
+          </button>
+
+          <button
+            onClick={() => {
+              logout();
+              setMobileOpen(false);
+            }}
+            className="text-red-600 flex items-center gap-2"
+          >
+            <LogOut size={18} /> Logout
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+)}
+
       </nav>
 
       {/* ✅ RIGHT SIDEBAR */}

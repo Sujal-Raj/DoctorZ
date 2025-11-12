@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 import BookingDrawer from "../components/BookingDrawer";
+import api from "../Services/mainApi";
 
 interface Doctor {
   _id: string;

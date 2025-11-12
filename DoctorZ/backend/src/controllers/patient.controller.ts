@@ -8,7 +8,6 @@ import { get } from "http";
 import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
 import Booking from "../models/booking.model.js";
-import e from "cors";
 
 
 const patientRegister = async (req: Request, res: Response) => {
@@ -16,7 +15,15 @@ const patientRegister = async (req: Request, res: Response) => {
     console.log("Received body:", req.body);
     const body = req.body;
 
-    const files = req.files as Express.Multer.File[];
+    // const files = req.files as Express.Multer.File[];
+const photoFile = req.files && (req.files as any).photo 
+  ? (req.files as any).photo[0] 
+  : null;
+
+const medicalReports = req.files && (req.files as any).medicalReports
+  ? (req.files as any).medicalReports
+  : [];
+const profilePhotoUrl = photoFile ? `/uploads/${photoFile.filename}` : "";
 
     const {
       fullName,
@@ -42,10 +49,8 @@ const patientRegister = async (req: Request, res: Response) => {
     const currentMedications = JSON.parse(body.currentMedications || "[]");
 
     // Report URLs
-    const reportUrls =
-      files?.length > 0
-        ? files.map((file) => `/uploads/${file.filename}`)
-        : [];
+    const reportUrls = medicalReports.map((file:any) => `/uploads/${file.filename}`);
+
 
     // Required validation
     if (!fullName || !gender || !dob || !mobileNumber || !aadhar) {
@@ -73,6 +78,8 @@ const patientRegister = async (req: Request, res: Response) => {
       abhaId,
       address: { city, pincode },
       emergencyContact: { name, number },
+      profilePhoto: profilePhotoUrl,
+
               
     });
 

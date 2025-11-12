@@ -17,7 +17,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 router.post(
   "/register",
-  upload.array("medicalReports"),  
+ upload.fields([
+  { name: "photo", maxCount: 1 },
+  { name: "medicalReports", maxCount: 10 }
+])
+,  
   patientController.patientRegister
 );
 router.post("/login",patientController.patientLogin);

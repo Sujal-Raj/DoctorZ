@@ -12,6 +12,7 @@ export interface IPatient extends Document {
     city: string;
     pincode: number;
   };
+    profilePhoto?:string;
   abhaId:string;
   emergencyContact:{
     name:string;
@@ -42,6 +43,9 @@ const patientSchema = new mongoose.Schema<IPatient>({
     password:{
         type:String,
         required:true
+    },
+    profilePhoto:{
+        type:String,
     },
     mobileNumber:{
         type:Number,

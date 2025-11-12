@@ -11,6 +11,7 @@ export interface IPatient extends Document {
         city: string;
         pincode: number;
     };
+    profilePhoto?: string;
     abhaId: string;
     emergencyContact: {
         name: string;

@@ -1,8 +1,9 @@
+
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { X, Video, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDayShort, formatDateNumber } from "../utils/date.js";
 import api from "../Services/mainApi.js";
-import { addMonths, startOfMonth, endOfMonth } from "date-fns";
+import { startOfMonth, endOfMonth } from "date-fns";
 import AppointmentFormModal from "./AppointmentFormModal.js";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
@@ -29,7 +30,21 @@ interface Props {
   onBooked?: (bookingInfo: unknown) => void;
 }
 
-const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) => {
+interface SlotsAPIResponse {
+  availableMonths: {
+    [key: string]: Array<{
+      date: string;
+      slots: Slot[];
+    }>;
+  };
+}
+
+const BookingSidebar: React.FC<Props> = ({
+  doctor,
+  open,
+  onClose,
+  onBooked,
+}) => {
   const [mode, setMode] = useState<"online" | "offline">("online");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -39,23 +54,32 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
   const [showForm, setShowForm] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const [availableMonthKeys, setAvailableMonthKeys] = useState<string[]>([]);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
 
   const days = useMemo(() => {
     const start = startOfMonth(currentMonth);
     const end = endOfMonth(currentMonth);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const arr: Date[] = [];
     const d = new Date(start);
+
     while (d <= end) {
-      arr.push(new Date(d));
+      if (d >= today) arr.push(new Date(d));
       d.setDate(d.getDate() + 1);
     }
+
     return arr;
   }, [currentMonth]);
 
   const formatDate = (date: Date) =>
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
-      date.getDate()
-    ).padStart(2, "0")}`;
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getDate()).padStart(2, "0")}`;
 
   useEffect(() => {
     if (!doctor) return;
@@ -66,21 +90,59 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
     setShowForm(false);
   }, [doctor]);
 
-  interface SlotsResponse {
-    slots: Array<{
-      _id: string;
-      slots: Slot[];
-    }>;
-  }
+  const monthKey = `${currentMonth.getFullYear()}-${String(
+    currentMonth.getMonth() + 1
+  ).padStart(2, "0")}`;
 
   useEffect(() => {
     const fetchSlots = async () => {
       if (!doctor || !selectedDate) return;
       setLoadingSlots(true);
-      const dateStr = formatDate(selectedDate);
+
       try {
-        const res = await api.get<SlotsResponse>(`/api/patient/slots/${doctor._id}/${dateStr}`);
-        setSlots(res.data.slots?.[0]?.slots ?? []);
+        const res = await api.get<SlotsAPIResponse>(
+          `/api/patient/slots/${doctor._id}`
+        );
+        if (
+          !res.data ||
+          !res.data.availableMonths ||
+          Object.keys(res.data.availableMonths).length === 0
+        ) {
+          setSlots([]);
+          setAvailableMonthKeys([]);
+          setAvailableDates([]);
+          return;
+        }
+
+        const monthKey = `${selectedDate.getFullYear()}-${String(
+          selectedDate.getMonth() + 1
+        ).padStart(2, "0")}`;
+        const keys = Object.keys(res.data.availableMonths || {}).sort();
+        setAvailableMonthKeys(keys);
+
+        if (keys.length > 0 && !keys.includes(monthKey)) {
+          const [y, m] = keys[0].split("-");
+          const firstMonth = new Date(Number(y), Number(m) - 1);
+          setCurrentMonth(firstMonth);
+          setSelectedDate(firstMonth);
+        }
+
+        const monthData = res.data.availableMonths?.[monthKey] ?? [];
+        setAvailableDates(
+          monthData.map((entry: any) => entry.date.slice(0, 10))
+        );
+
+        const dateEntry = monthData.find(
+          (entry: any) => entry.date.slice(0, 10) === formatDate(selectedDate)
+        );
+
+        if (!dateEntry && monthData.length > 0) {
+          const firstDate = new Date(monthData[0].date);
+          setSelectedDate(firstDate);
+          return;
+        }
+
+        setSlots(dateEntry?.slots ?? []);
       } catch (err) {
         console.error("Failed to fetch slots", err);
         setSlots([]);
@@ -89,11 +151,8 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
       }
     };
 
-    fetchAvailableMonths();
-  }, [doctor]);
-
-  // NOTE: removed the month-driven effect that auto-selected first day every time currentMonth changed.
-  // That autoset was causing overwrites after user clicks. We intentionally do NOT auto-select slots on month change.
+    fetchSlots();
+  }, [doctor, selectedDate]);
 
   const handleBook = async (formData: {
     name: string;
@@ -102,11 +161,13 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
     aadhar: string;
     contact: string;
   }) => {
-    const token = document.cookie.split("; ").find((r) => r.startsWith("patientToken="))?.split("=")[1];
+    const token = document.cookie
+      .split("; ")
+      .find((r) => r.startsWith("patientToken="))
+      ?.split("=")[1];
     const payloadBase64 = token?.split(".")[1];
     const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
     const userId = pay?.id;
-
     if (!token) {
       Swal.fire({
         icon: "info",
@@ -118,7 +179,11 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
     }
 
     if (!doctor || !selectedDate || !selectedTime) {
-      Swal.fire({ icon: "warning", title: "Incomplete Data", text: "Please select date & time." });
+      Swal.fire({
+        icon: "warning",
+        title: "Incomplete Data",
+        text: "Please select date & time.",
+      });
       return;
     }
 
@@ -129,7 +194,9 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
       doctorId: doctor._id,
       userId,
       mode,
-      datetime: `${selectedDate.toISOString().slice(0, 10)}T${selectedTime}:00Z`,
+      datetime: `${selectedDate
+        .toISOString()
+        .slice(0, 10)}T${selectedTime}:00Z`,
       fees: doctor.fees ?? 0,
       slotId: selectedSlotId,
       patient: formData,
@@ -147,7 +214,11 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
       onClose();
     } catch (err) {
       console.error("Booking error", err);
-      Swal.fire({ icon: "error", title: "Booking Failed", text: "Please try again later." });
+      Swal.fire({
+        icon: "error",
+        title: "Booking Failed",
+        text: "Please try again later.",
+      });
     } finally {
       setBookingLoading(false);
     }
@@ -164,7 +235,11 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
             "@type": "Physician",
             "name": "${doctor.fullName}",
             "medicalSpecialty": "${doctor.specialization ?? "General"}",
-            "image": "${doctor.photo ? `http://localhost:3000/uploads/${doctor.photo}` : ""}",
+            "image": "${
+              doctor.photo
+                ? `http://localhost:3000/uploads/${doctor.photo}`
+                : ""
+            }",
             "priceRange": "${doctor.fees ?? "0"}"
           }
         `}</script>
@@ -175,7 +250,10 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >
-        <div onClick={onClose} className="absolute inset-0 bg-black/40 backdrop" />
+        <div
+          onClick={onClose}
+          className="absolute inset-0 bg-black/40 backdrop"
+        />
 
         <aside
           ref={sidebarRef}
@@ -198,7 +276,9 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
                 </div>
               )}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">{doctor.fullName}</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {doctor.fullName}
+                </h2>
                 <p className="text-sm text-gray-500">{doctor.specialization}</p>
               </div>
             </div>
@@ -212,115 +292,192 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
 
           {/* Content */}
           <div className="p-5 space-y-5 overflow-y-auto h-[calc(100%-4rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-            {/* Mode Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => setMode("online")}
-                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                  mode === "online"
-                    ? "bg-[#28328C] text-white shadow"
-                    : "bg-white text-gray-700 hover:border-[#28328C]/40"
-                }`}
-              >
-                <Video className="w-4 h-4" /> Online
-              </button>
-              <button
-                onClick={() => setMode("offline")}
-                className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                  mode === "offline"
-                    ? "bg-[#28328C] text-white shadow"
-                    : "bg-white text-gray-700 hover:border-[#28328C]/40"
-                }`}
-              >
-                <Phone className="w-4 h-4" /> Offline
-              </button>
-            </div>
 
-            {/* Month Navigation */}
-            <div className="flex justify-between items-center">
-              <button
-                onClick={() => setCurrentMonth(addMonths(currentMonth, -1))}
-                className="p-2 rounded-full hover:bg-gray-100 border"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <span className="text-sm font-semibold text-gray-700">
-                {currentMonth.toLocaleString("default", { month: "long", year: "numeric" })}
-              </span>
-              <button
-                onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                className="p-2 rounded-full hover:bg-gray-100 border"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Date Selection */}
-            <div className="flex gap-2 overflow-x-auto py-2">
-              {days.map((d) => {
-                const key = formatDate(d);
-                const active = selectedDate && formatDate(selectedDate) === key;
-                return (
+            {/* 🩵 Check if slots exist */}
+            {availableMonthKeys.length === 0 ? (
+              <div className="text-center py-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                  No Slots Available
+                </h2>
+                <p className="text-gray-500 text-sm">
+                  This doctor hasn’t added any appointment slots yet.
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Mode Buttons */}
+                <div className="grid grid-cols-2 gap-3">
                   <button
-                    key={key}
-                    onClick={() => {
-                      setSelectedDate(d);
-                      setSelectedTime(null);
-                    }}
-                    className={`min-w-[72px] p-3 text-center rounded-lg border transition-all ${
-                      active
+                    onClick={() => setMode("online")}
+                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                      mode === "online"
                         ? "bg-[#28328C] text-white shadow"
-                        : "bg-white text-gray-800 hover:shadow-sm"
+                        : "bg-white text-gray-700 hover:border-[#28328C]/40"
                     }`}
                   >
-                    <div className="text-xs opacity-80">{formatDayShort(d)}</div>
-                    <div className="text-lg font-semibold">{formatDateNumber(d)}</div>
+                    <Video className="w-4 h-4" /> Online
                   </button>
-                );
-              })}
-            </div>
-
-            {/* Slots */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2 text-gray-700">Available Slots</h4>
-              {loadingSlots ? (
-                <div className="grid grid-cols-3 gap-2">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-10 rounded bg-gray-100 animate-pulse" />
-                  ))}
+                  <button
+                    onClick={() => setMode("offline")}
+                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                      mode === "offline"
+                        ? "bg-[#28328C] text-white shadow"
+                        : "bg-white text-gray-700 hover:border-[#28328C]/40"
+                    }`}
+                  >
+                    <Phone className="w-4 h-4" /> Offline
+                  </button>
                 </div>
-              ) : slots.length === 0 ? (
-                <div className="text-gray-500 text-sm">No slots available for selected date.</div>
-              ) : (
-                <div className="grid grid-cols-3 gap-2">
-                  {slots.map((slot) => {
-                    const isBooked = !slot.isActive;
-                    const selected = selectedTime === slot.time;
+
+                {/* Month Navigation */}
+                <div className="flex justify-between items-center mb-3">
+                  <button
+                    className={`p-2 rounded ${
+                      availableMonthKeys.indexOf(monthKey) <= 0
+                        ? "opacity-40 cursor-not-allowed"
+                        : "hover:bg-gray-100"
+                    }`}
+                    disabled={availableMonthKeys.indexOf(monthKey) <= 0}
+                    onClick={() => {
+                      const idx = availableMonthKeys.indexOf(monthKey);
+                      if (idx > 0) {
+                        const prevKey = availableMonthKeys[idx - 1];
+                        const [y, m] = prevKey.split("-");
+                        const newMonth = new Date(Number(y), Number(m) - 1);
+                        setCurrentMonth(newMonth);
+                        setSelectedDate(newMonth);
+                      }
+                    }}
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  <span className="text-sm font-semibold text-gray-800">
+                    {currentMonth.toLocaleString("default", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+
+                  <button
+                    className={`p-2 rounded ${
+                      availableMonthKeys.indexOf(monthKey) >=
+                      availableMonthKeys.length - 1
+                        ? "opacity-40 cursor-not-allowed"
+                        : "hover:bg-gray-100"
+                    }`}
+                    disabled={
+                      availableMonthKeys.indexOf(monthKey) >=
+                      availableMonthKeys.length - 1
+                    }
+                    onClick={() => {
+                      const idx = availableMonthKeys.indexOf(monthKey);
+                      if (idx < availableMonthKeys.length - 1) {
+                        const nextKey = availableMonthKeys[idx + 1];
+                        const [y, m] = nextKey.split("-");
+                        const newMonth = new Date(Number(y), Number(m) - 1);
+                        setCurrentMonth(newMonth);
+                        setSelectedDate(newMonth);
+                      }
+                    }}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Date Selection */}
+                <div className="flex gap-2 overflow-x-auto py-2">
+                  {days.map((d) => {
+                    const key = formatDate(d);
+                    const active =
+                      selectedDate && formatDate(selectedDate) === key;
+                    const disabled = !availableDates.includes(key);
+
                     return (
                       <button
-                        key={slot._id}
-                        onClick={() => !isBooked && setSelectedTime(slot.time)}
-                        disabled={isBooked}
-                        className={`p-2 rounded border text-sm transition-all ${
-                          selected
-                            ? "bg-[#28328C] text-white shadow"
-                            : "bg-white text-gray-800 hover:shadow-sm"
-                        } ${
-                          isBooked
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : ""
-                        }`}
+                        key={key}
+                        onClick={() => {
+                          if (!disabled) {
+                            setSelectedDate(d);
+                            setSelectedTime(null);
+                          }
+                        }}
+                        disabled={disabled}
+                        className={`min-w-[72px] p-3 text-center rounded-lg border transition-all
+                          ${
+                            active
+                              ? "bg-[#28328C] text-white shadow"
+                              : "bg-white text-gray-800 hover:shadow-sm"
+                          }
+                          ${
+                            disabled
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : ""
+                          }`}
                       >
-                        {slot.time}
+                        <div className="text-xs opacity-80">
+                          {formatDayShort(d)}
+                        </div>
+                        <div className="text-lg font-semibold">
+                          {formatDateNumber(d)}
+                        </div>
                       </button>
                     );
                   })}
                 </div>
-              )}
-            </div>
+
+                {/* Slots */}
+                <div>
+                  <h4 className="text-sm font-semibold mb-2 text-gray-700">
+                    Available Slots
+                  </h4>
+
+                  {loadingSlots ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="h-10 rounded bg-gray-100 animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ) : slots.length === 0 ? (
+                    <div className="text-gray-500 text-sm text-center py-3">
+                      No slots available for selected date.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      {slots.map((slot) => {
+                        const isBooked = !slot.isActive;
+                        const selected = selectedTime === slot.time;
+                        return (
+                          <button
+                            key={slot._id}
+                            onClick={() =>
+                              !isBooked && setSelectedTime(slot.time)
+                            }
+                            disabled={isBooked}
+                            className={`p-2 rounded border text-sm transition-all ${
+                              selected
+                                ? "bg-[#28328C] text-white shadow"
+                                : "bg-white text-gray-800 hover:shadow-sm"
+                            } ${
+                              isBooked
+                                ? "!bg-gray-200 text-gray-950 cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
+                            {slot.time}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Sticky Bottom Button */}
           {selectedTime && (
             <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
               <button
@@ -345,4 +502,3 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }) =>
 };
 
 export default BookingSidebar;
-

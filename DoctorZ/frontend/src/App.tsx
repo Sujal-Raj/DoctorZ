@@ -11,7 +11,7 @@ import LoginClinic from "./pages/LoginPages/LoginClinic";
 import Layout from "../Layout";
 import Home from "./pages/Home";
 import AllClinic from "./pages/AllClinic";
-import AllDoctors from "./pages/AllDoctors";
+// import AllDoctors from "./pages/AllDoctors";
 import ViewDoctorProfile from "./pages/ViewDoctorProfile";
 
 
@@ -83,7 +83,7 @@ const App: React.FC = () => {
         
             <Route path="/" element={<Home />} />
             <Route path="/patient-register" element={<RegisterPatient />} />
-            <Route path="/doctor-register" element={<RegisterDoc />} />
+            <Route path="/doctor-register" element={<RegisterDoctor />} />
             <Route path="/clinic-register" element={<RegisterClinic />} />
             <Route path="/all-clinics" element={<AllClinic />} />
             {/* <Route path="/all-doctors" element={<AllDoctors />} /> */}
@@ -92,7 +92,7 @@ const App: React.FC = () => {
             <Route path="/patient-login" element={<LoginPatient />} />
             <Route path="/patient-chat" element={<PatientChat />} />
             <Route path="/doctor-chat" element={<DoctorChat />} />
-            <Route path="/doctor/login" element={<DoctorLogin />} />
+            <Route path="/doctor-login" element={<DoctorLogin />} />
              <Route path="/clinic/:id" element={<ClinicDetails/>}/>
             <Route
               path="/view-doctor-profile/:drId"
