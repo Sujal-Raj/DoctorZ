@@ -113,6 +113,8 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, 
   });
 });
 
+app.use(express.json()); // ✅ to parse JSON requests
+
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/admin",adminRoutes)

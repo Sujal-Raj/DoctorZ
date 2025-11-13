@@ -10,9 +10,9 @@ export interface IBooking extends Document {
     doctorId: mongoose.Types.ObjectId;
     userId: mongoose.Types.ObjectId;
     patient: IPatientInfo;
-    emrId?: mongoose.Types.ObjectId;
+    slot: string;
     slotId: mongoose.Types.ObjectId;
-    datetime: Date;
+    dateTime: Date;
     mode: "online" | "offline";
     fees: number;
     status: "booked" | "cancelled" | "completed";

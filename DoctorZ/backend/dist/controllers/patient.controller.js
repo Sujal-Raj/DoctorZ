@@ -109,8 +109,12 @@ const patientLogin = async (req, res) => {
             message: "Login Successful",
             token,
             user: {
-                id: patient._id,
+                _id: patient._id,
                 email: patient.email,
+                name: patient.fullName,
+                gender: patient.gender,
+                aadhar: patient.aadhar,
+                contact: patient.mobileNumber,
             },
         });
     }

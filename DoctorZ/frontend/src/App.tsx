@@ -68,7 +68,7 @@ import PatientChat from "./pages/PatientChat";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import PatientAppointments from "./pages/UserPages/PatientAppointments";
 import DoctorSearchResults from "./pages/DoctorSearchResults";
-
+import PatientEMR from "./pages/PatientEMR";
 // Admin
 
 const App: React.FC = () => {
@@ -94,6 +94,7 @@ const App: React.FC = () => {
             <Route path="/doctor-chat" element={<DoctorChat />} />
             <Route path="/doctor-login" element={<DoctorLogin />} />
              <Route path="/clinic/:id" element={<ClinicDetails/>}/>
+
             <Route
               path="/view-doctor-profile/:drId"
               element={<ViewDoctorProfile />}
@@ -149,6 +150,7 @@ const App: React.FC = () => {
              <Route path="appointments" element={<DoctorAppointments/>} />
              <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
+            <Route path="patientEMR/:aadhar" element={<PatientEMR />} />
             <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
           </Route>

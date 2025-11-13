@@ -32,6 +32,7 @@ const PatientAppointments: React.FC = () => {
         const res = await api.get<DoctorApiResponse>(`/api/patient/appointments/doctors/${patientId}`);
 
         // ✅ extract doctorId from each booking
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const extractedDoctors = res.data.doctor.map((item: any) => item.doctorId);
 
         setDoctors(extractedDoctors);
