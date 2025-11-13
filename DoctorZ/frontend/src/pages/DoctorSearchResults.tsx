@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import {
   MapPin,
   Calendar,
@@ -13,14 +13,23 @@ import DoctorCard from "../components/DoctorCard";
 import BookingDrawer from "../components/BookingDrawer";
 import { useEffect, useMemo, useState } from "react";
 import api from "../Services/mainApi";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type SearchState = {
   location?: string;
   specialty?: string;
   date?: string;
 };
+interface DecodedToken {
+  id: string;
+}
 
-const API = "/api/doctor/allDoctors";
+// ✅ Get patient ID from token safely
+  const token = Cookies.get("patientToken");
+  const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
+
+const API = `/api/doctor/allDoctors/${patientId }`;
 
 const DoctorSearchResults: React.FC = () => {
   const { state } = useLocation();
@@ -54,6 +63,7 @@ const DoctorSearchResults: React.FC = () => {
         const data = Array.isArray(res.data)
           ? res.data
           : res.data?.doctors ?? res.data;
+          
         setDoctors(data || []);
       } catch (e) {
         console.error("Error fetching doctors:", e);
@@ -185,12 +195,7 @@ const sortedDoctors = useMemo(() => {
     return a.isFavourite ? -1 : 1;
   });
 
-  // const indexOfLastDoctor = currentPage * doctorsPerPage;
-  // const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
-  // const currentDoctors = filtered.slice(indexOfFirstDoctor, indexOfLastDoctor);
-  // const totalPages = Math.ceil(filtered.length / doctorsPerPage);
-
-
+  
 }, [filtered]);
 const indexOfLastDoctor = currentPage * doctorsPerPage;
 const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;

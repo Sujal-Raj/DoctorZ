@@ -248,6 +248,7 @@ const addFavouriteDoctor = async (req, res) => {
             return res.json({
                 message: "Removed from favourites",
                 isFavourite: false,
+                favourites: patient.favouriteDoctors,
             });
         }
         // ✅ Add to favourites
@@ -256,6 +257,7 @@ const addFavouriteDoctor = async (req, res) => {
         return res.status(200).json({
             message: "Doctor added to favourites.",
             isFavourite: true, // ✅ Missing earlier!
+            favourites: patient.favouriteDoctors,
         });
     }
     catch (error) {

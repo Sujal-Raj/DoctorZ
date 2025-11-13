@@ -327,6 +327,7 @@ if (!patient.favouriteDoctors) {
       return res.json({
         message: "Removed from favourites",
         isFavourite: false,
+          favourites: patient.favouriteDoctors,
       });
     }
 
@@ -337,6 +338,7 @@ if (!patient.favouriteDoctors) {
     return res.status(200).json({
       message: "Doctor added to favourites.",
       isFavourite: true,   // ✅ Missing earlier!
+      favourites: patient.favouriteDoctors,
     });
 
   } catch (error) {
