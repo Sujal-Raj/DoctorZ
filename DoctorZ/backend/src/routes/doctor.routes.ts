@@ -9,7 +9,7 @@ router.post('/register',upload.fields([
   { name: 'degreeCert', maxCount: 1 },
   { name: 'photo', maxCount: 1 },
   { name: 'signature', maxCount: 1 },]),doctorController.doctorRegister);
-router.get('/allDoctors',doctorController.getAllDoctors);
+router.get('/allDoctors/:patientId',doctorController.getAllDoctors);
 router.get('/:id',doctorController.getDoctorById);
 router.delete('/delete/:id',doctorController.deleteDoctor);
 router.put('/update/:id',doctorController.updateDoctor);

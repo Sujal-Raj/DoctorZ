@@ -3,9 +3,9 @@ dotenv.config();
 import mongoose from "mongoose";
 import patientModel from "../models/patient.model.js";
 let MONGO_URI;
-console.log(process.env.MONGO_DEVELOPMENT_URI, process.env.MONGO_ATLAS_URI);
+console.log(process.env.MONGO_URI, process.env.MONGO_ATLAS_URI);
 if (process.env.NODE_ENV == "development") {
-    MONGO_URI = process.env.MONGO_DEVELOPMENT_URI;
+    MONGO_URI = process.env.MONGO_URI;
 }
 else {
     MONGO_URI = process.env.MONGO_ATLAS_URI;
