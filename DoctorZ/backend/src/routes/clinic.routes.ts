@@ -20,7 +20,7 @@ router.post(
 router.put("/update/:id",updateClinic);
 router.delete("/delete/:id",deleteClinic);
 router.get("/search",searchClinicAndDoctor);                                                                                                                        
-router.get("/getClinic",getAllClinic);
+router.get("/getClinic/:patientId",getAllClinic);
 router.post("/clinicLogin",clinicLogin);
 router.get("/getClinicById/:id",getClinicById);
 router.get("/getAllClinicPatients/:clinicId",getAllClinicPatients);

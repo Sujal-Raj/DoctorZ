@@ -7,6 +7,7 @@ import { get } from "http";
 import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
 import Booking from "../models/booking.model.js";
+import { FaV } from "react-icons/fa6";
 const patientRegister = async (req, res) => {
     try {
         console.log("Received body:", req.body);
@@ -232,6 +233,7 @@ const getBookedDoctor = async (req, res) => {
         });
     }
 };
+//------------------------------------Add or Remove Favourite Doctor----------------------------------
 const addFavouriteDoctor = async (req, res) => {
     try {
         const { id } = req.params; // patientId
@@ -252,6 +254,7 @@ const addFavouriteDoctor = async (req, res) => {
             return res.json({
                 message: "Removed from favourites",
                 isFavourite: false,
+                favourites: patient.favouriteDoctors,
             });
         }
         // ✅ Add to favourites
@@ -260,6 +263,7 @@ const addFavouriteDoctor = async (req, res) => {
         return res.status(200).json({
             message: "Doctor added to favourites.",
             isFavourite: true, // ✅ Missing earlier!
+            favourites: patient.favouriteDoctors,
         });
     }
     catch (error) {
@@ -285,5 +289,61 @@ const isFavouriteDoctor = async (req, res) => {
         return res.status(500).json({ isFavourite: false });
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor };
+//------------------------------------Add or Remove Favourite Clinic----------------------------------
+const addfavouriteClinic = async (req, res) => {
+    try {
+        const { id } = req.params; // patientId
+        const { clinicId } = req.body;
+        const patient = await patientModel.findById(id);
+        if (!patient) {
+            return res.status(404).json({ message: "Patient not found." });
+        }
+        // Check if already favourite
+        if (!patient.favouriteClinics) {
+            patient.favouriteClinics = [];
+        }
+        const isAlreadyFavourite = patient.favouriteClinics?.includes(clinicId);
+        if (isAlreadyFavourite) {
+            // Remove from favourites
+            patient.favouriteClinics = patient.favouriteClinics.filter((favId) => favId.toString() !== clinicId);
+            await patient.save();
+            return res.json({
+                message: "Removed from favourites",
+                isFavourite: false,
+                Favourites: patient.favouriteClinics,
+            });
+        }
+        // Add to favourites
+        patient.favouriteClinics?.push(new mongoose.Types.ObjectId(clinicId));
+        await patient.save();
+        return res.status(200).json({
+            message: "Clinic added to favourites.",
+            isFavourite: true,
+            Favourites: patient.favouriteClinics,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Something went wrong.",
+            error,
+        });
+    }
+};
+const isFavouriteClinic = async (req, res) => {
+    try {
+        const { patientId, clinicId } = req.params;
+        const patient = await patientModel.findById(patientId);
+        if (!patient) {
+            return res.status(404).json({ message: "Patient not found." });
+        }
+        // Convert stored ObjectId → string
+        const isFavourite = patient.favouriteClinics?.some((favId) => favId.toString() === clinicId);
+        return res.json({ isFavourite });
+    }
+    catch (error) {
+        return res.status(500).json({ isFavourite: false });
+    }
+};
+export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor, addfavouriteClinic, isFavouriteClinic };
 //# sourceMappingURL=patient.controller.js.map

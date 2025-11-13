@@ -5,6 +5,7 @@ import doctorModel from '../models/doctor.model.js';
 import Booking from '../models/booking.model.js';
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
+import patientModel from "../models/patient.model.js";
 const doctorRegister = async (req, res) => {
     try {
         console.log("Text fields:", req.body);
@@ -129,8 +130,31 @@ const getDoctorById = async (req, res) => {
 // ==========================
 const getAllDoctors = async (req, res) => {
     try {
+        // Fetch all approved doctors
         const doctors = await doctorModel.find({ status: "approved" });
-        return res.status(200).json({ message: "Approved doctors fetched successfully", doctors });
+        const { patientId } = req.params;
+        // If user not logged in, just return doctors normally
+        if (!patientId) {
+            return res
+                .status(200)
+                .json({ message: "Approved doctors fetched successfully", doctors });
+        }
+        // Get patient's favourite doctor list
+        const patient = await patientModel
+            .findById(patientId)
+            .select("favouriteDoctors");
+        const favouriteIds = new Set((patient?.favouriteDoctors || []).map((id) => id.toString()));
+        // Mark each doctor as favourite: true / false
+        const doctorsWithFav = doctors.map((doc) => ({
+            ...doc.toObject(),
+            isFavourite: favouriteIds.has(doc._id.toString()),
+        }));
+        // Sort favourites first
+        const sortedDoctors = doctorsWithFav.sort((a, b) => a.isFavourite === b.isFavourite ? 0 : a.isFavourite ? -1 : 1);
+        return res.status(200).json({
+            message: "Approved doctors fetched successfully",
+            doctors: sortedDoctors,
+        });
     }
     catch (error) {
         console.error("Error fetching doctors:", error);

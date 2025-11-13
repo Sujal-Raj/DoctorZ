@@ -2,209 +2,9 @@
 
 
 
-// import  { useState, useContext } from "react";
-// import { Link, useLocation, useNavigate } from "react-router-dom";
-// import {
-//   Menu,
-//   X,
-//   User,
-//   LogOut,
-//   LogIn,
- 
-// } from "lucide-react";
-// import Cookies from "js-cookie";
-// import { jwtDecode, type JwtPayload } from "jwt-decode";
-// import { AuthContext } from "../Context/AuthContext";
-// import RightSidebar from "./RightSidebar";
-
-
-// const Navbar = () => {
-//   interface MyTokenPayload extends JwtPayload {
-//   id: string;     // ✅ your custom field
-//   name?: string;  // (optional)
-//   email?: string; // (optional)
-// }
-
-//   const [mobileOpen, setMobileOpen] = useState(false);
-//   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-//   const { isLoggedIn, logout } = useContext(AuthContext);
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   const token = Cookies.get("patientToken") || "";
-//   const decoded = token ? jwtDecode<MyTokenPayload>(token) : null;
-//   const patientId = decoded?.id;
-
-//   return (
-//     <>
-//       {/* NAVBAR */}
-//       <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50">
-//         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-
-//           {/* Logo */}
-//           <Link
-//             to="/"
-//             className="flex items-center gap-2 text-2xl font-bold text-blue-700 hover:text-blue-800"
-//           >
-//             🏥 <span>DoctorZ</span>
-//             <span className="hidden md:inline text-sm text-gray-500 font-medium">
-//               | Smart Healthcare
-//             </span>
-//           </Link>
-
-//           {/* Desktop Menu */}
-//           <div className="hidden md:flex items-center gap-8">
-
-//             <Link to="/" className={`${location.pathname === "/" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
-//               Home
-//             </Link>
-
-//             <Link to="/search-results" className={`${location.pathname === "/all-doctors" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
-//               Find Doctors
-//             </Link>
-
-//             <Link to="/all-clinics" className={`${location.pathname === "/all-clinics" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
-//               Find Clinics
-//             </Link>
-
-//             <Link to="/all-lab-test" className={`${location.pathname === "/all-lab-test" ? "text-blue-600" : "text-gray-700 hover:text-blue-600"} font-medium`}>
-//               Lab Tests
-//             </Link>
-
-//             {/* If Not Logged In */}
-//             {!isLoggedIn && (
-//               <Link
-//                 to="/patient-register"
-//                 className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:from-blue-700 hover:to-indigo-700"
-//               >
-//                 Registration
-//               </Link>
-//             )}
-
-//             {/* Login / Profile */}
-//             {isLoggedIn ? (
-//               <div className="flex items-center gap-4">
-
-//                 {/* ✅ PROFILE → Opens Sidebar */}
-//                 <button
-//                   onClick={() => setSidebarOpen(true)}
-//                   className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-full hover:bg-gray-200"
-//                 >
-//                   <User size={18} /> Profile
-//                 </button>
-
-//                 {/* ✅ LOGOUT */}
-//                 <button
-//                   onClick={() => {
-//                     logout();
-//                     Cookies.remove("patientToken");
-//                     navigate("/patient-login");
-//                   }}
-//                   className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100"
-//                 >
-//                   <LogOut size={18} /> Logout
-//                 </button>
-//               </div>
-//             ) : (
-//               <Link
-//                 to="/patient-login"
-//                 className="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 flex items-center gap-2"
-//               >
-//                 <LogIn size={18} /> Login
-//               </Link>
-//             )}
-//           </div>
-
-//           {/* Mobile Menu Icon */}
-//           <button className="md:hidden text-gray-700" onClick={() => setMobileOpen(!mobileOpen)}>
-//             {mobileOpen ? <X size={28} /> : <Menu size={28} />}
-//           </button>
-//         </div>
-
-//         {/* MOBILE MENU */}
-//         {mobileOpen && (
-//           <div className="md:hidden bg-white shadow-md border-t">
-//             <div className="flex flex-col px-6 py-4 space-y-4">
-
-//               <Link to="/" onClick={() => setMobileOpen(false)}>Home</Link>
-//               <Link to="/all-doctors" onClick={() => setMobileOpen(false)}>Find Doctors</Link>
-//               <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>Find Clinics</Link>
-//               <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>Lab Tests</Link>
-
-//               {!isLoggedIn && (
-//                 <>
-//                   <Link to="/patient-register" onClick={() => setMobileOpen(false)}>
-//                     Patient Registration
-//                   </Link>
-//                   <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>
-//                     Doctor Registration
-//                   </Link>
-//                   <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>
-//                     Clinic Registration
-//                   </Link>
-//                   <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
-//                     Lab Registration
-//                   </Link>
-//                 </>
-//               )}
-
-//               {/* ✅ MOBILE PROFILE BUTTON */}
-//               {isLoggedIn && (
-//                 <button
-//                   onClick={() => {
-//                     setSidebarOpen(true);
-//                     setMobileOpen(false);
-//                   }}
-//                   className="flex items-center gap-2"
-//                 >
-//                   <User size={18} /> Profile
-//                 </button>
-//               )}
-
-//               {/* ✅ MOBILE LOGOUT */}
-//               {isLoggedIn ? (
-//                 <button
-//                   onClick={() => {
-//                     logout();
-//                     setMobileOpen(false);
-//                   }}
-//                   className="text-red-600 flex items-center gap-2"
-//                 >
-//                   <LogOut size={18} /> Logout
-//                 </button>
-//               ) : (
-//                 <Link
-//                   to="/patient-login"
-//                   onClick={() => setMobileOpen(false)}
-//                   className="text-green-600 flex items-center gap-2"
-//                 >
-//                   <LogIn size={18} /> Login
-//                 </Link>
-//               )}
-
-//             </div>
-//           </div>
-//         )}
-//       </nav>
-
-//       {/* ✅ RIGHT SIDEBAR */}
-//       <RightSidebar
-//         open={sidebarOpen}
-//         onClose={() => setSidebarOpen(false)}
-//         patientId={patientId}
-//       />
-//     </>
-//   );
-// };
-
-// export default Navbar;
-
-
-
-
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Menu,
   X,
@@ -212,25 +12,28 @@ import {
   LogOut,
   LogIn,
   ChevronDown,
-  ChevronUp,
+  MapPin,
+  Navigation,
+  Loader2,
+  Stethoscope,
+  UserPlus,
+  UserCircle2,
+  Hospital,
+  FlaskConical,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import { jwtDecode, type JwtPayload } from "jwt-decode";
 import { AuthContext } from "../Context/AuthContext";
 import RightSidebar from "./RightSidebar";
 
-const Navbar = () => {
+export default function Navbar() {
   interface MyTokenPayload extends JwtPayload {
     id: string;
   }
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const [showRegister, setShowRegister] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, user, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -238,161 +41,220 @@ const Navbar = () => {
   const decoded = token ? jwtDecode<MyTokenPayload>(token) : null;
   const patientId = decoded?.id;
 
+  // ---------------- LOCATION ----------------
+  const [userLocation, setUserLocation] = useState<string>("Detecting location...");
+  const [isLocating, setIsLocating] = useState<boolean>(true);
+  const [showLocationPopup, setShowLocationPopup] = useState<boolean>(false);
+  const [locationError, setLocationError] = useState<string>("");
+
+  const popularCities = [
+    "Delhi, India",
+    "Mumbai, India",
+    "Bangalore, India",
+    "Hyderabad, India",
+    "Chennai, India",
+    "Kolkata, India",
+    "Pune, India",
+    "Ahmedabad, India",
+  ];
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        setIsLocating(true);
+        if (!navigator.geolocation) {
+          setUserLocation("Location not supported");
+          setIsLocating(false);
+          return;
+        }
+
+        const cached = localStorage.getItem("userLocation");
+        if (cached) {
+          setUserLocation(cached);
+          setIsLocating(false);
+        }
+
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            timeout: 8000,
+            maximumAge: 300000,
+          })
+        );
+
+        const { latitude, longitude } = pos.coords;
+        const res = await fetch(
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+        );
+        const data = await res.json();
+        const locationText = `${data.city || "Unknown"}, ${data.countryName || ""}`;
+        console.log("Detected location:", locationText);
+        setUserLocation(locationText);
+        localStorage.setItem("userLocation", locationText);
+      } catch {
+        setUserLocation("Location not found");
+      } finally {
+        setIsLocating(false);
+      }
+    };
+
+    fetchLocation();
+  }, []);
+
+  const handleLocationClick = () => setShowLocationPopup(true);
+  const handleManualLocationSelect = (city: string) => {
+    setUserLocation(city);
+    localStorage.setItem("userLocation", city);
+    setShowLocationPopup(false);
+  };
+
+  const handleUseCurrentLocation = async () => {
+    setIsLocating(true);
+    try {
+      const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      );
+      const { latitude, longitude } = pos.coords;
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+      );
+      const data = await res.json();
+      const locationText = `${data.city || "Unknown"}, ${data.countryName || ""}`;
+      setUserLocation(locationText);
+      localStorage.setItem("userLocation", locationText);
+    } catch {
+      setLocationError("Failed to fetch location");
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  // ---------------- NAV ITEMS ----------------
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "Find Doctors", path: "/search-results" },
+    { label: "Find Clinics", path: "/all-clinics" },
+    { label: "Lab Tests", path: "/all-lab-test" },
+  ];
+
+  // ---------------- DROPDOWN OPTIONS ----------------
+  const registerOptions = [
+    { label: "Patient", path: "/patient-register", icon: <UserCircle2 size={18} /> },
+    { label: "Doctor", path: "/doctor-register", icon: <Stethoscope size={18} /> },
+    { label: "Clinic", path: "/clinic-register", icon: <Hospital size={18} /> },
+    { label: "Lab", path: "/lab-register", icon: <FlaskConical size={18} /> },
+  ];
+
+  const loginOptions = [
+    { label: "Patient", path: "/patient-login", icon: <UserCircle2 size={18} /> },
+    { label: "Doctor", path: "/doctor-login", icon: <Stethoscope size={18} /> },
+    { label: "Clinic", path: "/clinic-login", icon: <Hospital size={18} /> },
+    { label: "Lab", path: "/lab-login", icon: <FlaskConical size={18} /> },
+  ];
+
+  // ---------------- RENDER ----------------
   return (
     <>
-      {/* NAVBAR */}
-      <nav className="bg-white/90 backdrop-blur-md shadow-md sticky top-0 z-50">
+      <nav className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center gap-2 text-2xl font-bold text-blue-700 hover:text-blue-800"
-          >
-            🏥 <span>DoctorZ</span>
-            <span className="hidden md:inline text-sm text-gray-500 font-medium">
-              | Smart Healthcare
-            </span>
-          </Link>
+          {/* LOGO + LOCATION */}
+          <div className="flex items-center gap-6">
+            <Link
+              to="/"
+              className="flex items-center gap-2 text-2xl font-bold text-[#28328C] hover:text-[#1f2673]"
+            >
+              <div className="w-8 h-8 bg-[#28328C] rounded-full flex items-center justify-center">
+                <Stethoscope className="w-4 h-4 text-white" />
+              </div>
+              DoctorZ
+            </Link>
+
+            {/* Location */}
+            <div
+              onClick={handleLocationClick}
+              className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 cursor-pointer"
+            >
+              {isLocating ? (
+                <Loader2 className="w-4 h-4 text-[#28328C] animate-spin" />
+              ) : (
+                <MapPin size={16} className="text-[#28328C]" />
+              )}
+              <span className="text-sm font-semibold text-gray-800">
+                {isLocating ? "Detecting..." : userLocation}
+              </span>
+              <ChevronDown size={14} className="text-gray-400" />
+            </div>
+          </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <Link
-              to="/"
-              className={`${
-                location.pathname === "/"
-                  ? "text-blue-600"
-                  : "text-gray-700 hover:text-blue-600"
-              } font-medium`}
-            >
-              Home
-            </Link>
-
-            <Link
-              to="/search-results"
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
-              Find Doctors
-            </Link>
-
-            <Link
-              to="/all-clinics"
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
-              Find Clinics
-            </Link>
-
-            <Link
-              to="/all-lab-test"
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
-              Lab Tests
-            </Link>
-
-            {/* ✅ NOT LOGGED IN → REGISTER DROPDOWN */}
-            {!isLoggedIn && (
-              <div
-                className="relative"
-                onMouseEnter={() => setShowRegister(true)}
-                onMouseLeave={() => setShowRegister(false)}
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`font-medium transition-colors relative py-2 ${
+                  location.pathname === item.path
+                    ? "text-[#28328C] font-semibold"
+                    : "text-gray-600 hover:text-[#28328C]"
+                }`}
               >
-                <button className="bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-                  Register{" "}
-                  {showRegister ? (
-                    <ChevronUp size={18} />
-                  ) : (
-                    <ChevronDown size={18} />
-                  )}
-                </button>
+                {item.label}
+                {location.pathname === item.path && (
+                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#28328C]" />
+                )}
+              </Link>
+            ))}
 
-                <div
-                  className={`absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl py-3 transition-all ${
-                    showRegister
-                      ? "opacity-100 visible"
-                      : "opacity-0 invisible"
-                  }`}
-                >
-                  <Link
-                    to="/patient-register"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    <User size={16} className="text-blue-600" /> Patient
-                  </Link>
-                  <Link
-                    to="/doctor-register"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    🩺 Doctor
-                  </Link>
-                  <Link
-                    to="/clinic-register"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    🏥 Clinic
-                  </Link>
-                  <Link
-                    to="/lab-register"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    🔬 Lab
-                  </Link>
-                </div>
-              </div>
+            {/* Register Dropdown */}
+            {!isLoggedIn && (
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <button className="bg-[#28328C] text-white px-5 py-2.5 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[#1f2673]">
+                    <UserPlus size={18} />
+                    Register
+                    <ChevronDown size={16} />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content className="bg-white rounded-xl shadow-2xl border border-gray-100 w-56">
+                  {registerOptions.map((opt) => (
+                    <DropdownMenu.Item asChild key={opt.path}>
+                      <Link
+                        to={opt.path}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 border-b last:border-0"
+                      >
+                        {opt.icon}
+                        {opt.label}
+                      </Link>
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
             )}
 
-            {/* ✅ NOT LOGGED IN → LOGIN DROPDOWN */}
-            {!isLoggedIn && (
-              <div
-                className="relative"
-                onMouseEnter={() => setShowLogin(true)}
-                onMouseLeave={() => setShowLogin(false)}
-              >
-                <button className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
-                  Login{" "}
-                  {showLogin ? (
-                    <ChevronUp size={18} />
-                  ) : (
-                    <ChevronDown size={18} />
-                  )}
-                </button>
-
-                <div
-                  className={`absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-xl py-3 transition-all ${
-                    showLogin ? "opacity-100 visible" : "opacity-0 invisible"
-                  }`}
-                >
-                  <Link
-                    to="/patient-login"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    <LogIn size={16} className="text-green-600" /> Patient Login
-                  </Link>
-
-                  <Link
-                    to="/doctor-login"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    🩺 Doctor Login
-                  </Link>
-
-                  <Link
-                    to="/clinic-login"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    🏥 Clinic Login
-                  </Link>
-
-                  <Link
-                    to="/lab-login"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                  >
-                    🔬 Lab Login
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* ✅ LOGGED IN → PROFILE + LOGOUT */}
-            {isLoggedIn && (
+            {/* Login Dropdown */}
+            {!isLoggedIn ? (
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <button className="bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-lg flex items-center gap-2 hover:bg-green-700">
+                    <LogIn size={18} />
+                    Login
+                    <ChevronDown size={16} />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content className="bg-white rounded-xl shadow-2xl border border-gray-100 w-56">
+                  {loginOptions.map((opt) => (
+                    <DropdownMenu.Item asChild key={opt.path}>
+                      <Link
+                        to={opt.path}
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 border-b last:border-0"
+                      >
+                        {opt.icon}
+                        {opt.label}
+                      </Link>
+                    </DropdownMenu.Item>
+                  ))}
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            ) : (
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setSidebarOpen(true)}
@@ -400,14 +262,13 @@ const Navbar = () => {
                 >
                   <User size={18} /> Profile
                 </button>
-
                 <button
                   onClick={() => {
                     logout();
                     Cookies.remove("patientToken");
                     navigate("/patient-login");
                   }}
-                  className="flex items-center gap-2 px-3 py-2 rounded-full text-red-600 bg-red-50 hover:bg-red-100"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-red-600 bg-red-50 hover:bg-red-100 border"
                 >
                   <LogOut size={18} /> Logout
                 </button>
@@ -415,7 +276,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Icon */}
+          {/* Mobile Icon */}
           <button
             className="md:hidden text-gray-700"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -424,108 +285,109 @@ const Navbar = () => {
           </button>
         </div>
 
-        {/* ✅ MOBILE MENU */}
-{mobileOpen && (
-  <div className="md:hidden bg-white shadow-md border-t">
-    <div className="flex flex-col px-6 py-4 space-y-4">
+        {/* Mobile Menu */}
+        {mobileOpen && (
+          <div className="md:hidden bg-white border-t shadow-lg">
+            <div className="flex flex-col px-6 py-4 space-y-3">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileOpen(false)}
+                  className="py-2 text-gray-700 hover:text-[#28328C]"
+                >
+                  {item.label}
+                </Link>
+              ))}
 
-      <Link to="/" onClick={() => setMobileOpen(false)}>
-        Home
-      </Link>
+              {/* Register & Login dropdowns in mobile */}
+              <div>
+                <div className="text-gray-600 font-semibold mt-2 mb-1">Register</div>
+                {registerOptions.map((opt) => (
+                  <Link
+                    key={opt.path}
+                    to={opt.path}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 py-2 text-gray-700 hover:text-[#28328C]"
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </Link>
+                ))}
 
-      <Link to="/search-results" onClick={() => setMobileOpen(false)}>
-        Find Doctors
-      </Link>
-
-      <Link to="/all-clinics" onClick={() => setMobileOpen(false)}>
-        Find Clinics
-      </Link>
-
-      <Link to="/all-lab-test" onClick={() => setMobileOpen(false)}>
-        Lab Tests
-      </Link>
-
-    
-      {!isLoggedIn && (
-        <>
-          {/* ✅ REGISTER OPTIONS */}
-          <p className="mt-2 font-semibold text-gray-700">Register</p>
-
-          <Link to="/patient-register" onClick={() => setMobileOpen(false)}>
-            Patient Registration
-          </Link>
-
-          <Link to="/doctor-register" onClick={() => setMobileOpen(false)}>
-            Doctor Registration
-          </Link>
-
-          <Link to="/clinic-register" onClick={() => setMobileOpen(false)}>
-            Clinic Registration
-          </Link>
-
-          <Link to="/lab-register" onClick={() => setMobileOpen(false)}>
-            Lab Registration
-          </Link>
-
-          {/* ✅ LOGIN OPTIONS */}
-          <p className="mt-4 font-semibold text-gray-700">Login</p>
-
-          <Link to="/patient-login" onClick={() => setMobileOpen(false)}>
-            Patient Login
-          </Link>
-
-          <Link to="/doctor-login" onClick={() => setMobileOpen(false)}>
-            Doctor Login
-          </Link>
-
-          <Link to="/clinic-login" onClick={() => setMobileOpen(false)}>
-            Clinic Login
-          </Link>
-
-          <Link to="/lab-login" onClick={() => setMobileOpen(false)}>
-            Lab Login
-          </Link>
-        </>
-      )}
-
-      {/* ✅ IF LOGGED IN → SHOW PROFILE + LOGOUT */}
-      {isLoggedIn && (
-        <>
-          <button
-            onClick={() => {
-              setSidebarOpen(true);
-              setMobileOpen(false);
-            }}
-            className="flex items-center gap-2"
-          >
-            <User size={18} /> Profile
-          </button>
-
-          <button
-            onClick={() => {
-              logout();
-              setMobileOpen(false);
-            }}
-            className="text-red-600 flex items-center gap-2"
-          >
-            <LogOut size={18} /> Logout
-          </button>
-        </>
-      )}
-    </div>
-  </div>
-)}
-
+                <div className="text-gray-600 font-semibold mt-4 mb-1">Login</div>
+                {loginOptions.map((opt) => (
+                  <Link
+                    key={opt.path}
+                    to={opt.path}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-2 py-2 text-gray-700 hover:text-green-600"
+                  >
+                    {opt.icon}
+                    {opt.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
-      {/* ✅ RIGHT SIDEBAR */}
-      <RightSidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        patientId={patientId}
-      />
+      {/* Right Sidebar */}
+      <RightSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Location Popup */}
+      {showLocationPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+            <div className="p-6 border-b">
+              <h3 className="text-lg font-semibold">Choose Location</h3>
+              <p className="text-sm text-gray-600">
+                Select your location for better experience
+              </p>
+            </div>
+            <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
+              <button
+                onClick={handleUseCurrentLocation}
+                className="w-full flex items-center gap-3 p-4 rounded-xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-100"
+              >
+                <Navigation size={20} className="text-blue-500" />
+                <span>Use Current Location</span>
+                {isLocating && <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
+              </button>
+              <div>
+                <div className="text-sm font-semibold mb-3">Popular Cities</div>
+                <div className="grid gap-2">
+                  {popularCities.map((city) => (
+                    <button
+                      key={city}
+                      onClick={() => handleManualLocationSelect(city)}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-blue-50"
+                    >
+                      <MapPin size={16} className="inline mr-2" />
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {locationError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {locationError}
+                </div>
+              )}
+            </div>
+            <div className="p-4 border-t">
+              <button
+                onClick={() => setShowLocationPopup(false)}
+                className="w-full py-3 text-gray-600 hover:text-gray-800 font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
-};
+}
 
-export default Navbar;
