@@ -80,6 +80,7 @@ interface EMRRecord {
   prescriptions: string[];
   currentMedications: string[];
   allergies: string[];
+  reports: string[];
   createdAt: string;
 }
 
@@ -147,7 +148,28 @@ const PatientEMR: React.FC = () => {
         : "None"}
     </p>
         
-    
+    <p>
+  <strong>Reports:</strong>{" "}
+  {Array.isArray(record.reports) && record.reports.length > 0 ? (
+    <ul className="list-disc ml-6">
+      {record.reports.map((r, i) => (
+        <li key={i}>
+          <a
+            href={r}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline"
+          >
+            {r.split("/").pop()}
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    "No reports uploaded"
+  )}
+</p>
+
 
     <p className="text-sm text-gray-500 mt-1">
       <strong>Date:</strong>{" "}

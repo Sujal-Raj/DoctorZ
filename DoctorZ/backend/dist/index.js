@@ -70,6 +70,7 @@ io.on("connection", (socket) => {
         console.log("User disconnected:", socket.id);
     });
 });
+app.use(express.json()); // ✅ to parse JSON requests
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/admin", adminRoutes);
 app.use("/api/patient", patientRoutes);

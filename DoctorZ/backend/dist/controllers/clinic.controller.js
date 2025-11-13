@@ -305,7 +305,7 @@ export const getAllClinicPatients = async (req, res) => {
                 aadhar: patient?.aadhar,
                 appointedTo: `Dr. ${doctor?.fullName}`,
                 specialization: doctor?.specialization,
-                datetime: b.datetime,
+                datetime: b.dateTime,
                 mode: b.mode,
                 fees: b.fees,
             };

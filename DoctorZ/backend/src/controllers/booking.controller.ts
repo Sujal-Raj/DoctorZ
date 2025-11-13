@@ -140,22 +140,22 @@ export const bookAppointment = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // ✅ Check duplicate booking (same patient + same date)
-    const existingAadharBooking = await BookingModel.findOne({
-  "patient.aadhar": patient.aadhar,
-  status: "booked",
-  dateTime: {
-    $gte: new Date(new Date(dateTime).setHours(0, 0, 0, 0)),  // start of the day
-    $lt: new Date(new Date(dateTime).setHours(23, 59, 59, 999)), // end of the day
-  },
-});
+//     // ✅ Check duplicate booking (same patient + same date)
+//     const existingAadharBooking = await BookingModel.findOne({
+//   "patient.aadhar": patient.aadhar,
+//   status: "booked",
+//   dateTime: {
+//     $gte: new Date(new Date(dateTime).setHours(0, 0, 0, 0)),  // start of the day
+//     $lt: new Date(new Date(dateTime).setHours(23, 59, 59, 999)), // end of the day
+//   },
+// });
 
-if (existingAadharBooking) {
-  console.log("❌ Duplicate booking found:", existingAadharBooking);
-  return res.status(400).json({
-    message: "An appointment already exists for this Aadhar number on this date.",
-  });
-}
+// if (existingAadharBooking) {
+//   console.log("❌ Duplicate booking found:", existingAadharBooking);
+//   return res.status(400).json({
+//     message: "An appointment already exists for this Aadhar number on this date.",
+//   });
+// }
     
 
     // ✅ Check if slot already booked
@@ -235,6 +235,99 @@ if (existingAadharBooking) {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// export const bookAppointment = async (req: Request, res: Response) => {
+//   try {
+//     let { patient, doctorId, slot, slotId, dateTime, mode, fees, userId } = req.body;
+
+//     // If using FormData, patient will be a string, parse it
+//     if (typeof patient === "string") {
+//       patient = JSON.parse(patient);
+//     }
+
+//     console.log("📦 Booking Received:", req.body);
+//     console.log("Types after parsing patient:", {
+//       doctorId: typeof doctorId,
+//       userId: typeof userId,
+//       slot: typeof slot,
+//       dateTime: typeof dateTime,
+//       mode: typeof mode,
+//       fees: typeof fees,
+//       patient: typeof patient,
+//     });
+
+//     if (!patient || !doctorId || !slot || !dateTime || !mode || !userId || !fees) {
+//       return res.status(400).json({ message: "Missing required fields" });
+//     }
+
+//     const {
+//       allergies,
+//       diseases,
+//       pastSurgeries,
+//       currentMedications,
+//       name,
+//       age,
+//       gender,
+//       aadhar,
+//       contact,
+//       relation,
+//     } = patient;
+
+//     // ✅ Create Booking
+//     const booking = await BookingModel.create({
+//       userId,
+//       doctorId,
+//       slot,
+//       slotId,
+//       dateTime: new Date(dateTime),
+//       mode,
+//       fees,
+//       status: "booked",
+//       patient: {
+//         name,
+//         age,
+//         gender,
+//         aadhar,
+//         contact,
+//         relation,
+//         // allergies: allergies || [],
+//         // diseases: diseases || [],
+//         // pastSurgeries: pastSurgeries || [],
+//         // currentMedications: currentMedications || [],
+//       },
+//     });
+
+//     // ✅ Optional: create EMR if any EMR data exists
+//     if (
+//       (allergies && allergies.length > 0) ||
+//       (diseases && diseases.length > 0) ||
+//       (pastSurgeries && pastSurgeries.length > 0) ||
+//       (currentMedications && currentMedications.length > 0)
+//     ) {
+//       await EMRModel.create({
+//         doctorId,
+//         aadhar,
+//         allergies: allergies || [],
+//         diseases: diseases || [],
+//         pastSurgeries: pastSurgeries || [],
+//         currentMedications: currentMedications || [],
+//       });
+//     }
+
+//     await timeSlotsModel.updateOne(
+//       { "slots._id": slotId },
+//       { $set: { "slots.$.isActive": false } }
+//     );
+
+//     return res.status(201).json({
+//       message: "Appointment booked successfully",
+//       booking,
+//     });
+//   } catch (err) {
+//     console.error("Booking error:", err);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 
 // ✅ Get bookings by doctor

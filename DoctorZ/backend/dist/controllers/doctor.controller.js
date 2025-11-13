@@ -77,6 +77,7 @@ const doctorLogin = async (req, res) => {
             return res.status(400).json({ message: "doctorId and password are required" });
         }
         const doctor = await doctorModel.findOne({ doctorId });
+        console.log("Doctor found:", doctor);
         if (!doctor) {
             return res.status(400).json({ message: "Invalid Credentials" });
         }
