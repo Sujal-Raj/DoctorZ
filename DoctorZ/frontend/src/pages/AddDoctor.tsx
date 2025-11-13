@@ -1,4 +1,4 @@
-import React from 'react'
+
 import RegisterDoctor from './RegisterPages/RegisterDoctor'
 
 const AddDoctor = () => {

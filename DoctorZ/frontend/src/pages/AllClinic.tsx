@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import { Helmet } from "react-helmet";
 import api from "../Services/mainApi";
+import ClinicCard from "../components/ClinicCard";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type SearchState = {
   location?: string;
@@ -38,13 +41,19 @@ interface Clinic {
   rating?: number;
   patientCount?: number;
   establishedYear?: number;
+  isFavourite?: boolean;
 }
 interface ClinicResponse {
   clinic: Clinic[];
   message: string;
 }
+interface DecodedToken {
+  id: string;
+}
 
-const API = "/api/clinic/getClinic";
+ const token = Cookies.get("patientToken");
+  const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
+const API = `/api/clinic/getClinic/${patientId}`;
 
 const ClinicSearchResults: React.FC = () => {
   const { state } = useLocation();
@@ -66,6 +75,21 @@ const ClinicSearchResults: React.FC = () => {
   const [feeFilters, setFeeFilters] = useState<string[]>([]);
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
+const handleFavouriteToggle = (clinicId: string) => {
+  setClinics((prevClinics) =>
+    prevClinics
+      .map((clinic) =>
+        clinic._id === clinicId
+          ? { ...clinic, isFavourite: !clinic.isFavourite }
+          : clinic
+      )
+      // ✅ isFavourite true wale top pe chale jaye
+      .sort((a, b) =>
+        a.isFavourite === b.isFavourite ? 0 : a.isFavourite ? -1 : 1
+      )
+  );
+};
+
 
   // Mobile filter sidebar state
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -85,8 +109,11 @@ const ClinicSearchResults: React.FC = () => {
       try {
         const response = await api.get(API);
         console.log("✅ API response:", response.data);
-        const data = response.data as Clinic[];
-        const enhancedClinics = enhanceClinicsWithMockData(data || []);
+        
+        const responseData = response.data as { clinics: Clinic[]; message: string };
+const data = responseData.clinics || [];
+const enhancedClinics = enhanceClinicsWithMockData(data);
+
         setClinics(enhancedClinics);
       } catch (err) {
         console.error("❌ Error fetching clinics:", err);
@@ -164,10 +191,19 @@ const ClinicSearchResults: React.FC = () => {
     languageFilters,
     typeFilters,
   ]);
+  // ✅ Sort favourites first
+const sortedClinics = useMemo(() => {
+  return [...filtered].sort((a, b) => {
+    if (a.isFavourite === b.isFavourite) return 0;
+    return a.isFavourite ? -1 : 1;
+  });
+}, [filtered]);
+
 
   const indexOfLastClinic = currentPage * clinicsPerPage;
   const indexOfFirstClinic = indexOfLastClinic - clinicsPerPage;
-  const currentClinics = filtered.slice(indexOfFirstClinic, indexOfLastClinic);
+ const currentClinics = sortedClinics.slice(indexOfFirstClinic, indexOfLastClinic);
+
   const totalPages = Math.ceil(filtered.length / clinicsPerPage);
 
   const toggleFilter = (filterFn: any, val: string) => {
@@ -343,7 +379,7 @@ const ClinicSearchResults: React.FC = () => {
           ) : (
             <div className="space-y-4">
               {currentClinics.map((clinic) => (
-                <ClinicCard key={clinic._id} clinic={clinic} navigate={navigate} />
+                <ClinicCard key={clinic._id} clinic={clinic} navigate={navigate} onFavouriteToggle={handleFavouriteToggle}/>
               ))}
             </div>
           )}
@@ -650,139 +686,9 @@ const MobileFilterPanel = ({
   </div>
 );
 
-const ClinicCard = ({ clinic, navigate }: any) => (
- 
-  <div
-  onClick={() => navigate(`/clinic/${clinic._id}`)}
-  className="bg-white rounded-xl border border-gray-200 overflow-hidden relative shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
->
-  {/* Clinic Image - Larger Size */}
-  <div className="absolute left-3 sm:left-6 top-3">
-    <div className="relative">
-      <img
-        src={
-          clinic.clinicImage
-            ? clinic.clinicImage.startsWith("http")
-              ? clinic.clinicImage
-              : `http://localhost:3000/uploads/${clinic.clinicImage}`
-            : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-        }
-        alt={clinic.clinicName}
-        className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-white shadow-md group-hover:scale-105 transition-transform duration-300"
-      />
-      {/* Verified Badge */}
-      <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
-        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-        </svg>
-      </div>
-    </div>
-  </div>
 
-  <div className="pl-32 sm:pl-40 pr-4 sm:pr-6 py-4 sm:py-6">
-    {/* Clinic Name and Location - VERTICAL */}
-    <div className="mb-3 sm:mb-4">
-      <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300 line-clamp-1">
-        {clinic.clinicName}
-      </h2>
-      <div className="flex items-center text-gray-500 text-xs sm:text-sm mb-1">
-        <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-blue-500 flex-shrink-0" />
-        <span className="line-clamp-1">
-          {clinic.district}, {clinic.state}
-        </span>
-      </div>
-      {/* Operating Hours - VERTICAL under location */}
-      <div className="flex items-center text-gray-700 text-xs sm:text-sm">
-        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-gray-400 flex-shrink-0" />
-        <span className="text-gray-600 mr-1">Hours:</span>
-        <span className="line-clamp-1">{clinic.operatingHours || "Not Available"}</span>
-      </div>
-    </div>
 
-    {/* Divider Line */}
-    <hr className="border-gray-200 my-2 sm:my-3" />
-
-    {/* Contact Info - HORIZONTAL layout */}
-    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3 sm:mb-4">
-      {/* Phone - Always visible */}
-      <div className="flex-1">
-        <div className="flex items-center text-xs sm:text-sm text-gray-700 mb-1">
-          <span className="text-gray-600 mr-2">Phone:</span>
-          <span className="line-clamp-1">{clinic.phone || "Not available"}</span>
-        </div>
-      </div>
-      
-      {/* Email - HORIZONTAL with phone on larger screens */}
-      <div className="flex-1">
-        <div className="flex items-center text-xs sm:text-sm text-gray-700 mb-1">
-          <span className="text-gray-600 mr-2">Email:</span>
-          <span className="line-clamp-1">{clinic.email || "Not available"}</span>
-        </div>
-      </div>
-    </div>
-
-    {/* Specialities - HORIZONTAL layout with email on larger screens */}
-    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3 sm:mb-4">
-      {/* Specialities */}
-      <div className="flex-1">
-        <h3 className="text-xs sm:text-sm font-semibold text-gray-800 mb-1">Medical Specialities</h3>
-        <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
-          {clinic.specialities?.join(", ") || "General Practice"}
-        </p>
-      </div>
-      
-      {/* Additional info can go here if needed */}
-      <div className="flex-1 hidden sm:block">
-        {/* Empty space for balance or add additional info */}
-      </div>
-    </div>
-
- 
-
-    {/* Verified Status and Action Button */}
-    <div className="flex flex-col space-y-2 sm:space-y-3 mt-4 sm:mt-6">
-      {/* Verified Badge */}
-      <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4">
-        <svg
-          className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 mr-1 sm:mr-2 flex-shrink-0"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fillRule="evenodd"
-            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <span className="text-xs sm:text-sm font-medium text-green-700">Verified Healthcare Provider</span>
-      </div>
-
-      {/* Action Button */}
-      <button 
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent navigation when button is clicked
-          // Add your availability check logic here
-        }}
-        className="w-full bg-[#28328C] ] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base"
-      >
-        <span>Check Availability</span>
-        <svg
-          className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 flex-shrink-0"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M14 5l7 7m0 0l-7 7m7-7H3"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
-</div>
-);
 
 export default ClinicSearchResults;
+
+

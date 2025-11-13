@@ -87,6 +87,7 @@ export default function Navbar() {
         );
         const data = await res.json();
         const locationText = `${data.city || "Unknown"}, ${data.countryName || ""}`;
+        console.log("Detected location:", locationText);
         setUserLocation(locationText);
         localStorage.setItem("userLocation", locationText);
       } catch {

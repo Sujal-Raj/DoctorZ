@@ -26,6 +26,7 @@ interface DecodedToken {
 }
 
 // ✅ Get patient ID from token safely
+
   const token = Cookies.get("patientToken");
   const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
 
