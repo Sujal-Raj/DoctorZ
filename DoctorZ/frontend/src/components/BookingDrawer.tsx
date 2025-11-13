@@ -1735,13 +1735,33 @@ const BookingDrawer: React.FC<Props> = ({
       });
       onBooked?.(bookingPayload);
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Booking error", err);
-      Swal.fire({
-        icon: "error",
-        title: "Booking Failed",
-        text: "Please try again later.",
-      });
+
+  // Extract backend error message safely
+  const errorMessage =
+    err.response?.data?.message ||
+    err.message ||
+    "Something went wrong while booking.";
+
+  // ✅ Show specific alert if duplicate Aadhar booking detected
+  if (errorMessage.toLowerCase().includes("aadhar")) {
+    await Swal.fire({
+      icon: "warning",
+      title: "Duplicate Booking Detected",
+      text: "An appointment has already been booked with this Aadhar number.",
+      confirmButtonColor: "#28328C",
+    });
+  } else {
+    await Swal.fire({
+      icon: "error",
+      title: "Booking Failed",
+      text: errorMessage || "Please try again later.",
+      confirmButtonColor: "#28328C",
+    });
+  }
+
+      
     } finally {
       setBookingLoading(false);
     }

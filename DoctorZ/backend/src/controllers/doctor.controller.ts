@@ -100,6 +100,7 @@ const doctorLogin = async (req: Request, res: Response) => {
     }
 
     const doctor = await doctorModel.findOne({ doctorId });
+    console.log("Doctor found:", doctor);
     if (!doctor) {
       return res.status(400).json({ message: "Invalid Credentials" });
     }
