@@ -54,6 +54,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 const onlineUsers = new Map();
 
@@ -116,6 +117,7 @@ io.on("connection", (socket: Socket<ClientToServerEvents, ServerToClientEvents, 
 app.use(express.json()); // ✅ to parse JSON requests
 
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads/reports", express.static(path.join(process.cwd(), "uploads", "reports")));
 
 app.use("/api/admin",adminRoutes)
 app.use("/api/patient",patientRoutes)
@@ -124,7 +126,18 @@ app.use("/api/doctor",doctorRoutes)
 app.use("/api/availability",timeSlotsRoutes)
 app.use("/api/booking",bookingRoutes)
 app.use("/api/lab", labRoutes);
-app.use("/api/emr",emrRoutes)
+app.use("/api/emr",emrRoutes);
+
+// app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+// });
+
+// console.log("STATIC PATH:", path.join(__dirname, "../../frontend/dist"));
+// console.log("INDEX PATH:", path.join(__dirname, "../../frontend/dist/index.html"));
+
+
 
 server.listen(PORT,()=>{
     console.log("Server running at " + PORT);

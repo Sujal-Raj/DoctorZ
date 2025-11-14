@@ -134,7 +134,7 @@ const getAllDoctors = async (req, res) => {
         const doctors = await doctorModel.find({ status: "approved" });
         const { patientId } = req.params;
         // If user not logged in, just return doctors normally
-        if (!patientId) {
+        if (!patientId || patientId === "null" || patientId === "undefined") {
             return res
                 .status(200)
                 .json({ message: "Approved doctors fetched successfully", doctors });

@@ -63,7 +63,7 @@ import { ClinicDashboard } from "./pages/ClinicPages/ClinicDashboard";
 import UserProfile from "./pages/UserPages/UserProfile";
 import UserDashboard from "./pages/UserPages/UserDashboard";
 import AddEmr from "./pages/UserPages/AddEmr";
-import DoctorChat from "./pages/DoctorPages/DoctorChat";
+// import DoctorChat from "./pages/DoctorPages/DoctorChat";
 import PatientChat from "./pages/PatientChat";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import PatientAppointments from "./pages/UserPages/PatientAppointments";
@@ -90,8 +90,8 @@ const App: React.FC = () => {
             <Route path="/search-results" element={<DoctorSearchResults />} />
             <Route path="/clinic-login" element={<LoginClinic />} />
             <Route path="/patient-login" element={<LoginPatient />} />
-            <Route path="/patient-chat" element={<PatientChat />} />
-            <Route path="/doctor-chat" element={<DoctorChat />} />
+            {/* <Route path="/patient-chat" element={<PatientChat />} />
+            <Route path="/doctor-chat" element={<DoctorChat />} /> */}
             <Route path="/doctor-login" element={<DoctorLogin />} />
              <Route path="/clinic/:id" element={<ClinicDetails/>}/>
 

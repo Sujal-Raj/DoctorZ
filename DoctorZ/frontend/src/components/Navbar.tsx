@@ -334,7 +334,7 @@ export default function Navbar() {
       </nav>
 
       {/* Right Sidebar */}
-      <RightSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <RightSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} patientId={patientId} />
 
       {/* Location Popup */}
       {showLocationPopup && (

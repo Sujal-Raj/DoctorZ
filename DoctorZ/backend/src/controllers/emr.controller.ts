@@ -40,7 +40,7 @@ export const createEMR = async (req: Request, res: Response) => {
 
     // ✅ Create new EMR
     const emr = await EMRModel.create({
-      aadhar: body.aadhar, 
+      aadhar: Number(body.aadhar), 
       doctorId,
       allergies,
       diseases,

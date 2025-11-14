@@ -41,7 +41,7 @@ export default function LoginPatient() {
 
       // ✅ Store token in cookie
       Cookies.set("patientToken", res.token, { expires: 7 });
-
+      
       // ✅ Update Auth Context
       login(res.token);
 

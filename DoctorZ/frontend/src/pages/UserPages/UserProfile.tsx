@@ -195,6 +195,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import api from "../../Services/mainApi";
 
 // ✅ Strong Types
 interface Address {
@@ -213,7 +214,7 @@ export interface User {
   dob: string;
   email: string;
   mobileNumber: number;
-  Aadhar: number;
+  aadhar: number;
   address: Address;
   abhaId?: string;
   emergencyContact: EmergencyContact;
@@ -238,7 +239,7 @@ const fields: {
   { key: "dob", label: "Date of Birth" },
   { key: "email", label: "Email" },
   { key: "mobileNumber", label: "Mobile Number" },
-  { key: "Aadhar", label: "Aadhar Number" },
+  { key: "aadhar", label: "Aadhar Number" },
   { key: "address.city", label: "City" },
   { key: "address.pincode", label: "Pincode" },
   { key: "abhaId", label: "ABHA ID" },
@@ -263,10 +264,11 @@ function UserProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get<UserResponse>(
-          `http://localhost:3000/api/patient/${id}`
+        const res = await api.get<UserResponse>(
+          `/api/patient/${id}`
         );
         setUser(res.data.user);
+       
       } catch (err) {
         console.error("Profile fetch error:", err);
       } finally {
@@ -276,6 +278,7 @@ function UserProfile() {
 
     if (userId) fetchUser();
   }, [userId, id]);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!editData) return;
@@ -303,7 +306,7 @@ function UserProfile() {
     } else {
       const key = name as keyof User;
       const finalValue =
-        key === "mobileNumber" || key === "Aadhar" ? Number(value) : value;
+        key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
 
       setEditData({
         ...editData,
@@ -314,8 +317,8 @@ function UserProfile() {
 
   const handleSave = async () => {
     try {
-      const res = await axios.put<{ message: string; user: User }>(
-        `http://localhost:3000/api/patient/update/${id}`,
+      const res = await api.put<{ message: string; user: User }>(
+        `/api/patient/update/${id}`,
         editData
       );
       alert("Profile Updated Successfully!");
