@@ -78,25 +78,28 @@ const ClinicSearchResults: React.FC = () => {
       establishedYear: Math.floor(Math.random() * 30) + 1990,
     }));
 
-  useEffect(() => {
-    const fetchClinics = async () => {
-      setLoading(true);
-      try {
-       const response = await axios.get<ClinicResponse>(API);
-console.log("✅ API response:", response.data);
-const data = response.data.clinic as Clinic[];
-const enhancedClinics = enhanceClinicsWithMockData(data || []);
-setClinics(enhancedClinics);
+useEffect(() => {
+  const fetchClinics = async () => {
+    setLoading(true);
+    try {
+      // API returns Clinic[] directly, not wrapped in an object
+      const response = await axios.get<Clinic[]>(API);
+      console.log("✅ API response (array):", response.data);
+      
+      const clinicsData = response.data;
+      const enhancedClinics = enhanceClinicsWithMockData(clinicsData);
+      setClinics(enhancedClinics);
 
-      } catch (err) {
-        console.error("❌ Error fetching clinics:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    } catch (err) {
+      console.error("❌ Error fetching clinics:", err);
+      setClinics([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchClinics();
-  }, []);
+  fetchClinics();
+}, []);
 
   // ✅ Filters & Search
   const filtered = useMemo(() => {

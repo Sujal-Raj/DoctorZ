@@ -1,15 +1,10 @@
 
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import {
-//   Stethoscope,
-//   Calendar,
-//   MapPin,
-//   Search as SearchIcon,
-//   Menu,
-//   ChevronRight,
-// } from "lucide-react";
-// import { Helmet } from "react-helmet";
+
+import { Award, Calendar, Clock, Filter, Search, Stethoscope, Users, X } from "lucide-react";
+import BookingDrawer from "../components/BookingDrawer";
+import DoctorCard, { type Doctor } from "../components/DoctorCard";
+import SlidingBanner from "../components/SlidingBanner";
+import { useEffect, useMemo, useState } from "react";
 
 // 🔹 Type Definitions
 interface DoctorForBooking {
@@ -45,8 +40,6 @@ const AllDoctor: React.FC = () => {
     ?.split("=")[1];
   const payloadBase64 = token?.split(".")[1];
   const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
-  const patientId = pay?.id;
-
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
@@ -150,7 +143,7 @@ const AllDoctor: React.FC = () => {
   };
 
   const handleFilterChange = (filterType: keyof FilterState, value: string): void => {
-    setFilters(prev => {
+    setFilters((prev: FilterState) => {
       if (filterType === 'specialization') {
         return { ...prev, specialization: value === '' ? null : value };
       }
@@ -179,9 +172,9 @@ const AllDoctor: React.FC = () => {
 
   const removeFilter = (filterType: keyof FilterState, value?: string): void => {
     if (filterType === 'specialization') {
-      setFilters(prev => ({ ...prev, specialization: null }));
+      setFilters((prev: FilterState) => ({ ...prev, specialization: null }));
     } else if (value) {
-      setFilters(prev => ({
+      setFilters((prev: FilterState) => ({
         ...prev,
         [filterType]: (prev[filterType] as string[]).filter(item => item !== value)
       }));
@@ -737,8 +730,9 @@ const AllDoctor: React.FC = () => {
         onClose={handleCloseDrawer}
         onBooked={(info: unknown) => {
           console.log("Booked:", info);
-        } }
-        variant="modal" roomId={undefined}      />
+        }}
+        variant="modal"
+      />
     </div>
   );
 };

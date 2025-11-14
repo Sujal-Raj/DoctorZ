@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 // Pages
 import RegisterPatient from "./pages/RegisterPages/RegisterPatient";
-import { RegisterDoctor } from "./pages/RegisterPages/RegisterDoctor";
+import RegisterDoctor from "./pages/RegisterPages/RegisterDoctor";
 import RegisterClinic from "./pages/RegisterPages/RegisterClinic";
 import { AuthProvider } from "../src/Context/AuthContext"; // <-- adjust path as needed
 

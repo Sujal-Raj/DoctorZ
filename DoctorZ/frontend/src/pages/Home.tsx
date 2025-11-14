@@ -58,11 +58,12 @@ export default function Home() {
 
   const serviceBlocks = [
     {
-      title: "Instant Video Consultation",
+      title: " Video Consultation",
       subtitle: "Connect within 60 secs",
       icon: VideoCameraIcon, // was FaVideo
       bgColor: "bg-purple-100",
       iconColor: "text-purple-600",
+      features: ["Expert doctors", "Quick response", "Secure chat"],
     },
     {
       title: "Find Doctors Near You",
@@ -70,6 +71,7 @@ export default function Home() {
       icon: UserIcon, // was FaUserMd
       bgColor: "bg-blue-100",
       iconColor: "text-blue-600",
+      features: ["Verified profiles", "Real reviews", "Easy booking"],
     },
     {
       title: "Surgeries",
@@ -77,6 +79,15 @@ export default function Home() {
       icon: BuildingOfficeIcon, // was FaHospital
       bgColor: "bg-green-100",
       iconColor: "text-green-600",
+      features: ["Accredited centers", "Expert surgeons", "Post-care support"],
+    },
+       {
+      title: "Surgeries",
+      subtitle: "Safe and trusted surgery centers",
+      icon: BuildingOfficeIcon, // was FaHospital
+      bgColor: "bg-green-100",
+      iconColor: "text-green-600",
+      features: ["Accredited centers", "Expert surgeons", "Post-care support"],
     },
   ];
 
@@ -109,15 +120,17 @@ const handleSearchResults = (data: unknown) => {
 };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col max-w-[1500px] bg-gray-50">
       {/* --- Main Search/Hero Section (Inspired by image_7f854e.png) --- */}
 
       <header className="bg-white py-12 shadow-md">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Find the care you need
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
+
+               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        Expert Medical Care 
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"> When You Need It</span>
+      </h2>
+          <p className="text-lg text-medium text-gray-600 mb-8">
             Book appointments, video consults & lab tests.
           </p>
           {/* Assuming SearchBar component is a full-width input field */}
@@ -128,36 +141,98 @@ const handleSearchResults = (data: unknown) => {
       </header>
 
       {/* --- Service Blocks (Inspired by image_7f854e.png) --- */}
-      <section className="py-12 bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-            Consult top doctors online for any health concern
-          </h2>
-          <p className="text-md text-gray-600 mb-10 text-center">
-            Private online consultations with verified doctors in all
-            specialties
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {serviceBlocks.map((block) => (
-              <div
-                key={block.title}
-                className={`p-6 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1 ${block.bgColor}`}
-              >
-                <div className={`text-4xl mx-auto mb-3 ${block.iconColor}`}>
-                  <block.icon className="h-6 w-6 mx-auto" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                  {block.title}
-                </h3>
-                <p className="text-sm text-gray-600">{block.subtitle}</p>
-                <button className="mt-3 text-sm font-medium text-blue-600 hover:text-blue-800">
-                  Get Started &rarr;
-                </button>
-              </div>
-            ))}
-          </div>
+  <section className="py-20 bg-white border-b border-gray-200">
+  {/* <div className="container mx-auto px-4"> */}
+    {/* Enhanced Header */}
+    <div className="text-center mb-16" data-aos="fade-up">
+      {/* <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full text-sm font-medium mb-6">
+        <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+        Trusted by 50,000+ Patients
+      </div> */}
+          {/* <h1 className="text-3xl font-semibold text-black mb-2">
+            Find the care you need
+          </h1>
+      <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+        Connect with board-certified doctors within minutes. Comprehensive healthcare solutions from the comfort of your home.
+      </p>
+    </div> */}
+
+    {/* Premium Services Grid */}
+<div className="grid grid-cols-1 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+  {serviceBlocks.map((block, index) => (
+    <div
+      key={block.title}
+      data-aos="zoom-in"
+      data-aos-delay={index * 150}
+      className="group relative bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
+    >
+      {/* Animated Background */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${block.bgColor} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+      
+      {/* Pattern Overlay */}
+      <div className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.03] transition-opacity duration-300">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent transform skew-x-12 group-hover:skew-x-0 transition-transform duration-700" />
+      </div>
+
+      <div className="relative p-6 z-10">
+        {/* Icon with Glow Effect */}
+        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${block.bgColor} bg-opacity-10 mb-4 group-hover:bg-opacity-20 transition-all duration-300 group-hover:scale-105 shadow-md`}>
+          <block.icon className={`h-6 w-6 ${block.iconColor} drop-shadow-sm`} />
         </div>
-      </section>
+
+        {/* Text Content */}
+        <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-gray-800 transition-colors">
+          {block.title}
+        </h3>
+        <p className="text-gray-600 leading-relaxed mb-4 text-base">
+          {block.subtitle}
+        </p> 
+
+      
+        {/* <ul className="space-y-1.5 mb-6">
+          {block.features?.map((feature, i) => (
+            <li key={i} className="flex items-center gap-2 text-xs text-gray-500">
+              <span className="w-1 h-1 bg-blue-400 rounded-full flex-shrink-0"></span>
+              <span className="leading-tight">{feature}</span>
+            </li>
+          ))}
+        </ul>  */}
+
+        {/* Enhanced CTA */}
+        <button className="group/btn w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all duration-300 flex items-center justify-between text-sm">
+          <span>Start Consultation</span>
+          <span className="group-hover/btn:translate-x-1 transition-transform duration-300 text-blue-500">
+            &rarr;
+          </span>
+        </button>
+      </div>
+
+      {/* Shine Effect */}
+      <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-30 group-hover:animate-shine" />
+    </div>
+  ))}
+</div>
+    {/* Trust Indicators */}
+    <div className="max-w-4xl mx-auto mt-16" data-aos="fade-up">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        {[
+          { number: "24/7", text: "Available" },
+          { number: "15min", text: "Average Wait" },
+          { number: "100%", text: "Verified Doctors" },
+          { number: "4.9★", text: "Patient Rating" }
+        ].map((stat, index) => (
+          <div key={index} className="text-center">
+            <div className="text-2xl font-bold text-yellow-500 mb-1">{stat.number}</div>
+            <div className="text-sm text-gray-500">{stat.text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  {/* Add this to your CSS for shine animation */}
+
+</section>
 
       {/* --- Search Results Section (Original Logic) --- */}
       {(clinics.length > 0 || doctors.length > 0) && (

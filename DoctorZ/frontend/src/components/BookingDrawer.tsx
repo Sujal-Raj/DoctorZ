@@ -5,7 +5,7 @@ import api from "../Services/mainApi.js";
 import { addMonths, startOfMonth, endOfMonth } from "date-fns";
 import AppointmentFormModal from "./AppointmentFormModal.js";
 import Swal from "sweetalert2";
-import { Helmet } from "react-helmet";
+
 
 interface Slot {
   _id: string;
@@ -38,9 +38,11 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onBooked?: (bookingInfo: unknown) => void;
+  variant?: BookingDrawerVariant;
 }
-
-const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }: Props) => {
+const BookingDrawer: React.FC<Props> = ({ doctor, open, onClose, onBooked, variant = "sidebar" }: Props) => {
+  const isModal = variant === "modal";
+  const sidebarRef = React.useRef<HTMLDivElement | null>(null);
   const [mode, setMode] = useState<"online" | "offline">("online");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -443,11 +445,10 @@ const BookingSidebar: React.FC<Props> = ({ doctor, open, onClose, onBooked }: Pr
             selectedDate={
               selectedDate ? selectedDate.toISOString().slice(0, 10) : ""
             }
-            selectedTime={selectedTime || ""}
           />
         </aside>
       </div>
-    </>
+    </div>
   );
 };
 
