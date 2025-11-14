@@ -33,11 +33,15 @@ export default function LoginPatient() {
       setLoading(true);
       const res = await loginPatient({ email, password });
  login(res.token);
-     
+     if (res.user) {
+      localStorage.setItem("user", JSON.stringify(res.user));
+      console.log("👤 Logged-in user:", res.user);
+      localStorage.setItem("userId", res.user._id);
+    }
 
       // ✅ Store token in cookie
       Cookies.set("patientToken", res.token, { expires: 7 });
-
+      
       // ✅ Update Auth Context
       login(res.token);
 

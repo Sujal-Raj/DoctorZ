@@ -254,7 +254,7 @@ export const getAllClinic = async (req, res) => {
         // Fetch all approved clinics only
         const clinics = await clinicModel.find({ status: "approved" });
         // If patient not logged in, return clinics normally
-        if (!patientId) {
+        if (!patientId || patientId === "null" || patientId === "undefined") {
             res.status(200).json({
                 message: "Approved clinics fetched successfully",
                 clinics,
@@ -340,7 +340,7 @@ export const getAllClinicPatients = async (req, res) => {
                 aadhar: patient?.aadhar,
                 appointedTo: `Dr. ${doctor?.fullName}`,
                 specialization: doctor?.specialization,
-                datetime: b.datetime,
+                datetime: b.dateTime,
                 mode: b.mode,
                 fees: b.fees,
             };

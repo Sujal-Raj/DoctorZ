@@ -96,6 +96,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  aadhar:string
 }
 
 interface AuthContextType {
@@ -118,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = Cookies.get("patientToken");
-
+ 
     if (token) {
       try {
         const decoded: any = jwtDecode(token);
@@ -127,10 +128,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: decoded.id,
           name: decoded.name,
           email: decoded.email,
+          aadhar:decoded.aadhar
         });
 
         setIsLoggedIn(true);
-        setUser(user)
+        // setUser(user)
       } catch (error) {
         console.error("Invalid Token:", error);
         Cookies.remove("patientToken");
@@ -148,6 +150,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     id: decoded.id,
     name: decoded.name,
     email: decoded.email,
+    aadhar:decoded.aadhar
   });
 
   setIsLoggedIn(true);

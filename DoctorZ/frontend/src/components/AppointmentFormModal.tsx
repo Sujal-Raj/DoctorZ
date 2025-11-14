@@ -1,298 +1,293 @@
-import React from "react";
+
+
+
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-interface FormData {
-  name: string;
-  age: string;
-  gender: string;
-  aadhar: string;
-  contact: string;
-}
-
-interface Props {
+interface AppointmentFormModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: FormData) => void;
-  loading?: boolean;
-  initialData?: Partial<FormData>; // Added for pre-filling form
+  onSubmit: (formData: {
+    name: string;
+    age: number;
+    gender: "Male" | "Female" | "Other";
+    aadhar: string;
+    contact: string;
+    allergies?: string[];
+    diseases?: string[];
+    pastSurgeries?: string[];
+    currentMedications?: string[];
+    relation: "self" | "relative";
+  }) => Promise<void> | void;
+  loading: boolean;
 }
 
-const AppointmentFormModal: React.FC<Props> = ({ 
-  open, 
-  onClose, 
-  onSubmit, 
-  loading = false,
-  initialData 
+const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
+  loading,
 }) => {
-  const [formData, setFormData] = React.useState<FormData>({
+  const [relation, setRelation] = useState<"self" | "relative">("self");
+
+  const [formData, setFormData] = useState({
     name: "",
     age: "",
-    gender: "Male",
+    gender: "Male" as "Male" | "Female" | "Other",
     aadhar: "",
     contact: "",
+    allergies: "",
+    diseases: "",
+    pastSurgeries: "",
+    currentMedications: "",
   });
 
-  const [errors, setErrors] = React.useState<Partial<FormData>>({});
+  // ✅ Auto-fill details if booking for self
+  useEffect(() => {
+    if (relation === "self") {
+      const token = document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("patientToken="))
+        ?.split("=")[1];
 
-  // Reset form when modal opens/closes or when initialData changes
-  React.useEffect(() => {
-    if (open) {
-      setFormData(prev => ({
-        name: initialData?.name || prev.name,
-        age: initialData?.age || prev.age,
-        gender: initialData?.gender || prev.gender,
-        aadhar: initialData?.aadhar || prev.aadhar,
-        contact: initialData?.contact || prev.contact,
-      }));
-      setErrors({});
-    }
-  }, [open, initialData]);
-
-  // Close on escape key
-  React.useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) {
-        onClose();
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          setFormData((prev) => ({
+            ...prev,
+            name: payload.name || "",
+            age: payload.age?.toString() || "",
+            gender: payload.gender || "Male",
+            aadhar: payload.aadhar || "",
+            contact: payload.contact || "",
+          }));
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
       }
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [open, onClose]);
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<FormData> = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
-
-    // Age validation
-    if (!formData.age) {
-      newErrors.age = "Age is required";
     } else {
-      const ageNum = parseInt(formData.age);
-      if (ageNum < 1 || ageNum > 120) {
-        newErrors.age = "Age must be between 1 and 120";
-      }
+      // reset fields if booking for relative
+      setFormData({
+        name: "",
+        age: "",
+        gender: "Male",
+        aadhar: "",
+        contact: "",
+        allergies: "",
+        diseases: "",
+        pastSurgeries: "",
+        currentMedications: "",
+      });
     }
-
-    // Aadhar validation (12 digits)
-    if (!formData.aadhar) {
-      newErrors.aadhar = "Aadhar number is required";
-    } else if (!/^\d{12}$/.test(formData.aadhar.replace(/\s/g, ''))) {
-      newErrors.aadhar = "Aadhar must be 12 digits";
-    }
-
-    // Contact validation (10 digits)
-    if (!formData.contact) {
-      newErrors.contact = "Contact number is required";
-    } else if (!/^\d{10}$/.test(formData.contact.replace(/\s/g, ''))) {
-      newErrors.contact = "Contact must be 10 digits";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    
-    // Format Aadhar number (add spaces for readability)
-    if (name === "aadhar") {
-      const cleaned = value.replace(/\D/g, '').slice(0, 12);
-      const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
-      setFormData(prev => ({ ...prev, [name]: formatted }));
-    }
-    // Format contact number
-    else if (name === "contact") {
-      const cleaned = value.replace(/\D/g, '').slice(0, 10);
-      setFormData(prev => ({ ...prev, [name]: cleaned }));
-    }
-    // For age, only allow numbers
-    else if (name === "age") {
-      const cleaned = value.replace(/\D/g, '').slice(0, 3);
-      setFormData(prev => ({ ...prev, [name]: cleaned }));
-    }
-    else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-
-    // Clear error when user starts typing
-    if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      // Remove formatting spaces before submitting
-      const submitData = {
-        ...formData,
-        aadhar: formData.aadhar.replace(/\s/g, ''),
-        contact: formData.contact.replace(/\s/g, '')
-      };
-      onSubmit(submitData);
-    }
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+  }, [relation]);
 
   if (!open) return null;
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const formattedData = {
+      ...formData,
+      age: Number(formData.age),
+      allergies: formData.allergies
+        ? formData.allergies.split(",").map((a) => a.trim())
+        : [],
+      diseases: formData.diseases
+        ? formData.diseases.split(",").map((d) => d.trim())
+        : [],
+      pastSurgeries: formData.pastSurgeries
+        ? formData.pastSurgeries.split(",").map((p) => p.trim())
+        : [],
+      currentMedications: formData.currentMedications
+        ? formData.currentMedications.split(",").map((m) => m.trim())
+        : [],
+      relation,
+    };
+
+    onSubmit(formattedData);
+  };
+
   return (
-    <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-      onClick={handleBackdropClick}
-    >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto relative animate-in fade-in-90 zoom-in-90 duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Appointment Details
-          </h2>
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-50 transition-colors rounded-lg hover:bg-gray-100"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative overflow-y-auto max-h-[90vh]">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Name Field */}
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+          Book Appointment
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Relation Selector */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name *
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Booking For
             </label>
-            <input
-              id="name"
-              type="text"
-              name="name"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              disabled={loading}
-              placeholder="Enter your full name"
-              className={`w-full border rounded-lg p-3 focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] outline-none transition-colors ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
-            )}
+            <select
+              value={relation}
+              onChange={(e) =>
+                setRelation(e.target.value as "self" | "relative")
+              }
+              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
+            >
+              <option value="self">Self</option>
+              <option value="relative">Relative</option>
+            </select>
           </div>
 
-          {/* Age and Gender */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="age" className="block text-sm font-medium text-gray-700 mb-1">
-                Age *
-              </label>
-              <input
-                id="age"
-                type="text"
-                name="age"
-                required
-                value={formData.age}
-                onChange={handleChange}
-                disabled={loading}
-                placeholder="Age"
-                className={`w-full border rounded-lg p-3 focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] outline-none transition-colors ${
-                  errors.age ? 'border-red-500' : 'border-gray-300'
-                } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-              />
-              {errors.age && (
-                <p className="text-red-500 text-xs mt-1">{errors.age}</p>
-              )}
-            </div>
-            <div>
-              <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-                Gender *
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                required
-                value={formData.gender}
-                onChange={handleChange}
-                disabled={loading}
-                className={`w-full border rounded-lg p-3 focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] outline-none transition-colors ${
-                  loading ? 'bg-gray-100 cursor-not-allowed' : 'border-gray-300'
-                }`}
-              >
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-                <option value="Prefer not to say">Prefer not to say</option>
-              </select>
-            </div>
-          </div>
+          {/* Show fields only when booking for relative */}
+          {relation === "relative" && (
+            <>
+              {/* Personal Details */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
 
-          {/* Aadhar Field */}
-          <div>
-            <label htmlFor="aadhar" className="block text-sm font-medium text-gray-700 mb-1">
-              Aadhar Number *
-            </label>
-            <input
-              id="aadhar"
-              type="text"
-              name="aadhar"
-              required
-              value={formData.aadhar}
-              onChange={handleChange}
-              disabled={loading}
-              placeholder="1234 5678 9012"
-              maxLength={14}
-              className={`w-full border rounded-lg p-3 focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] outline-none transition-colors ${
-                errors.aadhar ? 'border-red-500' : 'border-gray-300'
-              } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-            />
-            {errors.aadhar && (
-              <p className="text-red-500 text-xs mt-1">{errors.aadhar}</p>
-            )}
-          </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    name="age"
+                    required
+                    value={formData.age}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Gender
+                  </label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  >
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
 
-          {/* Contact Field */}
-          <div>
-            <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
-              Contact Number *
-            </label>
-            <input
-              id="contact"
-              type="text"
-              name="contact"
-              required
-              value={formData.contact}
-              onChange={handleChange}
-              disabled={loading}
-              placeholder="9876543210"
-              maxLength={10}
-              className={`w-full border rounded-lg p-3 focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] outline-none transition-colors ${
-                errors.contact ? 'border-red-500' : 'border-gray-300'
-              } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-            />
-            {errors.contact && (
-              <p className="text-red-500 text-xs mt-1">{errors.contact}</p>
-            )}
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Aadhar Number
+                </label>
+                <input
+                  type="text"
+                  name="aadhar"
+                  required
+                  value={formData.aadhar}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contact Number
+                </label>
+                <input
+                  type="text"
+                  name="contact"
+                  required
+                  value={formData.contact}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* EMR Section */}
+              <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
+                Add EMR Details (Optional)
+              </h3>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Allergies (comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="allergies"
+                  value={formData.allergies}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Diseases (comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="diseases"
+                  value={formData.diseases}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Past Surgeries (comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="pastSurgeries"
+                  value={formData.pastSurgeries}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Current Medications (comma separated)
+                </label>
+                <input
+                  type="text"
+                  name="currentMedications"
+                  value={formData.currentMedications}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+            </>
+          )}
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className={`w-full py-3 rounded-lg font-semibold text-white transition-all flex items-center justify-center ${
+            className={`w-full py-2 mt-4 rounded-lg font-semibold text-white transition-all ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-[#28328C] hover:bg-[#1e2675] transform hover:scale-[1.02] active:scale-[0.98]"
@@ -306,6 +301,7 @@ const AppointmentFormModal: React.FC<Props> = ({
             ) : (
               "Book Appointment"
             )}
+            {loading ? "Processing..." : "Book Appointment"}
           </button>
         </form>
       </div>
@@ -314,3 +310,285 @@ const AppointmentFormModal: React.FC<Props> = ({
 };
 
 export default AppointmentFormModal;
+
+
+
+// import React, { useState, useEffect } from "react";
+// import { X } from "lucide-react";
+
+// interface AppointmentFormModalProps {
+//   open: boolean;
+//   onClose: () => void;
+//   onSubmit: (formData: FormData) => Promise<void> | void; // change to FormData
+//   loading: boolean;
+// }
+
+// const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
+//   open,
+//   onClose,
+//   onSubmit,
+//   loading,
+// }) => {
+//   const [relation, setRelation] = useState<"self" | "relative">("self");
+
+//   const [formData, setFormData] = useState({
+//     name: "",
+//     age: "",
+//     gender: "Male" as "Male" | "Female" | "Other",
+//     aadhar: "",
+//     contact: "",
+//     allergies: "",
+//     diseases: "",
+//     pastSurgeries: "",
+//     currentMedications: "",
+//     reports: [] as File[], // ← added for file upload
+//   });
+
+//   useEffect(() => {
+//     if (relation === "self") {
+//       const token = document.cookie
+//         .split("; ")
+//         .find((r) => r.startsWith("patientToken="))
+//         ?.split("=")[1];
+
+//       if (token) {
+//         try {
+//           const payload = JSON.parse(atob(token.split(".")[1]));
+//           setFormData((prev) => ({
+//             ...prev,
+//             name: payload.name || "",
+//             age: payload.age?.toString() || "",
+//             gender: payload.gender || "Male",
+//             aadhar: payload.aadhar || "",
+//             contact: payload.contact || "",
+//           }));
+//         } catch (error) {
+//           console.error("Error decoding token:", error);
+//         }
+//       }
+//     } else {
+//       setFormData({
+//         name: "",
+//         age: "",
+//         gender: "Male",
+//         aadhar: "",
+//         contact: "",
+//         allergies: "",
+//         diseases: "",
+//         pastSurgeries: "",
+//         currentMedications: "",
+//         reports: [],
+//       });
+//     }
+//   }, [relation]);
+
+//   if (!open) return null;
+
+//   const handleChange = (
+//     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+//   ) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   // ✅ Handle multiple file upload
+//   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//     if (e.target.files) {
+//       setFormData((prev) => ({ ...prev, reports: Array.from(e.target.files!) }));
+//     }
+//   };
+
+//   const handleSubmit = (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     const patientData = {
+//       name: formData.name,
+//       age: Number(formData.age),
+//       gender: formData.gender,
+//       aadhar: formData.aadhar,
+//       contact: formData.contact,
+//       relation,
+//       allergies: formData.allergies
+//         ? formData.allergies.split(",").map((a) => a.trim())
+//         : [],
+//       diseases: formData.diseases
+//         ? formData.diseases.split(",").map((d) => d.trim())
+//         : [],
+//       pastSurgeries: formData.pastSurgeries
+//         ? formData.pastSurgeries.split(",").map((p) => p.trim())
+//         : [],
+//       currentMedications: formData.currentMedications
+//         ? formData.currentMedications.split(",").map((m) => m.trim())
+//         : [],
+//     };
+
+//     const finalData = new FormData();
+//     finalData.append("patient", JSON.stringify(patientData));
+
+//     // Append files
+//     formData.reports.forEach((file) => finalData.append("reports", file));
+
+//     onSubmit(finalData);
+//   };
+
+//   return (
+//     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+//       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative overflow-y-auto max-h-[90vh]">
+//         <button
+//           onClick={onClose}
+//           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+//         >
+//           <X className="w-5 h-5" />
+//         </button>
+
+//         <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+//           Book Appointment
+//         </h2>
+
+//         <form onSubmit={handleSubmit} className="space-y-4">
+//           {/* Relation Selector */}
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700 mb-1">
+//               Booking For
+//             </label>
+//             <select
+//               value={relation}
+//               onChange={(e) => setRelation(e.target.value as "self" | "relative")}
+//               className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
+//             >
+//               <option value="self">Self</option>
+//               <option value="relative">Relative</option>
+//             </select>
+//           </div>
+
+//           {/* Show fields only for relative */}
+//           {relation === "relative" && (
+//             <>
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Full Name
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="name"
+//                   required
+//                   value={formData.name}
+//                   onChange={handleChange}
+//                   className="w-full border border-gray-300 rounded-lg p-2"
+//                 />
+//               </div>
+
+//               <div className="grid grid-cols-2 gap-3">
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Age
+//                   </label>
+//                   <input
+//                     type="number"
+//                     name="age"
+//                     required
+//                     value={formData.age}
+//                     onChange={handleChange}
+//                     className="w-full border border-gray-300 rounded-lg p-2"
+//                   />
+//                 </div>
+//                 <div>
+//                   <label className="block text-sm font-medium text-gray-700 mb-1">
+//                     Gender
+//                   </label>
+//                   <select
+//                     name="gender"
+//                     value={formData.gender}
+//                     onChange={handleChange}
+//                     className="w-full border border-gray-300 rounded-lg p-2"
+//                   >
+//                     <option>Male</option>
+//                     <option>Female</option>
+//                     <option>Other</option>
+//                   </select>
+//                 </div>
+//               </div>
+
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Aadhar Number
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="aadhar"
+//                   required
+//                   value={formData.aadhar}
+//                   onChange={handleChange}
+//                   className="w-full border border-gray-300 rounded-lg p-2"
+//                 />
+//               </div>
+
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Contact Number
+//                 </label>
+//                 <input
+//                   type="text"
+//                   name="contact"
+//                   required
+//                   value={formData.contact}
+//                   onChange={handleChange}
+//                   className="w-full border border-gray-300 rounded-lg p-2"
+//                 />
+//               </div>
+
+//               {/* EMR Section */}
+//               <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
+//                 Add EMR Details (Optional)
+//               </h3>
+
+//               {["allergies", "diseases", "pastSurgeries", "currentMedications"].map(
+//                 (field) => (
+//                   <div key={field}>
+//                     <label className="block text-sm font-medium text-gray-700 mb-1">
+//                       {field.charAt(0).toUpperCase() + field.slice(1)} (comma separated)
+//                     </label>
+//                     <input
+//                       type="text"
+//                       name={field}
+//                       value={formData[field as keyof typeof formData] as string}
+//                       onChange={handleChange}
+//                       className="w-full border border-gray-300 rounded-lg p-2"
+//                     />
+//                   </div>
+//                 )
+//               )}
+
+//               {/* File Upload */}
+//               <div>
+//                 <label className="block text-sm font-medium text-gray-700 mb-1">
+//                   Upload Reports (PDF / Image)
+//                 </label>
+//                 <input
+//                   type="file"
+//                   multiple
+//                   accept=".pdf,.jpg,.jpeg,.png"
+//                   onChange={handleFileChange}
+//                   className="w-full border border-gray-300 rounded-lg p-2"
+//                 />
+//               </div>
+//             </>
+//           )}
+
+//           <button
+//             type="submit"
+//             disabled={loading}
+//             className={`w-full py-2 mt-4 rounded-lg font-semibold text-white transition-all ${
+//               loading
+//                 ? "bg-gray-400 cursor-not-allowed"
+//                 : "bg-[#28328C] hover:bg-[#1e2675]"
+//             }`}
+//           >
+//             {loading ? "Processing..." : "Book Appointment"}
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AppointmentFormModal;

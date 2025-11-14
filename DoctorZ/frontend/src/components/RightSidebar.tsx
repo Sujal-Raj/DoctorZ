@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 import { Link } from "react-router-dom";
 import {
   X,
@@ -22,6 +16,7 @@ interface SidebarProps {
 }
 
 const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => {
+  
   return (
     <>
       {/* Overlay */}
@@ -98,20 +93,7 @@ const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => 
             <ChevronRight size={18} className="text-gray-500" />
           </Link>
 
-          {/* Logout */}
-          <button
-            onClick={() => {
-              onClose();
-              // logout logic will go in Navbar
-            }}
-            className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition text-left"
-          >
-            <div className="flex items-center gap-4">
-              <LogOut size={20}  />
-              <span className="text-gray-800">Logout</span>
-            </div>
-            <ChevronRight size={18} className="text-gray-500" />
-          </button>
+         
         </div>
       </div>
     </>

@@ -12,9 +12,11 @@ import { AuthContext } from "../../Context/AuthContext";
 import UserIcon from "../../assets/user.png";
 function UserDashboard() {
   const { user } = useContext(AuthContext);
-  const patientId = useParams().id;
+  console.log("User",user);
+  const patientId = user?.id;
   const navigate = useNavigate();
   const token = Cookies.get("patientToken");
+  console.log(token);
   console.log("Patient ID from params:", user);
   useEffect(() => {
     if (!token) {
