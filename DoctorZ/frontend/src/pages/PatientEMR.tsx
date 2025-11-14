@@ -1,71 +1,5 @@
 
 
-// import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-
-// interface EMR {
-//   allergies?: string[];
-//   diseases?: string[];
-//   pastSurgeries?: string[];
-//   currentMedications?: string[];
-//   reports?: string[];
-//   createdAt: string;
-// }
-
-// const PatientEMR = () => {
-//   const { emrId } = useParams<{ emrId: string }>();
-//   const [emrData, setEmrData] = useState<EMR | null>(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState<string | null>(null);
-
-//   useEffect(() => {
-//     if (!emrId) {
-//       setError("EMR ID not found in URL.");
-//       setLoading(false);
-//       return;
-//     }
-
-//     const fetchEMR = async () => {
-//       try {
-//         const res = await fetch(`http://localhost:3000/api/emr/${emrId}`);
-//         const data = await res.json();
-
-//         if (data?.data) {
-//           setEmrData(data.data);
-//         } else {
-//           setError("No EMR found for this ID.");
-//         }
-//       } catch (err) {
-//         console.error("Error fetching EMR:", err);
-//         setError("Failed to load EMR data.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchEMR();
-//   }, [emrId]);
-
-//   if (loading) return <p>Loading EMR...</p>;
-//   if (error) return <p>{error}</p>;
-//   if (!emrData) return <p>No EMR record found.</p>;
-
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-2xl font-bold mb-6">Patient EMR</h1>
-//       <p><strong>Allergies:</strong> {emrData.allergies?.join(", ") || "None"}</p>
-//       <p><strong>Diseases:</strong> {emrData.diseases?.join(", ") || "None"}</p>
-//       <p><strong>Past Surgeries:</strong> {emrData.pastSurgeries?.join(", ") || "None"}</p>
-//       <p><strong>Medications:</strong> {emrData.currentMedications?.join(", ") || "None"}</p>
-//       <p><strong>Created At:</strong> {new Date(emrData.createdAt).toLocaleString()}</p>
-//     </div>
-//   );
-// };
-
-// export default PatientEMR;
-
-
-
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -147,13 +81,15 @@ const PatientEMR: React.FC = () => {
         ? record.allergies.join(", ")
         : "None"}
     </p>
-        
+{/*         
     <p>
   <strong>Reports:</strong>{" "}
   {Array.isArray(record.reports) && record.reports.length > 0 ? (
     <ul className="list-disc ml-6">
       {record.reports.map((r, i) => (
+        
         <li key={i}>
+          
           <a
             href={r}
             target="_blank"
@@ -164,6 +100,34 @@ const PatientEMR: React.FC = () => {
           </a>
         </li>
       ))}
+    </ul>
+  ) : (
+    "No reports uploaded"
+  )}
+</p> */}
+<p>
+  <strong>Reports:</strong>{" "}
+  {Array.isArray(record.reports) && record.reports.length > 0 ? (
+    <ul className="list-disc ml-6">
+
+      {record.reports.map((r, i) => {
+        
+        console.log("Report file path:", r); // <--- ADD THIS
+
+        return (
+          <li key={i}>
+            <a
+              href={`http://localhost:3000${r}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {r.split("/").pop()}
+            </a>
+          </li>
+        );
+      })}
+
     </ul>
   ) : (
     "No reports uploaded"

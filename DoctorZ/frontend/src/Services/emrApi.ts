@@ -48,6 +48,49 @@
 //   return res.data;
 // };
 
+// import api from "./mainApi";
+
+// export interface EMR {
+//   _id: string;
+//   aadhar: string;
+//   doctorId?: string;
+//   allergies: string[];
+//   diseases: string[];
+//   pastSurgeries: string[];
+//   currentMedications: string[];
+//   reports?: string[];
+//   createdAt?: string;
+//   updatedAt?: string;
+// }
+
+// export interface EMRResponse {
+//   message: string;
+//   emr: EMR;
+// }
+
+// // ✅ Create EMR API (now accepts JSON)
+// export const createEMR = async (emrData: {
+//   doctorId?: string;
+//   patientId: string;
+//   aadhar: number;
+//   allergies: string[];
+//   diseases: string[];
+//   pastSurgeries: string[];
+//   currentMedications: string[];
+// }): Promise<EMRResponse> => {
+//   try {
+//     const res = await api.post<EMRResponse>("/api/emr/createEmr", emrData, {
+//       headers: { "Content-Type": "application/json" },
+//     });
+//     return res.data;
+//   } catch (error: unknown) {
+//     console.error("❌ Error creating EMR:", error);
+//     throw error;
+//   }
+// };
+
+
+
 import api from "./mainApi";
 
 export interface EMR {
@@ -68,19 +111,13 @@ export interface EMRResponse {
   emr: EMR;
 }
 
-// ✅ Create EMR API (now accepts JSON)
-export const createEMR = async (emrData: {
-  doctorId?: string;
-  patientId: string;
-  aadhar: number;
-  allergies: string[];
-  diseases: string[];
-  pastSurgeries: string[];
-  currentMedications: string[];
-}): Promise<EMRResponse> => {
+// ✅ Create EMR API (ACCEPTS FORMDATA NOW)
+export const createEMR = async (formData: FormData): Promise<EMRResponse> => {
   try {
-    const res = await api.post<EMRResponse>("/api/emr/createEmr", emrData, {
-      headers: { "Content-Type": "application/json" },
+    const res = await api.post<EMRResponse>("/api/emr/createEmr", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return res.data;
   } catch (error: unknown) {

@@ -360,7 +360,7 @@ export const getAllClinic = async (req: Request, res: Response): Promise<void> =
     const clinics = await clinicModel.find({ status: "approved" });
 
     // If patient not logged in, return clinics normally
-    if (!patientId) {
+    if (!patientId || patientId === "null" || patientId === "undefined")  {
       res.status(200).json({
         message: "Approved clinics fetched successfully",
         clinics,

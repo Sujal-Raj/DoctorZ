@@ -153,7 +153,7 @@ const patientLogin = async(req: Request, res: Response)=>{
 
     // JWT Token create
     const token = jwt.sign(
-      { id: patient._id, email: patient.email,name:patient.fullName },
+      { id: patient._id, email: patient.email,name:patient.fullName ,aadhar:patient.aadhar},
       process.env.JWT_SECRET || "secret_key", 
       { expiresIn: "1d" }
     );
