@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const token = Cookies.get("patientToken");
-
+ 
     if (token) {
       try {
         const decoded: any = jwtDecode(token);
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
 
         setIsLoggedIn(true);
-        setUser(user)
+        // setUser(user)
       } catch (error) {
         console.error("Invalid Token:", error);
         Cookies.remove("patientToken");
