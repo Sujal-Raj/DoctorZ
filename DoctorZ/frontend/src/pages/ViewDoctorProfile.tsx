@@ -8,7 +8,6 @@ import {
   MessageCircleMore,
   Stethoscope,
   ChevronDown,
-  
   Phone,
   Star,
   Clock,
@@ -17,12 +16,10 @@ import {
   Calendar,
   Shield,
   CheckCircle,
-  Heart,
   Menu,
   X,
 } from "lucide-react";
 import BookingDrawer from "../components/BookingDrawer";
-import Doctor from "../assets/Doctor.jpeg";
 import api from "../Services/mainApi";
 
 interface Doctor {
@@ -163,7 +160,7 @@ const ViewDoctorProfile: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Enhanced Hero Section */}
-      <div className="relative bg-[#0c213e] text-white"> 
+      <div className="relative bg-[#0c213e] text-white">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
           <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
@@ -193,24 +190,10 @@ const ViewDoctorProfile: React.FC = () => {
                   <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">Dr. {doctor.fullName}</h1>
                   <p className="text-lg sm:text-xl text-blue-100 font-medium">{doctor.specialization}</p>
                 </div>
-               <div 
-  onClick={handleFavouriteToggle}
-  className="cursor-pointer flex items-center justify-center lg:justify-start gap-2 bg-white/20 px-4 py-2 rounded-full hover:bg-white/30 transition"
->
-  <Heart 
-    className={`${isFavourite ? "text-red-500" : "text-gray-300"}`} 
-    size={20} 
-    fill={isFavourite ? "currentColor" : "none"} 
-  />
-  <span className="font-semibold">
-    {isFavourite ? "Added to favourites" : "Mark as favourite"}
-  </span>
-</div>
-
-                <div className="mt-4 lg:mt-0 flex items-center justify-center lg:justify-start gap-2 bg-white/20 px-4 py-2 rounded-full">
-                  <Star className="text-yellow-300" size={20} fill="currentColor" />
-                  <span className="font-semibold">4.8/5</span>
-                  <span className="text-blue-100">(120 Reviews)</span>
+                <div className="flex items-center justify-center lg:justify-start gap-2 bg-white/20 px-3 sm:px-4 py-2 rounded-full">
+                  <Star className="text-yellow-300" size={18} fill="currentColor" />
+                  <span className="font-semibold text-sm sm:text-base">4.8/5</span>
+                  <span className="text-blue-100 text-sm">(120 Reviews)</span>
                 </div>
               </div>
 

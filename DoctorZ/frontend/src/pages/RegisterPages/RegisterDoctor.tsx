@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { useOutletContext } from "react-router-dom";
 
 import { registerDoctor } from "../../Services/doctorApi";
-
+import { FileText, Upload } from "lucide-react";
 
 type DoctorFormInputs = {
   fullName: string;
@@ -142,53 +142,306 @@ const RegisterDoctor: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const InputField = ({
+    id,
+    label,
+    type = "text",
+    placeholder,
+    registerField,
+    error,
+  }: {
+    id: string;
+    label: string;
+    type?: string;
+    placeholder?: string;
+    registerField: any;
+    error?: string;
+  }) => (
+    <div className="relative">
+      <label
+        htmlFor={id}
+        className="block text-sm font-semibold text-gray-700 mb-1"
+      >
+        {label}
+      </label>
+      <input
+        id={id}
+        type={type}
+        placeholder={placeholder}
+        {...registerField}
+        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] transition-all"
+      />
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+    </div>
+  );
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>, setPreview: React.Dispatch<React.SetStateAction<string | null>>): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <>
       <Helmet>
-        <title>Register Doctor - DoctorZ</title>
+        <title>Doctor Registration | Clinic Portal</title>
+        <meta
+          name="description"
+          content="Register qualified doctors with verified credentials and complete profile details for your clinic."
+        />
       </Helmet>
-      <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-          <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Doctor Registration</h1>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FormInput label="Full Name" name="fullName" register={register} error={errors.fullName} placeholder="Enter your full name" />
-            <FormInput label="Email" name="email" register={register} error={errors.email} placeholder="Enter your email" type="email" />
-            <SelectInput label="Gender" name="gender" register={register} error={errors.gender} />
-            <FormInput label="Date of Birth" name="dob" register={register} error={errors.dob} type="date" />
-            <FormInput label="Registration Number" name="regNumber" register={register} error={errors.regNumber} placeholder="Enter registration number" />
-            <FormInput label="Mobile No" name="mobileNo" register={register} error={errors.mobileNo} placeholder="Enter mobile number" />
-            <FormInput label="Qualification" name="qualification" register={register} error={errors.qualification} placeholder="Enter qualification" />
-            <FormInput label="Experience (Years)" name="experience" register={register} error={errors.experience} placeholder="Enter years of experience" />
-            <FormInput label="Consultation Fees" name="fees" register={register} error={errors.fees} placeholder="Enter consultation fees" />
-            <FormInput label="Languages" name="languages" register={register} error={errors.languages} placeholder="Enter languages spoken" />
-            <FormInput label="Aadhar" name="aadhar" register={register} error={errors.aadhar} placeholder="Enter aadhar number" />
-            <FormInput label="PAN" name="pan" register={register} error={errors.pan} placeholder="Enter PAN" />
-            <FormInput label="Specialization" name="specialization" register={register} error={errors.specialization} placeholder="Enter specialization" />
-            <FormInput label="Password" name="password" register={register} error={errors.password} placeholder="Enter password" type="password" />
-            <FormInput label="Address" name="address" register={register} error={errors.address} placeholder="Enter address" />
-            <FormInput label="State" name="state" register={register} error={errors.state} placeholder="Enter state" />
-            <FormInput label="City" name="city" register={register} error={errors.city} placeholder="Enter city" />
+
+      <main className="min-h-screen bg-white flex items-center justify-center p-4">
+        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-extrabold text-[#28328C]">
+              🩺 Doctor Registration
+            </h1>
+            <p className="mt-2 text-gray-600 text-sm md:text-base">
+              Fill in the details below to register a doctor under your clinic.
+            </p>
           </div>
 
-          {/* File Uploads */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-            <FileUpload label="Degree Certificate" fileName={degreeName} setFile={setDegreeFile} setFileName={setDegreeName} accept="image/*,application/pdf" />
-            <FileUpload label="Recent Photo" fileName={photoName} setFile={setPhotoFile} setFileName={setPhotoName} accept="image/*" />
-            <FileUpload label="Signature" fileName={sigName} setFile={setSignatureFile} setFileName={setSigName} accept="image/*" />
-          </div>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800"
+            encType="multipart/form-data"
+          >
+            {/* --- Doctor Info --- */}
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2">
+              Doctor Information
+            </h2>
 
-          {/* Submit Button */}
-          <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-8 flex justify-center">
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-8 py-3 bg-green-600 text-white font-semibold rounded-xl shadow-md hover:bg-green-700 transition-all text-lg disabled:opacity-50"
-            >
-              {loading ? "Registering..." : "Register Doctor"}
-            </button>
-          </div>
-        </form>
+            <InputField
+              id="fullName"
+              label="Full Name"
+              placeholder="Dr. John Doe"
+              registerField={register("fullName", {
+                required: "Full name is required",
+              })}
+              error={errors.fullName?.message}
+            />
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Gender
+              </label>
+              <select
+                {...register("gender", { required: "Gender is required" })}
+                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C]"
+              >
+                <option value="">Select Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+              {errors.gender && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.gender.message}
+                </p>
+              )}
+            </div>
+
+            <InputField
+              id="dob"
+              label="Date of Birth"
+              type="date"
+              registerField={register("dob")}
+            />
+            <InputField
+              id="email"
+              label="Email"
+              type="email"
+              placeholder="doctor@example.com"
+              registerField={register("email")}
+            />
+            <InputField
+              id="mobileNo"
+              label="Mobile Number"
+              placeholder="9876543210"
+              registerField={register("mobileNo")}
+            />
+            <InputField
+              id="regNumber"
+              label="Medical Registration Number"
+              placeholder="MED123456"
+              registerField={register("regNumber")}
+            />
+            <InputField
+              id="qualification"
+              label="Qualification"
+              placeholder="MBBS, MD"
+              registerField={register("qualification")}
+            />
+            <InputField
+              id="specialization"
+              label="Specialization"
+              placeholder="Dermatology"
+              registerField={register("specialization")}
+            />
+
+            <InputField
+              id="experience"
+              label="Experience (Years)"
+              placeholder="5"
+              type="number"
+              registerField={register("experience")}
+            />
+            <InputField
+              id="fees"
+              label="Consultation Fees"
+              placeholder="500"
+              type="number"
+              registerField={register("fees")}
+            />
+
+            <InputField
+              id="languages"
+              label="Languages Known"
+              placeholder="English, Hindi"
+              registerField={register("languages")}
+            />
+
+            {/* --- Personal Info --- */}
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pt-4 pb-2">
+              Personal Details
+            </h2>
+
+            <InputField
+              id="aadhar"
+              label="Aadhar Number"
+              placeholder="123456789012"
+              type="number"
+              registerField={register("aadhar")}
+            />
+            <InputField
+              id="pan"
+              label="PAN Number"
+              placeholder="ABCDE1234F"
+              registerField={register("pan")}
+            />
+            <InputField
+              id="address"
+              label="Address"
+              placeholder="123 Main Street"
+              registerField={register("address")}
+            />
+            <InputField
+              id="city"
+              label="City"
+              placeholder="Bhilai"
+              registerField={register("city")}
+            />
+            <InputField
+              id="state"
+              label="State"
+              placeholder="Chhattisgarh"
+              registerField={register("state")}
+            />
+
+            <InputField
+              id="password"
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              registerField={register("password", {
+                required: "Password is required",
+              })}
+              error={errors.password?.message}
+            />
+
+            {/* --- Documents --- */}
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pt-4 pb-2">
+              Upload Documents
+            </h2>
+
+            {/* File Uploads */}
+            {[
+              {
+                label: "Degree Certificate",
+                file: degreeFile,
+                setFile: setDegreeFile,
+                preview: degreePreview,
+                setPreview: setDegreePreview,
+                accept: "image/*,application/pdf",
+              },
+              {
+                label: "Recent Photo",
+                file: photoFile,
+                setFile: setPhotoFile,
+                preview: photoPreview,
+                setPreview: setPhotoPreview,
+                accept: "image/*",
+              },
+              {
+                label: "Signature",
+                file: signatureFile,
+                setFile: setSignatureFile,
+                preview: sigPreview,
+                setPreview: setSigPreview,
+                accept: "image/*",
+              },
+            ].map((fileInput, idx) => (
+              <div key={idx} className="md:col-span-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  {fileInput.label}
+                </label>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center justify-center w-full h-28 border-2 border-dashed border-[#28328C]/40 rounded-lg cursor-pointer hover:bg-[#28328C]/5 transition">
+                    <Upload className="text-[#28328C] mr-2" size={20} />
+                    <span className="text-gray-600 text-sm">
+                      {fileInput.file ? "Change File" : "Upload"}
+                    </span>
+                    <input
+                      type="file"
+                      accept={fileInput.accept}
+                      className="hidden"
+                      onChange={(e) =>
+                        handleFileChange(
+                          e,
+                          fileInput.setFile,
+                          fileInput.setPreview
+                        )
+                      }
+                    />
+                  </label>
+
+                  {fileInput.file && (
+                    <div className="border border-[#28328C]/30 rounded-lg p-2 bg-gray-50 shadow-sm flex items-center justify-center w-28 h-28">
+                      {fileInput.preview ? (
+                        <img
+                          src={fileInput.preview}
+                          alt="Preview"
+                          className="object-cover w-full h-full rounded-md"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center text-gray-600 text-xs text-center">
+                          <FileText size={20} />
+                          <p className="mt-1 truncate">
+                            {fileInput.file.name}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Submit Button */}
+            <div className="md:col-span-2 text-center mt-6">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`px-8 py-2.5 text-white text-base font-semibold rounded-lg shadow-md transition-all duration-300 ${
+                  loading
+                    ? "bg-[#3a49c9] cursor-not-allowed"
+                    : "bg-[#28328C] hover:bg-[#1f2775] hover:scale-[1.02]"
+                }`}
+              >
+                {loading ? "Submitting..." : "Register Doctor"}
+              </button>
+            </div>
+          </form>
+        </section>
       </main>
     </>
   );

@@ -28,17 +28,34 @@ export default function DoctorLogin() {
     }
 
     try {
-      const data = await loginDoctor(doctorId, password); // 👈 use API
-      console.log("Login Response:", data);
+      setLoading(true);
 
-     
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("doctorId", data.doctor._id);
-      console.log( "doctor ID saved",data.doctor._id);
+      const res = await loginDoctor(doctorId, password);
 
-      navigate(`/doctorDashboard/${data.doctor._id}`);
-    } catch (err: unknown) {
-      setError(err + "Login failed. Please try again.");
+      // ✅ Save token in cookies
+      Cookies.set("doctorToken", res.token, { expires: 7 });
+
+      // ✅ Save info in localStorage (optional)
+      localStorage.setItem("doctorId", res.doctor._id);
+
+      Swal.fire({
+        title: "Login Successful!",
+        text: `Welcome Dr. ${res.doctor.fullName}`,
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setTimeout(() => {
+        navigate(`/doctorDashboard/${res.doctor._id}`);
+      }, 1500);
+    } catch (err: any) {
+      Swal.fire({
+        title: "Login Failed!",
+        text: err?.message || "Invalid Doctor ID or Password.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+      });
     } finally {
       setLoading(false);
     }
@@ -151,9 +168,4 @@ export default function DoctorLogin() {
       </div>
     </>
   );
-};
-
-function setError(arg0: string) {
-  throw new Error("Function not implemented.");
 }
-

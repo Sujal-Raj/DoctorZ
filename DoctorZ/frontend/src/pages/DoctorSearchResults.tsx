@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import {
   MapPin,
   Calendar,
@@ -12,14 +12,25 @@ import { Helmet } from "react-helmet";
 import DoctorCard from "../components/DoctorCard";
 import BookingDrawer from "../components/BookingDrawer";
 import { useEffect, useMemo, useState } from "react";
+import api from "../Services/mainApi";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type SearchState = {
   location?: string;
   specialty?: string;
   date?: string;
 };
+interface DecodedToken {
+  id: string;
+}
 
-const API = "http://localhost:3000/api/doctor/allDoctors";
+// ✅ Get patient ID from token safely
+
+  const token = Cookies.get("patientToken");
+  const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
+
+const API = `/api/doctor/allDoctors/${patientId }`;
 
 const DoctorSearchResults: React.FC = () => {
   const { state } = useLocation();
@@ -49,10 +60,11 @@ const DoctorSearchResults: React.FC = () => {
     const fetchDoctors = async () => {
       setLoading(true);
       try {
-        const res = await axios.get<any>(API);
+        const res = await api.get<any>(API);
         const data = Array.isArray(res.data)
           ? res.data
           : res.data?.doctors ?? res.data;
+          
         setDoctors(data || []);
       } catch (e) {
         console.error("Error fetching doctors:", e);
@@ -62,6 +74,8 @@ const DoctorSearchResults: React.FC = () => {
     };
     fetchDoctors();
   }, []);
+
+
 
   // ✅ Utility for date filter
   const hasSlotForDate = (doc: any, date?: string) => {
@@ -162,6 +176,7 @@ const DoctorSearchResults: React.FC = () => {
 
       return matchesSpec && matchesLocation && matchesDate;
     });
+  
   }, [
     doctors,
     specialty,
@@ -173,11 +188,20 @@ const DoctorSearchResults: React.FC = () => {
     feeFilters,
     languageFilters,
   ]);
+ 
+// ✅ move sort here (after filtered)
+const sortedDoctors = useMemo(() => {
+  return [...filtered].sort((a, b) => {
+    if (a.isFavourite === b.isFavourite) return 0;
+    return a.isFavourite ? -1 : 1;
+  });
 
-  const indexOfLastDoctor = currentPage * doctorsPerPage;
-  const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
-  const currentDoctors = filtered.slice(indexOfFirstDoctor, indexOfLastDoctor);
-  const totalPages = Math.ceil(filtered.length / doctorsPerPage);
+  
+}, [filtered]);
+const indexOfLastDoctor = currentPage * doctorsPerPage;
+const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
+const currentDoctors = sortedDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
+const totalPages = Math.ceil(sortedDoctors.length / doctorsPerPage);
 
   const toggleExp = (val: string) =>
     setExpFilters((s) =>
@@ -204,6 +228,13 @@ const DoctorSearchResults: React.FC = () => {
       replace: true,
     });
   };
+const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
+  setDoctors((prev) =>
+    prev.map((d) =>
+      d._id === doctorId ? { ...d, isFavourite } : d
+    )
+  );
+};
 
   const clearFilters = () => {
     setSpecialty("");
@@ -313,7 +344,13 @@ const DoctorSearchResults: React.FC = () => {
           ) : (
             <div className="space-y-7">
               {currentDoctors.map((doc) => (
-                <DoctorCard key={doc._id} doctor={doc} onConsult={openBooking} />
+                <DoctorCard key={doc._id} doctor={doc} onConsult={openBooking}   onFavouriteToggle={(doctorId, isFav) => {
+    setDoctors((prev) =>
+      prev.map((d) =>
+        d._id === doctorId ? { ...d, isFavourite: isFav } : d
+      )
+    );
+  }} />
               ))}
             </div>
           )}
