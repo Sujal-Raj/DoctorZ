@@ -12,7 +12,9 @@ interface User {
   id: string;
   name: string;
   email: string;
-  aadhar:string
+  aadhar:string;
+  mobileNumber:Number;
+  gender:string;
 }
 
 interface AuthContextType {
@@ -44,7 +46,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           id: decoded.id,
           name: decoded.name,
           email: decoded.email,
-          aadhar:decoded.aadhar
+          aadhar:decoded.aadhar,
+          mobileNumber:decoded.mobileNumber,
+          gender:decoded.gender
         });
 
         setIsLoggedIn(true);
@@ -66,7 +70,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     id: decoded.id,
     name: decoded.name,
     email: decoded.email,
-    aadhar:decoded.aadhar
+    aadhar:decoded.aadhar,
+    mobileNumber:decoded.mobileNumber,
+    gender:decoded.gender
   });
 
   setIsLoggedIn(true);
