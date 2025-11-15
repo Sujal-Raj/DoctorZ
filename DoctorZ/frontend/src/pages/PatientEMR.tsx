@@ -81,30 +81,7 @@ const PatientEMR: React.FC = () => {
         ? record.allergies.join(", ")
         : "None"}
     </p>
-{/*         
-    <p>
-  <strong>Reports:</strong>{" "}
-  {Array.isArray(record.reports) && record.reports.length > 0 ? (
-    <ul className="list-disc ml-6">
-      {record.reports.map((r, i) => (
-        
-        <li key={i}>
-          
-          <a
-            href={r}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {r.split("/").pop()}
-          </a>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    "No reports uploaded"
-  )}
-</p> */}
+
 <p>
   <strong>Reports:</strong>{" "}
   {Array.isArray(record.reports) && record.reports.length > 0 ? (
@@ -112,8 +89,7 @@ const PatientEMR: React.FC = () => {
 
       {record.reports.map((r, i) => {
         
-        console.log("Report file path:", r); // <--- ADD THIS
-
+  
         return (
           <li key={i}>
             <a
