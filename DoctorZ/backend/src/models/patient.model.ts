@@ -18,6 +18,7 @@ export interface IPatient extends Document {
     name:string;
     number:number;
   }
+ 
   favouriteDoctors?: mongoose.Types.ObjectId[]; // Array of favorite doctor IDs
   favouriteClinics?: mongoose.Types.ObjectId[]; // Array of favorite clinic IDs
 }

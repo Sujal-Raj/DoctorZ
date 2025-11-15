@@ -37,7 +37,7 @@ const AllPatient: React.FC = () => {
       if (!drId) return;
       try {
         const res = await api.get<{ bookings: Booking[] }>(
-          `/api/booking/doctor/${drId}`
+          `/api/booking/doctor/${drId}/all-patient`
         );
         setBookings(res.data.bookings || []);
       } catch (err) {

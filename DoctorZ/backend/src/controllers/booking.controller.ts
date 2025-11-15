@@ -40,7 +40,7 @@ export const bookAppointment = async (req: Request, res: Response) => {
       dateTime: new Date(dateTime),
       mode,
       fees,
-      status: "booked",
+      status: "pending",
       patient: { name, age, gender, aadhar, contact, relation },
     });
 
@@ -89,6 +89,70 @@ export const getBookingsByDoctor = async (req: Request, res: Response) => {
     const { doctorId } = req.params;
 
     // Find all bookings for this doctor
+    const bookings = await Booking.find({ doctorId ,status:"pending" })
+      .populate("userId", "fullName email phone") // patient info
+      .populate("slotId") // slot info
+      .lean();
+
+    if (!bookings || bookings.length === 0) {
+      return res.status(200).json({ bookings: [] });
+    }
+
+    // Add EMR data for each booking's patient
+    const bookingsWithEMR = await Promise.all(
+      bookings.map(async (b) => {
+        const emrData = await EMRModel.find({ patientId: b.userId?._id })
+          .sort({ createdAt: -1 })
+          .lean();
+
+        return {
+          ...b,
+          slot: b.slot || null,
+          emr: emrData || [], // include EMR records for this patient
+        };
+      })
+    );
+
+    return res.status(200).json({ bookings: bookingsWithEMR });
+  } catch (err) {
+    console.error("Error fetching doctor bookings:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const updateBookingStatus = async (req: Request, res: Response) => {
+  try {
+    const { bookingId } = req.params;
+    const { status } = req.body; // expected: "completed" or "cancelled"
+
+    if (!["completed", "cancelled", "booked"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const booking = await BookingModel.findByIdAndUpdate(
+      bookingId,
+      { status },
+      { new: true }
+    );
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    return res.json({ message: "Booking updated successfully", booking });
+  } catch (err) {
+    console.error("Error updating booking status:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const getBookingsByDoctorAllPatient = async (req: Request, res: Response) => {
+  try {
+    const { doctorId } = req.params;
+
+    // Find all bookings for this doctor
     const bookings = await Booking.find({ doctorId })
       .populate("userId", "fullName email phone") // patient info
       .populate("slotId") // slot info
@@ -120,56 +184,4 @@ export const getBookingsByDoctor = async (req: Request, res: Response) => {
   }
 };
 
-// export const getBookingsByDoctor = async (req: Request, res: Response) => {
-//   try {
-//     const { doctorId } = req.params;
 
-//     // Find all bookings for this doctor
-//     const bookings = await Booking.find({ doctorId })
-//       .populate("userId", "fullName email phone") // optional populate of patient user
-//       .populate("slotId") // this will give you full slot info
-//       .lean();
-
-//     if (!bookings || bookings.length === 0) {
-//       return res.status(200).json({ bookings: [] });
-//     }
-
-//     // Safely map each booking
-//     const safeBookings = bookings.map((b) => ({
-//       ...b,
-//       slot: b.slotId ? b.slotId : null, // if slotId is null, prevent crash
-//     }));
-
-//     return res.status(200).json({ bookings: safeBookings });
-//   } catch (err) {
-//     console.error("Error fetching doctor bookings:", err);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-
-export const updateBookingStatus = async (req: Request, res: Response) => {
-  try {
-    const { bookingId } = req.params;
-    const { status } = req.body; // expected: "completed" or "cancelled"
-
-    if (!["completed", "cancelled", "booked"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status value" });
-    }
-
-    const booking = await BookingModel.findByIdAndUpdate(
-      bookingId,
-      { status },
-      { new: true }
-    );
-
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-
-    return res.json({ message: "Booking updated successfully", booking });
-  } catch (err) {
-    console.error("Error updating booking status:", err);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
