@@ -304,14 +304,7 @@ const handleSearchResults = (data: unknown) => {
         </p> 
 
       
-        {/* <ul className="space-y-1.5 mb-6">
-          {block.features?.map((feature, i) => (
-            <li key={i} className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="w-1 h-1 bg-blue-400 rounded-full flex-shrink-0"></span>
-              <span className="leading-tight">{feature}</span>
-            </li>
-          ))}
-        </ul>  */}
+    
 
         {/* Enhanced CTA */}
         <button className="group/btn w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all duration-300 flex items-center justify-between text-sm">
@@ -345,7 +338,7 @@ const handleSearchResults = (data: unknown) => {
     </div>
   </div>
 
-  {/* Add this to your CSS for shine animation */}
+
 
 </section>
 
@@ -439,170 +432,7 @@ const handleSearchResults = (data: unknown) => {
         </section>
       )}
 
-      {/* <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-      
-          <div className="flex flex-col md:flex-row items-center justify-between mb-10">
-            <div className="text-center md:text-left mb-6 md:mb-0">
-              <h2 className="text-3xl font-bold text-black">
-                Consult top doctors online for any health concern
-              </h2>
-              <p className="text-md text-gray-700 mt-2">
-                Private online consultations with verified doctors in all
-                specialists
-              </p>
-            </div>
-            <Link
-              to="/specialities" 
-              className="px-6 py-2 border border-blue-400 text-blue-600 rounded-lg hover:bg-blue-50 transition duration-300 font-medium whitespace-nowrap"
-            >
-              View All Specialities
-            </Link>
-          </div>
-
-       
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 justify-items-center">
-         
-            <div className="flex flex-col items-center text-center p-4 group">
-     
-              <div
-                className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-4 
-            bg-red-100 border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300`}
-              >
-          
-                
-                  <Moon className="w-12 h-12 sm:w-14 sm:h-14 text-red-500" />
-              
-              </div>
-         
-              <p className="font-semibold text-gray-800 text-sm sm:text-base mb-2">
-                Period doubts or Pregnancy
-              </p>
-            
-              <Link
-                to="#"
-                className="text-blue-500 text-xs sm:text-sm font-semibold hover:underline hover:text-blue-700 transition"
-              >
-                CONSULT NOW
-              </Link>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 group">
-       
-              <div
-                className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-4 
-            bg-blue-100 border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300`}
-              >
-            
-               
-                  <Droplet className="w-12 h-12 sm:w-14 sm:h-14 text-blue-500" />
-             
-              </div>
-         
-              <p className="font-semibold text-gray-800 text-sm sm:text-base mb-2 ">
-                Acne, pimple or skin issues
-              </p>
-       
-              <Link
-                to="/consult/skin-issues"
-                className="text-blue-500 text-xs sm:text-sm font-semibold hover:underline hover:text-blue-700 transition"
-              >
-                CONSULT NOW
-              </Link>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 group">
- 
-              <div
-                className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-4 
-      bg-purple-100 border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300`}
-              >
-          
-                <Venus className="w-12 h-12 sm:w-14 sm:h-14 text-purple-500" />
-              </div>
-              
-              <p className="font-semibold text-gray-800 text-sm sm:text-base mb-2">
-                Performance issue in bed
-              </p>
-          
-              <Link
-                to="#" 
-                className="text-blue-500 text-xs sm:text-sm font-semibold hover:underline hover:text-blue-700 transition"
-              >
-                CONSULT NOW
-              </Link>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 group">
-   
-              <div
-                className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-4 
-            bg-blue-100 border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300`}
-              >
-                <Thermometer className="w-12 h-12 sm:w-14 sm:h-14 text-orange-500" />
-              </div>
-        
-              <p className="font-semibold text-gray-800 text-sm sm:text-base mb-2">
-                Cold ,cough or fever
-              </p>
-          
-              <Link
-                to="/consult/skin-issues"
-                className="text-blue-500 text-xs sm:text-sm font-semibold hover:underline hover:text-blue-700 transition"
-              >
-                CONSULT NOW
-              </Link>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 group">
-         
-              <div
-                className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-4 
-      bg-orange-100 border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300`}
-              >
-
-                <Baby className="w-12 h-12 sm:w-14 sm:h-14 text-orange-500" />
-              </div>
-       
-              <p className="font-semibold text-gray-800 text-sm sm:text-base mb-2">
-                Child not feeling well
-              </p>
-           
-              <Link
-                to="#" 
-                className="text-blue-500 text-xs sm:text-sm font-semibold hover:underline hover:text-blue-700 transition"
-              >
-                CONSULT NOW
-              </Link>
-            </div>
-
-            <div className="flex flex-col items-center text-center p-4 group">
-     
-              <div
-                className={`w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mb-4 
-            bg-blue-100 border-2 border-gray-200 group-hover:border-blue-300 transition-all duration-300`}
-              >
-            
-                <span className="text-4xl text-blue-500">
-                  <Heart className="w-12 h-12 sm:w-14 sm:h-14 text-blue-500" />
-                </span>
-              </div>
-        
-
-              <p className="font-semibold text-gray-800 text-sm sm:text-base mb-2">
-                Depression or anxiety
-              </p>
-        
-              <Link
-                to="#"
-                className="text-blue-500 text-xs sm:text-sm font-semibold hover:underline hover:text-blue-700 transition"
-              >
-                CONSULT NOW
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section> */}
+    
 
       <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -844,7 +674,7 @@ const handleSearchResults = (data: unknown) => {
             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
               🕒 30-min sessions
             </span>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors duration-300 transform group-hover:scale-105">
+            <button className="bg-[#0c213e] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-300 transform group-hover:scale-105">
               Book Now
             </button>
           </div>
@@ -880,7 +710,7 @@ const handleSearchResults = (data: unknown) => {
             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
               🕒 45-min sessions
             </span>
-            <button className="bg-pink-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-pink-700 transition-colors duration-300 transform group-hover:scale-105">
+            <button className="bg-[#0c213e] text-white px-4 py-2 rounded-lg text-sm font-semibold ransition-colors duration-300 transform group-hover:scale-105">
               Book Now
             </button>
           </div>
@@ -916,7 +746,7 @@ const handleSearchResults = (data: unknown) => {
             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
               🕒 60-min sessions
             </span>
-            <button className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition-colors duration-300 transform group-hover:scale-105">
+            <button className="bg-[#0c213e] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-300 transform group-hover:scale-105">
               Book Now
             </button>
           </div>
@@ -952,7 +782,7 @@ const handleSearchResults = (data: unknown) => {
             <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
               🕒 45-min sessions
             </span>
-            <button className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition-colors duration-300 transform group-hover:scale-105">
+            <button className="bg-[#0c213e] text-white px-4 py-2 rounded-lg text-sm font-semibold  transition-colors duration-300 transform group-hover:scale-105">
               Book Now
             </button>
           </div>

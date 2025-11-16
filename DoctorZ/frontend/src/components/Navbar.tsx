@@ -30,13 +30,16 @@ export default function Navbar() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showLocationPopup, setShowLocationPopup] = useState(false); // Added missing state
+  const [showLocationPopup, setShowLocationPopup] = useState(false);
   const { isLoggedIn, user, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
   const token = Cookies.get("patientToken") || "";
   const decoded = token ? jwtDecode<MyTokenPayload>(token) : null;
+  
+  // Get patientId from decoded token
+  const patientId = decoded?.id || "";
 
   // ---------------- LOCATION ----------------
   const [userLocation, setUserLocation] = useState<string>("Detecting location...");
@@ -103,7 +106,7 @@ export default function Navbar() {
     setUserLocation(city);
     localStorage.setItem("userLocation", city);
     setShowLocationPopup(false);
-    setLocationDropdownOpen(false); // Close dropdown when location is selected
+    setLocationDropdownOpen(false);
   };
 
   const handleUseCurrentLocation = async () => {
@@ -124,7 +127,7 @@ export default function Navbar() {
       const locationText = `${data.city || "Unknown"}, ${data.countryName || ""}`;
       setUserLocation(locationText);
       localStorage.setItem("userLocation", locationText);
-      setLocationDropdownOpen(false); // Close dropdown when location is selected
+      setLocationDropdownOpen(false);
     } catch {
       setLocationError("Failed to fetch location");
     } finally {
@@ -175,7 +178,7 @@ export default function Navbar() {
             {/* Location Dropdown */}
             <DropdownMenu.Root open={locationDropdownOpen} onOpenChange={setLocationDropdownOpen}>
               <DropdownMenu.Trigger asChild>
-                <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-white hover:bg-gray-50 cursor-pointer">
+                <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-white hover:bg-gray-50 cursor-pointer rounded-lg border border-gray-200">
                   {isLocating ? (
                     <Loader2 className="w-4 h-4 text-[#28328C] animate-spin" />
                   ) : (
@@ -432,7 +435,11 @@ export default function Navbar() {
       </nav>
 
       {/* Right Sidebar */}
-      <RightSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} patientId={patientId} />
+      <RightSidebar 
+        open={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        patientId={patientId} 
+      />
 
       {/* Location Popup */}
       {showLocationPopup && (
