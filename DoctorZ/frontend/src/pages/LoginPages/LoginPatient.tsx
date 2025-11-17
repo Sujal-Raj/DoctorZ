@@ -176,3 +176,7 @@ export default function LoginPatient() {
     </>
   );
 }
+function setLoading(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+

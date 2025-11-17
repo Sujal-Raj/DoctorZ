@@ -122,8 +122,8 @@ const enhancedClinics = enhanceClinicsWithMockData(data);
       }
     };
 
-    fetchClinics();
-  }, []);
+  fetchClinics();
+}, []);
 
   // ✅ Filters & Search
   const filtered = useMemo(() => {

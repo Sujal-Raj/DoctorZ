@@ -4,8 +4,9 @@ import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
 import Swal from "sweetalert2";
 import { useOutletContext } from "react-router-dom";
-import { FileText, Upload } from "lucide-react";
+
 import { registerDoctor } from "../../Services/doctorApi";
+import { FileText, Upload } from "lucide-react";
 
 type DoctorFormInputs = {
   fullName: string;
@@ -31,6 +32,56 @@ interface ClinicContext {
   clinicId?: string;
 }
 
+/* -------------------------- Reusable Inputs -------------------------- */
+const FormInput = ({ label, name, register, error, placeholder, type = "text" }: any) => (
+  <div className="flex flex-col">
+    <label className="text-gray-700 font-medium">{label}</label>
+    <input
+      type={type}
+      {...register(name, { required: `${label} is required` })}
+      placeholder={placeholder}
+      className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
+    />
+    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+  </div>
+);
+
+const SelectInput = ({ label, name, register, error }: any) => (
+  <div className="flex flex-col">
+    <label className="text-gray-700 font-medium">{label}</label>
+    <select
+      {...register(name, { required: `${label} is required` })}
+      className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
+    >
+      <option value="">Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+  </div>
+);
+
+const FileUpload = ({ label, fileName, setFile, setFileName, accept }: any) => (
+  <div className="flex flex-col">
+    <label className="text-gray-700 font-medium">{label}</label>
+    <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all text-sm sm:text-base">
+      Upload File
+      <input
+        type="file"
+        accept={accept}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          setFile(file || null);
+          setFileName(file?.name || "No file selected");
+        }}
+      />
+    </label>
+    <p className="mt-2 text-xs sm:text-sm text-gray-500 truncate">{fileName}</p>
+  </div>
+);
+
 const RegisterDoctor: React.FC = () => {
   const {
     register,
@@ -50,21 +101,11 @@ const RegisterDoctor: React.FC = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [sigPreview, setSigPreview] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [degreeName, setDegreeName] = useState<string>("No file selected");
+  const [photoName, setPhotoName] = useState<string>("No file selected");
+  const [sigName, setSigName] = useState<string>("No file selected");
 
-  const handleFileChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setFile: React.Dispatch<React.SetStateAction<File | null>>,
-    setPreview: React.Dispatch<React.SetStateAction<string | null>>
-  ) => {
-    const selectedFile = e.target.files?.[0];
-    setFile(selectedFile || null);
-    if (selectedFile && selectedFile.type.startsWith("image/")) {
-      setPreview(URL.createObjectURL(selectedFile));
-    } else {
-      setPreview(null);
-    }
-  };
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: DoctorFormInputs) => {
     setLoading(true);
@@ -134,6 +175,10 @@ const RegisterDoctor: React.FC = () => {
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>, setPreview: React.Dispatch<React.SetStateAction<string | null>>): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <>
@@ -403,3 +448,4 @@ const RegisterDoctor: React.FC = () => {
 };
 
 export default RegisterDoctor;
+
