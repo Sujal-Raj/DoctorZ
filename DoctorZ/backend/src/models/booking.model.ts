@@ -19,7 +19,7 @@ export interface IBooking extends Document {
   dateTime: Date;
   mode: "online" | "offline";
   fees: number;
-  status: "booked" | "cancelled" | "completed";
+  status: "pending" | "completed";
   createdAt: Date;
   updatedAt: Date;
  
@@ -52,8 +52,8 @@ const bookingSchema = new Schema<IBooking>(
 
     status: {
       type: String,
-      enum: ["booked", "cancelled", "completed"],
-      default: "booked",
+      enum: ["pending", "completed"],
+      default: "pending", // ✔ default to pending
       required: true,
     },
     

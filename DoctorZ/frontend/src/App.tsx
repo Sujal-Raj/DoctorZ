@@ -64,7 +64,7 @@ import UserProfile from "./pages/UserPages/UserProfile";
 import UserDashboard from "./pages/UserPages/UserDashboard";
 import AddEmr from "./pages/UserPages/AddEmr";
 // import DoctorChat from "./pages/DoctorPages/DoctorChat";
-import PatientChat from "./pages/PatientChat";
+// import PatientChat from "./pages/PatientChat";
 import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import PatientAppointments from "./pages/UserPages/PatientAppointments";
 import DoctorSearchResults from "./pages/DoctorSearchResults";
