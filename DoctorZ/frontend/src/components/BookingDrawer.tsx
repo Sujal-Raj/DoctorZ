@@ -453,7 +453,7 @@ reports?: FileList|null; // uploaded reports
                           }
                           ${
                             disabled
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              ? "bg-gray-100 text-gray-100 cursor-not-allowed"
                               : ""
                           }`}
                       >
@@ -501,11 +501,11 @@ reports?: FileList|null; // uploaded reports
                             disabled={isBooked}
                             className={`p-2 rounded border text-sm transition-all ${
                               selected
-                                ? "bg-[#28328C] text-white shadow"
-                                : "bg-white text-gray-800 hover:shadow-sm"
+                                ? "bg-[#28328C] text-white shadow "
+                                : "bg-white text-gray-800 hover:shadow-sm border-green-300"
                             } ${
                               isBooked
-                                ? "!bg-gray-200 text-gray-950 cursor-not-allowed"
+                                ? "!bg-gray-200 text-gray-100 border-gray-200 cursor-not-allowed"
                                 : ""
                             }`}
                           >

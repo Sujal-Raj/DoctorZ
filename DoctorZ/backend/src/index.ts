@@ -25,6 +25,7 @@ import timeSlotsRoutes from "./routes/timeSlots.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import labRoutes from "./routes/lab.routes.js";
 import emrRoutes from "./routes/emr.routes.js";
+import prescriptionRoutes from "./routes/prescription.routes.js";
 // dotenv.config();
  dbConnect();
 const PORT = 3000;
@@ -127,6 +128,7 @@ app.use("/api/availability",timeSlotsRoutes)
 app.use("/api/booking",bookingRoutes)
 app.use("/api/lab", labRoutes);
 app.use("/api/emr",emrRoutes);
+app.use("/api/prescription",prescriptionRoutes);
 
 // app.use(express.static(path.join(__dirname, "../../frontend/dist")));
 
