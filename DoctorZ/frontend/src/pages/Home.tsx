@@ -119,153 +119,497 @@ const handleSearchResults = (data: unknown) => {
   }
 };
 
+  function handleSearch(value: string): void {
+    throw new Error("Function not implemented.");
+  }
+
+
+  // The real image URL retrieved for a professional doctor
+  const doctorImageUrl = "/doctor.webp";
+
   return (
     <div className="flex flex-col max-w-[1500px] bg-gray-50">
       {/* --- Main Search/Hero Section (Inspired by image_7f854e.png) --- */}
-<header className="relative bg-gradient-to-r from-blue-900 to-purple-900 py-16 md:py-24 overflow-hidden">
-  {/* Background Pattern */}
-  <div className="absolute inset-0 opacity-10">
-    <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-    <div className="absolute top-0 right-0 w-72 h-72 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-    <div className="absolute bottom-0 left-1/2 w-72 h-72 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
-  </div>
+      {/* design 1 ...... */}
+{/* <header className="relative bg-gray-900 min-h-[85vh] flex items-center overflow-hidden">
 
-  {/* Medical Icons Floating */}
-  <div className="absolute inset-0 opacity-5">
-    <span className="absolute top-1/4 left-10 text-4xl">🩺</span>
-    <span className="absolute top-1/3 right-20 text-3xl">💊</span>
-    <span className="absolute bottom-1/4 left-20 text-5xl">🏥</span>
-    <span className="absolute bottom-1/3 right-10 text-4xl">❤️</span>
-  </div>
+      <div className="absolute inset-0">
+  
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1576091160550-2173dba99932?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0OTI3MDV8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBtZWRpY2FsJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3MTAxNDU4NTF8MA&lib=rb-4.0.3&q=80&w=1080")' }}>
 
-  <div className="container mx-auto px-4 relative z-10">
-    <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-      {/* Left Content */}
-      <div className="flex-1 text-center lg:text-left">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-          Find & Book
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">
-            The Best Doctors
-          </span>
-          Near You
-        </h1>
-        
-        <p className="text-xl text-blue-100 mb-8 max-w-2xl leading-relaxed">
-          Connect with 10,000+ verified doctors for online consultations, 
-          in-clinic visits, and lab tests. Your health is our priority.
-        </p>
-
-        {/* Trust Indicators */}
-        <div className="flex flex-wrap gap-6 mb-8 justify-center lg:justify-start">
-          <div className="flex items-center gap-2 text-white">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <span className="text-sm">✓</span>
-            </div>
-            <span className="text-sm font-medium">Verified Doctors</span>
-          </div>
-          <div className="flex items-center gap-2 text-white">
-            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-sm">🕒</span>
-            </div>
-            <span className="text-sm font-medium">24/7 Available</span>
-          </div>
-          <div className="flex items-center gap-2 text-white">
-            <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-              <span className="text-sm">🏆</span>
-            </div>
-            <span className="text-sm font-medium">Award Winning</span>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="flex flex-wrap gap-8 justify-center lg:justify-start">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">10K+</div>
-            <div className="text-blue-200 text-sm">Happy Patients</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">500+</div>
-            <div className="text-blue-200 text-sm">Expert Doctors</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-white">50+</div>
-            <div className="text-blue-200 text-sm">Cities</div>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-purple-900/90"></div>
         </div>
       </div>
 
-      {/* Right Content - Search Section */}
-      <div className="flex-1 max-w-2xl w-full">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-[1.02] transition-transform duration-300">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              Find Doctors & Book Instantly
-            </h3>
-            <p className="text-gray-600">
-              Search by specialty, symptoms, or doctor name
-            </p>
-          </div>
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 -left-1/4 w-[500px] h-[500px] bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
+        <div className="absolute -bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
+      </div>
 
-          {/* Search Bar */}
-          <div className="mb-6">
-            <SearchBar onResults={handleSearchResults} />
-          </div>
+   
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <span className="absolute top-1/4 left-10 text-7xl text-blue-300/50">🩺</span>
+        <span className="absolute top-1/3 right-20 text-6xl text-purple-300/50">💊</span>
+        <span className="absolute bottom-1/4 left-1/3 text-8xl text-pink-300/50">❤️</span>
+        <span className="absolute bottom-1/3 right-10 text-7xl text-blue-300/50">🔬</span>
+      </div>
 
-          {/* Quick Filters */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <button className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors group">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-lg">👨‍⚕️</span>
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-gray-900 text-sm">Video Consult</div>
-                <div className="text-xs text-gray-500">Available 24/7</div>
-              </div>
-            </button>
-            
-            <button className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors group">
-              <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-lg">🏥</span>
-              </div>
-              <div className="text-left">
-                <div className="font-semibold text-gray-900 text-sm">Clinic Visit</div>
-                <div className="text-xs text-gray-500">Book Appointment</div>
-              </div>
-            </button>
-          </div>
+      <div className="container mx-auto px-4 relative z-10 py-20">
+        
+     
+        <div className="max-w-4xl mx-auto text-center">
+          
+         
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+            Book <span className="text-blue-400">Trusted</span> & 
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300 mt-2">
+              Verified Doctors
+            </span>
+            Instantly
+          </h1>
 
-          {/* Emergency Section */}
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-lg">🚑</span>
-              </div>
+          <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto leading-snug font-light">
+            Connect with **10,000+ top specialists** for in-person or video consultations. 
+            Your health, our priority.
+          </p>
+
+          
+          <div className="max-w-3xl mx-auto mb-10 p-2 bg-white/20 backdrop-blur-md rounded-2xl shadow-xl border border-white/30">
+            <div className="flex flex-col md:flex-row gap-2">
               <div className="flex-1">
-                <div className="font-semibold text-red-900">Medical Emergency?</div>
-                <div className="text-sm text-red-700">Call our 24/7 helpline</div>
+                <input 
+                  type="text" 
+                  placeholder="Search by Specialty, Symptom, or Doctor name..." 
+                  className="w-full text-lg p-4 rounded-xl border-none focus:ring-4 focus:ring-purple-500/50 placeholder-gray-500 text-gray-800 shadow-inner"
+                  // You would replace this with a proper SearchBar component
+                  onChange={(e) => handleSearch(e.target.value)} 
+                />
               </div>
-              <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
-                Call Now
+              <button className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-8 py-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all text-lg shadow-lg">
+                Find My Doctor
               </button>
             </div>
           </div>
+
+         
+          <div className="flex justify-center flex-wrap gap-4 mb-16">
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              Video Consultations 👨‍💻
+            </button>
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              General Physician 🩺
+            </button>
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              Pediatrician 👶
+            </button>
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              Check Lab Results 🔬
+            </button>
+          </div>
+
+          
+          <div className="flex gap-12 justify-center border-t border-b border-white/20 py-6">
+              <div className="text-center">
+                <div className="text-4xl font-extrabold text-white">10K+</div>
+                <div className="text-blue-200 text-sm tracking-wide mt-1">Happy Patients</div>
+              </div>
+              <div className="text-center border-l border-white/20 pl-12">
+                <div className="text-4xl font-extrabold text-white">500+</div>
+                <div className="text-blue-200 text-sm tracking-wide mt-1">Expert Doctors</div>
+              </div>
+              <div className="text-center border-l border-white/20 pl-12">
+                <div className="text-4xl font-extrabold text-white">4.9/5</div>
+                <div className="text-blue-200 text-sm tracking-wide mt-1">Average Rating</div>
+              </div>
+            </div>
         </div>
       </div>
-    </div>
+    </header> */}
 
-    {/* Scroll Indicator */}
-    <div className="text-center mt-12">
-      <div className="inline-flex flex-col items-center text-white">
-        <span className="text-sm mb-2">Scroll to explore</span>
-        <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white rounded-full mt-2 animate-bounce"></div>
+
+    {/* design 2 ..... */}
+{/* <header className="relative bg-gray-900 min-h-[85vh] flex items-center overflow-hidden">
+   
+      <div className="absolute inset-0">
+    
+        <div 
+          className="absolute inset-0 bg-cover bg-center" 
+          style={{ backgroundImage: `url("${doctorImageUrl}")` }}
+        >
+          
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/90 to-purple-900/90"></div>
         </div>
       </div>
+
+     
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 -left-1/4 w-[500px] h-[500px] bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
+        <div className="absolute -bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
+      </div>
+
+    
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <span className="absolute top-1/4 left-10 text-7xl text-blue-300/50">🩺</span>
+        <span className="absolute top-1/3 right-20 text-6xl text-purple-300/50">💊</span>
+        <span className="absolute bottom-1/4 left-1/3 text-8xl text-pink-300/50">❤️</span>
+        <span className="absolute bottom-1/3 right-10 text-7xl text-blue-300/50">🔬</span>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10 py-20">
+        
+       
+        <div className="max-w-4xl mx-auto text-center">
+          
+        
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+            Book <span className="text-blue-400">Trusted</span> & 
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300 mt-2">
+              Verified Doctors
+            </span>
+            Instantly
+          </h1>
+
+          <p className="text-xl text-blue-100 mb-12 max-w-2xl mx-auto leading-snug font-light">
+            Connect with **10,000+ top specialists** for in-person or video consultations. 
+            Your health, our priority.
+          </p>
+
+          
+          <div className="max-w-3xl mx-auto mb-10 p-2 bg-white/20 backdrop-blur-md rounded-2xl shadow-xl border border-white/30">
+            <div className="flex flex-col md:flex-row gap-2">
+              <div className="flex-1">
+                <input 
+                  type="text" 
+                  placeholder="Search by Specialty, Symptom, or Doctor name..." 
+                  className="w-full text-lg p-4 rounded-xl border-none focus:ring-4 focus:ring-purple-500/50 placeholder-gray-500 text-gray-800 shadow-inner"
+                  onChange={(e) => handleSearch(e.target.value)} 
+                />
+              </div>
+              <button className="flex-shrink-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold px-8 py-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all text-lg shadow-lg">
+                Find My Doctor
+              </button>
+            </div>
+          </div>
+
+      
+          <div className="flex justify-center flex-wrap gap-4 mb-16">
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              Video Consultations 👨‍💻
+            </button>
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              General Physician 🩺
+            </button>
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              Pediatrician 👶
+            </button>
+            <button className="text-white text-sm font-semibold bg-white/10 hover:bg-white/20 transition-colors py-2 px-4 rounded-full border border-white/30">
+              Check Lab Results 🔬
+            </button>
+          </div>
+
+         
+          <div className="flex gap-12 justify-center border-t border-b border-white/20 py-6">
+              <div className="text-center">
+                <div className="text-4xl font-extrabold text-white">10K+</div>
+                <div className="text-blue-200 text-sm tracking-wide mt-1">Happy Patients</div>
+              </div>
+              <div className="text-center border-l border-white/20 pl-12">
+                <div className="text-4xl font-extrabold text-white">500+</div>
+                <div className="text-blue-200 text-sm tracking-wide mt-1">Expert Doctors</div>
+              </div>
+              <div className="text-center border-l border-white/20 pl-12">
+                <div className="text-4xl font-extrabold text-white">4.9/5</div>
+                <div className="text-blue-200 text-sm tracking-wide mt-1">Average Rating</div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </header> */}
+
+
+    {/* design 3 ..... */}
+
+{/* <header className="relative bg-white min-h-[85vh] flex items-center overflow-hidden">
+    
+   
+    <div className="absolute inset-0 opacity-10 pointer-events-none">
+       
+        <div className="absolute inset-0 bg-repeat" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239eebff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3C/g%3E%3C/svg%3E")` }}></div>
+        
+        <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
     </div>
-  </div>
+
+    <div className="container mx-auto px-4 relative z-10 py-20">
+        
+       
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+            
+            
+            <div className="md:col-span-7 lg:col-span-6 text-center md:text-left">
+                
+               
+                <div className="inline-block bg-blue-100 text-blue-700 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                    ⭐️ Verified Health Network
+                </div>
+
+              
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
+                    Find the <span className="text-blue-600">Right Doctor</span>, 
+                    <span className="block">Right Now.</span>
+                </h1>
+
+          
+                <p className="text-xl text-gray-600 mb-8 max-w-xl md:max-w-none mx-auto leading-snug">
+                    Access transparent profiles, real patient reviews, and instant booking 
+                    for over **100+ specialties**. Your health journey starts here.
+                </p>
+
+             
+                <div className="mt-10 max-w-2xl md:max-w-full mx-auto p-3 bg-white rounded-3xl shadow-xl border border-gray-100">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="flex-1">
+                            <input 
+                                type="text" 
+                                placeholder="Search by Specialty, Symptom, or Location..." 
+                                className="w-full text-lg p-4 rounded-2xl border-none focus:ring-4 focus:ring-blue-500/50 placeholder-gray-400 text-gray-800 shadow-inner bg-gray-50"
+                                onChange={(e) => handleSearch(e.target.value)} 
+                            />
+                        </div>
+                        <button className="flex-shrink-0 bg-blue-600 text-white font-bold px-8 py-4 rounded-2xl hover:bg-blue-700 transition-all text-lg shadow-lg">
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+           
+                <div className="flex justify-center md:justify-start flex-wrap gap-3 mt-6">
+                    <button className="text-gray-700 text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors py-2 px-4 rounded-full">
+                        Find Dentists 🦷
+                    </button>
+                    <button className="text-gray-700 text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors py-2 px-4 rounded-full">
+                        Book Telehealth 📞
+                    </button>
+                    <button className="text-gray-700 text-sm font-medium bg-gray-100 hover:bg-gray-200 transition-colors py-2 px-4 rounded-full">
+                        View Pediatricians 👶
+                    </button>
+                </div>
+
+            </div>
+
+           
+            <div className="md:col-span-5 lg:col-span-6 flex justify-center mt-10 md:mt-0">
+             
+                <div className="w-full max-w-md h-[450px] bg-blue-50 border-8 border-white rounded-3xl shadow-2xl relative overflow-hidden">
+                    
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center" 
+                        style={{ backgroundImage: `url("${doctorImageUrl}")` }}
+                    >
+                       
+                        <div className="flex items-center justify-center h-full text-gray-500 text-xl font-medium">
+                            
+                        </div>
+                    </div>
+                    
+                 
+                    <div className="absolute -bottom-4 -left-4 bg-white p-3 rounded-xl shadow-lg border border-blue-200 transform rotate-[-5deg]">
+                        <span className="text-sm font-bold text-green-600">
+                            ✅ 10K+ Bookings
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div className="mt-16 pt-8 border-t border-gray-100">
+            <div className="flex gap-8 justify-center flex-wrap">
+                <div className="text-center">
+                    <div className="text-4xl font-extrabold text-blue-600">98%</div>
+                    <div className="text-gray-500 text-sm tracking-wide mt-1">Satisfaction Rate</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-4xl font-extrabold text-blue-600">100+</div>
+                    <div className="text-gray-500 text-sm tracking-wide mt-1">Specialties Available</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-4xl font-extrabold text-blue-600">24/7</div>
+                    <div className="text-gray-500 text-sm tracking-wide mt-1">Support & Booking</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</header> */}
 
 
+{/* design 4 .... */}
+
+{/* <header className="relative bg-white min-h-[90vh] flex items-center overflow-hidden">
+    
+
+    <div className="absolute inset-0 md:left-1/2">
+       <div 
+            className="absolute inset-0 bg-cover bg-center" 
+           style={{ backgroundImage: `url(${doctorImageUrl})` }}
+        >
+            
+            <div className="absolute inset-0 bg-gradient-to-r from-white/95 to-transparent"></div>
+        </div>
+    </div>
+    
+   
+    <div className="container mx-auto px-4 relative z-10 py-24 md:py-32">
+        
+        <div className="max-w-xl text-center md:text-left">
+            
+           
+            <div className="inline-block bg-green-100 text-green-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4 shadow-sm">
+                ✅ 5-Star Rated Health Booking
+            </div>
+
+         
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
+                Connect with <span className="text-green-600">Expert Care</span>, 
+                <span className="block">Today.</span>
+            </h1>
+
+           
+            <p className="text-xl text-gray-700 mb-10 leading-relaxed font-light">
+                Find the perfect specialist near you. Easy scheduling, transparent pricing, and verified patient reviews.
+            </p>
+
+           
+            <div className="max-w-lg mx-auto md:mx-0 p-3 bg-white/95 border border-gray-100 rounded-3xl shadow-xl">
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1">
+                        <input 
+                            type="text" 
+                            placeholder="Specialty, Doctor name, or Symptom..." 
+                            className="w-full text-lg p-4 rounded-2xl border-none focus:ring-4 focus:ring-green-500/50 placeholder-gray-500 text-gray-800 shadow-inner bg-gray-50"
+                            onChange={(e) => handleSearch(e.target.value)} 
+                        />
+                    </div>
+                    <button className="flex-shrink-0 bg-green-600 text-white font-extrabold px-8 py-4 rounded-2xl hover:bg-green-700 transition-all text-lg shadow-lg">
+                        Search
+                    </button>
+                </div>
+            </div>
+
+            
+            <div className="flex gap-10 justify-center md:justify-start mt-10">
+                <div className="text-left">
+                    <div className="text-4xl font-extrabold text-green-600">10K+</div>
+                    <div className="text-gray-600 text-sm tracking-wide mt-1">Verified Doctors</div>
+                </div>
+                <div className="text-left">
+                    <div className="text-4xl font-extrabold text-green-600">500K+</div>
+                    <div className="text-gray-600 text-sm tracking-wide mt-1">Happy Patients</div>
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+</header> */}
+
+{/* desgin  ...5  */}
+
+<header className="relative bg-white min-h-[85vh] flex items-start pt-20 overflow-hidden">
+    
+    {/* ==================================================================== */}
+    {/* 1. Background Structure: Subtle Blue/Gray Gradient and Grid            */}
+    {/* ==================================================================== */}
+    <div className="absolute inset-0 opacity-70 pointer-events-none">
+        {/* Soft, professional background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white"></div>
+        
+        {/* Subtle grid pattern for texture and professionalism */}
+        <div className="absolute inset-0" style={{ 
+            backgroundImage: `linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)`, 
+            backgroundSize: '40px 40px', 
+            opacity: 0.5 
+        }}></div>
+    </div>
+
+    {/* ==================================================================== */}
+    {/* 2. Main Content Container (Full-Width Focus)                         */}
+    {/* ==================================================================== */}
+    <div className="container mx-auto px-4 relative z-10">
+        
+        {/* Central Content Block (No Grid) */}
+        <div className="max-w-5xl mx-auto text-center pt-10">
+            
+            {/* Headline: Now Centered */}
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight">
+                Your Health, <span className="text-blue-700">Simplified.</span>
+                <span className="block text-4xl md:text-5xl mt-2 font-semibold text-gray-800/90">
+                    Book Verified Professionals Instantly.
+                </span>
+            </h1>
+
+            {/* Description and Trust Seals */}
+            <p className="text-xl text-gray-600 mb-6 max-w-xl mx-auto leading-relaxed">
+                Trusted by millions, our platform connects you instantly with **certified doctors** and transparent, upfront information.
+            </p>
+
+            {/* Trust Seals/Badges: Now Centered */}
+            <div className="flex justify-center gap-8 mt-6 mb-10 flex-wrap">
+                <div className="flex items-center text-base font-semibold text-gray-800">
+                    <span className="text-blue-500 mr-2 text-xl">✅</span> 100% Verified Reviews
+                </div>
+                <div className="flex items-center text-base font-semibold text-gray-800">
+                    <span className="text-blue-500 mr-2 text-xl">🛡️</span> HIPAA Compliant Security
+                </div>
+            </div>
+
+            {/* Integrated Search Bar (Now Full-Width Focused Below Text) */}
+            <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-3xl shadow-2xl shadow-blue-200/60 border-t-4 border-blue-600">
+                <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                    Start Your Search Instantly
+                </h3>
+                
+                <div className="flex flex-col md:flex-row gap-4">
+                    <input 
+                        type="text" 
+                        placeholder="Specialty, Doctor, or Symptom..." 
+                        className="flex-1 text-lg p-4 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 placeholder-gray-500 text-gray-800"
+                        onChange={(e) => handleSearch(e.target.value)} 
+                    />
+                    <input 
+                        type="text" 
+                        placeholder="City or Zip Code" 
+                        className="flex-1 text-lg p-4 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 placeholder-gray-500 text-gray-800"
+                    />
+                    <button className="flex-shrink-0 bg-blue-600 text-white font-extrabold px-8 py-4 rounded-xl hover:bg-blue-700 transition-all text-xl shadow-lg shadow-blue-400/50">
+                        Find My Appointment 🔍
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+        
+        {/* 3. Global Stats/Footers (Wide Trust Indicators) */}
+        <div className="mt-20 pt-8 pb-12 border-t border-gray-200">
+            <div className="flex gap-12 justify-center flex-wrap">
+                <div className="text-center">
+                    <div className="text-5xl font-extrabold text-blue-700">1M+</div>
+                    <div className="text-gray-500 text-sm tracking-widest uppercase mt-1">Total Bookings</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-5xl font-extrabold text-blue-700">4.9/5</div>
+                    <div className="text-gray-500 text-sm tracking-widest uppercase mt-1">User Rating</div>
+                </div>
+                <div className="text-center">
+                    <div className="text-5xl font-extrabold text-blue-700">200+</div>
+                    <div className="text-gray-500 text-sm tracking-widest uppercase mt-1">Top Specialties</div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
 </header>
+
 
       {/* --- Service Blocks (Inspired by image_7f854e.png) --- */}
   <section className="py-2 bg-white border-b border-gray-200">

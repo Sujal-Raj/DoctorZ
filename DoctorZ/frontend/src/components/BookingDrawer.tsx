@@ -1,602 +1,316 @@
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
 
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import { X, Video, Phone, ChevronLeft, ChevronRight } from "lucide-react";
-import { formatDayShort, formatDateNumber } from "../utils/date.js";
-import api from "../Services/mainApi.js";
-import { startOfMonth, endOfMonth } from "date-fns";
-import AppointmentFormModal from "./AppointmentFormModal.js";
-import Swal from "sweetalert2";
-import { Helmet } from "react-helmet";
-
-interface Slot {
-  _id: string;
-  time: string;
-  isActive: boolean;
-}
-
-interface DoctorForBooking {
-  _id: string;
-  fullName: string;
-  photo?: string;
-  specialization?: string;
-  fees: number;
-  clinicAddress?: string;
-}
-
-interface FormData {
-  name: string;
-  age: string;
-  gender: string;
-  aadhar: string;
-  contact: string;
-}
-
-interface Props {
-  doctor: DoctorForBooking | null;
+interface AppointmentFormModalProps {
   open: boolean;
   onClose: () => void;
-  onBooked?: (bookingInfo: unknown) => void;
-}
-interface MonthDataEntry {
-  date: string;
-  slots: Slot[];
-}
-
-interface SlotsAPIResponse {
-  availableMonths: {
-    [key: string]: Array<{
-      date: string;
-      slots: Slot[];
-    }>;
-  };
-}
-
-interface BookingPayload {
-  doctorId: string;
-  userId: string;
-  mode: "online" | "offline";
-  datetime: string;
-  fees: number;
-  slotId: string | undefined;
-  patient: {
+  onSubmit: (formData: {
     name: string;
     age: number;
     gender: "Male" | "Female" | "Other";
     aadhar: string;
     contact: string;
-  };
-  createdAt: string;
+    allergies?: string[];
+    diseases?: string[];
+    pastSurgeries?: string[];
+    currentMedications?: string[];
+    reports?: FileList | null;
+    relation: "self" | "relative";
+  }) => Promise<void> | void;
+  loading: boolean;
 }
 
-interface JwtPayload {
-  id: string;
-  [key: string]: any;
-}
-
-const BookingDrawer: React.FC<Props> = ({
-  doctor,
+const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
   open,
   onClose,
-  onBooked,
+  onSubmit,
+  loading,
 }) => {
-  const [mode, setMode] = useState<"online" | "offline">("online");
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [bookingLoading, setBookingLoading] = useState(false);
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [showForm, setShowForm] = useState(false);
-  const [loadingSlots, setLoadingSlots] = useState(false);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const [availableMonthKeys, setAvailableMonthKeys] = useState<string[]>([]);
-  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [relation, setRelation] = useState<"self" | "relative">("self");
 
-  const days = useMemo(() => {
-    const start = startOfMonth(currentMonth);
-    const end = endOfMonth(currentMonth);
+  const [formData, setFormData] = useState({
+    name: "",
+    age: "",
+    gender: "Male" as "Male" | "Female" | "Other",
+    aadhar: "",
+    contact: "",
+    allergies: "",
+    diseases: "",
+    pastSurgeries: "",
+    currentMedications: "",
+    reports: null as FileList | null, // ✅ Added
+  });
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const arr: Date[] = [];
-    const d = new Date(start);
-
-    while (d <= end) {
-      if (d >= today) arr.push(new Date(d));
-      d.setDate(d.getDate() + 1);
-    }
-
-    return arr;
-  }, [currentMonth]);
-
-  const formatDate = (date: Date): string =>
-    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(date.getDate()).padStart(2, "0")}`;
-
+  // Auto-fill for self user
   useEffect(() => {
-    if (!doctor) return;
-    setMode("online");
-    const today = new Date();
-    setSelectedDate(today);
-    setSelectedTime(null);
-    setSlots([]);
-    setShowForm(false);
-  }, [doctor]);
+    if (relation === "self") {
+      const token = document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("patientToken="))
+        ?.split("=")[1];
 
-  const monthKey = `${currentMonth.getFullYear()}-${String(
-    currentMonth.getMonth() + 1
-  ).padStart(2, "0")}`;
-
-  useEffect(() => {
-    const fetchSlots = async () => {
-      if (!doctor || !selectedDate) return;
-      setLoadingSlots(true);
-
-      try {
-        const res = await api.get<SlotsAPIResponse>(
-          `/api/patient/slots/${doctor._id}`
-        );
-        if (
-          !res.data ||
-          !res.data.availableMonths ||
-          Object.keys(res.data.availableMonths).length === 0
-        ) {
-          setSlots([]);
-          setAvailableMonthKeys([]);
-          setAvailableDates([]);
-          return;
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          setFormData((prev) => ({
+            ...prev,
+            name: payload.name || "",
+            age: payload.age?.toString() || "",
+            gender: payload.gender || "Male",
+            aadhar: payload.aadhar || "",
+            contact: payload.mobileNumber || "",
+          }));
+        } catch (error) {
+          console.error("Error decoding token:", error);
         }
-
-        const monthKey = `${selectedDate.getFullYear()}-${String(
-          selectedDate.getMonth() + 1
-        ).padStart(2, "0")}`;
-        const keys = Object.keys(res.data.availableMonths || {}).sort();
-        setAvailableMonthKeys(keys);
-
-        if (keys.length > 0 && !keys.includes(monthKey)) {
-          const [y, m] = keys[0].split("-");
-          const firstMonth = new Date(Number(y), Number(m) - 1);
-          setCurrentMonth(firstMonth);
-          setSelectedDate(firstMonth);
-        }
-
-        const monthData: MonthDataEntry[] =
-          res.data.availableMonths?.[monthKey] ?? [];
-
-        setAvailableDates(monthData.map((entry) => entry.date.slice(0, 10)));
-
-        const dateEntry = monthData.find(
-          (entry) => entry.date.slice(0, 10) === formatDate(selectedDate)
-        );
-
-        if (!dateEntry && monthData.length > 0) {
-          const firstDate = new Date(monthData[0].date);
-          setSelectedDate(firstDate);
-          return;
-        }
-
-        setSlots(dateEntry?.slots ?? []);
-      } catch (err) {
-        console.error("Failed to fetch slots", err);
-        setSlots([]);
-      } finally {
-        setLoadingSlots(false);
       }
-    };
-
-    fetchSlots();
-  }, [doctor, selectedDate]);
-
- 
-
-
-  const handleBook = async (formData: {
-  name: string;
-  age: number;
-  gender: "Male" | "Female" | "Other";
-  aadhar: string;
-  contact: string;
-  allergies?: string[];
-  diseases?: string[];
-  pastSurgeries?: string[];
-  currentMedications?: string[];
-reports?: FileList|null; // uploaded reports
-}) => {
-  const token = document.cookie
-    .split("; ")
-    .find((r) => r.startsWith("patientToken="))
-    ?.split("=")[1];
-  const payloadBase64 = token?.split(".")[1];
-  const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
-  const userId = pay?.id;
-
-  if (!token) {
-    Swal.fire({
-      icon: "info",
-      title: "Login Required",
-      text: "Please login to book an appointment.",
-      confirmButtonText: "OK",
-    }).then(() => (window.location.href = "/patient-login"));
-    return;
-  }
-
-  if (!doctor || !selectedDate || !selectedTime) {
-    Swal.fire({
-      icon: "warning",
-      title: "Incomplete Data",
-      text: "Please select date & time.",
-    });
-    return;
-  }
-
-  const selectedSlotId = slots.find((s) => s.time === selectedTime)?._id;
-  setBookingLoading(true);
-
-  try {
-    const data = new FormData();
-    data.append("doctorId", doctor._id);
-    data.append("userId", userId);
-    data.append("mode", mode);
-    data.append("dateTime", `${selectedDate.toISOString().slice(0, 10)}T${selectedTime}:00Z`);
-    data.append("fees", String(doctor.fees ?? 0));
-    data.append("slot", selectedTime);
-    data.append("slotId", selectedSlotId ?? "");
-
-    // Patient info → Booking model only
-    data.append("patient", JSON.stringify({
-      name: formData.name,
-      age: formData.age,
-      gender: formData.gender,
-      aadhar: formData.aadhar,
-      contact: formData.contact,
-    }));
-
-    // EMR details → EMR model only
-    const emrDetails = {
-      allergies: formData.allergies,
-      diseases: formData.diseases,
-      pastSurgeries: formData.pastSurgeries,
-      currentMedications: formData.currentMedications,
-    };
-    data.append("emr", JSON.stringify(emrDetails));
-
-    // EMR file uploads
-   if (formData.reports) {
-      Array.from(formData.reports).forEach((file) => {
-        data.append("reports", file);
+    } else {
+      // Reset for relative
+      setFormData({
+        name: "",
+        age: "",
+        gender: "Male",
+        aadhar: "",
+        contact: "",
+        allergies: "",
+        diseases: "",
+        pastSurgeries: "",
+        currentMedications: "",
+        reports: null,
       });
     }
+  }, [relation]);
 
+  if (!open) return null;
 
-    await api.post("/api/booking/book", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  // Handle text + file inputs
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    if (e.target.type === "file") {
+      setFormData({
+        ...formData,
+        reports: (e.target as HTMLInputElement).files,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
 
-    await Swal.fire({
-      icon: "success",
-      title: "Appointment Confirmed!",
-      text: `Your appointment with Dr. ${doctor.fullName} is booked successfully.`,
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-    onBooked?.(formData);
-    onClose();
-  } catch (err: any) {
-    console.error("Booking error", err);
-    const errorMessage =
-      err.response?.data?.message || err.message || "Something went wrong while booking.";
-    await Swal.fire({
-      icon: "error",
-      title: "Booking Failed",
-      text: errorMessage,
-    });
-  } finally {
-    setBookingLoading(false);
-  }
-};
-
-
-  // Close drawer when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        sidebarRef.current &&
-        !sidebarRef.current.contains(event.target as Node) &&
-        open
-      ) {
-        onClose();
-      }
+    const formattedData = {
+      ...formData,
+      age: Number(formData.age),
+      allergies: formData.allergies
+        ? formData.allergies.split(",").map((a) => a.trim())
+        : [],
+      diseases: formData.diseases
+        ? formData.diseases.split(",").map((d) => d.trim())
+        : [],
+      pastSurgeries: formData.pastSurgeries
+        ? formData.pastSurgeries.split(",").map((p) => p.trim())
+        : [],
+      currentMedications: formData.currentMedications
+        ? formData.currentMedications.split(",").map((m) => m.trim())
+        : [],
+      reports: formData.reports, // ✅ Important
+      relation,
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open, onClose]);
-
-  if (!doctor) return null;
+    onSubmit(formattedData);
+  };
 
   return (
-    <>
-      <Helmet>
-        <script type="application/ld+json">{`
-          {
-            "@context": "https://schema.org",
-            "@type": "Physician",
-            "name": "${doctor.fullName}",
-            "medicalSpecialty": "${doctor.specialization ?? "General"}",
-            "image": "${
-              doctor.photo
-                ? `http://localhost:3000/uploads/${doctor.photo}`
-                : ""
-            }",
-            "priceRange": "₹${doctor.fees ?? "0"}"
-          }
-        `}</script>
-      </Helmet>
-
-      <div
-        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ${
-          open ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative overflow-y-auto max-h-[90vh]">
+        
+        <button
           onClick={onClose}
-          className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
-        />
-
-        <aside
-          ref={sidebarRef}
-          className={`relative bg-white w-full sm:w-96 h-full shadow-2xl transform transition-transform duration-500 ease-in-out ${
-            open ? "translate-x-0" : "translate-x-full"
-          } rounded-l-2xl overflow-hidden`}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
         >
-          {/* Header */}
-          <header className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-gray-50">
-            <div className="flex items-center gap-3">
-              {doctor.photo ? (
-                <img
-                  src={`http://localhost:3000/uploads/${doctor.photo}`}
-                  alt={doctor.fullName}
-                  className="h-14 w-14 rounded-full object-cover border border-gray-200"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className="h-14 w-14 flex items-center justify-center rounded-full bg-[#28328C] text-white text-lg font-semibold">
-                  {doctor.fullName.charAt(0)}
-                </div>
-              )}
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {doctor.fullName}
-                </h2>
-                <p className="text-sm text-gray-500">{doctor.specialization}</p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:bg-gray-200 rounded-full p-2 transition-colors"
-              aria-label="Close booking drawer"
+          <X className="w-5 h-5" />
+        </button>
+
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+          Book Appointment
+        </h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          
+          {/* Relation */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Booking For
+            </label>
+            <select
+              value={relation}
+              onChange={(e) =>
+                setRelation(e.target.value as "self" | "relative")
+              }
+              className="w-full border border-gray-300 rounded-lg p-2"
             >
-              <X className="w-5 h-5" />
-            </button>
-          </header>
-
-          {/* Content */}
-          <div className="p-5 space-y-5 overflow-y-auto h-[calc(100%-4rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-            {/* 🩵 Check if slots exist */}
-            {availableMonthKeys.length === 0 ? (
-              <div className="text-center py-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <h2 className="text-lg font-semibold text-gray-800 mb-1">
-                  No Slots Available
-                </h2>
-                <p className="text-gray-500 text-sm">
-                  This doctor hasn't added any appointment slots yet.
-                </p>
-              </div>
-            ) : (
-              <>
-                {/* Mode Buttons */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    onClick={() => setMode("online")}
-                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                      mode === "online"
-                        ? "bg-[#28328C] text-white shadow"
-                        : "bg-white text-gray-700 hover:border-[#28328C]/40"
-                    }`}
-                  >
-                    <Video className="w-4 h-4" /> Online
-                  </button>
-                  <button
-                    onClick={() => setMode("offline")}
-                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
-                      mode === "offline"
-                        ? "bg-[#28328C] text-white shadow"
-                        : "bg-white text-gray-700 hover:border-[#28328C]/40"
-                    }`}
-                  >
-                    <Phone className="w-4 h-4" /> Offline
-                  </button>
-                </div>
-
-                {/* Month Navigation */}
-                <div className="flex justify-between items-center mb-3">
-                  <button
-                    className={`p-2 rounded ${
-                      availableMonthKeys.indexOf(monthKey) <= 0
-                        ? "opacity-40 cursor-not-allowed"
-                        : "hover:bg-gray-100"
-                    }`}
-                    disabled={availableMonthKeys.indexOf(monthKey) <= 0}
-                    onClick={() => {
-                      const idx = availableMonthKeys.indexOf(monthKey);
-                      if (idx > 0) {
-                        const prevKey = availableMonthKeys[idx - 1];
-                        const [y, m] = prevKey.split("-");
-                        const newMonth = new Date(Number(y), Number(m) - 1);
-                        setCurrentMonth(newMonth);
-                        setSelectedDate(newMonth);
-                      }
-                    }}
-                    aria-label="Previous month"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-
-                  <span className="text-sm font-semibold text-gray-800">
-                    {currentMonth.toLocaleString("default", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-
-                  <button
-                    className={`p-2 rounded ${
-                      availableMonthKeys.indexOf(monthKey) >=
-                      availableMonthKeys.length - 1
-                        ? "opacity-40 cursor-not-allowed"
-                        : "hover:bg-gray-100"
-                    }`}
-                    disabled={
-                      availableMonthKeys.indexOf(monthKey) >=
-                      availableMonthKeys.length - 1
-                    }
-                    onClick={() => {
-                      const idx = availableMonthKeys.indexOf(monthKey);
-                      if (idx < availableMonthKeys.length - 1) {
-                        const nextKey = availableMonthKeys[idx + 1];
-                        const [y, m] = nextKey.split("-");
-                        const newMonth = new Date(Number(y), Number(m) - 1);
-                        setCurrentMonth(newMonth);
-                        setSelectedDate(newMonth);
-                      }
-                    }}
-                    aria-label="Next month"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Date Selection */}
-                <div className="flex gap-2 overflow-x-auto py-2 scrollbar-thin">
-                  {days.map((d) => {
-                    const key = formatDate(d);
-                    const active =
-                      selectedDate && formatDate(selectedDate) === key;
-                    const disabled = !availableDates.includes(key);
-
-                    return (
-                      <button
-                        key={key}
-                        onClick={() => {
-                          if (!disabled) {
-                            setSelectedDate(d);
-                            setSelectedTime(null);
-                          }
-                        }}
-                        disabled={disabled}
-                        className={`min-w-[72px] p-3 text-center rounded-lg border transition-all flex-shrink-0
-                          ${
-                            active
-                              ? "bg-[#28328C] text-white shadow"
-                              : "bg-white text-gray-800 hover:shadow-sm"
-                          }
-                          ${
-                            disabled
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : ""
-                          }`}
-                      >
-                        <div className="text-xs opacity-80">
-                          {formatDayShort(d)}
-                        </div>
-                        <div className="text-lg font-semibold">
-                          {formatDateNumber(d)}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Slots */}
-                <div>
-                  <h4 className="text-sm font-semibold mb-2 text-gray-700">
-                    Available Slots
-                  </h4>
-
-                  {loadingSlots ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="h-10 rounded bg-gray-100 animate-pulse"
-                        />
-                      ))}
-                    </div>
-                  ) : slots.length === 0 ? (
-                    <div className="text-gray-500 text-sm text-center py-3">
-                      No slots available for selected date.
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-2">
-                      {slots.map((slot) => {
-                        const isBooked = !slot.isActive;
-                        const selected = selectedTime === slot.time;
-                        return (
-                          <button
-                            key={slot._id}
-                            onClick={() =>
-                              !isBooked && setSelectedTime(slot.time)
-                            }
-                            disabled={isBooked}
-                            className={`p-2 rounded border text-sm transition-all ${
-                              selected
-                                ? "bg-[#28328C] text-white shadow"
-                                : "bg-white text-gray-800 hover:shadow-sm"
-                            } ${
-                              isBooked
-                                ? "!bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : ""
-                            }`}
-                          >
-                            {slot.time}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
+              <option value="self">Self</option>
+              <option value="relative">Relative</option>
+            </select>
           </div>
 
-          {selectedTime && (
-            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
-              <button
-                onClick={() => setShowForm(true)}
-                className="w-full bg-[#28328C] text-white py-3 rounded-lg font-medium hover:bg-[#1e2675] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={bookingLoading}
-              >
-                {bookingLoading ? "Processing..." : "Continue to Book"}
-              </button>
-            </div>
+          {relation === "relative" && (
+            <>
+              {/* Name */}
+              <div>
+                <label className="text-sm text-gray-700">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* Age + Gender */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-gray-700">Age</label>
+                  <input
+                    type="number"
+                    name="age"
+                    required
+                    value={formData.age}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-700">Gender</label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  >
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Aadhar */}
+              <div>
+                <label className="text-sm text-gray-700">Aadhar Number</label>
+                <input
+                  type="text"
+                  name="aadhar"
+                  required
+                  value={formData.aadhar}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* Contact */}
+              <div>
+                <label className="text-sm text-gray-700">Contact Number</label>
+                <input
+                  type="text"
+                  name="contact"
+                  required
+                  value={formData.contact}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* EMR Fields */}
+              <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
+                Add EMR Details (Optional)
+              </h3>
+
+              <div>
+                <label className="text-sm text-gray-700">Allergies</label>
+                <input
+                  type="text"
+                  name="allergies"
+                  value={formData.allergies}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">Diseases</label>
+                <input
+                  type="text"
+                  name="diseases"
+                  value={formData.diseases}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">Past Surgeries</label>
+                <input
+                  type="text"
+                  name="pastSurgeries"
+                  value={formData.pastSurgeries}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">
+                  Current Medications
+                </label>
+                <input
+                  type="text"
+                  name="currentMedications"
+                  value={formData.currentMedications}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* 📁 Reports Upload */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  Upload Reports (Multiple)
+                </label>
+                <input
+                  type="file"
+                   name="reports" 
+                  multiple
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+            </>
           )}
 
-          <AppointmentFormModal
-            open={showForm}
-            onClose={() => setShowForm(false)}
-            onSubmit={handleBook}
-            loading={bookingLoading}
-          />
-        </aside>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 mt-4 rounded-lg font-semibold text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#28328C] hover:bg-[#1e2675]"
+            }`}
+          >
+            {loading ? "Processing..." : "Book Appointment"}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
-export default BookingDrawer
+export default AppointmentFormModal;
