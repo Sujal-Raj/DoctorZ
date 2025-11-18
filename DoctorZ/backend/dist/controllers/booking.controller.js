@@ -29,7 +29,7 @@ export const bookAppointment = async (req, res) => {
             dateTime: new Date(dateTime),
             mode,
             fees,
-            status: "booked",
+            status: "pending",
             patient: { name, age, gender, aadhar, contact, relation },
         });
         // Create EMR if any EMR data or reports exist
@@ -65,7 +65,7 @@ export const getBookingsByDoctor = async (req, res) => {
     try {
         const { doctorId } = req.params;
         // Find all bookings for this doctor
-        const bookings = await Booking.find({ doctorId })
+        const bookings = await Booking.find({ doctorId, status: "pending" })
             .populate("userId", "fullName email phone") // patient info
             .populate("slotId") // slot info
             .lean();
@@ -90,28 +90,6 @@ export const getBookingsByDoctor = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
-// export const getBookingsByDoctor = async (req: Request, res: Response) => {
-//   try {
-//     const { doctorId } = req.params;
-//     // Find all bookings for this doctor
-//     const bookings = await Booking.find({ doctorId })
-//       .populate("userId", "fullName email phone") // optional populate of patient user
-//       .populate("slotId") // this will give you full slot info
-//       .lean();
-//     if (!bookings || bookings.length === 0) {
-//       return res.status(200).json({ bookings: [] });
-//     }
-//     // Safely map each booking
-//     const safeBookings = bookings.map((b) => ({
-//       ...b,
-//       slot: b.slotId ? b.slotId : null, // if slotId is null, prevent crash
-//     }));
-//     return res.status(200).json({ bookings: safeBookings });
-//   } catch (err) {
-//     console.error("Error fetching doctor bookings:", err);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };
 export const updateBookingStatus = async (req, res) => {
     try {
         const { bookingId } = req.params;
