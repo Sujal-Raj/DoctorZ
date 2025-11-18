@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { bookAppointment, getBookingsByDoctor, updateBookingStatus, getBookingsByDoctorAllPatient } from "../controllers/booking.controller.js";
+import { bookAppointment, getBookingsByDoctor, updateBookingStatus } from "../controllers/booking.controller.js";
 import { upload } from "../middlewares/upload.js";
 const router = Router();
 router.post("/book", upload.array("reports"), bookAppointment);
