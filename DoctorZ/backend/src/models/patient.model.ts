@@ -7,16 +7,20 @@ export interface IPatient extends Document {
   email:string;
   password:string;
   mobileNumber:number;
-  Aadhar:number;
+  aadhar:number;
   address: {
     city: string;
     pincode: number;
   };
+    profilePhoto?:string;
   abhaId:string;
   emergencyContact:{
     name:string;
     number:number;
   }
+ 
+  favouriteDoctors?: mongoose.Types.ObjectId[]; // Array of favorite doctor IDs
+  favouriteClinics?: mongoose.Types.ObjectId[]; // Array of favorite clinic IDs
 }
 
 
@@ -41,11 +45,14 @@ const patientSchema = new mongoose.Schema<IPatient>({
         type:String,
         required:true
     },
+    profilePhoto:{
+        type:String,
+    },
     mobileNumber:{
         type:Number,
         required:true,
     },
-    Aadhar:{
+    aadhar:{
         type:Number,
     },
     address:{
@@ -68,8 +75,15 @@ const patientSchema = new mongoose.Schema<IPatient>({
         number:{
             type:Number
         }
-    }
-});
+    },
+   
+   favouriteDoctors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" }],
+   favouriteClinics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Clinic" }],
+   
+  
+},
+{timestamps:true}
+);
 
 const patientModel = mongoose.model("Patient",patientSchema,"Patient");
 

@@ -20,11 +20,14 @@ const patientSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    profilePhoto: {
+        type: String,
+    },
     mobileNumber: {
         type: Number,
         required: true,
     },
-    Aadhar: {
+    aadhar: {
         type: Number,
     },
     address: {
@@ -46,8 +49,10 @@ const patientSchema = new mongoose.Schema({
         number: {
             type: Number
         }
-    }
-});
+    },
+    favouriteDoctors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" }],
+    favouriteClinics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Clinic" }],
+}, { timestamps: true });
 const patientModel = mongoose.model("Patient", patientSchema, "Patient");
 export default patientModel;
 //# sourceMappingURL=patient.model.js.map

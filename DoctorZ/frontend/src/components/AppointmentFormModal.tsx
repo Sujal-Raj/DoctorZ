@@ -1,30 +1,241 @@
-import React from "react";
+
+import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const AppointmentFormModal = ({ open, onClose, onSubmit, loading }) => {
-  const [formData, setFormData] = React.useState({
+interface AppointmentFormModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (formData: {
+    name: string;
+    age: number;
+    gender: "Male" | "Female" | "Other";
+    aadhar: string;
+    contact: string;
+    allergies?: string[];
+    diseases?: string[];
+    pastSurgeries?: string[];
+    currentMedications?: string[];
+    reports?: FileList | null;
+    relation: "self" | "relative";
+  }) => Promise<void> | void;
+  loading: boolean;
+}
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: FormData) => void;
+  loading?: boolean;
+  initialData?: Partial<FormData>; // Added for pre-filling form
+}
+
+const AppointmentFormModal: React.FC<Props> = ({ 
+  open, 
+  onClose, 
+  onSubmit, 
+  loading = false,
+  initialData 
+}) => {
+  const [formData, setFormData] = React.useState<FormData>({
     name: "",
     age: "",
     gender: "Male",
     aadhar: "",
     contact: "",
+    allergies: "",
+    diseases: "",
+    pastSurgeries: "",
+    currentMedications: "",
+    reports: null as FileList | null, // ✅ Added
   });
+
+  // Auto-fill for self user
+  useEffect(() => {
+    if (relation === "self") {
+      const token = document.cookie
+        .split("; ")
+        .find((r) => r.startsWith("patientToken="))
+        ?.split("=")[1];
+
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          setFormData((prev) => ({
+            ...prev,
+            name: payload.name || "",
+            age: payload.age?.toString() || "",
+            gender: payload.gender || "Male",
+            aadhar: payload.aadhar || "",
+            contact: payload.mobileNumber || "",
+          }));
+        } catch (error) {
+          console.error("Error decoding token:", error);
+        }
+      }
+    } else {
+      // Reset for relative
+      setFormData({
+        name: "",
+        age: "",
+        gender: "Male",
+        aadhar: "",
+        contact: "",
+        allergies: "",
+        diseases: "",
+        pastSurgeries: "",
+        currentMedications: "",
+        reports: null,
+      });
+    }
+  }, [open, initialData]);
+
+  // Close on escape key
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) {
+        onClose();
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [open, onClose]);
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<FormData> = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+
+    // Age validation
+    if (!formData.age) {
+      newErrors.age = "Age is required";
+    } else {
+      const ageNum = parseInt(formData.age);
+      if (ageNum < 1 || ageNum > 120) {
+        newErrors.age = "Age must be between 1 and 120";
+      }
+    }
+
+    // Aadhar validation (12 digits)
+    if (!formData.aadhar) {
+      newErrors.aadhar = "Aadhar number is required";
+    } else if (!/^\d{12}$/.test(formData.aadhar.replace(/\s/g, ''))) {
+      newErrors.aadhar = "Aadhar must be 12 digits";
+    }
+
+    // Contact validation (10 digits)
+    if (!formData.contact) {
+      newErrors.contact = "Contact number is required";
+    } else if (!/^\d{10}$/.test(formData.contact.replace(/\s/g, ''))) {
+      newErrors.contact = "Contact must be 10 digits";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
+    // Format Aadhar number (add spaces for readability)
+    if (name === "aadhar") {
+      const cleaned = value.replace(/\D/g, '').slice(0, 12);
+      const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+      setFormData(prev => ({ ...prev, [name]: formatted }));
+    }
+    // Format contact number
+    else if (name === "contact") {
+      const cleaned = value.replace(/\D/g, '').slice(0, 10);
+      setFormData(prev => ({ ...prev, [name]: cleaned }));
+    }
+    // For age, only allow numbers
+    else if (name === "age") {
+      const cleaned = value.replace(/\D/g, '').slice(0, 3);
+      setFormData(prev => ({ ...prev, [name]: cleaned }));
+    }
+    else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+
+    // Clear error when user starts typing
+    if (errors[name as keyof FormData]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (validateForm()) {
+      // Remove formatting spaces before submitting
+      const submitData = {
+        ...formData,
+        aadhar: formData.aadhar.replace(/\s/g, ''),
+        contact: formData.contact.replace(/\s/g, '')
+      };
+      onSubmit(submitData);
+    }
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   if (!open) return null;
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Handle text + file inputs
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    if (e.target.type === "file") {
+      setFormData({
+        ...formData,
+        reports: (e.target as HTMLInputElement).files,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    const formattedData = {
+      ...formData,
+      age: Number(formData.age),
+      allergies: formData.allergies
+        ? formData.allergies.split(",").map((a) => a.trim())
+        : [],
+      diseases: formData.diseases
+        ? formData.diseases.split(",").map((d) => d.trim())
+        : [],
+      pastSurgeries: formData.pastSurgeries
+        ? formData.pastSurgeries.split(",").map((p) => p.trim())
+        : [],
+      currentMedications: formData.currentMedications
+        ? formData.currentMedications.split(",").map((m) => m.trim())
+        : [],
+      reports: formData.reports, // ✅ Important
+      relation,
+    };
+
+    onSubmit(formattedData);
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative">
-        {/* Close button */}
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative overflow-y-auto max-h-[90vh]">
+        
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
@@ -33,93 +244,183 @@ const AppointmentFormModal = ({ open, onClose, onSubmit, loading }) => {
         </button>
 
         <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-          Appointment Details
+          Book Appointment
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          
+          {/* Relation */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name *
             </label>
-            <input
-              type="text"
-              name="name"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
-            />
+            <select
+              value={relation}
+              onChange={(e) =>
+                setRelation(e.target.value as "self" | "relative")
+              }
+              className="w-full border border-gray-300 rounded-lg p-2"
+            >
+              <option value="self">Self</option>
+              <option value="relative">Relative</option>
+            </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Age
-              </label>
-              <input
-                type="number"
-                name="age"
-                required
-                value={formData.age}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Gender
-              </label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
-              >
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
-            </div>
-          </div>
+          {relation === "relative" && (
+            <>
+              {/* Name */}
+              <div>
+                <label className="text-sm text-gray-700">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Aadhar Number
-            </label>
-            <input
-              type="text"
-              name="aadhar"
-              required
-              value={formData.aadhar}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
-            />
-          </div>
+              {/* Age + Gender */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm text-gray-700">Age</label>
+                  <input
+                    type="number"
+                    name="age"
+                    required
+                    value={formData.age}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contact Number
-            </label>
-            <input
-              type="text"
-              name="contact"
-              required
-              value={formData.contact}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-[#28328C] outline-none"
-            />
-          </div>
+                <div>
+                  <label className="text-sm text-gray-700">Gender</label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  >
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
 
+              {/* Aadhar */}
+              <div>
+                <label className="text-sm text-gray-700">Aadhar Number</label>
+                <input
+                  type="text"
+                  name="aadhar"
+                  required
+                  value={formData.aadhar}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* Contact */}
+              <div>
+                <label className="text-sm text-gray-700">Contact Number</label>
+                <input
+                  type="text"
+                  name="contact"
+                  required
+                  value={formData.contact}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* EMR Fields */}
+              <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
+                Add EMR Details (Optional)
+              </h3>
+
+              <div>
+                <label className="text-sm text-gray-700">Allergies</label>
+                <input
+                  type="text"
+                  name="allergies"
+                  value={formData.allergies}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">Diseases</label>
+                <input
+                  type="text"
+                  name="diseases"
+                  value={formData.diseases}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">Past Surgeries</label>
+                <input
+                  type="text"
+                  name="pastSurgeries"
+                  value={formData.pastSurgeries}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-700">
+                  Current Medications
+                </label>
+                <input
+                  type="text"
+                  name="currentMedications"
+                  value={formData.currentMedications}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* 📁 Reports Upload */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  Upload Reports (Multiple)
+                </label>
+                <input
+                  type="file"
+                   name="reports" 
+                  multiple
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded-lg font-semibold text-white transition-all ${
+            className={`w-full py-2 mt-4 rounded-lg font-semibold text-white ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#28328C] hover:bg-[#1e2675]"
+                : "bg-[#28328C] hover:bg-[#1e2675] transform hover:scale-[1.02] active:scale-[0.98]"
             }`}
           >
-            {loading ? "Booking..." : "Book Appointment"}
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Booking Appointment...
+              </>
+            ) : (
+              "Book Appointment"
+            )}
           </button>
         </form>
       </div>

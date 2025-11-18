@@ -20,7 +20,7 @@ const AdminSidebar = () => {
   return (
     <>
       {/* Mobile Top Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900 text-white flex items-center justify-between px-4 py-3 shadow-md z-50">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#28328C] text-white flex items-center justify-between px-4 py-3 shadow-md z-50">
         <h2 className="text-lg font-semibold">Admin Dashboard</h2>
         <button
           className="p-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
@@ -32,7 +32,7 @@ const AdminSidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-gray-200 flex flex-col justify-between shadow-lg transform transition-transform duration-300 z-40
+        className={`fixed top-0 left-0 h-full w-64 bg-[#28328C] text-gray-200 flex flex-col justify-between shadow-lg transform transition-transform duration-300 z-40
         ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         {/* Sidebar content */}
@@ -47,8 +47,8 @@ const AdminSidebar = () => {
               onClick={handleNavClick}
               className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
                 location.pathname === "/"
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700"
+                  ? "bg-white text-black"
+                  : "hover:bg-white hover:text-black"
               }`}
             >
               <Home size={18} /> Home
@@ -59,8 +59,8 @@ const AdminSidebar = () => {
               onClick={handleNavClick}
               className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
                 location.pathname.includes("admin-lab")
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700"
+                  ? "bg-white text-black"
+                  : "hover:bg-white hover:text-black"
               }`}
             >
               <User size={18} /> Lab

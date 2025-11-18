@@ -25,7 +25,12 @@ const transporter = nodemailer.createTransport({
 // ---------------- Clinic Registration ----------------
 
 export const clinicRegister = async (req: Request, res: Response) => {
+  
   try {
+      console.log("🟡 Incoming registration request...");
+    console.log("➡️ Body:", req.body);
+    console.log("➡️ Files:", req.files); // 👈 this will tell you if multer is working
+
     const {
       clinicName,
       clinicType,
@@ -34,7 +39,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
       licenseNo,
       ownerAadhar,
       ownerPan,
-      address,
+      address,     
       state,
       district,
       pincode,
@@ -50,8 +55,24 @@ export const clinicRegister = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "All required fields must be filled." });
     }
 
-    // Multer provides the uploaded file here
-    const registrationCertPath = req.file ? `http://localhost:3000/uploads/${req.file.filename}`: undefined;
+// Multer provides the uploaded file here
+const registrationCertPath =
+  req.files &&
+  'registrationCert' in req.files &&
+  Array.isArray((req.files as any)['registrationCert']) &&
+  (req.files as any)['registrationCert'].length > 0
+    ? `http://localhost:3000/uploads/${(((req.files as any)['registrationCert'] as Express.Multer.File[])[0])?.filename}`
+    : undefined;
+
+const clinicImagePath =
+  req.files &&
+  'clinicImage' in req.files &&
+  Array.isArray((req.files as any)['clinicImage']) &&
+  (req.files as any)['clinicImage'].length > 0
+    ? `http://localhost:3000/uploads/${(((req.files as any)['clinicImage'] as Express.Multer.File[])[0])?.filename}`
+    : undefined;
+
+
 
     const clinic = new clinicModel({
       clinicName,
@@ -72,6 +93,7 @@ export const clinicRegister = async (req: Request, res: Response) => {
       staffId,
       staffPassword: await bcrypt.hash(staffPassword, 10),
       registrationCertificate: registrationCertPath,
+        clinicImage: clinicImagePath,
     });
 
     await clinic.save();
@@ -315,22 +337,69 @@ export const searchClinicAndDoctor = async (req: Request, res: Response) => {
 
 
 // ---------------- Get All Clinics ----------------
+// export const getAllClinic = async (req: Request, res: Response) => {
+//   try {
+//     const clinics = await clinicModel.find();
+   
 
-export const getAllClinic=async(req:Request,res:Response)=>{
-   try{
-      const clinic=await clinicModel.find();
-      return res.status(200).json({
-        clinic:clinic,
-        message:"successfully fetched all clinic"
-      })
-   }
-   catch(error){
-   return res.status(500).json({
-    message:"Something went wrong"
-   })
-   }
-}
+//     res.status(200).json(clinics); // ✅ return array directly
+//   } catch (error: any) {
+//     res.status(500).json({ message: "Something went wrong", error: error.message });
+//   }
+// };
 
+
+
+
+
+export const getAllClinic = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { patientId } = req.params;
+
+    // Fetch all approved clinics only
+    const clinics = await clinicModel.find({ status: "approved" });
+
+    // If patient not logged in, return clinics normally
+    if (!patientId || patientId === "null" || patientId === "undefined")  {
+      res.status(200).json({
+        message: "Approved clinics fetched successfully",
+        clinics,
+      });
+      return;
+    }
+
+    // Get patient's favourite clinics
+    const patient = await patientModel
+      .findById(patientId)
+      .select("favouriteClinics");
+
+    const favouriteIds = new Set(
+      (patient?.favouriteClinics || []).map((id: any) => id.toString())
+    );
+
+    // Add isFavourite flag
+    const clinicsWithFav = clinics.map((clinic:any) => ({
+      ...clinic.toObject(),
+      isFavourite: favouriteIds.has(clinic._id.toString()),
+    }));
+
+    // Sort favourites first
+    const sortedClinics = clinicsWithFav.sort((a, b) =>
+      a.isFavourite === b.isFavourite ? 0 : a.isFavourite ? -1 : 1
+    );
+
+    res.status(200).json({
+      message: "Approved clinics fetched successfully",
+      clinics: sortedClinics,
+    });
+  } catch (error: any) {
+    console.error("Error fetching clinics:", error);
+    res.status(500).json({
+      message: "Failed to fetch clinics",
+      error: error.message,
+    });
+  }
+};
 
 export const getClinicById = async(req:Request,res:Response)=>{
    try{
@@ -400,7 +469,7 @@ export const getAllClinicPatients = async (req: Request, res: Response) => {
         aadhar: patient?.aadhar,
         appointedTo: `Dr. ${doctor?.fullName}`,
         specialization: doctor?.specialization,
-        datetime: b.datetime,
+        datetime: b.dateTime,
         mode: b.mode,
         fees: b.fees,
       };

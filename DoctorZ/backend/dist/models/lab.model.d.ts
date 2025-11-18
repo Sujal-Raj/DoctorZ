@@ -1,75 +1,78 @@
-import mongoose, { Document, Model } from "mongoose";
-interface Timings {
-    open: string;
-    close: string;
-}
-export type TestCategory = "Liver" | "Kidney" | "Diabetes" | "Fever" | "Vitamin" | "Pregnancy" | "Heart" | "Other";
-export interface Test {
-    testName: string;
-    price: number;
-    description: string;
-    precaution: string;
-    category: string;
-    customCategory?: string;
-    labId: mongoose.Types.ObjectId;
-}
-export interface Lab extends Document {
-    labId?: string | null;
+import mongoose, { Document } from "mongoose";
+export interface LabDocument extends Document {
+    labId: string;
     name: string;
     email: string;
     password: string;
     state: string;
     city: string;
-    pincode: string;
     address: string;
-    status: "pending" | "approved" | "rejected";
-    timings: Timings;
+    pincode: string;
+    timings: {
+        open: string;
+        close: string;
+    };
     certificateNumber: string;
-    createdAt?: string;
-    updatedAt?: string;
+    status: "pending" | "approved" | "rejected";
+    createdAt: Date;
 }
-export interface LabTestBooking extends Document {
+export declare const LabModel: mongoose.Model<LabDocument, {}, {}, {}, mongoose.Document<unknown, {}, LabDocument, {}, {}> & LabDocument & Required<{
+    _id: unknown;
+}> & {
+    __v: number;
+}, any>;
+export interface TestDocument extends Document {
+    testName: string;
+    description: string;
+    category: string;
+    customCategory?: string;
+    precaution: string;
+    price: number;
+    labId: mongoose.Types.ObjectId;
+}
+export declare const TestModel: mongoose.Model<TestDocument, {}, {}, {}, mongoose.Document<unknown, {}, TestDocument, {}, {}> & TestDocument & Required<{
+    _id: unknown;
+}> & {
+    __v: number;
+}, any>;
+export interface LabTestBookingDocument extends Document {
     labId: mongoose.Types.ObjectId;
     userId: mongoose.Types.ObjectId;
     testName: string;
-    bookingDate: Date;
+    category: string;
+    price: number;
     status: "pending" | "completed" | "cancelled";
-    reportFile?: string | null;
+    bookedAt: Date;
 }
-export interface LabPackage extends Document {
+export declare const LabTestBookingModel: mongoose.Model<LabTestBookingDocument, {}, {}, {}, mongoose.Document<unknown, {}, LabTestBookingDocument, {}, {}> & LabTestBookingDocument & Required<{
+    _id: unknown;
+}> & {
+    __v: number;
+}, any>;
+export interface LabPackageDocument extends Document {
     labId: mongoose.Types.ObjectId;
     packageName: string;
-    description?: string;
+    description: string;
     tests: mongoose.Types.ObjectId[];
     totalPrice: number;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt: Date;
 }
-export interface PackageBooking extends Document {
+export declare const LabPackageModel: mongoose.Model<LabPackageDocument, {}, {}, {}, mongoose.Document<unknown, {}, LabPackageDocument, {}, {}> & LabPackageDocument & Required<{
+    _id: unknown;
+}> & {
+    __v: number;
+}, any>;
+export interface PackageBookingDocument extends Document {
     packageId: mongoose.Types.ObjectId;
     labId: mongoose.Types.ObjectId;
-    tests: mongoose.Types.ObjectId[];
     userId: mongoose.Types.ObjectId;
+    tests: mongoose.Types.ObjectId[];
     bookingDate: Date;
-    status: "pending" | "completed";
-    reportFile?: string | null;
+    status: "pending" | "completed" | "cancelled";
 }
-export declare const LabModel: Model<Lab>;
-export declare const LabTestBookingModel: Model<LabTestBooking>;
-export declare const TestModel: Model<Test>;
-export declare const LabPackageModel: Model<LabPackage>;
-export declare const PackageBookingModel: mongoose.Model<PackageBooking, {}, {}, {}, mongoose.Document<unknown, {}, PackageBooking, {}, mongoose.DefaultSchemaOptions> & PackageBooking & Required<{
+export declare const PackageBookingModel: mongoose.Model<PackageBookingDocument, {}, {}, {}, mongoose.Document<unknown, {}, PackageBookingDocument, {}, {}> & PackageBookingDocument & Required<{
     _id: unknown;
 }> & {
     __v: number;
-}, mongoose.Schema<PackageBooking, mongoose.Model<PackageBooking, any, any, any, mongoose.Document<unknown, any, PackageBooking, any, {}> & PackageBooking & Required<{
-    _id: unknown;
-}> & {
-    __v: number;
-}, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, PackageBooking, mongoose.Document<unknown, {}, mongoose.FlatRecord<PackageBooking>, {}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & mongoose.FlatRecord<PackageBooking> & Required<{
-    _id: unknown;
-}> & {
-    __v: number;
-}>>;
-export {};
+}, any>;
 //# sourceMappingURL=lab.model.d.ts.map

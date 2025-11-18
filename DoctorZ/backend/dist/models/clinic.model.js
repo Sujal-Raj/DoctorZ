@@ -26,6 +26,7 @@ const clinicSchema = new mongoose.Schema({
     ],
     clinicLicenseNumber: { type: String, required: true },
     registrationCertificate: { type: String },
+    clinicImage: { type: String },
     panNumber: { type: String, required: true },
     operatingHours: { type: String, required: true },
     staffName: {

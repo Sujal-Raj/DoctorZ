@@ -39,26 +39,78 @@ import { generateTimeSlots } from "../utils/slotGenerator.js";
 //     return res.status(500).json({ message: "Server error" });
 //   }
 // };
+// export const createTimeSlot = async (req: Request, res: Response) => {
+//   try {
+//     console.log("Request Body:", req.body);
+//     const { doctorId, dates, workingHours } = req.body;
+//     const slots = generateTimeSlots(workingHours.start, workingHours.end);
+//     console.log("Generated Slots:", slots);
+//     const availability: any[] = [];
+//     const alreadyExistDates: string[] = [];
+//     for (const date of dates) {
+//       const existingSlot = await timeSlotsModel.findOne({
+//         doctorId,
+//         date: new Date(date),
+//       });
+//       if (existingSlot) {
+//         alreadyExistDates.push(date); // collect already existing dates
+//         continue; // skip this date, baki dates ke liye loop continue
+//       }
+//       availability.push({
+//         doctorId,
+//         date: new Date(date),
+//         slots,
+//       });
+//     }
+//     if (availability.length > 0) {
+//       await timeSlotsModel.insertMany(availability);
+//       console.log("Inserted Availability:", availability);
+//     }
+//     return res.status(200).json({
+//       success: true,
+//       message: "Time slots processed successfully",
+//       createdDates: availability.map((a) => a.date.toISOString().split("T")[0]),
+//       alreadyExistDates,
+//     });
+//   } catch (error) {
+//     console.error("Error creating time slot:", error);
+//     return res.status(500).json({ success: false, message: "Server error" });
+//   }
+// };
 export const createTimeSlot = async (req, res) => {
     try {
         console.log("Request Body:", req.body);
         const { doctorId, dates, workingHours } = req.body;
         const slots = generateTimeSlots(workingHours.start, workingHours.end);
-        console.log("Generated Slots:", slots);
         const availability = [];
         const alreadyExistDates = [];
-        for (const date of dates) {
-            const existingSlot = await timeSlotsModel.findOne({
+        for (const rawDate of dates) {
+            // ✅ Support ISO + plain date formats
+            const dateStr = rawDate.includes("T") ? rawDate.split("T")[0] : rawDate;
+            let dateIso = rawDate;
+            // Remove time part
+            if (dateIso.includes("T")) {
+                dateIso = dateIso.split("T")[0];
+            }
+            const [year, month, day] = dateIso.split("-").map(Number);
+            // ✅ Create a date WITHOUT timezone shift
+            const pureDate = new Date(Date.UTC(year, month - 1, day));
+            if (isNaN(pureDate.getTime())) {
+                console.log("Invalid parsed date:", rawDate, pureDate);
+                continue; // skip invalid dates
+            }
+            // ✅ Check existing
+            const existing = await timeSlotsModel.findOne({
                 doctorId,
-                date: new Date(date),
+                date: pureDate,
             });
-            if (existingSlot) {
-                alreadyExistDates.push(date); // collect already existing dates
-                continue; // skip this date, baki dates ke liye loop continue
+            if (existing) {
+                alreadyExistDates.push(dateStr);
+                continue;
             }
             availability.push({
                 doctorId,
-                date: new Date(date),
+                date: pureDate,
                 slots,
             });
         }
@@ -110,6 +162,21 @@ export const updateSlot = async (req, res) => {
     catch (error) {
         console.error("Error updating slot:", error);
         return res.status(500).json({ message: "Server error" });
+    }
+};
+export const getActiveSlots = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        // Get all time slots for doctor
+        const slots = await timeSlotsModel.find({ doctorId });
+        // Filter only those having at least 1 active slot
+        const filteredSlots = slots.filter((slot) => slot.slots.some((s) => s.isActive));
+        // Return only active ones
+        res.status(200).json(filteredSlots);
+    }
+    catch (error) {
+        console.error("Error fetching active slots:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 //# sourceMappingURL=timeSlots.controller.js.map
