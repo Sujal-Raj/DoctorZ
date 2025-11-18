@@ -48,6 +48,8 @@ diagnosis: { type: String, required: true },
     medicines: { type: [MedicineSchema], required: true },
 
     recommendedTests: { type: [String], default: [] },
+    notes:{type:String},
+    pdfUrl:{type:String}
 
 
 })

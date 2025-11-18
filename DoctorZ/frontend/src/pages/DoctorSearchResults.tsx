@@ -228,13 +228,13 @@ const totalPages = Math.ceil(sortedDoctors.length / doctorsPerPage);
       replace: true,
     });
   };
-const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
-  setDoctors((prev) =>
-    prev.map((d) =>
-      d._id === doctorId ? { ...d, isFavourite } : d
-    )
-  );
-};
+// const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
+//   setDoctors((prev) =>
+//     prev.map((d) =>
+//       d._id === doctorId ? { ...d, isFavourite } : d
+//     )
+//   );
+// };
 
   const clearFilters = () => {
     setSpecialty("");

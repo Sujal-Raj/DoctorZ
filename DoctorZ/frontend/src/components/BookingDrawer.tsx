@@ -1,158 +1,332 @@
-import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
 
-interface AppointmentFormModalProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (formData: {
-    name: string;
-    age: number;
-    gender: "Male" | "Female" | "Other";
-    aadhar: string;
-    contact: string;
-    allergies?: string[];
-    diseases?: string[];
-    pastSurgeries?: string[];
-    currentMedications?: string[];
-    reports?: FileList | null;
-    relation: "self" | "relative";
-  }) => Promise<void> | void;
-  loading: boolean;
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { X, Video, Phone, ChevronLeft, ChevronRight } from "lucide-react";
+import { formatDayShort, formatDateNumber } from "../utils/date.js";
+import api from "../Services/mainApi.js";
+import { startOfMonth, endOfMonth } from "date-fns";
+import AppointmentFormModal from "./AppointmentFormModal.js";
+import Swal from "sweetalert2";
+import { Helmet } from "react-helmet";
+
+interface Slot {
+  _id: string;
+  time: string;
+  isActive: boolean;
 }
 
-const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
+interface DoctorForBooking {
+  _id: string;
+  fullName: string;
+  photo?: string;
+  specialization?: string;
+  fees: number;
+  clinicAddress?: string;
+}
+
+interface Props {
+  doctor: DoctorForBooking | null;
+  open: boolean;
+  onClose: () => void;
+  onBooked?: (bookingInfo: unknown) => void;
+}
+interface MonthDataEntry {
+  date: string;
+  slots: Slot[];
+}
+
+interface SlotsAPIResponse {
+  availableMonths: {
+    [key: string]: Array<{
+      date: string;
+      slots: Slot[];
+    }>;
+  };
+}
+
+const BookingDrawer: React.FC<Props> = ({
+  doctor,
   open,
   onClose,
-  onSubmit,
-  loading,
+  onBooked,
 }) => {
-  const [relation, setRelation] = useState<"self" | "relative">("self");
+  const [mode, setMode] = useState<"online" | "offline">("online");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showForm, setShowForm] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement | null>(null);
+  const [availableMonthKeys, setAvailableMonthKeys] = useState<string[]>([]);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    gender: "Male" as "Male" | "Female" | "Other",
-    aadhar: "",
-    contact: "",
-    allergies: "",
-    diseases: "",
-    pastSurgeries: "",
-    currentMedications: "",
-    reports: null as FileList | null, // ✅ Added
-  });
+  const days = useMemo(() => {
+    const start = startOfMonth(currentMonth);
+    const end = endOfMonth(currentMonth);
 
-  // Auto-fill for self user
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const arr: Date[] = [];
+    const d = new Date(start);
+
+    while (d <= end) {
+      if (d >= today) arr.push(new Date(d));
+      d.setDate(d.getDate() + 1);
+    }
+
+    return arr;
+  }, [currentMonth]);
+
+  const formatDate = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getDate()).padStart(2, "0")}`;
+
   useEffect(() => {
-    if (relation === "self") {
-      const token = document.cookie
-        .split("; ")
-        .find((r) => r.startsWith("patientToken="))
-        ?.split("=")[1];
+    if (!doctor) return;
+    setMode("online");
+    setSelectedDate(new Date());
+    setSelectedTime(null);
+    setSlots([]);
+    setShowForm(false);
+  }, [doctor]);
 
-      if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          setFormData((prev) => ({
-            ...prev,
-            name: payload.name || "",
-            age: payload.age?.toString() || "",
-            gender: payload.gender || "Male",
-            aadhar: payload.aadhar || "",
-            contact: payload.mobileNumber || "",
-          }));
-        } catch (error) {
-          console.error("Error decoding token:", error);
+  const monthKey = `${currentMonth.getFullYear()}-${String(
+    currentMonth.getMonth() + 1
+  ).padStart(2, "0")}`;
+
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!doctor || !selectedDate) return;
+      setLoadingSlots(true);
+
+      try {
+        const res = await api.get<SlotsAPIResponse>(
+          `/api/patient/slots/${doctor._id}`
+        );
+        if (
+          !res.data ||
+          !res.data.availableMonths ||
+          Object.keys(res.data.availableMonths).length === 0
+        ) {
+          setSlots([]);
+          setAvailableMonthKeys([]);
+          setAvailableDates([]);
+          return;
         }
+
+        const monthKey = `${selectedDate.getFullYear()}-${String(
+          selectedDate.getMonth() + 1
+        ).padStart(2, "0")}`;
+        const keys = Object.keys(res.data.availableMonths || {}).sort();
+        setAvailableMonthKeys(keys);
+
+        if (keys.length > 0 && !keys.includes(monthKey)) {
+          const [y, m] = keys[0].split("-");
+          const firstMonth = new Date(Number(y), Number(m) - 1);
+          setCurrentMonth(firstMonth);
+          setSelectedDate(firstMonth);
+        }
+
+        const monthData: MonthDataEntry[] =
+          res.data.availableMonths?.[monthKey] ?? [];
+
+        setAvailableDates(monthData.map((entry) => entry.date.slice(0, 10)));
+
+        const dateEntry = monthData.find(
+          (entry) => entry.date.slice(0, 10) === formatDate(selectedDate)
+        );
+
+        if (!dateEntry && monthData.length > 0) {
+          const firstDate = new Date(monthData[0].date);
+          setSelectedDate(firstDate);
+          return;
+        }
+
+        setSlots(dateEntry?.slots ?? []);
+      } catch (err) {
+        console.error("Failed to fetch slots", err);
+        setSlots([]);
+      } finally {
+        setLoadingSlots(false);
       }
-    } else {
-      // Reset for relative
-      setFormData({
-        name: "",
-        age: "",
-        gender: "Male",
-        aadhar: "",
-        contact: "",
-        allergies: "",
-        diseases: "",
-        pastSurgeries: "",
-        currentMedications: "",
-        reports: null,
-      });
-    }
-  }, [relation]);
-
-  if (!open) return null;
-
-  // Handle text + file inputs
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    if (e.target.type === "file") {
-      setFormData({
-        ...formData,
-        reports: (e.target as HTMLInputElement).files,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formattedData = {
-      ...formData,
-      age: Number(formData.age),
-      allergies: formData.allergies
-        ? formData.allergies.split(",").map((a) => a.trim())
-        : [],
-      diseases: formData.diseases
-        ? formData.diseases.split(",").map((d) => d.trim())
-        : [],
-      pastSurgeries: formData.pastSurgeries
-        ? formData.pastSurgeries.split(",").map((p) => p.trim())
-        : [],
-      currentMedications: formData.currentMedications
-        ? formData.currentMedications.split(",").map((m) => m.trim())
-        : [],
-      reports: formData.reports, // ✅ Important
-      relation,
     };
 
-    onSubmit(formattedData);
-  };
+    fetchSlots();
+  }, [doctor, selectedDate]);
+
+ 
+
+
+  const handleBook = async (formData: {
+  name: string;
+  age: number;
+  gender: "Male" | "Female" | "Other";
+  aadhar: string;
+  contact: string;
+  allergies?: string[];
+  diseases?: string[];
+  pastSurgeries?: string[];
+  currentMedications?: string[];
+reports?: FileList|null; // uploaded reports
+}) => {
+  const token = document.cookie
+    .split("; ")
+    .find((r) => r.startsWith("patientToken="))
+    ?.split("=")[1];
+  const payloadBase64 = token?.split(".")[1];
+  const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
+  const userId = pay?.id;
+
+  if (!token) {
+    Swal.fire({
+      icon: "info",
+      title: "Login Required",
+      text: "Please login to book an appointment.",
+      confirmButtonText: "OK",
+    }).then(() => (window.location.href = "/patient-login"));
+    return;
+  }
+
+  if (!doctor || !selectedDate || !selectedTime) {
+    Swal.fire({
+      icon: "warning",
+      title: "Incomplete Data",
+      text: "Please select date & time.",
+    });
+    return;
+  }
+
+  const selectedSlotId = slots.find((s) => s.time === selectedTime)?._id;
+  setBookingLoading(true);
+
+  try {
+    const data = new FormData();
+    data.append("doctorId", doctor._id);
+    data.append("userId", userId);
+    data.append("mode", mode);
+    data.append("dateTime", `${selectedDate.toISOString().slice(0, 10)}T${selectedTime}:00Z`);
+    data.append("fees", String(doctor.fees ?? 0));
+    data.append("slot", selectedTime);
+    data.append("slotId", selectedSlotId ?? "");
+
+    // Patient info → Booking model only
+    data.append("patient", JSON.stringify({
+      name: formData.name,
+      age: formData.age,
+      gender: formData.gender,
+      aadhar: formData.aadhar,
+      contact: formData.contact,
+    }));
+
+    // EMR details → EMR model only
+    const emrDetails = {
+      allergies: formData.allergies,
+      diseases: formData.diseases,
+      pastSurgeries: formData.pastSurgeries,
+      currentMedications: formData.currentMedications,
+    };
+    data.append("emr", JSON.stringify(emrDetails));
+
+    // EMR file uploads
+   if (formData.reports) {
+      Array.from(formData.reports).forEach((file) => {
+        data.append("reports", file);
+      });
+    }
+
+
+    await api.post("/api/booking/book", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    await Swal.fire({
+      icon: "success",
+      title: "Appointment Confirmed!",
+      text: `Your appointment with Dr. ${doctor.fullName} is booked successfully.`,
+    });
+
+    onBooked?.(formData);
+    onClose();
+  } catch (err: any) {
+    console.error("Booking error", err);
+    const errorMessage =
+      err.response?.data?.message || err.message || "Something went wrong while booking.";
+    await Swal.fire({
+      icon: "error",
+      title: "Booking Failed",
+      text: errorMessage,
+    });
+  } finally {
+    setBookingLoading(false);
+  }
+};
+
+
+  if (!doctor) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative overflow-y-auto max-h-[90vh]">
-        
-        <button
+    <>
+      <Helmet>
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "Physician",
+            "name": "${doctor.fullName}",
+            "medicalSpecialty": "${doctor.specialization ?? "General"}",
+            "image": "${
+              doctor.photo
+                ? `http://localhost:3000/uploads/${doctor.photo}`
+                : ""
+            }",
+            "priceRange": "${doctor.fees ?? "0"}"
+          }
+        `}</script>
+      </Helmet>
+
+      <div
+        className={`fixed inset-0 z-50 flex justify-end transition-opacity duration-300 ${
+          open ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute inset-0 bg-black/40 backdrop"
+        />
+
+        <aside
+          ref={sidebarRef}
+          className={`relative bg-white w-full sm:w-96 h-full shadow-2xl transform transition-transform duration-500 ease-in-out ${
+            open ? "translate-x-0" : "translate-x-full"
+          } rounded-l-2xl overflow-hidden`}
         >
-          <X className="w-5 h-5" />
-        </button>
-
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-          Book Appointment
-        </h2>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {/* Relation */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Booking For
-            </label>
-            <select
-              value={relation}
-              onChange={(e) =>
-                setRelation(e.target.value as "self" | "relative")
-              }
-              className="w-full border border-gray-300 rounded-lg p-2"
+          {/* Header */}
+          <header className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center gap-3">
+              {doctor.photo ? (
+                <img
+                  src={`http://localhost:3000/uploads/${doctor.photo}`}
+                  alt={doctor.fullName}
+                  className="h-14 w-14 rounded-full object-cover border border-gray-200"
+                />
+              ) : (
+                <div className="h-14 w-14 flex items-center justify-center rounded-full bg-[#28328C] text-white text-lg font-semibold">
+                  {doctor.fullName.charAt(0)}
+                </div>
+              )}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {doctor.fullName}
+                </h2>
+                <p className="text-sm text-gray-500">{doctor.specialization}</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:bg-gray-200 rounded-full p-2 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -278,7 +452,7 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                           }
                           ${
                             disabled
-                              ? "bg-gray-100 text-gray-100 cursor-not-allowed"
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                               : ""
                           }`}
                       >
@@ -326,11 +500,11 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                             disabled={isBooked}
                             className={`p-2 rounded border text-sm transition-all ${
                               selected
-                                ? "bg-[#28328C] text-white shadow "
-                                : "bg-white text-gray-800 hover:shadow-sm border-green-300"
+                                ? "bg-[#28328C] text-white shadow"
+                                : "bg-white text-gray-800 hover:shadow-sm"
                             } ${
                               isBooked
-                                ? "!bg-gray-200 text-gray-100 border-gray-200 cursor-not-allowed"
+                                ? "!bg-gray-200 text-gray-950 cursor-not-allowed"
                                 : ""
                             }`}
                           >
@@ -345,158 +519,27 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
             )}
           </div>
 
-          {relation === "relative" && (
-            <>
-              {/* Name */}
-              <div>
-                <label className="text-sm text-gray-700">Full Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              {/* Age + Gender */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm text-gray-700">Age</label>
-                  <input
-                    type="number"
-                    name="age"
-                    required
-                    value={formData.age}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm text-gray-700">Gender</label>
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                  >
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Aadhar */}
-              <div>
-                <label className="text-sm text-gray-700">Aadhar Number</label>
-                <input
-                  type="text"
-                  name="aadhar"
-                  required
-                  value={formData.aadhar}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              {/* Contact */}
-              <div>
-                <label className="text-sm text-gray-700">Contact Number</label>
-                <input
-                  type="text"
-                  name="contact"
-                  required
-                  value={formData.contact}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              {/* EMR Fields */}
-              <h3 className="text-lg font-semibold text-gray-800 mt-4 mb-2">
-                Add EMR Details (Optional)
-              </h3>
-
-              <div>
-                <label className="text-sm text-gray-700">Allergies</label>
-                <input
-                  type="text"
-                  name="allergies"
-                  value={formData.allergies}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-700">Diseases</label>
-                <input
-                  type="text"
-                  name="diseases"
-                  value={formData.diseases}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-700">Past Surgeries</label>
-                <input
-                  type="text"
-                  name="pastSurgeries"
-                  value={formData.pastSurgeries}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm text-gray-700">
-                  Current Medications
-                </label>
-                <input
-                  type="text"
-                  name="currentMedications"
-                  value={formData.currentMedications}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-
-              {/* 📁 Reports Upload */}
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1">
-                  Upload Reports (Multiple)
-                </label>
-                <input
-                  type="file"
-                   name="reports" 
-                  multiple
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-lg p-2"
-                />
-              </div>
-            </>
+          {selectedTime && (
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
+              <button
+                onClick={() => setShowForm(true)}
+                className="w-full bg-[#28328C] text-white py-2 rounded-lg font-medium hover:bg-[#1e2675] transition-all"
+              >
+                Continue
+              </button>
+            </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-2 mt-4 rounded-lg font-semibold text-white ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#28328C] hover:bg-[#1e2675]"
-            }`}
-          >
-            {loading ? "Processing..." : "Book Appointment"}
-          </button>
-        </form>
+          <AppointmentFormModal
+            open={showForm}
+            onClose={() => setShowForm(false)}
+            onSubmit={handleBook}
+            loading={bookingLoading}
+          />
+        </aside>
       </div>
-    </div>
+    </>
   );
 };
 
-export default AppointmentFormModal;
+export default BookingDrawer

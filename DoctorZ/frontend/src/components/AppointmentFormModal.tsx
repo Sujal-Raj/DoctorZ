@@ -21,25 +21,18 @@ interface AppointmentFormModalProps {
   loading: boolean;
 }
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (data: FormData) => void;
-  loading?: boolean;
-  initialData?: Partial<FormData>; // Added for pre-filling form
-}
-
-const AppointmentFormModal: React.FC<Props> = ({ 
-  open, 
-  onClose, 
-  onSubmit, 
-  loading = false,
-  initialData 
+const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
+  loading,
 }) => {
-  const [formData, setFormData] = React.useState<FormData>({
+  const [relation, setRelation] = useState<"self" | "relative">("self");
+
+  const [formData, setFormData] = useState({
     name: "",
     age: "",
-    gender: "Male",
+    gender: "Male" as "Male" | "Female" | "Other",
     aadhar: "",
     contact: "",
     allergies: "",
@@ -87,106 +80,7 @@ const AppointmentFormModal: React.FC<Props> = ({
         reports: null,
       });
     }
-  }, [open, initialData]);
-
-  // Close on escape key
-  React.useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) {
-        onClose();
-      }
-    };
-    
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [open, onClose]);
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<FormData> = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
-
-    // Age validation
-    if (!formData.age) {
-      newErrors.age = "Age is required";
-    } else {
-      const ageNum = parseInt(formData.age);
-      if (ageNum < 1 || ageNum > 120) {
-        newErrors.age = "Age must be between 1 and 120";
-      }
-    }
-
-    // Aadhar validation (12 digits)
-    if (!formData.aadhar) {
-      newErrors.aadhar = "Aadhar number is required";
-    } else if (!/^\d{12}$/.test(formData.aadhar.replace(/\s/g, ''))) {
-      newErrors.aadhar = "Aadhar must be 12 digits";
-    }
-
-    // Contact validation (10 digits)
-    if (!formData.contact) {
-      newErrors.contact = "Contact number is required";
-    } else if (!/^\d{10}$/.test(formData.contact.replace(/\s/g, ''))) {
-      newErrors.contact = "Contact must be 10 digits";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    
-    // Format Aadhar number (add spaces for readability)
-    if (name === "aadhar") {
-      const cleaned = value.replace(/\D/g, '').slice(0, 12);
-      const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
-      setFormData(prev => ({ ...prev, [name]: formatted }));
-    }
-    // Format contact number
-    else if (name === "contact") {
-      const cleaned = value.replace(/\D/g, '').slice(0, 10);
-      setFormData(prev => ({ ...prev, [name]: cleaned }));
-    }
-    // For age, only allow numbers
-    else if (name === "age") {
-      const cleaned = value.replace(/\D/g, '').slice(0, 3);
-      setFormData(prev => ({ ...prev, [name]: cleaned }));
-    }
-    else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-
-    // Clear error when user starts typing
-    if (errors[name as keyof FormData]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      // Remove formatting spaces before submitting
-      const submitData = {
-        ...formData,
-        aadhar: formData.aadhar.replace(/\s/g, ''),
-        contact: formData.contact.replace(/\s/g, '')
-      };
-      onSubmit(submitData);
-    }
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+  }, [relation]);
 
   if (!open) return null;
 
@@ -225,7 +119,7 @@ const AppointmentFormModal: React.FC<Props> = ({
       currentMedications: formData.currentMedications
         ? formData.currentMedications.split(",").map((m) => m.trim())
         : [],
-      reports: formData.reports, // ✅ Important
+      reports: formData.reports, 
       relation,
     };
 
@@ -251,8 +145,8 @@ const AppointmentFormModal: React.FC<Props> = ({
           
           {/* Relation */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name *
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Booking For
             </label>
             <select
               value={relation}
@@ -403,24 +297,16 @@ const AppointmentFormModal: React.FC<Props> = ({
             </>
           )}
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className={`w-full py-2 mt-4 rounded-lg font-semibold text-white ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#28328C] hover:bg-[#1e2675] transform hover:scale-[1.02] active:scale-[0.98]"
+                : "bg-[#28328C] hover:bg-[#1e2675]"
             }`}
           >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                Booking Appointment...
-              </>
-            ) : (
-              "Book Appointment"
-            )}
+            {loading ? "Processing..." : "Book Appointment"}
           </button>
         </form>
       </div>

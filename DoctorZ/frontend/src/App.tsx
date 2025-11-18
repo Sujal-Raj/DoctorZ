@@ -69,6 +69,7 @@ import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import PatientAppointments from "./pages/UserPages/PatientAppointments";
 import DoctorSearchResults from "./pages/DoctorSearchResults";
 import PatientEMR from "./pages/PatientEMR";
+import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
 // Admin
 
 const App: React.FC = () => {
@@ -147,12 +148,18 @@ const App: React.FC = () => {
                path="doctor-home-dashboard"
                element={<DoctorDashboardHome/>}
              />
-             <Route path="appointments" element={<DoctorAppointments/>} />
+             <Route path="appointments" element={<DoctorAppointments/>}
+              />
+                 <Route
+    path="appointments/addPrescription/:bookingId/:patientAadhar"
+    element={<PrescriptionForm />}
+  />
              <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
             <Route path="patientEMR/:aadhar" element={<PatientEMR />} />
             <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
+            
           </Route>
 
           {/* Admin Dashboard */}

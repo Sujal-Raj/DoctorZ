@@ -17,8 +17,8 @@ const bookingSchema = new Schema({
     fees: { type: Number, required: true },
     status: {
         type: String,
-        enum: ["booked", "cancelled", "completed"],
-        default: "booked",
+        enum: ["pending", "completed"],
+        default: "pending", // ✔ default to pending
         required: true,
     },
 }, { timestamps: true });
