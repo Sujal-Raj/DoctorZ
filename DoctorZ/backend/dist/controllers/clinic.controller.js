@@ -384,4 +384,25 @@ export const getClinicStatus = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong", error });
     }
 };
+// export const searchDoctorsOnly = async (req:Request, res:Response) => {
+//   try {
+//     const { q } = req.query;
+//     if (!q) {
+//       return res.status(400).json({ message: "Query is required" });
+//     }
+//     const doctors = await doctorModel.find({
+//       $or: [
+//         { fullName: { $regex: q, $options: "i" } },
+//         { specialization: { $regex: q, $options: "i" } }
+//       ]
+//     });
+//     return res.status(200).json({
+//       type: "doctor",
+//       results: doctors,
+//     });
+//   } catch (err) {
+//     console.error("Doctor Search Error", err);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
 //# sourceMappingURL=clinic.controller.js.map
