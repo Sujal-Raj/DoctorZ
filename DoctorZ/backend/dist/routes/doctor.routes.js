@@ -8,6 +8,7 @@ router.post('/register', upload.fields([
     { name: 'photo', maxCount: 1 },
     { name: 'signature', maxCount: 1 },
 ]), doctorController.doctorRegister);
+router.get('/search', doctorController.searchDoctors);
 router.get('/allDoctors/:patientId', doctorController.getAllDoctors);
 router.get('/:id', doctorController.getDoctorById);
 router.delete('/delete/:id', doctorController.deleteDoctor);

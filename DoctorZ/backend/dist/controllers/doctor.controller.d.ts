@@ -1,6 +1,7 @@
 import type { Response, Request } from "express";
 export declare const getTodaysBookedAppointments: (req: Request, res: Response) => Promise<void>;
 export declare const getTotalPatients: (req: Request, res: Response) => Promise<void>;
+export declare const searchDoctors: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 declare const _default: {
     getAllDoctors: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     doctorRegister: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
@@ -11,6 +12,7 @@ declare const _default: {
     doctorLogin: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     getTodaysBookedAppointments: (req: Request, res: Response) => Promise<void>;
     getTotalPatients: (req: Request, res: Response) => Promise<void>;
+    searchDoctors: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 };
 export default _default;
 //# sourceMappingURL=doctor.controller.d.ts.map

@@ -285,5 +285,25 @@ const deleteDoctor = async (req, res) => {
         });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin, getTodaysBookedAppointments, getTotalPatients };
+export const searchDoctors = async (req, res) => {
+    try {
+        const { query } = req.query;
+        // Empty search → return all doctors
+        const filter = query
+            ? {
+                fullName: { $regex: query, $options: "i" },
+            }
+            : {};
+        const doctors = await doctorModel.find(filter);
+        return res.status(200).json({
+            message: "Doctors fetched",
+            doctors,
+        });
+    }
+    catch (error) {
+        console.error("Doctor search error:", error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
+export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin, getTodaysBookedAppointments, getTotalPatients, searchDoctors };
 //# sourceMappingURL=doctor.controller.js.map
