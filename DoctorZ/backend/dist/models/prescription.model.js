@@ -22,6 +22,8 @@ const PrescriptionSchema = new Schema({
     symptoms: { type: [String], default: [] },
     medicines: { type: [MedicineSchema], required: true },
     recommendedTests: { type: [String], default: [] },
+    notes: { type: String },
+    pdfUrl: { type: String }
 });
 const PrescriptionModel = mongoose.model("Prescription", PrescriptionSchema);
 export default PrescriptionModel;

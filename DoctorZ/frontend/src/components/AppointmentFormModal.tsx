@@ -551,7 +551,7 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
       currentMedications: formData.currentMedications
         ? formData.currentMedications.split(",").map((m) => m.trim())
         : [],
-      reports: formData.reports, // ✅ Important
+      reports: formData.reports, 
       relation,
     };
 

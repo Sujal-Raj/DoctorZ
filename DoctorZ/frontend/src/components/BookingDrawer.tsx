@@ -1,6 +1,4 @@
 
-
-
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { X, Video, Phone, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDayShort, formatDateNumber } from "../utils/date.js";
