@@ -9,8 +9,8 @@ import {
   CalendarIcon,
   UsersIcon,
   KeyIcon,
-  ArrowRightOnRectangleIcon,
   Bars3Icon,
+  ArrowRightOnRectangleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
@@ -39,6 +39,7 @@ export default function DoctorDashboard() {
     { name: "Appointments", path: "appointments", icon: <CalendarIcon className="w-5 h-5" /> },
     { name: "Edit ID & Password", path: "editDoctorIdPassword", icon: <KeyIcon className="w-5 h-5" /> },
     { name: "My Patients", path: "patients", icon: <UsersIcon className="w-5 h-5" /> },
+   
   ];
 
   return (

@@ -172,7 +172,7 @@ interface Patient {
 interface Booking {
   _id: string;
   patient: Patient;
-  datetime: string;
+  dateTime: string;
   fees: number;
   mode: "online" | "offline";
   status: "pending" | "completed";
@@ -247,9 +247,10 @@ export default function DoctorAppointments() {
               <div className="mb-4 text-gray-700 text-sm space-y-2">
                 <p className="flex items-center gap-2">
                   <CalendarDaysIcon className="w-5 h-5 text-gray-500" />
-                  <span className="font-medium">Date & Time:</span>{" "}
-                  {new Date(b.datetime).toLocaleString()}
+                  <span className="font-medium">Date & Time :</span>{" "}
+                  {new Date(b.dateTime).toLocaleString()}
                 </p>
+                
                 <p className="flex items-center gap-2">
                   <CurrencyRupeeIcon className="w-5 h-5 text-gray-500" />
                   <span className="font-medium">Fees:</span> {b.fees}

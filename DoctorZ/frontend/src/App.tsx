@@ -17,7 +17,7 @@ import ViewDoctorProfile from "./pages/ViewDoctorProfile";
 
 // Clinic
 
-
+import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
 import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
@@ -138,6 +138,7 @@ const App: React.FC = () => {
              <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
             
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
+            <Route path="clinic-doctor-card" element={<ClinicDoctorCard />} />
           </Route>
 
           {/* Doctor Dashboard */}
