@@ -38,6 +38,7 @@ export default function DoctorAppointments() {
       const { data } = await axios.get<{ bookings: Booking[] }>(
         `http://localhost:3000/api/booking/doctor/${doctorId}`
       );
+      console.log(data)
       setBookings(data.bookings);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);

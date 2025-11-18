@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
@@ -13,28 +11,32 @@ interface Doctor {
   MobileNo: string;
   Aadhar: number;
 }
-interface DoctorApiResponse {
-  doctor: Array<{
-    doctorId: Doctor;
-  }>;
-}
 
+interface DoctorWithRoom extends Doctor {
+  roomId: string;
+}
 
 const PatientAppointments: React.FC = () => {
   const navigate = useNavigate();
-  const patientId = useParams().id;
+  const { id: patientId } = useParams();
 
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] = useState<DoctorWithRoom[]>([]);
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const res = await api.get<DoctorApiResponse>(`/api/patient/appointments/doctors/${patientId}`);
+        // Use patientId from URL params or fallback static ID if needed
+        const res = await api.get<{ doctor: Array<any> }>(
+          `/api/patient/appointments/doctors/${"68f1029cba3a940d89e776da"}`
+        );
 
-        // ✅ extract doctorId from each booking
-        const extractedDoctors = res.data.doctor.map((item: any) => item.doctorId);
+        // Map response to include doctor info and roomId
+        const mappedDoctors = res.data.doctor.map((item: any) => ({
+          ...item.doctorId,
+          roomId: item.roomId,
+        }));
 
-        setDoctors(extractedDoctors);
+        setDoctors(mappedDoctors);
       } catch (err) {
         console.error("Error fetching doctors:", err);
       }
@@ -89,7 +91,7 @@ const PatientAppointments: React.FC = () => {
                       </a>
 
                       <button
-                        onClick={() => navigate("/doctor-chat")}
+                        onClick={() => navigate(`/doctor-chat/${doctor.roomId}`)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                       >
                         Chat
@@ -107,4 +109,3 @@ const PatientAppointments: React.FC = () => {
 };
 
 export default PatientAppointments;
-

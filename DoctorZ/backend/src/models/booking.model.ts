@@ -20,6 +20,7 @@ export interface IBooking extends Document {
   mode: "online" | "offline";
   fees: number;
   status: "booked" | "cancelled" | "completed";
+  roomId: string;
   createdAt: Date;
   updatedAt: Date;
  
@@ -58,6 +59,10 @@ const bookingSchema = new Schema<IBooking>(
       default: "booked",
       required: true,
     },
+    roomId:{
+      type:String,
+      required:true,
+    }
     
   },
   { timestamps: true }

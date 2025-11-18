@@ -16,6 +16,7 @@ export interface IBooking extends Document {
     mode: "online" | "offline";
     fees: number;
     status: "booked" | "cancelled" | "completed";
+    roomId: string;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -14,36 +14,65 @@ const DoctorChat = () => {
   const location = useLocation();
   const { patient, doctorId } = location.state || {};
   // Set user id: usually from auth context, but fallback for example
-  const userId = doctorId || "doctor"; 
+  const userId = doctorId || "doctor";
 
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]); // each message: { _id?, roomId, senderId, message, createdAt }
   const [msg, setMsg] = useState("");
   const chatEndRef = useRef(null);
 
-  // Fetch chat history
-    // useEffect(() => {
-    //   if (roomId) {
-    //     api.get(`/api/message/${roomId}`).then(res => {
-    //       setMessages(res.data.messages || []);
-    //     });
-    //   }
-    // }, [roomId]);
+  // Register current user with server so server's onlineUsers map is populated
+  useEffect(() => {
+    if (!userId) return;
+    socket.emit("register", userId);
+  }, [userId]);
 
-  // Handle socket events
+  // Handle socket events: set up handlers, then join room
   useEffect(() => {
     if (!roomId) return;
 
+    // history handler: server sends an array of normalized messages
+    const handleHistory = (history) => {
+      // history expected shape: [{ _id, roomId, senderId, message, createdAt }, ...]
+      if (Array.isArray(history)) {
+        setMessages(history);
+      } else {
+        setMessages([]);
+      }
+    };
+
+    // incoming message handler
+    const handleReceive = (data) => {
+      // data expected shape: { _id, roomId, senderId, message, createdAt }
+      setMessages((prev) => [
+        ...prev,
+        {
+          _id: data._id,
+          roomId: data.roomId,
+          senderId: data.senderId,
+          message: data.message,
+          createdAt: data.createdAt || new Date().toISOString(),
+        },
+      ]);
+    };
+
+    // error handler (optional)
+    const handleError = (err) => {
+      console.error("Socket error:", err);
+    };
+
+    // attach listeners BEFORE joining so we don't miss history/first messages
+    socket.on("history", handleHistory);
+    socket.on("receiveMessage", handleReceive);
+    socket.on("error", handleError);
+
+    // now ask server to join room (server will send "history" after join)
     socket.emit("joinRoom", roomId);
 
-    socket.on("receiveMessage", (data) => {
-      setMessages(prev =>
-        [...prev, { ...data, senderId: data.senderId, timestamp: new Date() }]
-      );
-    });
-
     return () => {
-      socket.off("receiveMessage");
-      // socket.emit("disconnect");
+      socket.off("history", handleHistory);
+      socket.off("receiveMessage", handleReceive);
+      socket.off("error", handleError);
+      // note: do not disconnect the socket here; just remove listeners
     };
   }, [roomId]);
 
@@ -56,9 +85,23 @@ const DoctorChat = () => {
 
   const sendMessage = () => {
     if (!msg.trim()) return;
+    if (!roomId) return;
+
     const messageData = { roomId, senderId: userId, message: msg };
+
+    // optimistic UI update with temporary id and timestamp
+    const tempMsg = {
+      _id: `temp-${Date.now()}`,
+      roomId,
+      senderId: userId,
+      message: msg,
+      createdAt: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, tempMsg]);
+
     socket.emit("sendMessage", messageData);
-    setMessages((prev) => [...prev, { ...messageData, timestamp: new Date() }]);
+
     setMsg("");
   };
 
@@ -68,7 +111,7 @@ const DoctorChat = () => {
       <div className="flex-1 overflow-y-auto p-4" style={{ minHeight: "400px" }}>
         {messages.map((m, i) => (
           <div
-            key={i}
+            key={m._id ?? i}
             className={`mb-2 flex ${m.senderId === userId ? "justify-end" : "justify-start"}`}
           >
             <div
@@ -76,7 +119,10 @@ const DoctorChat = () => {
                 m.senderId === userId ? "bg-blue-500 text-white" : "bg-gray-200"
               }`}
             >
-              {m.message}
+              <div>{m.message}</div>
+              <div style={{ fontSize: 11, color: "#4b5563", marginTop: 6 }}>
+                {m.createdAt ? new Date(m.createdAt).toLocaleString() : ""}
+              </div>
             </div>
           </div>
         ))}
@@ -88,7 +134,9 @@ const DoctorChat = () => {
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
           placeholder="Type your message..."
-          onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") sendMessage();
+          }}
         />
         <button
           className="ml-2 px-4 py-2 bg-blue-500 text-white rounded shadow"
