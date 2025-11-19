@@ -9,6 +9,7 @@ import bookingModel from "../models/booking.model.js";
 import patientModel from "../models/patient.model.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import type { create } from "domain";
 dotenv.config();
 
 console.log("MAIL_USER:", process.env.MAIL_USER);
@@ -519,29 +520,72 @@ export const getClinicStatus = async (req: Request, res: Response) => {
   }
 };
 
-// export const searchDoctorsOnly = async (req:Request, res:Response) => {
-//   try {
-//     const { q } = req.query;
+export const sendDoctorRequest = async (req: Request, res: Response) => {
 
-//     if (!q) {
-//       return res.status(400).json({ message: "Query is required" });
-//     }
+  try{
+    const { doctorId , clinicId } = req.body;
 
-//     const doctors = await doctorModel.find({
-//       $or: [
-//         { fullName: { $regex: q, $options: "i" } },
-//         { specialization: { $regex: q, $options: "i" } }
-//       ]
-//     });
+    const doctor = await doctorModel.findById(doctorId);
+    const clinic = await clinicModel.findById(clinicId);
 
-//     return res.status(200).json({
-//       type: "doctor",
-//       results: doctors,
-//     });
+    if(!doctor || !clinic){
+      return res.status(400).json({
+        message:"Invalid doctor or clinic"
+      })
+    }
 
-//   } catch (err) {
-//     console.error("Doctor Search Error", err);
-//     res.status(500).json({ message: "Server Error" });
-//   }
-// };
+    doctor.notifications.push({
+      type :"request",
+      clinicId,
+      clinicName:clinic.clinicName,
+      message :`You have been invited to join this ${clinic.clinicName}  clinic. Please accept or reject the invitation.`,
+      status :"pending",
+      createdAt :new Date(),
+    })
 
+    await doctor.save();
+
+    res.json({message :" Request sent successfully"})
+
+    }
+    catch(error){
+      console.log(error);
+      res.json({message :"Something went wrong"})
+    }
+  
+}
+ 
+export const getClinicDoctorStatus = async (req: Request, res: Response) => {
+  try {
+    const { clinicId } = req.params;
+
+    const doctors = await doctorModel.find();
+
+    const addedDoctors: string[] = [];
+    const pendingRequests: string[] = [];
+
+    doctors.forEach((doctor) => {
+      const notif = doctor.notifications.find(
+        (n) => n.clinicId?.toString() === clinicId
+      );
+
+      if (notif) {
+        if (notif.status === "accepted") {
+          addedDoctors.push(doctor._id.toString());
+        }
+
+        if (notif.status === "pending") {
+          pendingRequests.push(doctor._id.toString());
+        }
+      }
+    });
+
+    return res.json({
+      addedDoctors,
+      pendingRequests,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
