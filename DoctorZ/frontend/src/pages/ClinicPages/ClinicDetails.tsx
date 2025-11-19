@@ -57,7 +57,7 @@ const ClinicDetails: React.FC = () => {
   const [clinic, setClinic] = useState<Clinic | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabType>("overview");
+  const [activeTab, setActiveTab] = useState<TabType>("doctors");
 
   const [filters, setFilters] = useState<Filters>({
     gender: [],
