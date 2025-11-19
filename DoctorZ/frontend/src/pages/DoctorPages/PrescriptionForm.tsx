@@ -1,10 +1,13 @@
-
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { X } from "lucide-react";
 import api from "../../Services/mainApi";
 import Swal from "sweetalert2";
+
+// JSON Files
+import medicineData from "../../assets/indian_medicine_data.json";
+import diseaseData from "../../assets/Disease_symptom_dataset.json";
+import symptomData from "../../assets/symptoms.json";
 
 interface Medicine {
   name: string;
@@ -15,33 +18,140 @@ interface Medicine {
 const PrescriptionForm = () => {
   const { bookingId, patientAadhar } = useParams();
   const doctorId = localStorage.getItem("doctorId");
-    const { state } = useLocation();
-      const name = state?.name;
-       const gender=state?.gender;
+  const { state } = useLocation();
+  const name = state?.name;
+  const gender = state?.gender;
 
+  // Diagnosis
+  const [diagnosisInput, setDiagnosisInput] = useState("");
+  const [allDiseases, setAllDiseases] = useState<string[]>([]);
+  const [filteredDiseases, setFilteredDiseases] = useState<string[]>([]);
+  const [showDiseaseSuggestions, setShowDiseaseSuggestions] = useState(false);
 
-
-  const [diagnosis, setDiagnosis] = useState("");
+  // Symptoms
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [symptomInput, setSymptomInput] = useState("");
 
+  const [allSymptoms, setAllSymptoms] = useState<string[]>([]);
+
+  const [filteredSymptoms, setFilteredSymptoms] = useState<string[]>([]);
+  const [showSymptoms, setShowSymptoms] = useState(false);
+
+  // Tests
   const [tests, setTests] = useState<string[]>([]);
   const [testInput, setTestInput] = useState("");
 
-  // Medicine inputs
+  // Medicine
   const [medicineName, setMedicineName] = useState("");
   const [medicineDosage, setMedicineDosage] = useState("");
   const [medicineQty, setMedicineQty] = useState("");
-
   const [medicines, setMedicines] = useState<Medicine[]>([]);
+
+  const [allMedicines, setAllMedicines] = useState<string[]>([]);
+  const [filteredMedicines, setFilteredMedicines] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Add Symptom
+  // Load all medicine names
+  useEffect(() => {
+    const meds = Array.isArray(medicineData) ? medicineData : [];
+    const names = meds
+      .map((m: any) => m?.name)
+      .filter((n: any) => typeof n === "string" && n.trim() !== "");
+    setAllMedicines(names);
+  }, []);
+
+  // Load all diseases
+  useEffect(() => {
+    if (!Array.isArray(diseaseData)) return;
+    const diseaseSet = new Set<string>();
+
+    diseaseData.forEach((item) => {
+      if (item.Disease) diseaseSet.add(item.Disease);
+    });
+
+    setAllDiseases(Array.from(diseaseSet));
+  }, []);
+
+  //Load all symptoms
+  useEffect(() => {
+    if (!Array.isArray(symptomData)) return;
+
+    
+    const symptoms = Object.keys(symptomData[0]).filter(
+      (key) => key !== "prognosis"
+    );
+
+    setAllSymptoms(symptoms);
+  }, []);
+
+  //Symptoms Search
+  const handleSymptomSearch = (query: string) => {
+    setSymptomInput(query);
+
+    if (!query.trim()) {
+      setFilteredSymptoms([]);
+      return;
+    }
+
+    const filtered = allSymptoms.filter((symptom) =>
+      symptom.toLowerCase().startsWith(query.toLowerCase())
+    );
+
+    setFilteredSymptoms(filtered.slice(0, 10));
+    setShowSymptoms(true);
+  };
+  const formatSymptomLabel = (symptom: string) => {
+    return symptom.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
+  // Medicine search
+  const handleMedicineSearch = (query: string) => {
+    setMedicineName(query);
+
+    if (!query) {
+      setFilteredMedicines([]);
+      return;
+    }
+
+    const filtered = allMedicines
+      .filter((m) => typeof m === "string")
+      .filter((m) => m.toLowerCase().startsWith(query.toLowerCase()));
+
+    setFilteredMedicines(filtered.slice(0, 10));
+    setShowSuggestions(true);
+  };
+
+  // Select medicine
+  const selectMedicine = (name: string) => {
+    setMedicineName(name);
+    setFilteredMedicines([]);
+    setShowSuggestions(false);
+  };
+
+  // Diagnosis search
+  const handleDiagnosisSearch = (query: string) => {
+    setDiagnosisInput(query);
+
+    if (!query) {
+      setFilteredDiseases([]);
+      return;
+    }
+
+    const filtered = allDiseases.filter((d) =>
+      d.toLowerCase().startsWith(query.toLowerCase())
+    );
+
+    setFilteredDiseases(filtered.slice(0, 10));
+    setShowDiseaseSuggestions(true);
+  };
+
+  // Add symptom
   const handleAddSymptom = () => {
     if (!symptomInput.trim()) return;
-    setSymptoms([...symptoms, symptomInput.trim()]);
+    setSymptoms([...symptoms, formatSymptomLabel(symptomInput.trim())]);
     setSymptomInput("");
   };
 
@@ -49,7 +159,7 @@ const PrescriptionForm = () => {
     setSymptoms(symptoms.filter((_, i) => i !== index));
   };
 
-  // Add Test
+  // Add test
   const handleAddTest = () => {
     if (!testInput.trim()) return;
     setTests([...tests, testInput.trim()]);
@@ -60,6 +170,7 @@ const PrescriptionForm = () => {
     setTests(tests.filter((_, i) => i !== index));
   };
 
+  // Add medicine chip
   const addMedicineChip = () => {
     if (!medicineName.trim() || !medicineDosage.trim()) return;
 
@@ -89,47 +200,35 @@ const PrescriptionForm = () => {
     const payload = {
       doctorId,
       patientAadhar,
-      diagnosis,
+      diagnosis: diagnosisInput,
       symptoms,
       medicines,
       recommendedTests: tests,
       notes,
-      name,gender
+      name,
+      gender,
     };
 
     try {
       await api.post(`/api/prescription/addPrescription/${bookingId}`, payload);
+
       Swal.fire({
         title: "Prescription Saved Successfully!",
-
         icon: "success",
-      
         showConfirmButton: true,
       });
-      // RESET ALL INPUTS
-setDiagnosis("");
-setSymptoms([]);
-setSymptomInput("");
 
-setTests([]);
-setTestInput("");
-
-setMedicineName("");
-setMedicineDosage("");
-setMedicineQty("");
-setMedicines([]);
-
-setNotes("");
-
-    
+      // Reset all
+      setDiagnosisInput("");
+      setSymptoms([]);
+      setTests([]);
+      setMedicines([]);
+      setNotes("");
     } catch (error) {
       console.error(error);
       Swal.fire({
-        title: "Prescription Saved Successfully!",
-
+        title: "Error Saving Prescription",
         icon: "error",
-        
-        confirmButtonText: "TryAgain",
       });
     }
 
@@ -142,9 +241,6 @@ setNotes("");
         <h2 className="text-3xl font-bold text-center text-blue-900">
           Create Prescription
         </h2>
-        <p className="text-center text-gray-500 mb-8">
-          Fill the details to generate your patient's prescription.
-        </p>
 
         <form onSubmit={handleSubmit} className="space-y-10">
           {/* Diagnosis */}
@@ -152,14 +248,35 @@ setNotes("");
             <h3 className="text-xl font-semibold text-gray-800 mb-4">
               Diagnosis
             </h3>
-            <textarea
-              value={diagnosis}
-              onChange={(e) => setDiagnosis(e.target.value)}
-              className="w-full border rounded-lg p-3"
-              rows={3}
-              required
-              placeholder="Add Diagnosis"
-            />
+
+            <div className="relative w-full">
+              <input
+                className="border p-3 rounded-lg w-full"
+                placeholder="Search diagnosis..."
+                value={diagnosisInput}
+                onChange={(e) => handleDiagnosisSearch(e.target.value)}
+                onFocus={() =>
+                  diagnosisInput && setShowDiseaseSuggestions(true)
+                }
+              />
+
+              {showDiseaseSuggestions && filteredDiseases.length > 0 && (
+                <div className="absolute bg-white border w-full rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+                  {filteredDiseases.map((disease, i) => (
+                    <div
+                      key={i}
+                      className="p-3 cursor-pointer hover:bg-blue-100"
+                      onClick={() => {
+                        setDiagnosisInput(disease);
+                        setShowDiseaseSuggestions(false);
+                      }}
+                    >
+                      {disease}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Symptoms */}
@@ -168,13 +285,13 @@ setNotes("");
               Symptoms
             </h3>
 
-            <div className="flex gap-3">
+            <div className="relative flex gap-3">
               <input
-                type="text"
                 value={symptomInput}
-                onChange={(e) => setSymptomInput(e.target.value)}
+                onChange={(e) => handleSymptomSearch(e.target.value)}
+                onFocus={() => symptomInput && setShowSymptoms(true)}
                 className="flex-1 border rounded-lg p-3"
-                placeholder="Add symptom"
+                placeholder="Search symptom"
               />
               <button
                 type="button"
@@ -183,6 +300,23 @@ setNotes("");
               >
                 Add
               </button>
+
+              {showSymptoms && filteredSymptoms.length > 0 && (
+                <div className="absolute left-0 top-14 bg-white border w-full rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+                  {filteredSymptoms.map((sym, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 cursor-pointer hover:bg-blue-100"
+                      onClick={() => {
+                        setSymptomInput(formatSymptomLabel(sym));
+                        setShowSymptoms(false);
+                      }}
+                    >
+                      {formatSymptomLabel(sym)}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-2 mt-3">
@@ -191,11 +325,11 @@ setNotes("");
                   key={i}
                   className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
                 >
-                  {s}
+                  {formatSymptomLabel(s)}
                   <button
                     type="button"
                     onClick={() => removeSymptom(i)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500"
                   >
                     <X size={16} />
                   </button>
@@ -210,20 +344,38 @@ setNotes("");
               Medicines
             </h3>
 
-            {/* Input Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input
-                value={medicineName}
-                onChange={(e) => setMedicineName(e.target.value)}
-                className="border rounded-lg p-3"
-                placeholder="Medicine name"
-              />
+              <div className="relative">
+                <input
+                  value={medicineName}
+                  onChange={(e) => handleMedicineSearch(e.target.value)}
+                  onFocus={() => medicineName && setShowSuggestions(true)}
+                  className="border rounded-lg p-3 w-full"
+                  placeholder="Medicine name"
+                />
+
+                {showSuggestions && filteredMedicines.length > 0 && (
+                  <div className="absolute z-20 bg-white border rounded-lg w-full max-h-60 overflow-y-auto shadow-lg">
+                    {filteredMedicines.map((med, index) => (
+                      <div
+                        key={index}
+                        onClick={() => selectMedicine(med)}
+                        className="p-3 hover:bg-blue-100 cursor-pointer text-sm"
+                      >
+                        {med}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <input
                 value={medicineDosage}
                 onChange={(e) => setMedicineDosage(e.target.value)}
                 className="border rounded-lg p-3"
-                placeholder="Dosage (e.g., 1/day)"
+                placeholder="Dosage"
               />
+
               <input
                 value={medicineQty}
                 onChange={(e) => setMedicineQty(e.target.value)}
@@ -240,19 +392,18 @@ setNotes("");
               + Add Medicine
             </button>
 
-            {/* Chips */}
             <div className="flex flex-wrap gap-2 mt-4">
               {medicines.map((med, i) => (
                 <span
                   key={i}
                   className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
                 >
-                  {med.name} — {med.dosage}
+                  {med.name} — {med.dosage}{" "}
                   {med.quantity && ` — ${med.quantity}`}
                   <button
                     type="button"
                     onClick={() => removeMedicine(i)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500"
                   >
                     <X size={16} />
                   </button>
@@ -293,7 +444,7 @@ setNotes("");
                   <button
                     type="button"
                     onClick={() => removeTest(i)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500"
                   >
                     <X size={16} />
                   </button>
@@ -308,10 +459,10 @@ setNotes("");
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full border rounded-lg p-3"
               rows={4}
+              className="w-full border rounded-lg p-3"
               placeholder="Additional notes"
-            />
+            ></textarea>
           </div>
 
           {/* Submit */}

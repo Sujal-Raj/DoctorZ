@@ -8,6 +8,7 @@ import Booking from '../models/booking.model.js';
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
 import patientModel from "../models/patient.model.js";
+import mongoose from "mongoose";
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -300,7 +301,7 @@ export const getTodaysBookedAppointments = async (req: Request, res: Response) =
     const bookedAppointments = await Booking.find({
       doctorId,
       datetime: { $gte: startOfDay, $lte: endOfDay },
-      status: "booked",
+      status: "pending",
     });
 
     res.status(200).json(bookedAppointments);
@@ -312,13 +313,14 @@ export const getTodaysBookedAppointments = async (req: Request, res: Response) =
 
 
 
+
 export const getTotalPatients = async (req: Request, res: Response) => {
   try {
     const doctorId = req.params.doctorId;
 
     const totalPatients = await Booking.countDocuments({
       doctorId,
-      status: "booked",
+      status: "pending",
     });
 
     res.status(200).json({ totalPatients });
