@@ -17,7 +17,7 @@ import ViewDoctorProfile from "./pages/ViewDoctorProfile";
 
 // Clinic
 
-import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
+
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
 import DoctorLogin from "./pages/DoctorPages/DoctorLogin";
@@ -70,6 +70,7 @@ import PatientAppointments from "./pages/UserPages/PatientAppointments";
 import DoctorSearchResults from "./pages/DoctorSearchResults";
 import PatientEMR from "./pages/PatientEMR";
 import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
+import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
 // Admin
 
 const App: React.FC = () => {
