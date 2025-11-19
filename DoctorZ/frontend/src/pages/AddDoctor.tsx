@@ -1,88 +1,27 @@
 
-
-// import { useEffect, useState } from "react";
-// import ClinicDoctorCard from "../pages/ClinicPages/ClinicDoctorCard";
-// import api from "../Services/mainApi";
-// import { useParams } from "react-router-dom";
-
-// const AddDoctor = () => {
-//   const { clinicId } = useParams();
-
-//   const [doctors, setDoctors] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [search, setSearch] = useState("");
-
-//   const API = `/api/clinic/${clinicId}`;
-
-//   useEffect(() => {
-//     const fetchDoctors = async () => {
-//       setLoading(true);
-//       try {
-//         const res = await api.get(API);
-//         const data = Array.isArray(res.data)
-//           ? res.data
-//           : res.data?.doctors ?? [];
-//         setDoctors(data);
-//       } catch (error) {
-//         console.error("Error fetching doctors:", error);
-//       }
-//       setLoading(false);
-//     };
-
-//     fetchDoctors();
-//   }, [clinicId]);
-
-//   const filteredDoctors = doctors.filter((d) =>
-//     d.fullName.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   return (
-//     <div className="p-5">
-//       <div className="flex justify-center mb-6">
-//         <input
-//           type="text"
-//           placeholder="Search doctor..."
-//           value={search}
-//           onChange={(e) => setSearch(e.target.value)}
-//           className="px-3 py-2 border rounded-lg w-96"
-//         />
-//       </div>
-
-//       {loading ? (
-//         <p className="text-center text-gray-600">Searching...</p>
-//       ) : filteredDoctors.length === 0 ? (
-//         <p className="text-center text-gray-600">No doctors found.</p>
-//       ) : (
-//         <div className="grid md:grid-cols-2 gap-6">
-//           {filteredDoctors.map((doc) => (
-//             <ClinicDoctorCard key={doc._id} doctor={doc} />
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default AddDoctor;
-
-
 import { useEffect, useState } from "react";
 import ClinicDoctorCard from "../pages/ClinicPages/ClinicDoctorCard";
 import api from "../Services/mainApi";
 import { Search as SearchIcon } from "lucide-react";
 
-interface Doctor {
+export interface Doctor {
   _id: string;
   fullName: string;
-  gender: string;
   specialization: string;
+  qualification?: string;
+  location?: string;
+  city?: string;
+  photo?: string;
+  gender?: string;
 }
-
 interface SearchResponse {
   doctors: Doctor[];
 }
 
 const AddDoctor = () => {
+  const [addedDoctors, setAddedDoctors] = useState<string[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<string[]>([]);
+
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -92,19 +31,33 @@ const AddDoctor = () => {
 
   // ------------------ FETCH DOCTORS (FULL DB SEARCH) ------------------
   const fetchDoctors = async (query: string = "") => {
-    if(!query.trim()){
-      setDoctors([]);   // Clear list
-    return; 
+    if (!query.trim()) {
+      setDoctors([]); // Clear list
+      return;
     }
     setLoading(true);
     try {
-      const res = await api.get<SearchResponse>(`/api/doctor/search?query=${query}`);
+      const res = await api.get<SearchResponse>(
+        `/api/doctor/search?query=${query}`
+      );
       setDoctors(res.data.doctors || []);
     } catch (error) {
       console.error("Error fetching doctors:", error);
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    const clinicId = localStorage.getItem("clinicId");
+
+    api
+      .get <{ addedDoctors: string[]; pendingRequests: string[] }>(`/api/clinic/doctor-status/${clinicId}`)
+      .then((res) => {
+        setAddedDoctors(res.data.addedDoctors || []);
+        setPendingRequests(res.data.pendingRequests || []);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   // // Initial load → show all doctors
   // useEffect(() => {
@@ -114,10 +67,9 @@ const AddDoctor = () => {
   // Search doctor by typing
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if(search.trim()){
-            fetchDoctors(search);
-      }
-      else{
+      if (search.trim()) {
+        fetchDoctors(search);
+      } else {
         setDoctors([]);
       }
     }, 400); // debounce
@@ -136,26 +88,35 @@ const AddDoctor = () => {
   });
 
   return (
-    <div className="w-full bg-gray-50 min-h-screen">
-      <div className="max-w-[1500px] mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Add Doctors to Clinic
-        </h1>
+    
+  <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="max-w-[1500px] mx-auto px-4 py-8">
 
-        {/* --------- LAYOUT: FILTERS + RESULTS --------- */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          
-          {/* ---------------- LEFT FILTER SIDEBAR ---------------- */}
-          <div className="bg-white border rounded-lg p-4 shadow-sm h-fit">
-            <h2 className="text-lg font-semibold mb-3">Filters</h2>
+      {/* Page Heading */}
+      <h1 className="text-3xl font-extrabold text-gray-900 mb-8 tracking-tight">
+        Add Doctors to Clinic
+      </h1>
 
-            {/* Gender filter */}
-            <div className="mb-4">
-              <label className="block text-sm mb-2 text-gray-700">Gender</label>
+      {/* Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        {/* ================= FILTER SIDEBAR ================= */}
+        <div className="lg:sticky lg:top-6">
+          <div className="bg-white/80 backdrop-blur-xl border rounded-2xl p-6 shadow-lg">
+
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Filters
+            </h2>
+
+            {/* Gender */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Gender
+              </label>
               <select
                 value={genderFilter}
                 onChange={(e) => setGenderFilter(e.target.value)}
-                className="w-full border rounded-md p-2 text-sm"
+                className="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All</option>
                 <option value="Male">Male</option>
@@ -164,9 +125,9 @@ const AddDoctor = () => {
               </select>
             </div>
 
-            {/* Specialization filter */}
-            <div className="mb-4">
-              <label className="block text-sm mb-2 text-gray-700">
+            {/* Specialization */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Specialization
               </label>
               <input
@@ -174,11 +135,11 @@ const AddDoctor = () => {
                 value={specialization}
                 placeholder="e.g. Dentist"
                 onChange={(e) => setSpecialization(e.target.value)}
-                className="w-full border rounded-md p-2 text-sm"
+                className="w-full border rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            {/* Reset button */}
+            {/* Reset Button */}
             <button
               onClick={() => {
                 setGenderFilter("");
@@ -186,55 +147,64 @@ const AddDoctor = () => {
                 setSearch("");
                 fetchDoctors("");
               }}
-              className="w-full bg-blue-600 text-white py-2 rounded-md mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-sm rounded-xl transition-all"
             >
               Reset Filters
             </button>
+
+          </div>
+        </div>
+
+        {/* ================= RIGHT SECTION ================= */}
+        <div className="lg:col-span-3 space-y-6">
+
+          {/* Search Bar */}
+          <div className="bg-white border rounded-2xl shadow p-4 flex items-center gap-3">
+            <SearchIcon className="w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search doctor by name..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full outline-none text-gray-700 text-sm"
+            />
           </div>
 
-          {/* ---------------- RIGHT: SEARCH + RESULTS ---------------- */}
-          <div className="md:col-span-3">
-
-            {/* Search bar */}
-            <div className="bg-white border rounded-lg p-3 mb-6 shadow-sm">
-              <div className="flex items-center gap-3">
-                <SearchIcon className="w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search doctor by name..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full outline-none text-gray-700"
-                />
-              </div>
+          {/* Doctor List */}
+          {loading ? (
+            <div className="bg-white p-10 rounded-2xl shadow border text-center">
+              <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-gray-600 font-medium">Loading doctors...</p>
             </div>
-
-            {/* Show doctors */}
-            {loading ? (
-              <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                <p className="text-gray-600">Loading doctors...</p>
-              </div>
-            ) : filteredDoctors.length === 0 ? (
-              <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-                <p className="text-gray-600">No doctors found.</p>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredDoctors.map((doc) => (
-                  <ClinicDoctorCard
-                    key={doc._id}
-                    doctor={doc}
-                    onConsult={() => console.log("Add doctor:", doc._id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+          ) : filteredDoctors.length === 0 ? (
+            <div className="bg-white p-10 rounded-2xl shadow border text-center">
+              <p className="text-gray-600 font-medium">No doctors found.</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {filteredDoctors.map((doc) => (
+                <ClinicDoctorCard
+                  key={doc._id}
+                  doctor={doc}
+                  onConsult={() => console.log("Add doctor:", doc._id)}
+                  doctorStatus={
+                    addedDoctors.includes(doc._id)
+                      ? "added"
+                      : pendingRequests.includes(doc._id)
+                      ? "pending"
+                      : "none"
+                  }
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
+  
 };
 
 export default AddDoctor;

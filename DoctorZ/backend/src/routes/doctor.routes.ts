@@ -19,5 +19,8 @@ router.get('/getClinicDoctors/:clinicId',doctorController.getClinicDoctors);
 router.post('/login',doctorController.doctorLogin);
 router.get("/todays-appointments/:doctorId", doctorController.getTodaysBookedAppointments);
 router.get('/total-patients/:doctorId', doctorController.getTotalPatients);
+router.get('/notifications/:doctorId',doctorController.getDoctorNotifications);
+router.post('/notifications/accept',doctorController.acceptDoctorRequest);
+router.post('/notifications/reject',doctorController.rejectDoctorRequest);
 
 export default router;
