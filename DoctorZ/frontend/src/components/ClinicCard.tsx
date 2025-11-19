@@ -1,8 +1,4 @@
-
-
-
-
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import type { MouseEvent } from "react";
 import { MapPin, Calendar, Heart } from "lucide-react";
 import Cookies from "js-cookie";
@@ -34,7 +30,7 @@ interface Clinic {
 interface ClinicCardProps {
   clinic: Clinic;
   navigate: (path: string) => void;
-   onFavouriteToggle: (clinicId: string) => void;
+  onFavouriteToggle: (clinicId: string) => void;
 }
 
 interface FavouriteResponse {
@@ -44,7 +40,11 @@ interface FavouriteResponse {
 // ---------------------------
 // Component
 // ---------------------------
-const ClinicCard: React.FC<ClinicCardProps> = ({ clinic, navigate,onFavouriteToggle }) => {
+const ClinicCard: React.FC<ClinicCardProps> = ({
+  clinic,
+  navigate,
+  onFavouriteToggle,
+}) => {
   const token = Cookies.get("patientToken") || "";
   const decoded = token ? jwtDecode<MyTokenPayload>(token) : null;
   const patientId = decoded?.id;
@@ -79,7 +79,7 @@ const ClinicCard: React.FC<ClinicCardProps> = ({ clinic, navigate,onFavouriteTog
     try {
       const res = await api.post<FavouriteResponse>(
         `/api/patient/favourite-clinic/${patientId}`,
-        {clinicId: clinic._id }
+        { clinicId: clinic._id }
       );
       setIsFavourite(res.data.isFavourite);
     } catch (err) {
@@ -88,7 +88,6 @@ const ClinicCard: React.FC<ClinicCardProps> = ({ clinic, navigate,onFavouriteTog
     onFavouriteToggle(clinic._id);
   };
 
-  
   return (
     <div
       onClick={() => navigate(`/clinic/${clinic._id}`)}
@@ -141,7 +140,7 @@ const ClinicCard: React.FC<ClinicCardProps> = ({ clinic, navigate,onFavouriteTog
       {/* Clinic Info */}
       <div className="pl-32 sm:pl-40 pr-4 sm:pr-6 py-4 sm:py-6">
         <div className="mb-3 sm:mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300 line-clamp-1">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-[#132d54] transition-colors duration-300 line-clamp-1">
             {clinic.clinicName}
           </h2>
           <div className="flex items-center text-gray-500 text-xs sm:text-sm mb-1">
@@ -215,9 +214,14 @@ const ClinicCard: React.FC<ClinicCardProps> = ({ clinic, navigate,onFavouriteTog
           </div>
 
           <button
-            onClick={(e) => e.stopPropagation()}
-            className="w-full bg-[#28328C] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/clinic/${clinic._id}`);
+            }}
+            className="w-full bg-[#0c213e] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base cursor-pointer"
           >
+            <span>Check Availability</span>
+
             <span>Check Availability</span>
             <svg
               className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 flex-shrink-0"
@@ -240,8 +244,3 @@ const ClinicCard: React.FC<ClinicCardProps> = ({ clinic, navigate,onFavouriteTog
 };
 
 export default ClinicCard;
-
-
-
-
-
