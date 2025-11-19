@@ -6,6 +6,7 @@ import Booking from '../models/booking.model.js';
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
 import patientModel from "../models/patient.model.js";
+import mongoose from "mongoose";
 const doctorRegister = async (req, res) => {
     try {
         console.log("Text fields:", req.body);
@@ -233,21 +234,49 @@ const getClinicDoctors = async (req, res) => {
 // ==========================
 // Get Today's Booked Appointments
 // ==========================
+// export const getTodaysBookedAppointments = async (req: Request, res: Response) => {
+//   try {
+//     const doctorId = req.params.doctorId;
+//     const now = new Date();
+//     const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
+//     const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+//     const bookedAppointments = await Booking.find({
+//       doctorId,
+//       datetime: { $gte: startOfDay, $lte: endOfDay },
+//       status: "pending",
+//     });
+//     res.status(200).json(bookedAppointments);
+//   } catch (error) {
+//     console.error("Error fetching today's booked appointments:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 export const getTodaysBookedAppointments = async (req, res) => {
     try {
         const doctorId = req.params.doctorId;
+        console.log(doctorId);
+        // India timezone date (UTC+5:30)
         const now = new Date();
-        const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
-        const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
-        const bookedAppointments = await Booking.find({
-            doctorId,
-            datetime: { $gte: startOfDay, $lte: endOfDay },
-            status: "booked",
+        const IST_OFFSET = 5.5 * 60 * 60 * 1000; // 5:30
+        // India start of day
+        const istStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        // India end of day
+        const istEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        // Convert IST → UTC
+        const startUTC = new Date(istStart.getTime() - IST_OFFSET);
+        const endUTC = new Date(istEnd.getTime() - IST_OFFSET);
+        console.log("Start UTC:", startUTC);
+        console.log("End UTC:", endUTC);
+        const appointments = await Booking.find({
+            doctorId: new mongoose.Types.ObjectId(doctorId),
+            status: "pending",
+            datetime: { $gte: startUTC, $lte: endUTC }
         });
-        res.status(200).json(bookedAppointments);
+        console.log(appointments);
+        res.status(200).json(appointments);
     }
     catch (error) {
-        console.error("Error fetching today's booked appointments:", error);
+        console.log(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -256,7 +285,7 @@ export const getTotalPatients = async (req, res) => {
         const doctorId = req.params.doctorId;
         const totalPatients = await Booking.countDocuments({
             doctorId,
-            status: "booked",
+            status: "pending",
         });
         res.status(200).json({ totalPatients });
     }

@@ -17,7 +17,7 @@ import ViewDoctorProfile from "./pages/ViewDoctorProfile";
 
 // Clinic
 
-import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
+
 import AddDoctor from "./pages/AddDoctor";
 import TimeSlots from "./pages/TimeSlots";
 import DoctorLogin from "./pages/DoctorPages/DoctorLogin";

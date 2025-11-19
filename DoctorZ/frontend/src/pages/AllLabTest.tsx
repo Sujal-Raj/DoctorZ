@@ -1,7 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { motion, type TargetAndTransition } from "framer-motion";
 import api from "../Services/mainApi";
-import { Search as SearchIcon, Sparkles, Shield, Heart, Star } from "lucide-react";
+import {
+  Search as SearchIcon,
+  Sparkles,
+  Shield,
+  Heart,
+  Star,
+} from "lucide-react";
 
 // 🧩 PNG icons
 import fullbody from "../assets/icons/fullbody.png";
@@ -59,7 +65,9 @@ export default function LabTestsPage() {
   const [tests, setTests] = useState<LabTest[]>([]);
   const [packages, setPackages] = useState<LabPackage[]>([]);
   const [query, setQuery] = useState("");
-  const [selectedHealthCheck, setSelectedHealthCheck] = useState<string | null>(null);
+  const [selectedHealthCheck, setSelectedHealthCheck] = useState<string | null>(
+    null
+  );
   const [showAllTests, setShowAllTests] = useState(false);
   const [showAllPackages, setShowAllPackages] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -120,11 +128,12 @@ export default function LabTestsPage() {
         interface PackageResponse {
           packages?: LabPackage[];
         }
-        
+
         const packageRes = await api.get<PackageResponse>("/api/lab/packages");
         const packageData = Array.isArray(packageRes.data)
           ? packageRes.data
-          : ("packages" in packageRes.data && Array.isArray(packageRes.data.packages))
+          : "packages" in packageRes.data &&
+            Array.isArray(packageRes.data.packages)
           ? packageRes.data.packages
           : [];
 
@@ -142,6 +151,15 @@ export default function LabTestsPage() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (selectedHealthCheck) {
+      window.scrollTo({
+        top: 600, // adjust this number if needed scroll effect hai
+        behavior: "smooth",
+      });
+    }
+  }, [selectedHealthCheck]);
+
   const filteredTests = useMemo(() => {
     const q = query.trim().toLowerCase();
     return tests.filter((t) => {
@@ -152,7 +170,9 @@ export default function LabTestsPage() {
       const matchesHealth =
         !selectedHealthCheck ||
         t.category?.toLowerCase().includes(selectedHealthCheck.toLowerCase()) ||
-        t.customCategory?.toLowerCase().includes(selectedHealthCheck.toLowerCase()) ||
+        t.customCategory
+          ?.toLowerCase()
+          .includes(selectedHealthCheck.toLowerCase()) ||
         t.testName?.toLowerCase().includes(selectedHealthCheck.toLowerCase());
       return matchesQuery && matchesHealth;
     });
@@ -163,7 +183,10 @@ export default function LabTestsPage() {
     return packages.filter((p) => {
       const name = p.packageName || p.name || p.title || "";
       const desc = p.description || p.shortDescription || "";
-      const matchesQuery = q === "" || name.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
+      const matchesQuery =
+        q === "" ||
+        name.toLowerCase().includes(q) ||
+        desc.toLowerCase().includes(q);
       const matchesHealth =
         !selectedHealthCheck ||
         name.toLowerCase().includes(selectedHealthCheck.toLowerCase()) ||
@@ -173,7 +196,11 @@ export default function LabTestsPage() {
   }, [packages, query, selectedHealthCheck]);
 
   const healthChecks = [
-    { key: "Full Body Checkup", icon: fullbody, color: "from-blue-500 to-cyan-500" },
+    {
+      key: "Full Body Checkup",
+      icon: fullbody,
+      color: "from-blue-500 to-cyan-500",
+    },
     { key: "Diabetes", icon: diabetes, color: "from-green-500 to-emerald-500" },
     { key: "Women's Health", icon: womens, color: "from-pink-500 to-rose-500" },
     { key: "Thyroid", icon: thyroid, color: "from-purple-500 to-violet-500" },
@@ -184,7 +211,11 @@ export default function LabTestsPage() {
     { key: "Liver", icon: liver, color: "from-teal-500 to-cyan-500" },
     { key: "Hairfall", icon: hairfall, color: "from-gray-600 to-gray-700" },
     { key: "Fever", icon: fever, color: "from-orange-500 to-amber-500" },
-    { key: "Senior Citizen", icon: senior, color: "from-slate-600 to-gray-700" },
+    {
+      key: "Senior Citizen",
+      icon: senior,
+      color: "from-slate-600 to-gray-700",
+    },
   ];
 
   const womenCare = [
@@ -210,11 +241,25 @@ export default function LabTestsPage() {
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl"></div>
 
       {/* Floating icons */}
-      <motion.div className="absolute top-20 left-10 opacity-15" animate={floatAnim}>
-        <img src={testIcon} alt="Floating test" className="w-20 h-20 object-contain" />
+      <motion.div
+        className="absolute top-20 left-10 opacity-15"
+        animate={floatAnim}
+      >
+        <img
+          src={testIcon}
+          alt="Floating test"
+          className="w-20 h-20 object-contain"
+        />
       </motion.div>
-      <motion.div className="absolute bottom-20 right-10 opacity-15" animate={floatAnim}>
-        <img src={packageIcon} alt="Floating package" className="w-24 h-24 object-contain" />
+      <motion.div
+        className="absolute bottom-20 right-10 opacity-15"
+        animate={floatAnim}
+      >
+        <img
+          src={packageIcon}
+          alt="Floating package"
+          className="w-24 h-24 object-contain"
+        />
       </motion.div>
 
       <div className="max-w-7xl mx-auto px-4 py-10 relative z-10">
@@ -232,7 +277,8 @@ export default function LabTestsPage() {
             Comprehensive Health Tests
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our curated collection of diagnostic tests and health packages designed for your well-being
+            Discover our curated collection of diagnostic tests and health
+            packages designed for your well-being
           </p>
         </div>
 
@@ -257,7 +303,7 @@ export default function LabTestsPage() {
             />
 
             <button
-              onClick={() => window.scrollTo({ top: 600, behavior: 'smooth' })}
+              onClick={() => window.scrollTo({ top: 600, behavior: "smooth" })}
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#28328C] to-[#4F46E5] text-white font-semibold px-7 py-3 rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-blue-500/30"
             >
               Search
@@ -280,7 +326,7 @@ export default function LabTestsPage() {
               Doctor-Created Health Checks
             </h2>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {healthChecks.map((hc) => {
               const active = selectedHealthCheck === hc.key;
@@ -291,15 +337,23 @@ export default function LabTestsPage() {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedHealthCheck(active ? null : hc.key)}
                   className={`relative flex items-center justify-start border border-gray-200/50 rounded-2xl bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 ${
-                    active ? "ring-2 ring-[#28328C] shadow-lg" : "shadow-md hover:border-gray-300"
+                    active
+                      ? "ring-2 ring-[#28328C] shadow-lg"
+                      : "shadow-md hover:border-gray-300"
                   }`}
                   style={{ height: "80px", padding: "12px", gap: "12px" }}
                 >
                   {active && (
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#28328C] rounded-full"></div>
                   )}
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${hc.color} shadow-md`}>
-                    <img src={hc.icon} alt={hc.key} className="w-6 h-6 object-contain filter brightness-0 invert" />
+                  <div
+                    className={`p-3 rounded-xl bg-gradient-to-br ${hc.color} shadow-md`}
+                  >
+                    <img
+                      src={hc.icon}
+                      alt={hc.key}
+                      className="w-6 h-6 object-contain filter brightness-0 invert"
+                    />
                   </div>
                   <span className="text-[14px] font-semibold text-gray-800 text-left leading-tight">
                     {hc.key}
@@ -338,7 +392,10 @@ export default function LabTestsPage() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="border border-gray-200 bg-white rounded-2xl shadow-sm p-6 h-48 animate-pulse">
+                <div
+                  key={i}
+                  className="border border-gray-200 bg-white rounded-2xl shadow-sm p-6 h-48 animate-pulse"
+                >
                   <div className="flex items-start gap-3">
                     <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
                     <div className="flex-1 space-y-2">
@@ -355,8 +412,12 @@ export default function LabTestsPage() {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <SearchIcon className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No tests found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No tests found
+              </h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filter criteria
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -372,17 +433,24 @@ export default function LabTestsPage() {
                   >
                     <div className="flex items-start gap-4">
                       <div className="p-3 border border-gray-200/50 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 group-hover:from-blue-100 group-hover:to-indigo-100 transition-all duration-300">
-                        <img src={getIconForTest(t)} alt={t.testName} className="w-8 h-8 object-contain" />
+                        <img
+                          src={getIconForTest(t)}
+                          alt={t.testName}
+                          className="w-8 h-8 object-contain"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-[17px] font-bold text-gray-900 line-clamp-2 leading-tight">
                           {t.testName}
                         </h3>
                         <p className="text-[14px] text-gray-600 mt-2 line-clamp-2 leading-relaxed">
-                          {t.shortDescription || "Comprehensive diagnostic test for accurate health assessment"}
+                          {t.shortDescription ||
+                            "Comprehensive diagnostic test for accurate health assessment"}
                         </p>
                         <div className="flex items-center justify-between mt-3">
-                          <p className="text-lg font-bold text-gray-900">₹{t.price ?? "N/A"}</p>
+                          <p className="text-lg font-bold text-gray-900">
+                            ₹{t.price ?? "N/A"}
+                          </p>
                           {(t.lab?.name || t.labName) && (
                             <p className="text-[12px] text-[#28328C] font-semibold bg-blue-50 px-2 py-1 rounded-full">
                               {t.lab?.name || t.labName}
@@ -393,7 +461,11 @@ export default function LabTestsPage() {
                     </div>
                     <div className="flex justify-end mt-4">
                       <button
-                        onClick={() => navigate(`/lab-test-details/${t._id}`, { state: { test: t } })}
+                        onClick={() =>
+                          navigate(`/lab-test-details/${t._id}`, {
+                            state: { test: t },
+                          })
+                        }
                         className="px-4 py-2 text-[13px] font-semibold text-white bg-gradient-to-r from-[#28328C] to-[#4F46E5] rounded-xl hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md shadow-blue-500/30"
                       >
                         View Details
@@ -431,22 +503,32 @@ export default function LabTestsPage() {
           </div>
 
           {loading ? (
-            <div className="text-center text-gray-500 text-sm py-10">Loading packages...</div>
+            <div className="text-center text-gray-500 text-sm py-10">
+              Loading packages...
+            </div>
           ) : filteredPackages.length === 0 ? (
             <div className="text-center py-16 bg-white/50 rounded-3xl border border-gray-200/50">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <SearchIcon className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No packages found</h3>
-              <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No packages found
+              </h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filter criteria
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {filteredPackages
                 .slice(0, showAllPackages ? filteredPackages.length : 8)
                 .map((p) => {
-                  const packageName = p.packageName || p.name || p.title || "Unnamed Package";
-                  const description = p.description || p.shortDescription || "Comprehensive health package.";
+                  const packageName =
+                    p.packageName || p.name || p.title || "Unnamed Package";
+                  const description =
+                    p.description ||
+                    p.shortDescription ||
+                    "Comprehensive health package.";
                   const price = p.totalPrice || p.price || "N/A";
                   const included = p.tests || [];
 
@@ -460,7 +542,11 @@ export default function LabTestsPage() {
                     >
                       <div className="flex items-start gap-4">
                         <div className="p-3 border border-gray-200/50 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 group-hover:from-purple-100 group-hover:to-pink-100 transition-all duration-300">
-                          <img src={packageIcon} alt="Package" className="w-8 h-8 object-contain" />
+                          <img
+                            src={packageIcon}
+                            alt="Package"
+                            className="w-8 h-8 object-contain"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-[17px] font-bold text-gray-900 line-clamp-2 leading-tight">
@@ -470,7 +556,9 @@ export default function LabTestsPage() {
                             {description}
                           </p>
                           <div className="flex items-center justify-between mt-3">
-                            <p className="text-lg font-bold text-gray-900">₹{price}</p>
+                            <p className="text-lg font-bold text-gray-900">
+                              ₹{price}
+                            </p>
                             {(p.lab?.name || p.labName) && (
                               <p className="text-[12px] text-[#28328C] font-semibold bg-blue-50 px-2 py-1 rounded-full">
                                 {p.lab?.name || p.labName}
@@ -479,21 +567,28 @@ export default function LabTestsPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       {Array.isArray(included) && included.length > 0 && (
                         <div className="mt-3 text-[13px] text-gray-600 line-clamp-1 bg-gray-50/50 px-3 py-2 rounded-lg">
-                          <span className="font-semibold text-gray-700">Includes:</span>{" "}
+                          <span className="font-semibold text-gray-700">
+                            Includes:
+                          </span>{" "}
                           {included
                             .slice(0, 2)
                             .map((t: LabTest) => t.testName || t.name)
                             .join(", ")}
-                          {included.length > 2 && ` +${included.length - 2} more`}
+                          {included.length > 2 &&
+                            ` +${included.length - 2} more`}
                         </div>
                       )}
-                      
+
                       <div className="flex justify-end mt-4">
                         <button
-                          onClick={() => navigate(`/lab-package-details/${p._id}`, { state: { pkg: p } })}
+                          onClick={() =>
+                            navigate(`/lab-package-details/${p._id}`, {
+                              state: { pkg: p },
+                            })
+                          }
                           className="px-4 py-2 text-[13px] font-semibold text-white bg-gradient-to-r from-[#28328C] to-[#4F46E5] rounded-xl hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md shadow-blue-500/30"
                         >
                           View Details
@@ -512,11 +607,9 @@ export default function LabTestsPage() {
             <div className="p-2 bg-pink-100 rounded-lg">
               <Heart className="w-5 h-5 text-pink-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              Women Care
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">Women Care</h2>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {womenCare.map((w) => {
               const active = selectedHealthCheck === w.key;
@@ -527,15 +620,23 @@ export default function LabTestsPage() {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedHealthCheck(active ? null : w.key)}
                   className={`relative flex items-center justify-start border border-gray-200/50 rounded-2xl bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 ${
-                    active ? "ring-2 ring-pink-500 shadow-lg" : "shadow-md hover:border-gray-300"
+                    active
+                      ? "ring-2 ring-pink-500 shadow-lg"
+                      : "shadow-md hover:border-gray-300"
                   }`}
                   style={{ height: "80px", padding: "12px", gap: "12px" }}
                 >
                   {active && (
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-pink-500 rounded-full"></div>
                   )}
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${w.color} shadow-md`}>
-                    <img src={w.icon} alt={w.key} className="w-6 h-6 object-contain filter brightness-0 invert" />
+                  <div
+                    className={`p-3 rounded-xl bg-gradient-to-br ${w.color} shadow-md`}
+                  >
+                    <img
+                      src={w.icon}
+                      alt={w.key}
+                      className="w-6 h-6 object-contain filter brightness-0 invert"
+                    />
                   </div>
                   <span className="text-[14px] font-semibold text-gray-800 text-left leading-tight">
                     {w.key}

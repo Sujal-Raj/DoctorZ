@@ -7,6 +7,7 @@ import Booking from "../models/booking.model.js";
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
 import patientModel from "../models/patient.model.js";
+import mongoose from "mongoose";
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
