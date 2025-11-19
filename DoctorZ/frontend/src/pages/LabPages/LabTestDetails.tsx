@@ -50,6 +50,10 @@ export default function LabTestDetails() {
   useEffect(() => {
     if (!test) navigate("/all-lab-test");
   }, [test, navigate]);
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
+
 
   useEffect(() => {
     const fetchOtherTests = async () => {

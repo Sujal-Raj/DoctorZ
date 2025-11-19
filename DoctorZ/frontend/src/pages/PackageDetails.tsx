@@ -90,6 +90,10 @@ export const PackageDetails: React.FC = () => {
     };
     fetchPackageDetails();
   }, [packageId]);
+  useEffect(() => {
+  window.scrollTo(0, 0);
+}, []);
+
 
   const toggleCategory = (category: string) => {
     setOpenCategories((prev) => ({

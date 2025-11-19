@@ -329,6 +329,43 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
             </div>
           </div>
 
+          {/* 🔵 Online / Visit Buttons */}
+          <div className="flex gap-3 mb-5">
+            <button
+              onClick={() => {
+                setModeOnline(true);
+                setModeHospital(false);
+              }}
+              className={`
+                px-4 py-2 rounded-lg border font-medium
+                ${
+                  modeOnline && !modeHospital
+                    ? "bg-[#0c213e] text-white border-[#0c213e]"
+                    : "bg-white text-gray-700 border-gray-400"
+                }
+              `}
+            >
+              Online Consult
+            </button>
+
+            <button
+              onClick={() => {
+                setModeOnline(false);
+                setModeHospital(true);
+              }}
+              className={`
+                px-4 py-2 rounded-lg border font-medium
+                ${
+                  modeHospital && !modeOnline
+                    ? "bg-[#0c213e] text-white border-[#0c213e]"
+                    : "bg-white text-gray-700 border-gray-400"
+                }
+              `}
+            >
+              Visit Doctor
+            </button>
+          </div>
+
           {/* Doctor Cards */}
           {loading ? (
             <div className="bg-white rounded-lg p-6 shadow-sm text-center border border-gray-200">
@@ -508,7 +545,7 @@ const FilterPanel = ({
       </button>
 
       {/* Mode */}
-      <div className="pt-2">
+      {/* <div className="pt-2">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Mode of Consult</h4>
         <label className="flex items-center gap-2 text-sm text-gray-600 mb-1">
           <input
@@ -528,7 +565,7 @@ const FilterPanel = ({
           />
           Online Consult
         </label>
-      </div>
+      </div> */}
 
       {/* Experience */}
       <div className="pt-2">
