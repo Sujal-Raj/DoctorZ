@@ -273,12 +273,37 @@ const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
 };
 
 // In your patient controller file
+// const updatePatient = async (req: Request, res: Response) => {
+//   try {
+//     const { id } = req.params;
+//     const updated = await patientModel.findByIdAndUpdate(id, req.body, {
+//       new: true,
+//     });
+//     if (!updated)
+//       return res.status(404).json({ message: "User not found." });
+
+//     return res.status(200).json({ message: "Profile updated", user: updated });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: "Something went wrong." });
+//   }
+// }
+
 const updatePatient = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updated = await patientModel.findByIdAndUpdate(id, req.body, {
+
+    const updateData: any = { ...req.body };
+
+    // Agar image upload hui hai
+    if (req.file) {
+      updateData.profilePhoto = `/uploads/${req.file.filename}`;
+    }
+
+    const updated = await patientModel.findByIdAndUpdate(id, updateData, {
       new: true,
     });
+
     if (!updated)
       return res.status(404).json({ message: "User not found." });
 
@@ -287,7 +312,8 @@ const updatePatient = async (req: Request, res: Response) => {
     console.error(err);
     return res.status(500).json({ message: "Something went wrong." });
   }
-}
+};
+
 
 const getBookedDoctor =async(req:Request,res:Response)=>{
     try {

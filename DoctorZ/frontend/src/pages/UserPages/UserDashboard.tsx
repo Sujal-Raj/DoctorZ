@@ -4,7 +4,7 @@ import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../Context/AuthContext";
-import UserIcon from "../../assets/user.png";
+import UserIcon from "../../assets/Icon2.png";
 function UserDashboard() {
   const { user } = useContext(AuthContext);
   console.log("User", user);
