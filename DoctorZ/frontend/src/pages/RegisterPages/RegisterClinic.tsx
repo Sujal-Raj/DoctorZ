@@ -85,7 +85,8 @@ const RegisterClinic: React.FC = () => {
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
-        text: err?.response?.data?.message || "Something went wrong. Try again.",
+        text:
+          err?.response?.data?.message || "Something went wrong. Try again.",
         confirmButtonColor: "#28328C",
       });
     } finally {
@@ -219,7 +220,14 @@ const RegisterClinic: React.FC = () => {
               label="Pincode"
               placeholder="400001"
               type="number"
-              registerField={register("pincode")}
+              registerField={register("pincode", {
+                required: "Aadhar number is required",
+                pattern: {
+                  value: /^[0-9]{6}$/,
+                  message: "Pincode must be exactly 6 digits",
+                },
+              })}
+              error={errors.pincode?.message}
             />
             <InputField
               id="contact"
@@ -252,18 +260,34 @@ const RegisterClinic: React.FC = () => {
               placeholder="CLN12345"
               registerField={register("licenseNo")}
             />
+
             <InputField
               id="ownerAadhar"
               label="Owner Aadhar"
               placeholder="123456789012"
               type="number"
-              registerField={register("ownerAadhar")}
+              registerField={register("ownerAadhar", {
+                required: "Aadhar number is required",
+                pattern: {
+                  value: /^[0-9]{12}$/,
+                  message: "Aadhar must be exactly 12 digits",
+                },
+              })}
+              error={errors.ownerAadhar?.message}
             />
+
             <InputField
               id="ownerPan"
               label="Owner PAN"
               placeholder="ABCDE1234F"
-              registerField={register("ownerPan")}
+              registerField={register("ownerPan", {
+                required: "PAN number is required",
+                pattern: {
+                  value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                  message: "Enter valid PAN (ABCDE1234F)",
+                },
+              })}
+              error={errors.ownerPan?.message}
             />
 
             {/* --- Staff Info --- */}

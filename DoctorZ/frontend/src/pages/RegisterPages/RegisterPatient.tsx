@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
@@ -32,6 +30,7 @@ type PatientFormInputs = {
 };
 
 const RegisterPatient: React.FC = () => {
+  
   const { register, handleSubmit } = useForm<PatientFormInputs>();
 
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
@@ -75,9 +74,7 @@ const RegisterPatient: React.FC = () => {
     );
     formData.append(
       "pastSurgeries",
-      JSON.stringify(
-        data.pastSurgeries?.split(",").map((s) => s.trim()) || []
-      )
+      JSON.stringify(data.pastSurgeries?.split(",").map((s) => s.trim()) || [])
     );
     formData.append(
       "currentMedications",
@@ -129,7 +126,6 @@ const RegisterPatient: React.FC = () => {
 
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
         <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
-
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#28328C]">
               🏥 Patient Registration
@@ -170,21 +166,88 @@ const RegisterPatient: React.FC = () => {
               </select>
             </div>
 
-            <InputField id="dob" label="Date of Birth" type="date" registerField={register("dob")} />
+            <InputField
+              id="dob"
+              label="Date of Birth"
+              type="date"
+              registerField={register("dob")}
+            />
 
-            <InputField id="email" label="Email" type="email" placeholder="example@gmail.com" registerField={register("email")} />
+            <InputField
+              id="email"
+              label="Email"
+              type="email"
+              placeholder="example@gmail.com"
+              registerField={register("email")}
+            />
 
-            <InputField id="password" label="Password" type="password" placeholder="••••••••" registerField={register("password")} />
+            <InputField
+              id="password"
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              registerField={register("password")}
+            />
 
-            <InputField id="mobileNumber" label="Mobile Number" placeholder="9876543210" registerField={register("mobileNumber")} />
+            <InputField
+              id="mobileNumber"
+              label="Mobile Number"
+              placeholder="9876543210"
+              registerField={register("mobileNumber", {
+                required: "Mobile number is required",
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message:" Mobile no must be exactly 10 digits",
+                },
+              })}
+           
+            />
 
-            <InputField id="aadhar" label="Aadhar" placeholder="123456789012" registerField={register("aadhar")} />
+            <InputField
+              id="aadhar"
+              label="Aadhar"
+              placeholder="123456789012"
+              registerField={register("aadhar" ,{
+                required: "Aadhar number is required",
+                pattern:{
+                  value:/^[0-9]{12}$/,
+                  message:"Aadhar must be exactly 12 digits"
+                }
+              })}
+            />
 
-            <InputField id="city" label="City" placeholder="Bhilai" registerField={register("city")} />
+            <InputField
+              id="city"
+              label="City"
+              placeholder="Bhilai"
+              registerField={register("city")}
+            />
 
-            <InputField id="pincode" label="Pincode" placeholder="490001" registerField={register("pincode")} />
+            <InputField
+              id="pincode"
+              label="Pincode"
+              placeholder="490001"
+              registerField={register("pincode",{
+                required: "Pincode is required",
+                pattern: {
+                  value: /^[0-9]{6}$/,
+                  message: "Pincode must be exactly 6 digits",
+                },
+              })}
+            />
 
-            <InputField id="abhaId" label="ABHA ID" placeholder="ABHA123456" registerField={register("abhaId")} />
+            <InputField
+              id="abhaId"
+              label="ABHA ID"
+              placeholder="ABHA123456"
+              registerField={register("abhaId" ,{
+                required: "ABHA ID is required",
+                pattern:{
+                  value:/^[0-9]{14}$/,
+                  message:"ABHA ID must be exactly 14 digits"
+                }
+              })}
+            />
 
             {/* ✅ EMERGENCY */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C]  pt-4 border-b border-[#28328C]/20 pb-2">
@@ -202,7 +265,13 @@ const RegisterPatient: React.FC = () => {
               id="emergencyNumber"
               label="Emergency Number"
               placeholder="9876541230"
-              registerField={register("emergencyNumber")}
+              registerField={register("emergencyNumber" ,{
+                required: "Emergency number is required",
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: "Emergency number must be exactly 10 digits",
+                },
+              })}
             />
 
             {/* ✅ PROFILE PHOTO ONLY */}
@@ -213,11 +282,19 @@ const RegisterPatient: React.FC = () => {
             <div className="md:col-span-2 flex items-center gap-6">
               <label className="w-40 h-40 border-2 border-dashed border-[#28328C]/40 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#28328C]/5 transition">
                 <Upload className="text-[#28328C]" size={22} />
-                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                />
               </label>
 
               {photoPreview && (
-                <img src={photoPreview} className="w-40 h-40 object-cover rounded-xl shadow-md border" />
+                <img
+                  src={photoPreview}
+                  className="w-40 h-40 object-cover rounded-xl shadow-md border"
+                />
               )}
             </div>
 
@@ -226,20 +303,43 @@ const RegisterPatient: React.FC = () => {
               Medical Records
             </h2>
 
-            <InputField id="allergies" label="Allergies" placeholder="Dust, Peanuts" registerField={register("allergies")} />
-            <InputField id="diseases" label="Diseases" placeholder="Diabetes, Asthma" registerField={register("diseases")} />
-            <InputField id="pastSurgeries" label="Past Surgeries" placeholder="Appendix Removal" registerField={register("pastSurgeries")} />
-            <InputField id="currentMedications" label="Current Medications" placeholder="Vitamin D, Paracetamol" registerField={register("currentMedications")} />
+            <InputField
+              id="allergies"
+              label="Allergies"
+              placeholder="Dust, Peanuts"
+              registerField={register("allergies")}
+            />
+            <InputField
+              id="diseases"
+              label="Diseases"
+              placeholder="Diabetes, Asthma"
+              registerField={register("diseases")}
+            />
+            <InputField
+              id="pastSurgeries"
+              label="Past Surgeries"
+              placeholder="Appendix Removal"
+              registerField={register("pastSurgeries")}
+            />
+            <InputField
+              id="currentMedications"
+              label="Current Medications"
+              placeholder="Vitamin D, Paracetamol"
+              registerField={register("currentMedications")}
+            />
 
             {/* ✅ Medical Reports */}
             <div className="md:col-span-2">
-              <label className="font-medium text-gray-700">Upload Medical Reports</label>
+              <label className="font-medium text-gray-700">
+                Upload Medical Reports
+              </label>
 
               <div className="border-2 border-dashed border-blue-300 rounded-xl p-6 bg-blue-50/30 hover:bg-blue-50 transition cursor-pointer flex flex-col items-center text-center relative">
-
                 <Upload className="h-10 w-10 text-blue-600 mb-2" />
 
-                <p className="text-gray-600 font-medium">Drag & Drop files here</p>
+                <p className="text-gray-600 font-medium">
+                  Drag & Drop files here
+                </p>
                 <p className="text-gray-400 text-sm">or click to browse</p>
 
                 <input

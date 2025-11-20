@@ -143,7 +143,7 @@ const App: React.FC = () => {
              <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
             
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-            <Route path="clinic-doctor-card" element={<ClinicDoctorCard />} />
+            {/* <Route path="clinic-doctor-card" element={<ClinicDoctorCard />} /> */}
           </Route>
 
           {/* Doctor Dashboard */}

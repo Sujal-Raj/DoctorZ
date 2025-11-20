@@ -25,8 +25,9 @@ interface Props {
   doctor: Doctor;
     doctorStatus: "added" | "pending" | "none";
 
-  // onConsult: (doctor: Doctor) => void;
-  onFavouriteToggle?: (doctorId: string, isFavourite: boolean) => void;
+  // onConsult?: (doctor: Doctor) => void;
+  // onFavouriteToggle?: (doctorId: string, isFavourite: boolean) => void;
+   onRequestSent: (doctorId: string) => void; // <- NEW
 }
 
 
@@ -38,7 +39,7 @@ interface Props {
 
 
 
-const ClinicDoctorCard: React.FC<Props> = ({ doctor , doctorStatus }) => {
+const ClinicDoctorCard: React.FC<Props> = ({ doctor , doctorStatus , onRequestSent  }) => {
 
   
   const navigate = useNavigate();
@@ -66,9 +67,10 @@ Swal.fire({
   text: "Your request has been sent successfully.",
   icon: "success",
   confirmButtonText: "Ok",
-})
+});
 
 
+  onRequestSent(doctor._id);
       
   }
   catch(error){
