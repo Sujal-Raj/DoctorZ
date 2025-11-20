@@ -72,6 +72,7 @@ import PatientEMR from "./pages/PatientEMR";
 import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
 import DoctorNotifications from "./pages/DoctorPages/DoctorNotifications";
 import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
+import UserPrescription from "./pages/UserPages/UserPrescription";
 // Admin
 
 const App: React.FC = () => {
@@ -113,6 +114,7 @@ const App: React.FC = () => {
                <Route path="user-profile" element={<UserProfile />} />
                   <Route path="add-emr" element={<AddEmr />} />
                   <Route path="appointments" element={<PatientAppointments/>}/>
+                  <Route path="prescription" element={<UserPrescription/>}/>
               </Route>
           </Route>
 

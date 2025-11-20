@@ -104,14 +104,15 @@ export const addPrescription = async (req, res) => {
         });
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        const pdfBuffer = await page.pdf({ format: "A4" });
+        await page.setViewport({ width: 794, height: 1123 }); // A4 size approx
+        const imageBuffer = await page.screenshot({ fullPage: true });
         await browser.close();
         // STEP 3: Upload to Cloudinary 
         const cloudResult = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream({
-                resource_type: "raw",
+                resource_type: "image",
                 folder: "prescriptions",
-                format: "pdf",
+                format: "png",
                 public_id: `prescription_${prescription._id}`,
             }, (error, result) => {
                 if (error) {
@@ -122,7 +123,7 @@ export const addPrescription = async (req, res) => {
                     resolve(result);
                 }
             });
-            uploadStream.end(pdfBuffer);
+            uploadStream.end(imageBuffer);
         });
         // Save URL
         prescription.pdfUrl = cloudResult.secure_url;

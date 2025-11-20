@@ -186,7 +186,7 @@ const AddDoctor = () => {
                 <ClinicDoctorCard
                   key={doc._id}
                   doctor={doc}
-                  onConsult={() => console.log("Add doctor:", doc._id)}
+                  
                   doctorStatus={
                     addedDoctors.includes(doc._id)
                       ? "added"

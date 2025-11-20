@@ -25,7 +25,7 @@ interface Props {
   doctor: Doctor;
     doctorStatus: "added" | "pending" | "none";
 
-  onConsult: (doctor: Doctor) => void;
+  // onConsult: (doctor: Doctor) => void;
   onFavouriteToggle?: (doctorId: string, isFavourite: boolean) => void;
 }
 

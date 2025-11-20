@@ -28,5 +28,6 @@ router.post("/favourite-doctor/:id", patientController.addFavouriteDoctor);
 router.get("/isFavourite/:patientId/:doctorId", patientController.isFavouriteDoctor);
 router.post("/favourite-clinic/:id", patientController.addfavouriteClinic);
 router.get("/isFavouriteClinic/:patientId/:clinicId", patientController.isFavouriteClinic);
+router.get("/getUserPrescription/:aadhar", patientController.getUserPrescription);
 export default router;
 //# sourceMappingURL=patient.routes.js.map

@@ -129,7 +129,9 @@ export const addPrescription = async (req: Request, res: Response) => {
     });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
-    const pdfBuffer = await page.pdf({ format: "A4" });
+    await page.setViewport({ width: 794, height: 1123 }); // A4 size approx
+const imageBuffer = await page.screenshot({ fullPage: true });
+
     await browser.close();
 
  
@@ -138,9 +140,9 @@ export const addPrescription = async (req: Request, res: Response) => {
 const cloudResult = await new Promise((resolve, reject) => {
   const uploadStream = cloudinary.uploader.upload_stream(
     {
-      resource_type: "raw",
+      resource_type: "image", 
       folder: "prescriptions",
-        format: "pdf",   
+        format: "png",   
       public_id: `prescription_${prescription._id}`,
     },
     (error, result) => {
@@ -153,7 +155,7 @@ const cloudResult = await new Promise((resolve, reject) => {
     }
   );
 
-  uploadStream.end(pdfBuffer);
+  uploadStream.end(imageBuffer);
 });
 
 

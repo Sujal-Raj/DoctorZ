@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
 import Booking from "../models/booking.model.js";
 import { FaV } from "react-icons/fa6";
+import PrescriptionModel from "../models/prescription.model.js";
 const patientRegister = async (req, res) => {
     try {
         console.log("Received body:", req.body);
@@ -345,5 +346,24 @@ const isFavouriteClinic = async (req, res) => {
         return res.status(500).json({ isFavourite: false });
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor, addfavouriteClinic, isFavouriteClinic };
+//-------------------- Get Prescription---------------------
+const getUserPrescription = async (req, res) => {
+    const { aadhar } = req.params;
+    try {
+        const prescriptions = await PrescriptionModel.find({
+            patientAadhar: aadhar
+        })
+            .populate("doctorId", "fullName MobileNo") // doctor name
+            .populate("bookingId", "dateTime"); // appointment date
+        return res.status(200).json({
+            success: true,
+            prescriptions,
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json("Something went wrong");
+    }
+};
+export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor, addfavouriteClinic, isFavouriteClinic, getUserPrescription };
 //# sourceMappingURL=patient.controller.js.map

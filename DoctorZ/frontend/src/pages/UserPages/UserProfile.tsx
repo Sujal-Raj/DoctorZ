@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../Services/mainApi";
@@ -70,11 +69,8 @@ function UserProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await api.get<UserResponse>(
-          `/api/patient/${id}`
-        );
+        const res = await api.get<UserResponse>(`/api/patient/${id}`);
         setUser(res.data.user);
-       
       } catch (err) {
         console.error("Profile fetch error:", err);
       } finally {
@@ -84,7 +80,6 @@ function UserProfile() {
 
     if (userId) fetchUser();
   }, [userId, id]);
-  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!editData) return;
@@ -140,15 +135,16 @@ function UserProfile() {
     return <div className="text-center text-gray-500 mt-8">Loading...</div>;
 
   if (!user)
-    return (
-      <div className="text-center text-red-500 mt-8">User Not Found.</div>
-    );
+    return <div className="text-center text-red-500 mt-8">User Not Found.</div>;
+
+
 
   return (
-    <div className="max-w-5xl mx-auto bg-white  p-10 shadow-lg">
-      
-      {/* ✅ HEADER */}
-      <div className="flex justify-between items-center mb-10">
+  <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-10">
+
+    {/* TOP CARD */}
+    <div className="bg-white rounded-2xl  p-8">
+      <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-semibold text-gray-800">User Profile</h1>
           <p className="text-gray-500">{user.email}</p>
@@ -160,35 +156,63 @@ function UserProfile() {
               setEditData(user);
               setIsEditing(true);
             }}
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+            className="px-6 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700"
           >
             Edit
           </button>
         )}
       </div>
+    </div>
 
-      {/* ✅ FORM GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {/* MAIN DETAILS CARD */}
+    <div className="bg-white rounded-2xl shadow-lg p-8">
+      <h2 className="text-xl font-semibold mb-6 text-gray-800">
+        Personal Information
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {fields.map(({ key, label }) => {
           const value = isEditing
             ? getValue(editData!, key)
             : getValue(user!, key);
 
           return (
-            <div key={key} className="flex flex-col">
-              <label className="text-sm text-gray-500 mb-1">{label}</label>
+            <div key={key} className="flex flex-col gap-1">
+
+              <span className="text-sm text-gray-500">{label}</span>
 
               {isEditing ? (
                 <input
-                  type="text"
+                  type={key === "dob" ? "date" : "text"}
                   name={key}
-                  value={value ?? ""}
+                  value={
+                    key === "dob"
+                      ? new Date(String(value)).toISOString().split("T")[0]
+                      : value ?? ""
+                  }
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 outline-none transition"
+                  className="
+                    w-full 
+                    py-2 
+                    bg-transparent 
+                    border-b border-gray-300 
+                    focus:outline-none 
+                    focus:border-blue-500 
+                    transition
+                  "
                 />
               ) : (
-                <div className="w-full px-4 py-3 rounded-xl bg-gray-100 text-gray-700">
-                  {value ?? "-"}
+                <div
+                  className="
+                    py-2 
+                    text-gray-700 
+                    border-b 
+                    border-gray-200
+                  "
+                >
+                  {key === "dob"
+                    ? new Date(String(value)).toLocaleDateString("en-GB")
+                    : value ?? "-"}
                 </div>
               )}
             </div>
@@ -196,26 +220,27 @@ function UserProfile() {
         })}
       </div>
 
-      {/* ✅ SAVE / CANCEL */}
       {isEditing && (
         <div className="flex gap-4 mt-10">
           <button
             onClick={handleSave}
-            className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl"
+            className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700"
           >
             Save
           </button>
 
           <button
             onClick={() => setIsEditing(false)}
-            className="px-6 py-3 bg-gray-400 hover:bg-gray-500 text-white rounded-xl"
+            className="px-6 py-3 bg-gray-400 text-white rounded-xl hover:bg-gray-500"
           >
             Cancel
           </button>
         </div>
       )}
     </div>
-  );
+  </div>
+);
+
 }
 
 export default UserProfile;
