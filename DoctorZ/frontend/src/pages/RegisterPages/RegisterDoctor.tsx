@@ -176,9 +176,21 @@ const RegisterDoctor: React.FC = () => {
     </div>
   );
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, setFile: React.Dispatch<React.SetStateAction<File | null>>, setPreview: React.Dispatch<React.SetStateAction<string | null>>): void {
-    throw new Error("Function not implemented.");
-  }
+  function handleFileChange(
+  e: React.ChangeEvent<HTMLInputElement>,
+  setFile: React.Dispatch<React.SetStateAction<File | null>>,
+  setPreview: React.Dispatch<React.SetStateAction<string | null>>
+) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  setFile(file);
+
+  // Show preview for images
+  const previewUrl = URL.createObjectURL(file);
+  setPreview(previewUrl);
+}
+
 
   return (
     <>
