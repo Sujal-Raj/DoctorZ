@@ -71,7 +71,7 @@ import DoctorSearchResults from "./pages/DoctorSearchResults";
 import PatientEMR from "./pages/PatientEMR";
 import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
 import DoctorNotifications from "./pages/DoctorPages/DoctorNotifications";
-import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
+// import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
 // Admin
 
 const App: React.FC = () => {
@@ -141,7 +141,7 @@ const App: React.FC = () => {
              <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
             
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
-            <Route path="clinic-doctor-card" element={<ClinicDoctorCard />} />
+            {/* <Route path="clinic-doctor-card" element={<ClinicDoctorCard />} /> */}
           </Route>
 
           {/* Doctor Dashboard */}

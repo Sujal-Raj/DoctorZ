@@ -5,7 +5,6 @@ import type { Lab } from "../../Services/labApi";
 // import api from "../Services/client";
 // import { registerLab } from "../Services/labApi";
 
-
 interface Timings {
   open: string;
   close: string;
@@ -20,7 +19,6 @@ interface Lab {
   pincode: string;
   address: string;
   timings: Timings;
- 
 }
 
 export default function RegisterLab() {
@@ -78,7 +76,10 @@ export default function RegisterLab() {
           name="description"
           content="Register your diagnostic lab easily on our platform. Get verified and reach patients in your area."
         />
-        <meta name="keywords" content="lab registration, diagnostic center, healthcare platform" />
+        <meta
+          name="keywords"
+          content="lab registration, diagnostic center, healthcare platform"
+        />
       </head>
 
       <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 flex items-center justify-center px-6 py-16">
@@ -90,7 +91,8 @@ export default function RegisterLab() {
             Register Your Laboratory
           </h1>
           <p className="text-center text-gray-600 mb-10">
-            Join our trusted network of diagnostic centers. Fill in your lab details below.
+            Join our trusted network of diagnostic centers. Fill in your lab
+            details below.
           </p>
 
           <form
@@ -100,16 +102,71 @@ export default function RegisterLab() {
             }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            <Input label="Lab Name" name="name" value={lab.name} onChange={handleOnChange} />
-            <Input label="Email" type="email" name="email" value={lab.email} onChange={handleOnChange} />
-            <Input label="Password" type="password" name="password" minLength={8} value={lab.password} onChange={handleOnChange} />
-            <Input label="Certificate Number" name="certificateNumber" value={lab.certificateNumber} onChange={handleOnChange} />
-            <Input label="State" name="state" value={lab.state} onChange={handleOnChange} />
-            <Input label="City" name="city" value={lab.city} onChange={handleOnChange} />
-            <Input label="Address" name="address" value={lab.address} onChange={handleOnChange} />
-            <Input label="Pincode" name="pincode" value={lab.pincode} onChange={handleOnChange} />
-            <Input label="Opening Time" name="open" value={lab.timings.open} onChange={handleOnChange} placeholder="e.g. 9:00 AM" />
-            <Input label="Closing Time" name="close" value={lab.timings.close} onChange={handleOnChange} placeholder="e.g. 7:00 PM" />
+            <Input
+              label="Lab Name"
+              name="name"
+              value={lab.name}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Email"
+              type="email"
+              name="email"
+              value={lab.email}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Password"
+              type="password"
+              name="password"
+              minLength={8}
+              value={lab.password}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Certificate Number"
+              name="certificateNumber"
+              value={lab.certificateNumber}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="State"
+              name="state"
+              value={lab.state}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="City"
+              name="city"
+              value={lab.city}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Address"
+              name="address"
+              value={lab.address}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Pincode"
+              name="pincode"
+              value={lab.pincode}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Opening Time"
+              name="open"
+              value={lab.timings.open}
+              onChange={handleOnChange}
+              placeholder="e.g. 9:00 AM"
+            />
+            <Input
+              label="Closing Time"
+              name="close"
+              value={lab.timings.close}
+              onChange={handleOnChange}
+              placeholder="e.g. 7:00 PM"
+            />
 
             <div className="col-span-2 mt-8">
               <button
@@ -123,7 +180,10 @@ export default function RegisterLab() {
 
           <p className="text-center text-gray-600 mt-8">
             Already registered?{" "}
-            <a href="/lab-login" className="text-blue-600 font-semibold hover:underline">
+            <a
+              href="/lab-login"
+              className="text-blue-600 font-semibold hover:underline"
+            >
               Login Here
             </a>
           </p>
@@ -170,4 +230,3 @@ function Input({
     </div>
   );
 }
-

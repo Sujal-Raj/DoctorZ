@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
@@ -33,54 +32,54 @@ interface ClinicContext {
 }
 
 /* -------------------------- Reusable Inputs -------------------------- */
-const FormInput = ({ label, name, register, error, placeholder, type = "text" }: any) => (
-  <div className="flex flex-col">
-    <label className="text-gray-700 font-medium">{label}</label>
-    <input
-      type={type}
-      {...register(name, { required: `${label} is required` })}
-      placeholder={placeholder}
-      className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
-    />
-    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
-  </div>
-);
+// const FormInput = ({ label, name, register, error, placeholder, type = "text" }: any) => (
+//   <div className="flex flex-col">
+//     <label className="text-gray-700 font-medium">{label}</label>
+//     <input
+//       type={type}
+//       {...register(name, { required: `${label} is required` })}
+//       placeholder={placeholder}
+//       className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
+//     />
+//     {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+//   </div>
+// );
 
-const SelectInput = ({ label, name, register, error }: any) => (
-  <div className="flex flex-col">
-    <label className="text-gray-700 font-medium">{label}</label>
-    <select
-      {...register(name, { required: `${label} is required` })}
-      className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
-    >
-      <option value="">Select Gender</option>
-      <option>Male</option>
-      <option>Female</option>
-      <option>Other</option>
-    </select>
-    {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
-  </div>
-);
+// const SelectInput = ({ label, name, register, error }: any) => (
+//   <div className="flex flex-col">
+//     <label className="text-gray-700 font-medium">{label}</label>
+//     <select
+//       {...register(name, { required: `${label} is required` })}
+//       className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
+//     >
+//       <option value="">Select Gender</option>
+//       <option>Male</option>
+//       <option>Female</option>
+//       <option>Other</option>
+//     </select>
+//     {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+//   </div>
+// );
 
-const FileUpload = ({ label, fileName, setFile, setFileName, accept }: any) => (
-  <div className="flex flex-col">
-    <label className="text-gray-700 font-medium">{label}</label>
-    <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all text-sm sm:text-base">
-      Upload File
-      <input
-        type="file"
-        accept={accept}
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          setFile(file || null);
-          setFileName(file?.name || "No file selected");
-        }}
-      />
-    </label>
-    <p className="mt-2 text-xs sm:text-sm text-gray-500 truncate">{fileName}</p>
-  </div>
-);
+// const FileUpload = ({ label, fileName, setFile, setFileName, accept }: any) => (
+//   <div className="flex flex-col">
+//     <label className="text-gray-700 font-medium">{label}</label>
+//     <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all text-sm sm:text-base">
+//       Upload File
+//       <input
+//         type="file"
+//         accept={accept}
+//         className="hidden"
+//         onChange={(e) => {
+//           const file = e.target.files?.[0];
+//           setFile(file || null);
+//           setFileName(file?.name || "No file selected");
+//         }}
+//       />
+//     </label>
+//     <p className="mt-2 text-xs sm:text-sm text-gray-500 truncate">{fileName}</p>
+//   </div>
+// );
 
 const RegisterDoctor: React.FC = () => {
   const {
@@ -101,9 +100,9 @@ const RegisterDoctor: React.FC = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [sigPreview, setSigPreview] = useState<string | null>(null);
 
-  const [degreeName, setDegreeName] = useState<string>("No file selected");
-  const [photoName, setPhotoName] = useState<string>("No file selected");
-  const [sigName, setSigName] = useState<string>("No file selected");
+  // const [degreeName, setDegreeName] = useState<string>("No file selected");
+  // const [photoName, setPhotoName] = useState<string>("No file selected");
+  // const [sigName, setSigName] = useState<string>("No file selected");
 
   const [loading, setLoading] = useState(false);
 
@@ -177,20 +176,19 @@ const RegisterDoctor: React.FC = () => {
   );
 
   function handleFileChange(
-  e: React.ChangeEvent<HTMLInputElement>,
-  setFile: React.Dispatch<React.SetStateAction<File | null>>,
-  setPreview: React.Dispatch<React.SetStateAction<string | null>>
-) {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    e: React.ChangeEvent<HTMLInputElement>,
+    setFile: React.Dispatch<React.SetStateAction<File | null>>,
+    setPreview: React.Dispatch<React.SetStateAction<string | null>>
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  setFile(file);
+    setFile(file);
 
-  // Show preview for images
-  const previewUrl = URL.createObjectURL(file);
-  setPreview(previewUrl);
-}
-
+    // Show preview for images
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
+  }
 
   return (
     <>
@@ -269,7 +267,14 @@ const RegisterDoctor: React.FC = () => {
               id="mobileNo"
               label="Mobile Number"
               placeholder="9876543210"
-              registerField={register("mobileNo")}
+              registerField={register("mobileNo", {
+                required: "Mobile number is required",
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: "Mobile number must be 10 digits",
+                },
+              })}
+              error={errors.mobileNo?.message}
             />
             <InputField
               id="regNumber"
@@ -322,13 +327,27 @@ const RegisterDoctor: React.FC = () => {
               label="Aadhar Number"
               placeholder="123456789012"
               type="number"
-              registerField={register("aadhar")}
+              registerField={register("aadhar", {
+                required: "Aadhar number is required",
+                pattern: {
+                  value: /^[0-9]{12}$/,
+                  message: "Aadhar must be exactly 12 digits",
+                },
+              })}
+              error={errors.aadhar?.message}
             />
             <InputField
               id="pan"
               label="PAN Number"
               placeholder="ABCDE1234F"
-              registerField={register("pan")}
+              registerField={register("pan", {
+                required: "PAN number is required",
+                pattern: {
+                  value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                  message: "Enter valid PAN (ABCDE1234F)",
+                },
+              })}
+              error={errors.pan?.message}
             />
             <InputField
               id="address"
@@ -427,9 +446,7 @@ const RegisterDoctor: React.FC = () => {
                       ) : (
                         <div className="flex flex-col items-center text-gray-600 text-xs text-center">
                           <FileText size={20} />
-                          <p className="mt-1 truncate">
-                            {fileInput.file.name}
-                          </p>
+                          <p className="mt-1 truncate">{fileInput.file.name}</p>
                         </div>
                       )}
                     </div>
@@ -460,4 +477,3 @@ const RegisterDoctor: React.FC = () => {
 };
 
 export default RegisterDoctor;
-
