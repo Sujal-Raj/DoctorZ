@@ -6,7 +6,7 @@ import {
   FilePlus2,
   CalendarDays,
   Bell,
-  LogOut,
+ 
   ChevronRight,
 } from "lucide-react";
 interface SidebarProps {
