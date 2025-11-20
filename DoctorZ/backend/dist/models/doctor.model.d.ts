@@ -23,19 +23,19 @@ export interface IDoctor extends Document {
     photo: string;
     clinic: Types.ObjectId[];
     status?: string;
+    notifications: {
+        type: string;
+        clinicId: Types.ObjectId;
+        clinicName: string;
+        message: string;
+        status: "pending" | "accepted" | "rejected";
+        createdAt: Date;
+    }[];
 }
-declare const doctorModel: mongoose.Model<IDoctor, {}, {}, {}, mongoose.Document<unknown, {}, IDoctor, {}, mongoose.DefaultSchemaOptions> & IDoctor & {
+declare const doctorModel: mongoose.Model<IDoctor, {}, {}, {}, mongoose.Document<unknown, {}, IDoctor, {}, {}> & IDoctor & {
     _id: Types.ObjectId;
 } & {
     __v: number;
-}, mongoose.Schema<IDoctor, mongoose.Model<IDoctor, any, any, any, mongoose.Document<unknown, any, IDoctor, any, {}> & IDoctor & {
-    _id: Types.ObjectId;
-} & {
-    __v: number;
-}, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, IDoctor, mongoose.Document<unknown, {}, mongoose.FlatRecord<IDoctor>, {}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & mongoose.FlatRecord<IDoctor> & {
-    _id: Types.ObjectId;
-} & {
-    __v: number;
-}>>;
+}, any>;
 export default doctorModel;
 //# sourceMappingURL=doctor.model.d.ts.map
