@@ -71,6 +71,7 @@ import DoctorSearchResults from "./pages/DoctorSearchResults";
 import PatientEMR from "./pages/PatientEMR";
 import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
 import DoctorNotifications from "./pages/DoctorPages/DoctorNotifications";
+import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
 // Admin
 
 const App: React.FC = () => {

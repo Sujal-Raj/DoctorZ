@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { transporter } from "../utils/email.js";
 import nodemailer from "nodemailer";
-import doctorModel from '../models/doctor.model.js';
-import Booking from '../models/booking.model.js';
+import doctorModel from "../models/doctor.model.js";
+import Booking from "../models/booking.model.js";
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
 import patientModel from "../models/patient.model.js";
@@ -76,7 +76,9 @@ const doctorLogin = async (req, res) => {
         console.log("Login request body:", req.body);
         const { doctorId, password } = req.body;
         if (!doctorId || !password) {
-            return res.status(400).json({ message: "doctorId and password are required" });
+            return res
+                .status(400)
+                .json({ message: "doctorId and password are required" });
         }
         const doctor = await doctorModel.findOne({ doctorId });
         console.log("Doctor found:", doctor);
@@ -170,7 +172,9 @@ const updateDoctor = async (req, res) => {
         const { id } = req.params;
         const { doctorId, password } = req.body;
         if (!doctorId || !password) {
-            return res.status(400).json({ message: "doctorId and password are required" });
+            return res
+                .status(400)
+                .json({ message: "doctorId and password are required" });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const updatedDoctor = await doctorModel.findByIdAndUpdate(id, { doctorId, password: hashedPassword }, { new: true, runValidators: true });
@@ -220,7 +224,10 @@ Your Hospital Admin Team
 const getClinicDoctors = async (req, res) => {
     try {
         const { clinicId } = req.params;
-        const doctors = await doctorModel.find({ clinic: clinicId, status: "approved" });
+        const doctors = await doctorModel.find({
+            clinic: clinicId,
+            status: "approved",
+        });
         return res.status(200).json({
             message: "Doctors fetched successfully",
             doctors,
@@ -234,49 +241,21 @@ const getClinicDoctors = async (req, res) => {
 // ==========================
 // Get Today's Booked Appointments
 // ==========================
-// export const getTodaysBookedAppointments = async (req: Request, res: Response) => {
-//   try {
-//     const doctorId = req.params.doctorId;
-//     const now = new Date();
-//     const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
-//     const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
-//     const bookedAppointments = await Booking.find({
-//       doctorId,
-//       datetime: { $gte: startOfDay, $lte: endOfDay },
-//       status: "pending",
-//     });
-//     res.status(200).json(bookedAppointments);
-//   } catch (error) {
-//     console.error("Error fetching today's booked appointments:", error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
 export const getTodaysBookedAppointments = async (req, res) => {
     try {
         const doctorId = req.params.doctorId;
-        console.log(doctorId);
-        // India timezone date (UTC+5:30)
         const now = new Date();
-        const IST_OFFSET = 5.5 * 60 * 60 * 1000; // 5:30
-        // India start of day
-        const istStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-        // India end of day
-        const istEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
-        // Convert IST → UTC
-        const startUTC = new Date(istStart.getTime() - IST_OFFSET);
-        const endUTC = new Date(istEnd.getTime() - IST_OFFSET);
-        console.log("Start UTC:", startUTC);
-        console.log("End UTC:", endUTC);
-        const appointments = await Booking.find({
-            doctorId: new mongoose.Types.ObjectId(doctorId),
+        const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
+        const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+        const bookedAppointments = await Booking.find({
+            doctorId,
+            datetime: { $gte: startOfDay, $lte: endOfDay },
             status: "pending",
-            datetime: { $gte: startUTC, $lte: endUTC }
         });
-        console.log(appointments);
-        res.status(200).json(appointments);
+        res.status(200).json(bookedAppointments);
     }
     catch (error) {
-        console.log(error);
+        console.error("Error fetching today's booked appointments:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -300,17 +279,18 @@ const deleteDoctor = async (req, res) => {
         const deletedoctor = await doctorModel.findByIdAndDelete(id);
         if (!deleteDoctor) {
             return res.status(400).json({
-                message: "Doctor not found"
+                message: "Doctor not found",
             });
         }
         return res.status(202).json({
-            message: "doctor deleted successfully", deleteDoctor
+            message: "doctor deleted successfully",
+            deleteDoctor,
         });
     }
     catch (error) {
         console.error("Error deleting doctor", error);
         return res.status(500).json({
-            message: "failed to delete doctor"
+            message: "failed to delete doctor",
         });
     }
 };
@@ -334,5 +314,86 @@ export const searchDoctors = async (req, res) => {
         res.status(500).json({ message: "Something went wrong" });
     }
 };
-export default { getAllDoctors, doctorRegister, getDoctorById, deleteDoctor, updateDoctor, getClinicDoctors, doctorLogin, getTodaysBookedAppointments, getTotalPatients, searchDoctors };
+// export const getDoctorNotifications = async (req : Request, res : Response) => {
+//   try {
+//     const { doctorId } = req.params;
+//     const doctor = await doctorModel.findById(doctorId);
+//     res.json({ notifications: doctor.notifications });
+//   } catch (err) {
+//     res.json({ message: "Error fetching notifications" });
+//   }
+// };
+export const getDoctorNotifications = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        const doctor = await doctorModel.findById(doctorId);
+        // ✅ Null check added
+        if (!doctor) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
+        return res.json({
+            notifications: doctor.notifications || [],
+        });
+    }
+    catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Error fetching notifications" });
+    }
+};
+export const acceptDoctorRequest = async (req, res) => {
+    try {
+        const { doctorId, notificationId, clinicId } = req.body;
+        const doctor = await doctorModel.findById(doctorId);
+        if (!doctor)
+            return res.status(404).json({ message: "Doctor not found" });
+        // update status
+        const notif = doctor.notifications.find((n) => n._id.toString() === notificationId);
+        if (!notif) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+        notif.status = "accepted";
+        // add clinic to doctor profile
+        if (!doctor.clinic.includes(clinicId)) {
+            doctor.clinic.push(clinicId);
+        }
+        await doctor.save();
+        res.json({ message: "Request accepted" });
+    }
+    catch (error) {
+        res.json({ message: "Error accepting request" });
+    }
+};
+export const rejectDoctorRequest = async (req, res) => {
+    try {
+        const { doctorId, notificationId } = req.body;
+        const doctor = await doctorModel.findById(doctorId);
+        if (!doctor)
+            return res.status(404).json({ message: "Doctor not found" });
+        const notif = doctor.notifications.find((n) => n._id.toString() === notificationId);
+        if (!notif) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+        notif.status = "rejected";
+        await doctor.save();
+        res.json({ message: "Request rejected" });
+    }
+    catch (error) {
+        res.json({ message: "Error rejecting request" });
+    }
+};
+export default {
+    getAllDoctors,
+    doctorRegister,
+    getDoctorById,
+    deleteDoctor,
+    updateDoctor,
+    getClinicDoctors,
+    doctorLogin,
+    getTodaysBookedAppointments,
+    getTotalPatients,
+    searchDoctors,
+    getDoctorNotifications,
+    acceptDoctorRequest,
+    rejectDoctorRequest,
+};
 //# sourceMappingURL=doctor.controller.js.map

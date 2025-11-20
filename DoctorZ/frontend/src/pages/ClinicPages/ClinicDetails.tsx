@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -29,7 +28,7 @@ interface Clinic {
   phone: string;
   email: string;
   operatingHours: string;
-   clinicImage?: string; // 
+  clinicImage?: string; //
 }
 
 interface ClinicResponse {
@@ -149,26 +148,24 @@ const ClinicDetails: React.FC = () => {
       {/* ---------- Hero Section ---------- */}
       <section className="relative h-[380px] overflow-hidden shadow-lg">
         <div className="absolute inset-0">
-    {/* <img
+          {/* <img
       src={clinicImage}
       alt="Clinic banner"
       className="w-full h-full object-center object-cover"
     /> */}
-    <img
-      src={
-        clinic.clinicImage
-          ? clinic.clinicImage.startsWith("http")
-            ? clinic.clinicImage
-            : `http://localhost:3000/uploads/${clinic.clinicImage}`
-          : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
-      }
-      alt={clinic.clinicName}
-      className="w-full h-full object-center object-cover"
-    />
-    <div className="absolute inset-0 bg-gradient-to-r from-[#0c213e]/70 to-[#0c213e]/80"></div>
-  </div>
-
-
+          <img
+            src={
+              clinic.clinicImage
+                ? clinic.clinicImage.startsWith("http")
+                  ? clinic.clinicImage
+                  : `http://localhost:3000/uploads/${clinic.clinicImage}`
+                : "https://cdn-icons-png.flaticon.com/512/2966/2966327.png"
+            }
+            alt={clinic.clinicName}
+            className="w-full h-full object-center object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0c213e]/70 to-[#0c213e]/80"></div>
+        </div>
 
         <div className="relative z-10 flex flex-col items-end justify-center h-full text-center text-white px-6">
           <div className="max-w-4xl mx-auto">
@@ -199,18 +196,34 @@ const ClinicDetails: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <a
-                href={`tel:${clinic.phone}`}
-                className="inline-flex items-center gap-2 bg-white text-[#0c213e] hover:bg-indigo-50 px-6 py-2 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-              >
+              <div className="inline-flex items-center gap-2 bg-white text-[#0c213e] px-6 py-2 rounded-full font-semibold shadow-lg">
                 <Phone size={18} />
-                Call Now
-              </a>
+                {clinic.phone}
+              </div>
+
               <button className="inline-flex items-center gap-2 bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-2 rounded-full font-semibold transition-all duration-300">
                 <MapPin size={18} />
                 Booking
               </button>
             </div>
+
+            {/* option 2 clickable phone number
+
+
+            <div className="flex flex-wrap justify-center gap-4 mt-8">
+              <a
+                href={`tel:${clinic.phone}`}
+                className="inline-flex items-center gap-2 bg-white text-[#0c213e] px-6 py-2 rounded-full font-semibold shadow-lg"
+              >
+                <Phone size={18} />
+                {clinic.phone}
+              </a>
+
+              <button className="inline-flex items-center gap-2 bg-transparent border-2 border-white text-white hover:bg-white/10 px-6 py-2 rounded-full font-semibold transition-all duration-300">
+                <MapPin size={18} />
+                Booking
+              </button>
+            </div> */}
           </div>
         </div>
 
