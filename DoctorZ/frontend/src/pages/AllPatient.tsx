@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { Phone } from "lucide-react";
 import api from "../Services/mainApi";
+// import Patients from "./LabPages/LabPatients";
 
 // ---------------- Interfaces ----------------
 interface Patient {
@@ -38,11 +39,12 @@ const AllPatient: React.FC = () => {
       if (!drId) return;
       try {
         const res = await api.get<{ bookings: Booking[] }>(
-          `/api/booking/doctor/${drId}`
+          `/api/booking/doctor/${drId}/all-patient`
         );
         console.log("Bookings:", res.data.bookings);
 
         setBookings(res.data.bookings);
+        // setBookings(res.data.bookings || []);
       } catch (err) {
         console.error("Error fetching patients:", err);
       }
@@ -51,6 +53,11 @@ const AllPatient: React.FC = () => {
     fetchBookings();
   }, [drId]);
 
+   const handleViewEMR = (aadhar?: string) => {
+    if (!aadhar || !drId) return;
+    navigate(`/doctordashboard/${drId}/patientEMR/${aadhar}`);
+  };
+
   return (
     <div className="w-full p-4 sm:p-5 md:p-6 overflow-x-auto rounded-lg font-[Poppins]">
       <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 text-center sm:text-left">
@@ -58,7 +65,9 @@ const AllPatient: React.FC = () => {
       </h2>
 
       {bookings.length === 0 ? (
-        <p className="text-gray-500 text-center sm:text-left">No patients found.</p>
+        <p className="text-gray-500 text-center sm:text-left">
+          No patients found.
+        </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full text-left bg-white border border-gray-200 shadow-md rounded-lg overflow-hidden">

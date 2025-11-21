@@ -75,6 +75,9 @@ const ClinicSearchResults: React.FC = () => {
   const [feeFilters, setFeeFilters] = useState<string[]>([]);
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
+  const [consultMode, setConsultMode] = useState<"online" | "hospital" | null>(
+    null
+  );
 const handleFavouriteToggle = (clinicId: string) => {
   setClinics((prevClinics) =>
     prevClinics
@@ -122,8 +125,8 @@ const enhancedClinics = enhanceClinicsWithMockData(data);
       }
     };
 
-    fetchClinics();
-  }, []);
+  fetchClinics();
+}, []);
 
   // ✅ Filters & Search
   const filtered = useMemo(() => {
@@ -357,7 +360,7 @@ const sortedClinics = useMemo(() => {
               />
               <button
                 onClick={handleSearch}
-                className="flex items-center justify-center gap-2 bg-[#28328C] hover:bg-[#1a365d] text-white font-medium rounded-lg px-4 py-2 sm:py-1.5 text-sm sm:text-base"
+                className="flex items-center justify-center gap-2 bg-[#0c213e] hover:bg-[#132d54] text-white font-medium rounded-lg px-4 py-2 sm:py-1.5 text-sm sm:text-base"
               >
                 <SearchIcon className="w-4 h-4" />
                 <span className="sm:hidden">Search</span>
@@ -365,11 +368,49 @@ const sortedClinics = useMemo(() => {
               </button>
             </div>
           </div>
+          {/* 🔵 Online / Visit Buttons */}
+          <div className="flex gap-3 mb-4">
+            {/* Online Consult */}
+            <button
+              onClick={() =>
+                setConsultMode((prev) => (prev === "online" ? null : "online"))
+              }
+              className={`
+      px-4 py-2 rounded-lg border font-medium
+      ${
+        consultMode === "online"
+          ? "bg-[#0c213e] text-white border-[#0c213e]"
+          : "bg-white text-gray-700 border-gray-400"
+      }
+    `}
+            >
+              Online Consult
+            </button>
+
+            {/* Visit Doctor */}
+            <button
+              onClick={() =>
+                setConsultMode((prev) =>
+                  prev === "hospital" ? null : "hospital"
+                )
+              }
+              className={`
+      px-4 py-2 rounded-lg border font-medium
+      ${
+        consultMode === "hospital"
+          ? "bg-[#0c213e] text-white border-[#0c213e]"
+          : "bg-white text-gray-700 border-gray-400"
+      }
+    `}
+            >
+              Visit Doctor
+            </button>
+          </div>
 
           {/* === Clinic Cards === */}
           {loading ? (
             <div className="bg-white rounded-lg p-6 shadow-sm text-center">
-              <div className="inline-block w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mb-2" />
+              <div className="inline-block w-8 h-8 border-4 border-[#0c213e] border-t-transparent rounded-full animate-spin mb-2" />
               <div className="text-gray-600">Loading clinics...</div>
             </div>
           ) : filtered.length === 0 ? (
@@ -392,11 +433,12 @@ const sortedClinics = useMemo(() => {
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`px-2.5 sm:px-3 py-1.5 rounded-md border text-xs sm:text-sm min-w-[2.5rem] ${
-                      currentPage === i + 1
-                        ? "bg-teal-700 text-white border-teal-700"
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                    }`}
+                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all duration-200 ${
+  currentPage === i + 1
+    ? "bg-[#0c213e] text-white border-[#0c213e] shadow-lg shadow-[#0c213e]/30 scale-105"
+    : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e] hover:bg-[#0c213e]/10"
+}`}
+
                   >
                     {i + 1}
                   </button>
@@ -476,13 +518,13 @@ const FilterPanel = ({
   <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-5 hover:shadow-lg transition-all duration-300">
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
-      <button onClick={clearFilters} className="text-sm text-teal-700 hover:underline">
+      <button onClick={clearFilters} className="text-sm text-[#0c213e] hover:underline">
         Clear All
       </button>
     </div>
 
     <div className="space-y-4">
-      {/* Mode */}
+      {/* Mode
       <div>
         <h4 className="text-sm font-medium text-gray-700 mb-2">Mode of Consult</h4>
         <label className="flex items-center gap-2 text-sm text-gray-600 mb-1">
@@ -490,7 +532,7 @@ const FilterPanel = ({
             type="checkbox"
             checked={modeHospital}
             onChange={() => setModeHospital((s: boolean) => !s)}
-            className="accent-teal-600"
+            className="accent-[#0c213e]"
           />
           Hospital Visit
         </label>
@@ -499,11 +541,11 @@ const FilterPanel = ({
             type="checkbox"
             checked={modeOnline}
             onChange={() => setModeOnline((s: boolean) => !s)}
-            className="accent-teal-600"
+            className="accent-[#0c213e]"
           />
           Online Consult
         </label>
-      </div>
+      </div> */}
 
       {/* Clinic Type */}
       <div>
@@ -517,7 +559,7 @@ const FilterPanel = ({
               type="checkbox"
               checked={typeFilters.includes(type)}
               onChange={() => toggleFilter(setExpFilters, type)}
-              className="accent-teal-600"
+              className="accent-[#0c213e]"
             />
             {type}
           </label>
@@ -536,7 +578,7 @@ const FilterPanel = ({
               type="checkbox"
               checked={specialty === spec}
               onChange={() => setSpecialty(specialty === spec ? "" : spec)}
-              className="accent-teal-600"
+              className="accent-[#0c213e]"
             />
             {spec}
           </label>
@@ -557,7 +599,7 @@ const FilterPanel = ({
               type="checkbox"
               checked={expFilters.includes(exp)}
               onChange={() => toggleFilter(setExpFilters, exp)}
-              className="accent-teal-600"
+              className="accent-[#0c213e]"
             />
             {exp}
           </label>
@@ -592,7 +634,7 @@ const MobileFilterPanel = ({
           type="checkbox"
           checked={modeHospital}
           onChange={() => setModeHospital((s: boolean) => !s)}
-          className="accent-teal-600"
+          className="accent-[#0c213e]"
         />
         Hospital Visit
       </label>
@@ -601,7 +643,7 @@ const MobileFilterPanel = ({
           type="checkbox"
           checked={modeOnline}
           onChange={() => setModeOnline((s: boolean) => !s)}
-          className="accent-teal-600"
+          className="accent-[#0c213e]"
         />
         Online Consult
       </label>
@@ -619,7 +661,7 @@ const MobileFilterPanel = ({
             type="checkbox"
             checked={typeFilters.includes(type)}
             onChange={() => toggleFilter(setTypeFilters, type)}
-            className="accent-teal-600"
+            className="accent-[#0c213e]"
           />
           {type}
         </label>
@@ -638,7 +680,7 @@ const MobileFilterPanel = ({
             type="checkbox"
             checked={specialty === spec}
             onChange={() => setSpecialty(specialty === spec ? "" : spec)}
-            className="accent-teal-600"
+            className="accent-[#0c213e]"
           />
           {spec}
         </label>
@@ -659,7 +701,7 @@ const MobileFilterPanel = ({
             type="checkbox"
             checked={expFilters.includes(exp)}
             onChange={() => toggleFilter(setExpFilters, exp)}
-            className="accent-teal-600"
+            className="accent-[#0c213e]"
           />
           {exp}
         </label>
@@ -677,7 +719,7 @@ const MobileFilterPanel = ({
         </button>
         <button
           onClick={onClose}
-          className="flex-1 py-2 px-4 bg-teal-600 text-white rounded-lg font-medium"
+          className="flex-1 py-2 px-4 bg-[#0c213e] text-white rounded-lg font-medium"
         >
           Apply Filters
         </button>

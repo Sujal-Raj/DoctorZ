@@ -62,7 +62,7 @@ export default function LoginClinic() {
       });
 
       setTimeout(() => navigate(`/clinicDashboard/${res.data.clinic.id}`), 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login error:", err);
       Swal.fire({
         title: "Login Failed!",

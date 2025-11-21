@@ -1,7 +1,6 @@
 import mongoose, { Document } from "mongoose";
 export interface IEMR extends Document {
     doctorId: mongoose.Types.ObjectId;
-    name?: string;
     aadhar?: number;
     allergies?: string[];
     diseases?: string[];

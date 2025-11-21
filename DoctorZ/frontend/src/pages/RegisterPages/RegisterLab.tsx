@@ -1,9 +1,6 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { registerLab } from "../../Services/labApi";
-import type { Lab } from "../../Services/labApi";
-// import api from "../Services/client";
-// import { registerLab } from "../Services/labApi";
 
 
 interface Timings {
@@ -20,10 +17,12 @@ interface Lab {
   pincode: string;
   address: string;
   timings: Timings;
- 
 }
 
 export default function RegisterLab() {
+  const [pincodeError, setPincodeError] = useState("");
+const [loading, setLoading] = useState(false);
+
   const [lab, setLab] = useState<Lab & { certificateNumber?: string }>({
     name: "",
     email: "",
@@ -49,9 +48,20 @@ export default function RegisterLab() {
   };
 
   const handleRegistration = async () => {
+    if (!/^[0-9]{6}$/.test(lab.pincode)) {
+      setPincodeError("Pincode must be exactly 6 digits");
+      return;
+    }
+  setLoading(true); 
+    setPincodeError("");
+    const cleanedData = {
+  ...lab,
+  email: lab.email.trim().toLowerCase(),
+};
+
     try {
-      const response = await registerLab(lab);
-      if (response.status === 200) {
+      const response = await registerLab(cleanedData);
+      if (response.status === 201) {
         Swal.fire({
           title: "Registration Successful!",
           text: "Your lab details have been submitted for admin approval. You’ll be notified once approved.",
@@ -66,7 +76,9 @@ export default function RegisterLab() {
         icon: "error",
         confirmButtonText: "OK",
       });
-    }
+    }finally {
+    setLoading(false); 
+  }
   };
 
   return (
@@ -78,7 +90,10 @@ export default function RegisterLab() {
           name="description"
           content="Register your diagnostic lab easily on our platform. Get verified and reach patients in your area."
         />
-        <meta name="keywords" content="lab registration, diagnostic center, healthcare platform" />
+        <meta
+          name="keywords"
+          content="lab registration, diagnostic center, healthcare platform"
+        />
       </head>
 
       <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 flex items-center justify-center px-6 py-16">
@@ -86,11 +101,12 @@ export default function RegisterLab() {
           className="w-full max-w-3xl bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 p-10 animate-fade-in"
           aria-label="Lab registration form"
         >
-          <h1 className="text-4xl font-bold text-center mb-8 text-gray-800 tracking-tight">
-            Register Your Laboratory
+          <h1 className="text-3xl font-extrabold text-[#28328C] text-center mb-8  tracking-tight">
+            🧪 Register Your Laboratory
           </h1>
           <p className="text-center text-gray-600 mb-10">
-            Join our trusted network of diagnostic centers. Fill in your lab details below.
+            Join our trusted network of diagnostic centers. Fill in your lab
+            details below.
           </p>
 
           <form
@@ -100,30 +116,103 @@ export default function RegisterLab() {
             }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            <Input label="Lab Name" name="name" value={lab.name} onChange={handleOnChange} />
-            <Input label="Email" type="email" name="email" value={lab.email} onChange={handleOnChange} />
-            <Input label="Password" type="password" name="password" minLength={8} value={lab.password} onChange={handleOnChange} />
-            <Input label="Certificate Number" name="certificateNumber" value={lab.certificateNumber} onChange={handleOnChange} />
-            <Input label="State" name="state" value={lab.state} onChange={handleOnChange} />
-            <Input label="City" name="city" value={lab.city} onChange={handleOnChange} />
-            <Input label="Address" name="address" value={lab.address} onChange={handleOnChange} />
-            <Input label="Pincode" name="pincode" value={lab.pincode} onChange={handleOnChange} />
-            <Input label="Opening Time" name="open" value={lab.timings.open} onChange={handleOnChange} placeholder="e.g. 9:00 AM" />
-            <Input label="Closing Time" name="close" value={lab.timings.close} onChange={handleOnChange} placeholder="e.g. 7:00 PM" />
+            <Input
+              label="Lab Name"
+              name="name"
+              value={lab.name}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Email"
+              type="email"
+              name="email"
+              value={lab.email}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Password"
+              type="password"
+              name="password"
+              minLength={8}
+              value={lab.password}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Certificate Number"
+              name="certificateNumber"
+              value={lab.certificateNumber}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="State"
+              name="state"
+              value={lab.state}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="City"
+              name="city"
+              value={lab.city}
+              onChange={handleOnChange}
+            />
+            <Input
+              label="Address"
+              name="address"
+              value={lab.address}
+              onChange={handleOnChange}
+            />
+            <div>
+              <Input
+                label="Pincode"
+                name="pincode"
+                value={lab.pincode}
+                onChange={(e) => {
+                  setPincodeError(""); // remove error when user types again
+                  handleOnChange(e);
+                }}
+                placeholder="Enter 6-digit pincode"
+              
+               
+              />
+              {pincodeError && (
+                <p className="text-red-500 text-xs mt-1">{pincodeError}</p>
+              )}
+            </div>
+            <Input
+              label="Opening Time"
+              name="open"
+              value={lab.timings.open}
+              onChange={handleOnChange}
+              placeholder="e.g. 9:00 AM"
+            />
+            <Input
+              label="Closing Time"
+              name="close"
+              value={lab.timings.close}
+              onChange={handleOnChange}
+              placeholder="e.g. 7:00 PM"
+            />
 
-            <div className="col-span-2 mt-8">
+            <div className="md:col-span-2 text-center mt-6">
               <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md transition-transform hover:scale-[1.02]"
-              >
-                Submit Registration
-              </button>
+  type="submit"
+  disabled={loading}
+  className={`px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
+    bg-[#28328C] hover:bg-[#1f2775] shadow-md transition 
+    ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+>
+  {loading ? "Submitting..." : "Register Lab"}
+</button>
+
             </div>
           </form>
 
           <p className="text-center text-gray-600 mt-8">
             Already registered?{" "}
-            <a href="/lab-login" className="text-blue-600 font-semibold hover:underline">
+            <a
+              href="/lab-login"
+              className="cursor-pointer text-blue-600 font-semibold hover:underline"
+            >
               Login Here
             </a>
           </p>
@@ -142,6 +231,8 @@ function Input({
   onChange,
   placeholder,
   minLength,
+  pattern,
+  title,
 }: {
   label: string;
   name: string;
@@ -150,6 +241,8 @@ function Input({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   minLength?: number;
+  pattern?: string;
+  title?: string;
 }) {
   return (
     <div className="flex flex-col space-y-1">
@@ -166,9 +259,9 @@ function Input({
         placeholder={placeholder || label}
         className="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-gray-800 bg-white"
         required
+        pattern={pattern}
+        title={title}
       />
     </div>
   );
 }
-
-

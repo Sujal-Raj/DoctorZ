@@ -14,13 +14,12 @@ export interface IBooking extends Document {
   doctorId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId; // who booked
   patient: IPatientInfo;
-  emrId?: mongoose.Types.ObjectId; // ✅ reference to EMR
+  slot: string;
   slotId: mongoose.Types.ObjectId;
-  datetime: Date;
+  dateTime: Date;
   mode: "online" | "offline";
   fees: number;
-  status: "booked" | "cancelled" | "completed";
-  roomId: string;
+  status: "pending" | "completed";
   createdAt: Date;
   updatedAt: Date;
  
@@ -39,15 +38,13 @@ const bookingSchema = new Schema<IBooking>(
     },
 
     // ✅ Link to EMR document
-    emrId: {
-      type: Schema.Types.ObjectId,
-      ref: "EMR",
-      default: null,
-    },
 
-    slotId: { type: Schema.Types.ObjectId, ref: "TimeSlot", required: true },
+    slot: { type: String, required: true },
+    slotId: { type: Schema.Types.ObjectId,
+      ref: "TimeSlot",   // ✅ connect to TimeSlot model
+      required: true,},
 
-    datetime: { type: Date, required: true },
+    dateTime: { type: Date, required: true },
 
     mode: { type: String, enum: ["online", "offline"], required: true },
 
@@ -55,8 +52,8 @@ const bookingSchema = new Schema<IBooking>(
 
     status: {
       type: String,
-      enum: ["booked", "cancelled", "completed"],
-      default: "booked",
+      enum: ["pending", "completed"],
+      default: "pending", // ✔ default to pending
       required: true,
     },
     roomId:{

@@ -8,19 +8,17 @@ const bookingSchema = new Schema({
         default: {},
     },
     // ✅ Link to EMR document
-    emrId: {
-        type: Schema.Types.ObjectId,
-        ref: "EMR",
-        default: null,
-    },
-    slotId: { type: Schema.Types.ObjectId, ref: "TimeSlot", required: true },
-    datetime: { type: Date, required: true },
+    slot: { type: String, required: true },
+    slotId: { type: Schema.Types.ObjectId,
+        ref: "TimeSlot", // ✅ connect to TimeSlot model
+        required: true, },
+    dateTime: { type: Date, required: true },
     mode: { type: String, enum: ["online", "offline"], required: true },
     fees: { type: Number, required: true },
     status: {
         type: String,
-        enum: ["booked", "cancelled", "completed"],
-        default: "booked",
+        enum: ["pending", "completed"],
+        default: "pending", // ✔ default to pending
         required: true,
     },
     roomId: {

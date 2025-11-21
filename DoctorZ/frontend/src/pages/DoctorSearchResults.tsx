@@ -1,3 +1,5 @@
+
+
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
@@ -44,11 +46,10 @@ if (token) {
   console.log("Patient ID:", patientId);
 }
 
+const token = Cookies.get("patientToken");
+const patientId = token ? jwtDecode<DecodedToken>(token)?.id ?? null : null;
 
-
-const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
-
-const API = `/api/doctor/allDoctors/${patientId }`;
+const API = `/api/doctor/allDoctors/${patientId}`;
 
 const DoctorSearchResults: React.FC = () => {
   const { state } = useLocation();
@@ -63,7 +64,9 @@ const DoctorSearchResults: React.FC = () => {
   const doctorsPerPage = 6;
 
   const [specialty, setSpecialty] = useState(searchState.specialty || "");
-  const [locationValue, setLocationValue] = useState(searchState.location || "");
+  const [locationValue, setLocationValue] = useState(
+    searchState.location || ""
+  );
   const [date, setDate] = useState(searchState.date || "");
 
   const [modeHospital, setModeHospital] = useState(true);
@@ -72,6 +75,9 @@ const DoctorSearchResults: React.FC = () => {
   const [feeFilters, setFeeFilters] = useState<string[]>([]);
   const [languageFilters, setLanguageFilters] = useState<string[]>([]);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [consultMode, setConsultMode] = useState<"online" | "hospital" | null>(
+    null
+  );
 
   // ✅ Fetch Doctors
   useEffect(() => {
@@ -82,7 +88,7 @@ const DoctorSearchResults: React.FC = () => {
         const data = Array.isArray(res.data)
           ? res.data
           : res.data?.doctors ?? res.data;
-          
+
         setDoctors(data || []);
       } catch (e) {
         console.error("Error fetching doctors:", e);
@@ -92,8 +98,6 @@ const DoctorSearchResults: React.FC = () => {
     };
     fetchDoctors();
   }, []);
-
-
 
   // ✅ Utility for date filter
   const hasSlotForDate = (doc: any, date?: string) => {
@@ -159,10 +163,10 @@ const DoctorSearchResults: React.FC = () => {
 
       const supportsHospital = d.modeOfConsult?.includes("hospital") ?? true;
       const supportsOnline = d.modeOfConsult?.includes("online") ?? true;
-      if (
-        !((modeHospital && supportsHospital) || (modeOnline && supportsOnline))
-      )
-        return false;
+
+      // NEW CONSULT MODE FILTER
+      if (consultMode === "online" && !supportsOnline) return false;
+      if (consultMode === "hospital" && !supportsHospital) return false;
 
       if (expFilters.length > 0) {
         const exp = d.experience ?? 0;
@@ -194,7 +198,6 @@ const DoctorSearchResults: React.FC = () => {
 
       return matchesSpec && matchesLocation && matchesDate;
     });
-  
   }, [
     doctors,
     specialty,
@@ -206,20 +209,21 @@ const DoctorSearchResults: React.FC = () => {
     feeFilters,
     languageFilters,
   ]);
- 
-// ✅ move sort here (after filtered)
-const sortedDoctors = useMemo(() => {
-  return [...filtered].sort((a, b) => {
-    if (a.isFavourite === b.isFavourite) return 0;
-    return a.isFavourite ? -1 : 1;
-  });
 
-  
-}, [filtered]);
-const indexOfLastDoctor = currentPage * doctorsPerPage;
-const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
-const currentDoctors = sortedDoctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
-const totalPages = Math.ceil(sortedDoctors.length / doctorsPerPage);
+  // ✅ move sort here (after filtered)
+  const sortedDoctors = useMemo(() => {
+    return [...filtered].sort((a, b) => {
+      if (a.isFavourite === b.isFavourite) return 0;
+      return a.isFavourite ? -1 : 1;
+    });
+  }, [filtered]);
+  const indexOfLastDoctor = currentPage * doctorsPerPage;
+  const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
+  const currentDoctors = sortedDoctors.slice(
+    indexOfFirstDoctor,
+    indexOfLastDoctor
+  );
+  const totalPages = Math.ceil(sortedDoctors.length / doctorsPerPage);
 
   const toggleExp = (val: string) =>
     setExpFilters((s) =>
@@ -246,13 +250,11 @@ const totalPages = Math.ceil(sortedDoctors.length / doctorsPerPage);
       replace: true,
     });
   };
-const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
-  setDoctors((prev) =>
-    prev.map((d) =>
-      d._id === doctorId ? { ...d, isFavourite } : d
-    )
-  );
-};
+  // const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
+  //   setDoctors((prev) =>
+  //     prev.map((d) => (d._id === doctorId ? { ...d, isFavourite } : d))
+  //   );
+  // };
 
   const clearFilters = () => {
     setSpecialty("");
@@ -301,7 +303,9 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                {specialty ? `Consult ${specialty}s Online` : "Available Doctors"}
+                {specialty
+                  ? `Consult ${specialty}s Online`
+                  : "Available Doctors"}
               </h1>
               <p className="text-sm text-gray-600 mt-0.5">
                 {filtered.length} doctors found
@@ -309,7 +313,10 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
             </div>
             <button
               onClick={() => setMobileFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-3 py-2 border border-teal-700 text-teal-700 rounded-md text-sm font-medium"
+              className="lg:hidden flex items-center gap-2 px-3 py-2 
+border border-[#0c213e] text-[#0c213e] 
+rounded-md text-sm font-medium 
+hover:bg-[#0c213e]/10 transition-all"
             >
               <SlidersHorizontal size={16} />
               Filters
@@ -339,7 +346,7 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
               />
               <button
                 onClick={handleSearch}
-                className="flex items-center justify-center gap-2 bg-[#28328C] hover:bg-[#1f286f] text-white font-medium rounded-lg px-4 py-1.5 border border-[#1f286f] transition-all duration-200"
+                className="flex items-center justify-center gap-2 bg-[#0c213e] hover:bg-[#132d54] text-white font-medium rounded-lg px-4 py-1.5 border border-[#1f286f] transition-all duration-200"
               >
                 <SearchIcon className="w-4 h-4" />
                 Search
@@ -347,10 +354,50 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
             </div>
           </div>
 
+          {/* 🔵 Online / Visit Buttons */}
+          <div className="flex gap-3 mb-4">
+            {/* Online Consult */}
+            <button
+              onClick={() =>
+                setConsultMode((prev) => (prev === "online" ? null : "online"))
+              }
+              className={`
+      px-4 py-2 rounded-lg border font-medium
+      ${
+        consultMode === "online"
+          ? "bg-[#0c213e] text-white border-[#0c213e]"
+          : "bg-white text-gray-700 border-gray-400"
+      }
+    `}
+            >
+              Online Consult
+            </button>
+
+            {/* Visit Doctor */}
+            <button
+              onClick={() =>
+                setConsultMode((prev) =>
+                  prev === "hospital" ? null : "hospital"
+                )
+              }
+              className={`
+      px-4 py-2 rounded-lg border font-medium
+      ${
+        consultMode === "hospital"
+          ? "bg-[#0c213e] text-white border-[#0c213e]"
+          : "bg-white text-gray-700 border-gray-400"
+      }
+    `}
+            >
+              Visit Doctor
+            </button>
+          </div>
+
           {/* Doctor Cards */}
           {loading ? (
             <div className="bg-white rounded-lg p-6 shadow-sm text-center border border-gray-200">
-              <div className="inline-block w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mb-2" />
+              <div className="inline-block w-8 h-8 border-4 border-[#0c213e] border-t-transparent rounded-full animate-spin mb-2" />
+
               <div className="text-gray-600">Loading doctors...</div>
             </div>
           ) : filtered.length === 0 ? (
@@ -362,13 +409,18 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
           ) : (
             <div className="space-y-7">
               {currentDoctors.map((doc) => (
-                <DoctorCard key={doc._id} doctor={doc} onConsult={openBooking}   onFavouriteToggle={(doctorId, isFav) => {
-    setDoctors((prev) =>
-      prev.map((d) =>
-        d._id === doctorId ? { ...d, isFavourite: isFav } : d
-      )
-    );
-  }} />
+                <DoctorCard
+                  key={doc._id}
+                  doctor={doc}
+                  onConsult={openBooking}
+                  onFavouriteToggle={(doctorId, isFav) => {
+                    setDoctors((prev) =>
+                      prev.map((d) =>
+                        d._id === doctorId ? { ...d, isFavourite: isFav } : d
+                      )
+                    );
+                  }}
+                />
               ))}
             </div>
           )}
@@ -381,10 +433,10 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-1.5 rounded-md border text-sm ${
+                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all duration-200 ${
                       currentPage === i + 1
-                        ? "bg-teal-700 text-white border-teal-700"
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                        ? "bg-[#0c213e] text-white border-[#0c213e] shadow-lg shadow-[#0c213e]/30 scale-105"
+                        : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e] hover:bg-[#0c213e]/10"
                     }`}
                   >
                     {i + 1}
@@ -402,7 +454,8 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
               Need help consulting the right doctor?
             </h3>
             <p className="text-sm mt-2 leading-snug">
-              Call <span className="font-medium">+91-8040245807</span> to book instantly
+              Call <span className="font-medium">+91-8040245807</span> to book
+              instantly
             </p>
             <a
               href="tel:+918040245807"
@@ -445,7 +498,19 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
 
             <button
               onClick={() => setMobileFilterOpen(false)}
-              className="mt-5 w-full bg-teal-700 text-white py-2 rounded-md font-medium hover:bg-teal-800"
+              className="
+  mt-5 w-full 
+  bg-[#0c213e] 
+  text-white 
+  py-2 
+  rounded-md 
+  font-medium
+  border border-[#1a2f4a]
+  shadow-sm
+  hover:bg-[#10273f]
+  hover:border-[#254466]
+  transition-all duration-200
+"
             >
               Apply Filters
             </button>
@@ -482,7 +547,13 @@ const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
 
 /* 🔹 Reusable Components */
 
-const SearchInput = ({ icon, placeholder, value, onChange, type = "text" }: any) => (
+const SearchInput = ({
+  icon,
+  placeholder,
+  value,
+  onChange,
+  type = "text",
+}: any) => (
   <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-white">
     {icon}
     <input
@@ -512,7 +583,10 @@ const FilterPanel = ({
   <div className="bg-white border border-gray-200 rounded-2xl shadow-md p-5 hover:shadow-lg transition-all duration-300">
     <div className="flex items-center justify-between mb-4">
       <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
-      <button onClick={clearFilters} className="text-sm text-teal-700 hover:underline">
+      <button
+        onClick={clearFilters}
+        className="text-sm text-[#0c213e] hover:underline"
+      >
         Clear All
       </button>
     </div>
@@ -520,13 +594,13 @@ const FilterPanel = ({
     <div className="space-y-4">
       <button
         onClick={showNearMe}
-        className="w-full border border-[#28328C] text-[#28328C] text-sm font-medium rounded-md py-2 hover:bg-[#28328C]/10"
+        className="w-full border border-[#0c213e] text-[#0c213e] text-sm font-medium rounded-md py-2 hover:bg-[#0c213e]/10"
       >
         Show Doctors Near Me
       </button>
 
       {/* Mode */}
-      <div className="pt-2">
+      {/* <div className="pt-2">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Mode of Consult</h4>
         <label className="flex items-center gap-2 text-sm text-gray-600 mb-1">
           <input
@@ -546,18 +620,21 @@ const FilterPanel = ({
           />
           Online Consult
         </label>
-      </div>
+      </div> */}
 
       {/* Experience */}
       <div className="pt-2">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Experience</h4>
         {["0-5", "5-10", "10-15", "15+"].map((v) => (
-          <label key={v} className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+          <label
+            key={v}
+            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+          >
             <input
               type="checkbox"
               checked={expFilters.includes(v)}
               onChange={() => toggleExp(v)}
-              className="accent-teal-600"
+              className="accent-[#0c213e]"
             />
             {v} years
           </label>
@@ -566,14 +643,19 @@ const FilterPanel = ({
 
       {/* Fee */}
       <div className="pt-2">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Consultation Fee</h4>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">
+          Consultation Fee
+        </h4>
         {["0-500", "500-1000", "1000+"].map((v) => (
-          <label key={v} className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+          <label
+            key={v}
+            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+          >
             <input
               type="checkbox"
               checked={feeFilters.includes(v)}
               onChange={() => toggleFee(v)}
-              className="accent-teal-600"
+              className="accent-[#0c213e]"
             />
             ₹{v}
           </label>
@@ -584,12 +666,16 @@ const FilterPanel = ({
       <div className="pt-2">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Languages</h4>
         {["English", "Hindi", "Marathi", "Gujarati"].map((v) => (
-          <label key={v} className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+          <label
+            key={v}
+            className="flex items-center gap-2 text-sm text-gray-600 mb-1"
+          >
             <input
               type="checkbox"
               checked={languageFilters.includes(v)}
               onChange={() => toggleLang(v)}
-              className="accent-teal-600"
+              className="accent-[#0c213e]"
+
             />
             {v}
           </label>

@@ -1,0 +1,6 @@
+import express from "express";
+import { addPrescription } from "../controllers/prescription.controller.js";
+const router = express.Router();
+router.post("/addPrescription/:bookingId", addPrescription);
+export default router;
+//# sourceMappingURL=prescription.routes.js.map

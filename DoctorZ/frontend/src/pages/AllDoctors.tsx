@@ -1,291 +1,175 @@
 
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import {
-//   Stethoscope,
-//   Calendar,
-//   MapPin,
-//   Search as SearchIcon,
-//   Menu,
-//   ChevronRight,
-// } from "lucide-react";
-// import { Helmet } from "react-helmet";
 
-// const SPECIALTIES = [
-//   "Anaesthesia",
-//   "General Physician",
-//   "Cardiology",
-//   "Dermatology",
-//   "Pediatrics",
-//   "Orthopaedics",
-//   "Neurology",
-//   "Urology",
-//   "Gastroenterology",
-//   "Psychiatry",
-//   "Pulmonology",
-//   "Endocrinology",
-//   "Nephrology",
-//   "Ophthalmology",
-//   "Dentist",
-// ];
+import { Award, Calendar, Clock, Filter, Search, Stethoscope, Users, X } from "lucide-react";
+import BookingDrawer from "../components/BookingDrawer";
+import DoctorCard, { type Doctor } from "../components/DoctorCard";
+import SlidingBanner from "../components/SlidingBanner";
+import { useEffect, useMemo, useState } from "react";
 
-// const AllDoctor: React.FC = () => {
-//   const navigate = useNavigate();
+// 🔹 Type Definitions
+interface DoctorForBooking {
+  _id: string;
+  fullName: string;
+  photo?: string;
+  specialization: string;
+  fees: number;
+  availability?: Record<string, string[]>;
+}
 
-//   // search inputs
-//   const [specialty, setSpecialty] = useState<string>("");
-//   const [location, setLocation] = useState<string>("");
-//   const [date, setDate] = useState<string>(""); // optional, YYYY-MM-DD
-//   const [visitType, setVisitType] = useState<"hospital" | "online">("hospital");
+interface FilterState {
+  specialization: string | null;
+  gender: string[];
+  fees: string[];
+  experience: string[];
+}
+
+// 🔹 Helper Function
+const mapToBookingDoctor = (doc: Doctor): DoctorForBooking => ({
+  _id: doc._id,
+  fullName: doc.fullName,
+  photo: doc.photo,
+  specialization: doc.specialization,
+  fees: doc.consultationFee, 
+  availability: undefined,
+});
 
 //   // small UI-only state
 //   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-//   const onSearch = () => {
-//     // normalize values
-//     const s = specialty?.trim();
-//     const l = location?.trim();
+  // ✅ Fetch doctors from backend
+  useEffect(() => {
+    const fetchDoctors = async (p0: Doctor[]): Promise<void> => {
+      try {
+        setLoading(true);
+        const response = await fetch("http://localhost:3000/api/doctor/allDoctors");
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
 
-//     navigate("/search-results", {
-//       state: {
-//         specialty: s || "",
-//         location: l || "",
-//         date: date || "",
-//         visitType,
-//       },
-//     });
-//   };
+        if (Array.isArray(data.doctors)) {
+          const validDoctors = data.doctors.filter((doc: unknown) => 
+            doc && typeof doc === 'object' && 'fullName' in doc
+          );
+          fetchDoctors(validDoctors as Doctor[]);
+        } else {
+          fetchDoctors([]);
+        }
+      } catch (err) {
+        console.error("Error fetching doctors:", err);
+        fetchDoctors([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-//   return (
-//     <div className="min-h-screen bg-gray-50 text-slate-900">
-//       <Helmet>
-//         <title>Find Doctors — Search by specialty, location | DoctorZ</title>
-//         <meta
-//           name="description"
-//           content="Find and book trusted doctors by speciality, city and date. Search online consultations or hospital visits. Fast booking and verified profiles."
-//         />
-//       </Helmet>
+    fetchDoctors();
+  }, []);
 
-//       {/* Mobile header */}
-//       <header className="lg:hidden bg-white border-b sticky top-0 z-40">
-//         <div className="flex items-center justify-between px-4 py-3">
-//           <div className="flex items-center gap-3">
-//             <button
-//               aria-label="Open menu"
-//               onClick={() => setMobileMenuOpen((s) => !s)}
-//               className="p-2 rounded-md bg-slate-100 text-slate-700"
-//             >
-//               <Menu className="w-5 h-5" />
-//             </button>
-//             <div className="flex items-center gap-2">
-//               <div className="bg-[#106C89] text-white rounded-lg p-2">
-//                 <Stethoscope className="w-5 h-5" />
-//               </div>
-//               <h1 className="text-lg font-semibold">Find Doctors</h1>
-//             </div>
-//           </div>
+  // Filter logic with TypeScript
+  const filteredDoctors = useMemo((): Doctor[] => {
+    return doctors.filter((doctor: Doctor) => {
+      const matchesSearch: boolean =
+        Search.trim() === "" ||
+        doctor.fullName?.toLowerCase().includes(Search.toLowerCase()) ||
+        doctor.specialization?.toLowerCase().includes(Search.toLowerCase());
 
-//           <div className="flex items-center gap-2">
-//             <button
-//               onClick={() =>
-//                 navigate("/search-results", {
-//                   state: { specialty: "", location: "", date: "", visitType },
-//                 })
-//               }
-//               className="px-3 py-2 rounded-md bg-[#106C89] text-white text-sm font-medium"
-//             >
-//               Quick search
-//             </button>
-//           </div>
-//         </div>
-//       </header>
+      const matchesSpecialization: boolean =
+        !filters.specialization || 
+        doctor.specialization?.trim().toLowerCase() === filters.specialization.toLowerCase();
 
-//       {/* Main container */}
-//       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-//         {/* Hero + Search */}
-//         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-//           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 lg:p-8 items-center">
-//             {/* Left: hero text */}
-//             <div className="lg:col-span-5">
-//               <div className="flex items-start gap-4">
-//                 <div className="bg-[#e6f4f6] text-[#106C89] rounded-2xl p-3">
-//                   <Stethoscope className="w-6 h-6" />
-//                 </div>
-//                 <div>
-//                   <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">
-//                     Find top doctors near you
-//                   </h2>
-//                   <p className="mt-2 text-sm text-slate-600">
-//                     Search by speciality, city or date. Book online consultations or hospital visits with verified
-//                     doctors.
-//                   </p>
+      const matchesGender: boolean =
+        filters.gender.length === 0 || 
+        (doctor.gender != null && filters.gender.includes(doctor.gender));
 
-//                   <div className="mt-4 flex flex-wrap gap-2 text-sm">
-//                     <span className="inline-flex items-center gap-2 px-3 py-1 bg-sky-50 text-[#106C89] rounded-full">
-//                       <Calendar className="w-4 h-4" /> Flexible dates
-//                     </span>
-//                     <span className="inline-flex items-center gap-2 px-3 py-1 bg-sky-50 text-[#106C89] rounded-full">
-//                       <MapPin className="w-4 h-4" /> Multiple cities
-//                     </span>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
+      const matchesFees: boolean =
+        filters.fees.length === 0 ||
+        filters.fees.some((range: string) => {
+          const fee: number = doctor.consultationFee;
+          switch (range) {
+            case "0-500": return fee >= 0 && fee <= 500;
+            case "500-1000": return fee > 500 && fee <= 1000;
+            case "1000+": return fee > 1000;
+            default: return false;
+          }
+        });
 
-//             {/* Right: sticky search controls */}
-//             <div className="lg:col-span-7">
-//               <div className="sticky top-6">
-//                 <form
-//                   onSubmit={(e) => {
-//                     e.preventDefault();
-//                     onSearch();
-//                   }}
-//                   className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 sm:p-5"
-//                   aria-label="Doctor search form"
-//                 >
-//                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-//                     {/* Speciality (typeable + datalist) */}
-//                     <div className="md:col-span-2">
-//                       <label className="sr-only">Speciality</label>
-//                       <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-[#106C89]">
-//                         <Stethoscope className="w-5 h-5 text-gray-400" />
-//                         <input
-//                           aria-label="Speciality"
-//                           list="speciality-list"
-//                           value={specialty}
-//                           onChange={(e) => setSpecialty(e.target.value)}
-//                           placeholder="Speciality (e.g. Cardiologist)"
-//                           className="w-full text-sm outline-none text-slate-700 bg-transparent"
-//                         />
-//                         <datalist id="speciality-list">
-//                           {SPECIALTIES.map((s) => (
-//                             <option key={s} value={s} />
-//                           ))}
-//                         </datalist>
-//                       </div>
-//                     </div>
+      const matchesExperience: boolean =
+        filters.experience.length === 0 ||
+        filters.experience.some((range: string) => {
+          const exp: number = Number(doctor.experience) || 0;
+          switch (range) {
+            case "0-2": return exp >= 0 && exp <= 2;
+            case "3-5": return exp >= 3 && exp <= 5;
+            case "5+": return exp > 5;
+            default: return false;
+          }
+        });
 
-//                     {/* Location */}
-//                     <div>
-//                       <label className="sr-only">Location</label>
-//                       <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-[#106C89]">
-//                         <MapPin className="w-5 h-5 text-gray-400" />
-//                         <input
-//                           aria-label="Location or pincode"
-//                           value={location}
-//                           onChange={(e) => setLocation(e.target.value)}
-//                           placeholder="City or pincode"
-//                           className="w-full text-sm outline-none text-slate-700 bg-transparent"
-//                         />
-//                         <button
-//                           type="button"
-//                           title="Use current location"
-//                           onClick={() => {
-//                             if (!navigator.geolocation) return;
-//                             navigator.geolocation.getCurrentPosition(
-//                               (pos) => {
-//                                 // optionally convert coords to city using reverse-geocoding later
-//                                 // small UX notification could be added here
-//                               },
-//                               () => {
-//                                 // ignore failure silently
-//                               }
-//                             );
-//                           }}
-//                           className="p-1 rounded-md"
-//                         >
-//                           <MapPin className="w-4 h-4 text-gray-300" />
-//                         </button>
-//                       </div>
-//                     </div>
+      return matchesSearch && matchesSpecialization && matchesGender && matchesFees && matchesExperience;
+    });
+  }, [doctors, Search, Filter]);
 
-//                     {/* Date */}
-//                     <div>
-//                       <label className="sr-only">Date</label>
-//                       <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-[#106C89]">
-//                         <Calendar className="w-5 h-5 text-gray-400" />
-//                         <input
-//                           aria-label="Select date (optional)"
-//                           type="date"
-//                           value={date}
-//                           onChange={(e) => setDate(e.target.value)}
-//                           className="w-full text-sm outline-none text-slate-700 bg-transparent"
-//                         />
-//                       </div>
-//                     </div>
+  // Event handlers with proper typing
+  const handleConsult = (doctor: Doctor): void => {
+    setSelectedDoctor(doctor);
+    setDrawerOpen(true);
+  };
 
-//                     {/* Search button */}
-//                     <div>
-//                       <button
-//                         aria-label="Search doctors"
-//                         type="submit"
-//                         className="w-full inline-flex items-center justify-center gap-2 bg-[#28328C] hover:bg-[#0d5a70] text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition"
-//                       >
-//                         <SearchIcon className="w-4 h-4" /> Search
-//                       </button>
-//                     </div>
-//                   </div>
+  const handleCloseDrawer = (): void => {
+    setDrawerOpen(false);
+    setTimeout(() => setSelectedDoctor(null), 300);
+  };
 
-//                   {/* Visit type toggle */}
-//                   <div className="mt-3 flex items-center gap-3">
-//                     <div className="text-sm text-gray-600">Visit type:</div>
-//                     <div className="flex gap-2">
-//                       <button
-//                         type="button"
-//                         onClick={() => setVisitType("hospital")}
-//                         className={`px-3 py-1.5 rounded-full text-sm border ${
-//                           visitType === "hospital"
-//                             ? "bg-[#e6f4f6] border-[#bfe6eb] text-[#106C89]"
-//                             : "bg-white border-gray-200 text-slate-700"
-//                         }`}
-//                       >
-//                         Hospital Visit
-//                       </button>
-//                       <button
-//                         type="button"
-//                         onClick={() => setVisitType("online")}
-//                         className={`px-3 py-1.5 rounded-full text-sm border ${
-//                           visitType === "online"
-//                             ? "bg-[#e6f4f6] border-[#bfe6eb] text-[#106C89]"
-//                             : "bg-white border-gray-200 text-slate-700"
-//                         }`}
-//                       >
-//                         Consult Online
-//                       </button>
-//                     </div>
-//                   </div>
-//                 </form>
+  const handleFilterChange = (filterType: keyof FilterState, value: string): void => {
+    setFilters((prev: FilterState) => {
+      if (filterType === 'specialization') {
+        return { ...prev, specialization: value === '' ? null : value };
+      }
+      
+      const currentArray = prev[filterType] as string[];
+      const isChecked = currentArray.includes(value);
+      
+      return {
+        ...prev,
+        [filterType]: isChecked 
+          ? currentArray.filter(item => item !== value)
+          : [...currentArray, value]
+      };
+    });
+  };
 
-//                 {/* small helper row */}
-//                 <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-//                   <div>Tip: You can type a speciality if it's not in the list.</div>
-//                   <div className="hidden sm:flex items-center gap-2">
-//                     <span className="px-2 py-0.5 bg-sky-50 rounded-full text-[#106C89]">Verified</span>
-//                     <span className="px-2 py-0.5 bg-slate-50 rounded-full">Secure booking</span>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </section>
+  const clearAllFilters = (): void => {
+    setFilters({
+      specialization: null,
+      gender: [],
+      fees: [],
+      experience: []
+    });
+    setSearch("");
+  };
 
-//         {/* Browse by specialties */}
-//         <section className="mt-8">
-//           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-//             <div className="flex items-center justify-between mb-4">
-//               <h3 className="text-xl font-semibold text-slate-900">Browse by Specialities</h3>
-//               <button
-//                 onClick={() =>
-//                   navigate("/search-results", {
-//                     state: { specialty: "", location: "", date: "", visitType },
-//                   })
-//                 }
-//                 className="text-sm text-[#106C89] inline-flex items-center gap-2"
-//               >
-//                 View all <ChevronRight className="w-4 h-4" />
-//               </button>
-//             </div>
+  const removeFilter = (filterType: keyof FilterState, value?: string): void => {
+    if (filterType === 'specialization') {
+      setFilters((prev: FilterState) => ({ ...prev, specialization: null }));
+    } else if (value) {
+      setFilters((prev: FilterState) => ({
+        ...prev,
+        [filterType]: (prev[filterType] as string[]).filter(item => item !== value)
+      }));
+    }
+  };
 
+
+function setLoading(arg0: boolean) {
+  throw new Error("Function not implemented.");
+}
+
+function setFilters(arg0: { specialization: null; gender: never[]; fees: never[]; experience: never[]; }) {
+  throw new Error("Function not implemented.");
+}
 //             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
 //               {SPECIALTIES.map((s) => (
 //                 <button
@@ -343,4 +227,3 @@
 //   );
 // };
 
-// export default AllDoctor;
