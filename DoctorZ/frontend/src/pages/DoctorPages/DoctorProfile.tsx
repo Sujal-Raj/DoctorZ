@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import { Toaster, toast } from "react-hot-toast";
 
 const PRIMARY = "#0C213E";
 
@@ -33,10 +34,14 @@ const DoctorProfile: React.FC = () => {
   const [formData, setFormData] = useState<Partial<Doctor>>({});
   const [showConfirm, setShowConfirm] = useState(false);
 
+  // Login Credentials Edit Mode
+  const [editCreds, setEditCreds] = useState(false);
+
   const [newDoctorId, setNewDoctorId] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [updatingCreds, setUpdatingCreds] = useState(false);
 
+  // FETCH PROFILE
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -50,7 +55,7 @@ const DoctorProfile: React.FC = () => {
         setDoctor(res.data.doctor);
         setFormData(res.data.doctor);
       } catch {
-        console.error("Failed to load doctor data");
+        toast.error("Failed to load doctor data");
       } finally {
         setLoading(false);
       }
@@ -63,19 +68,25 @@ const DoctorProfile: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // UPDATE PROFILE DETAILS
   const handleProfileUpdate = async () => {
     try {
+      const token = localStorage.getItem("token");
+
       await axios.put(
         `http://localhost:3000/api/doctor/update/${doctor?._id}`,
-        formData
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert("Profile Updated Successfully!");
+
+      toast.success("Profile Updated Successfully!");
       setEditMode(false);
     } catch {
-      alert("Update failed");
+      toast.error("Update failed");
     }
   };
 
+  // DELETE DOCTOR
   const handleDelete = async () => {
     try {
       await axios.delete(
@@ -86,24 +97,34 @@ const DoctorProfile: React.FC = () => {
       localStorage.removeItem("token");
       navigate("/");
     } catch {
-      alert("Delete failed");
+      toast.error("Delete failed");
     }
   };
 
+  // UPDATE LOGIN CREDENTIALS
   const handleCredUpdate = async (e: any) => {
     e.preventDefault();
     setUpdatingCreds(true);
 
     try {
+      const token = localStorage.getItem("token");
+
       await axios.put(
-        `http://localhost:3000/api/doctor/updateCreds/${storedDoctorId}`,
-        { doctorId: newDoctorId, password: newPassword }
+        `http://localhost:3000/api/doctor/update/${storedDoctorId}`,
+        { doctorId: newDoctorId, password: newPassword },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert("Credentials Updated!");
+      toast.success("Login Credentials Updated Successfully!");
+
+      setNewDoctorId("");
+      setNewPassword("");
+      setEditCreds(false);
       navigate(`/doctordashboard/${storedDoctorId}`);
-    } catch {
-      alert("Failed to update credentials");
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || "Failed to update login credentials"
+      );
     } finally {
       setUpdatingCreds(false);
     }
@@ -117,6 +138,19 @@ const DoctorProfile: React.FC = () => {
 
   return (
     <>
+      {/* TOAST */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 2400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       <Helmet>
         <title>Dr. {doctor?.fullName} | Profile</title>
       </Helmet>
@@ -124,13 +158,8 @@ const DoctorProfile: React.FC = () => {
       <div className="min-h-screen bg-gray-100 px-4 py-6 md:px-10">
         <div className="mx-auto max-w-20xl">
 
-          
-
-          {/* PROFILE TOP COMPACT CARD */}
-          <div
-            className="rounded-2xl p-5 shadow-lg"
-            style={{ backgroundColor: PRIMARY }}
-          >
+          {/* PROFILE HEADER */}
+          <div className="rounded-2xl p-5 shadow-lg" style={{ backgroundColor: PRIMARY }}>
             <div className="flex flex-col md:flex-row items-center gap-6">
 
               {/* Photo */}
@@ -147,7 +176,7 @@ const DoctorProfile: React.FC = () => {
                 )}
               </div>
 
-              {/* Basic Info */}
+              {/* Info */}
               <div className="text-white flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-bold">{doctor?.fullName}</h3>
                 <p className="mt-1 text-gray-300">{doctor?.specialization}</p>
@@ -158,7 +187,7 @@ const DoctorProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Buttons */}
             <div className="flex gap-3 justify-end mt-5">
               <button
                 onClick={() => setEditMode(!editMode)}
@@ -179,15 +208,12 @@ const DoctorProfile: React.FC = () => {
           {/* GRID */}
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-            {/* LEFT COLUMN */}
+            {/* LEFT */}
             <div className="lg:col-span-2 space-y-8">
 
               {/* Professional Info */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
-                <h3
-                  className="text-xl font-bold mb-4"
-                  style={{ color: PRIMARY }}
-                >
+                <h3 className="text-xl font-bold mb-4" style={{ color: PRIMARY }}>
                   Professional Details
                 </h3>
 
@@ -232,10 +258,7 @@ const DoctorProfile: React.FC = () => {
 
               {/* Certificates */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
-                <h3
-                  className="text-xl font-bold mb-4"
-                  style={{ color: PRIMARY }}
-                >
+                <h3 className="text-xl font-bold mb-4" style={{ color: PRIMARY }}>
                   Certificates & Signature
                 </h3>
 
@@ -264,15 +287,12 @@ const DoctorProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* RIGHT COLUMN */}
+            {/* RIGHT */}
             <div className="space-y-8">
 
               {/* Contact Info */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
-                <h3
-                  className="text-xl font-bold mb-5"
-                  style={{ color: PRIMARY }}
-                >
+                <h3 className="text-xl font-bold mb-5" style={{ color: PRIMARY }}>
                   Contact Information
                 </h3>
 
@@ -303,47 +323,65 @@ const DoctorProfile: React.FC = () => {
 
               {/* LOGIN CREDENTIALS */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
-                <h3
-                  className="text-xl font-bold mb-4"
-                  style={{ color: PRIMARY }}
-                >
-                  Update Login Credentials
-                </h3>
-
-                <form onSubmit={handleCredUpdate} className="space-y-4">
-                  <div>
-                    <label className={labelClass}>New Doctor ID</label>
-                    <input
-                      type="text"
-                      className={inputClass}
-                      value={newDoctorId}
-                      onChange={(e) => setNewDoctorId(e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className={labelClass}>New Password</label>
-                    <input
-                      type="password"
-                      className={inputClass}
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                  </div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold" style={{ color: PRIMARY }}>
+                    Update Login Credentials
+                  </h3>
 
                   <button
-                    type="submit"
-                    className="w-full text-white py-3 rounded-xl shadow-md text-sm"
-                    style={{ backgroundColor: PRIMARY }}
+                    type="button"
+                    onClick={() => setEditCreds(!editCreds)}
+                    className="bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-1 rounded-lg shadow text-sm"
                   >
-                    {updatingCreds ? "Updating..." : "Update Credentials"}
+                    {editCreds ? "Cancel" : "Edit"}
                   </button>
+                </div>
+
+                <form onSubmit={handleCredUpdate} className="space-y-4">
+                  {!editCreds && (
+                    <p className="text-gray-500 text-sm">
+                      Click Edit to update login credentials
+                    </p>
+                  )}
+
+                  {editCreds && (
+                    <>
+                      <div>
+                        <label className={labelClass}>New Doctor ID</label>
+                        <input
+                          type="text"
+                          className={inputClass}
+                          value={newDoctorId}
+                          onChange={(e) => setNewDoctorId(e.target.value)}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={labelClass}>New Password</label>
+                        <input
+                          type="password"
+                          className={inputClass}
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={updatingCreds}
+                        className="w-full text-white py-3 rounded-xl shadow-md text-sm"
+                        style={{ backgroundColor: PRIMARY }}
+                      >
+                        {updatingCreds ? "Updating..." : "Update Credentials"}
+                      </button>
+                    </>
+                  )}
                 </form>
               </div>
             </div>
           </div>
 
-          {/* Delete Confirm Modal */}
+          {/* DELETE CONFIRM MODAL */}
           {showConfirm && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
               <div className="bg-white p-6 rounded-xl shadow-lg w-80 text-center">

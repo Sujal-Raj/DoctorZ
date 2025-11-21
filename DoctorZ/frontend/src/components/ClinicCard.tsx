@@ -220,7 +220,7 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
             }}
             className="w-full bg-[#0c213e] text-white font-semibold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md flex items-center justify-center text-sm sm:text-base cursor-pointer"
           >
-            <span>Check Availability</span>
+            
 
             <span>Check Availability</span>
             <svg
