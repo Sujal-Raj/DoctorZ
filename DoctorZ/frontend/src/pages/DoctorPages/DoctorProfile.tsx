@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import api from "../../Services/mainApi";
+import toast, { Toaster } from "react-hot-toast";
 
 const PRIMARY = "#0C213E";
 
@@ -34,14 +34,13 @@ const DoctorProfile: React.FC = () => {
   const [formData, setFormData] = useState<Partial<Doctor>>({});
   const [showConfirm, setShowConfirm] = useState(false);
 
-  // Login Credentials Edit Mode
+  // LOGIN CREDENTIALS
   const [editCreds, setEditCreds] = useState(false);
-
   const [newDoctorId, setNewDoctorId] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [updatingCreds, setUpdatingCreds] = useState(false);
 
-  // FETCH PROFILE
+  // FETCH DOCTOR DATA
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -65,21 +64,29 @@ const DoctorProfile: React.FC = () => {
   }, []);
 
   const handleChange = (e: any) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "dob") {
+      setFormData({ ...formData, dob: value });
+      return;
+    }
+
+    setFormData({ ...formData, [name]: value });
   };
 
-  // UPDATE PROFILE DETAILS
+  // UPDATE PROFILE
   const handleProfileUpdate = async () => {
     try {
       await api.put(`/api/doctor/update/${doctor?._id}`, formData);
-      alert("Profile Updated Successfully!");
+
+      toast.success("Profile updated successfully!");
       setEditMode(false);
     } catch {
       toast.error("Update failed");
     }
   };
 
-  // DELETE DOCTOR
+  // DELETE PROFILE
   const handleDelete = async () => {
     try {
       await api.delete(`/api/doctor/delete/${doctor?._id}`);
@@ -92,38 +99,35 @@ const DoctorProfile: React.FC = () => {
     }
   };
 
-  // UPDATE LOGIN CREDENTIALS
-  const handleCredUpdate = async (e: any) => {
+  // UPDATE LOGIN CREDENTIALS (CORRECTED)
+  const handleCredUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setUpdatingCreds(true);
 
     try {
+      // FIX: use storedDoctorId (actual doctorId)
       await api.put(`/api/doctor/updateCreds/${storedDoctorId}`, {
         doctorId: newDoctorId,
         password: newPassword,
       });
 
-      toast.success("Login Credentials Updated Successfully!");
+      toast.success("Login credentials updated successfully!");
 
       setNewDoctorId("");
       setNewPassword("");
       setEditCreds(false);
+
       navigate(`/doctordashboard/${storedDoctorId}`);
     } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Failed to update login credentials"
-      );
+      toast.error(err?.response?.data?.message || "Update failed");
     } finally {
       setUpdatingCreds(false);
     }
   };
+
   const formatDMY = (dateString: string | undefined) => {
     if (!dateString) return "";
-    const d = new Date(dateString);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}-${month}-${year}`;
+    return new Date(dateString).toLocaleDateString("en-GB");
   };
 
   if (loading) return <p className="text-center p-8">Loading...</p>;
@@ -134,16 +138,11 @@ const DoctorProfile: React.FC = () => {
 
   return (
     <>
-      {/* TOAST */}
       <Toaster
         position="top-right"
         toastOptions={{
           duration: 2400,
-          style: {
-            borderRadius: "10px",
-            background: "#333",
-            color: "#fff",
-          },
+          style: { borderRadius: "10px", background: "#333", color: "#fff" },
         }}
       />
 
@@ -153,13 +152,9 @@ const DoctorProfile: React.FC = () => {
 
       <div className="min-h-screen bg-gray-100 px-4 py-6 md:px-10">
         <div className="mx-auto max-w-20xl">
-          {/* PROFILE TOP COMPACT CARD */}
-          <div
-            className="rounded-2xl p-5 shadow-lg"
-            style={{ backgroundColor: PRIMARY }}
-          >
+          {/* PROFILE HEADER */}
+          <div className="rounded-2xl p-5 shadow-lg" style={{ backgroundColor: PRIMARY }}>
             <div className="flex flex-col md:flex-row items-center gap-6">
-              {/* Photo */}
               <div className="h-28 w-28 rounded-xl border-4 border-white shadow-md overflow-hidden bg-gray-100">
                 {doctor?.photo ? (
                   <img
@@ -173,7 +168,6 @@ const DoctorProfile: React.FC = () => {
                 )}
               </div>
 
-              {/* Info */}
               <div className="text-white flex-1 text-center md:text-left">
                 <h3 className="text-2xl font-bold">{doctor?.fullName}</h3>
                 <p className="mt-1 text-gray-300">{doctor?.specialization}</p>
@@ -184,7 +178,6 @@ const DoctorProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3 justify-end mt-5">
               <button
                 onClick={() => setEditMode(!editMode)}
@@ -202,17 +195,18 @@ const DoctorProfile: React.FC = () => {
             </div>
           </div>
 
-          {/* GRID */}
+          {/* MAIN GRID */}
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* LEFT COLUMN */}
+            {/* LEFT */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Professional Info */}
+              {/* DETAILS */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
                 <h3 className="text-xl font-bold mb-4" style={{ color: PRIMARY }}>
                   Professional Details
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* LIST OF FIELDS */}
                   {[
                     ["qualification", "Qualification"],
                     ["experience", "Experience (Years)"],
@@ -223,26 +217,23 @@ const DoctorProfile: React.FC = () => {
                   ].map(([field, label]) => (
                     <div key={field}>
                       <label className={labelClass}>{label}</label>
+
                       {editMode ? (
                         <input
                           name={field}
-                          type={field === "dob" ? "text" : "text"}
+                          type={field === "dob" ? "date" : "text"}
                           value={
                             field === "dob"
-                              ? formatDMY(formData.dob)
+                              ? formData.dob?.slice(0, 10)
                               : (formData as any)[field]
                           }
                           onChange={handleChange}
                           className={inputClass}
                         />
                       ) : field === "dob" ? (
-                        <p className="p-2 text-gray-700">
-                          {formatDMY(formData.dob)}
-                        </p>
+                        <p className="p-2 text-gray-700">{formatDMY(formData.dob)}</p>
                       ) : (
-                        <p className="p-2 text-gray-700">
-                          {(formData as any)[field]}
-                        </p>
+                        <p className="p-2 text-gray-700">{(formData as any)[field]}</p>
                       )}
                     </div>
                   ))}
@@ -292,7 +283,7 @@ const DoctorProfile: React.FC = () => {
 
             {/* RIGHT */}
             <div className="space-y-8">
-              {/* Contact Info */}
+              {/* Contact */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
                 <h3 className="text-xl font-bold mb-5" style={{ color: PRIMARY }}>
                   Contact Information
@@ -339,7 +330,7 @@ const DoctorProfile: React.FC = () => {
                   </button>
                 </div>
 
-                <form onSubmit={handleCredUpdate} className="space-y-4">
+                <form onSubmit={handleCredUpdate} className="space-y-5">
                   {!editCreds && (
                     <p className="text-gray-500 text-sm">
                       Click Edit to update login credentials
@@ -348,30 +339,43 @@ const DoctorProfile: React.FC = () => {
 
                   {editCreds && (
                     <>
-                      <div>
-                        <label className={labelClass}>New Doctor ID</label>
+                      {/* Doctor ID */}
+                      <div className="flex flex-col">
+                        <label className="font-semibold mb-2 text-gray-700">
+                          New Doctor ID
+                        </label>
                         <input
                           type="text"
-                          className={inputClass}
+                          className="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                           value={newDoctorId}
                           onChange={(e) => setNewDoctorId(e.target.value)}
+                          placeholder="Enter new Doctor ID"
+                          required
                         />
                       </div>
 
-                      <div>
-                        <label className={labelClass}>New Password</label>
+                      {/* Password */}
+                      <div className="flex flex-col">
+                        <label className="font-semibold mb-2 text-gray-700">
+                          New Password
+                        </label>
                         <input
                           type="password"
-                          className={inputClass}
+                          className="w-full border border-gray-300 px-4 py-2 rounded-lg 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password"
+                          required
                         />
                       </div>
 
+                      {/* Submit */}
                       <button
                         type="submit"
                         disabled={updatingCreds}
-                        className="w-full text-white py-3 rounded-xl shadow-md text-sm"
+                        className="w-full text-white py-2.5 rounded-lg font-medium transition flex justify-center items-center gap-2"
                         style={{ backgroundColor: PRIMARY }}
                       >
                         {updatingCreds ? "Updating..." : "Update Credentials"}
@@ -383,7 +387,7 @@ const DoctorProfile: React.FC = () => {
             </div>
           </div>
 
-          {/* DELETE CONFIRM MODAL */}
+          {/* DELETE CONFIRMATION */}
           {showConfirm && (
             <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
               <div className="bg-white p-6 rounded-xl shadow-lg w-80 text-center">

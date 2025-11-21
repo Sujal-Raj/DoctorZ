@@ -210,12 +210,22 @@ export default function DoctorDashboard() {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
   const [newNotifCount, setNewNotifCount] = useState(0);
 
-  // Responsive Sidebar
+  // Detect screen size
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // ⭐ FIX: Ensure correct sidebar behavior on mobile vs desktop
+  useEffect(() => {
+    if (isDesktop) {
+      setSidebarOpen(true); // always open on desktop
+    } else {
+      setSidebarOpen(false); // always closed initially on mobile
+    }
+  }, [isDesktop]);
 
   const handleLogout = () => {
     localStorage.removeItem("doctorId");
@@ -225,7 +235,7 @@ export default function DoctorDashboard() {
 
   const doctorId = localStorage.getItem("doctorId");
 
-  // Fetch Pending Notifications
+  // Fetch notifications
   const fetchNotificationCount = async () => {
     try {
       const res = await api.get<{ notifications: Notification[] }>(
@@ -248,7 +258,6 @@ export default function DoctorDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Menu Items
   const menuItems = [
     { name: "Dashboard", path: "", icon: <HomeIcon className="w-5 h-5" /> },
     { name: "Profile", path: "doctorProfile", icon: <UserIcon className="w-5 h-5" /> },
@@ -262,27 +271,38 @@ export default function DoctorDashboard() {
   return (
     <div className="flex h-screen bg-gray-100 relative">
 
+      {/* --- MOBILE TOP BAR --- */}
+      <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white flex items-center justify-between px-4 py-3 z-50 shadow-lg">
+        <h1 className="text-lg font-semibold">Doctor Dashboard</h1>
+
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="p-2 rounded hover:bg-[#0a1a32] transition"
+        >
+          <Bars3Icon className="w-7 h-7 text-white" />
+        </button>
+      </div>
+
       {/* Sidebar */}
       <aside
-        className={`bg-gray-800 text-white flex flex-col justify-between transition-all duration-300 
-          ${sidebarOpen ? "w-64" : "w-0"} 
-          md:w-64 overflow-hidden fixed md:relative z-40 h-full`}
+        className={`
+          bg-[#0c213e] text-white flex flex-col justify-between
+          fixed md:relative top-0 left-0 h-full z-40 w-64 
+          transform transition-transform duration-300
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}
       >
 
-        {/* Close Button Mobile */}
+        {/* Mobile Close Button */}
         <button
           onClick={() => setSidebarOpen(false)}
-          className={`absolute top-4 right-4 p-2 bg-gray-800 rounded-md hover:bg-gray-700 transition md:hidden ${
-            sidebarOpen ? "block" : "hidden"
-          }`}
+          className="absolute top-4 right-4 p-2 bg-[#0c213e] rounded-md hover:bg-[#0a1a32] transition md:hidden"
         >
           <XMarkIcon className="w-5 h-5 text-white" />
         </button>
 
-        <div
-          className={`flex-1 p-6 ${sidebarOpen || isDesktop ? "opacity-100" : "opacity-0"} transition-opacity`}
-        >
-          <div className="flex items-center justify-center mb-10">
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="hidden md:flex items-center justify-center mb-10">
             <h2 className="text-2xl font-bold">Doctor Dashboard</h2>
           </div>
 
@@ -293,23 +313,23 @@ export default function DoctorDashboard() {
               const isActive =
                 (item.name === "Dashboard" &&
                   (location.pathname === dashboardPath ||
-                   location.pathname === `${dashboardPath}/`)) ||
+                    location.pathname === `${dashboardPath}/`)) ||
                 (item.path !== "" && location.pathname.includes(item.path));
 
               return (
                 <Link
                   key={item.name}
                   to={item.path === "" ? dashboardPath : item.path}
+                  onClick={() => !isDesktop && setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
                     isActive
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                      ? "bg-gray-700 text-white"
+                      : "hover:bg-gray-800 text-gray-300"
                   }`}
                 >
                   {item.icon}
                   <span className="font-medium text-sm md:text-base">{item.name}</span>
 
-                  {/* Notification Badge */}
                   {item.name === "Notifications" && newNotifCount > 0 && (
                     <span className="ml-auto bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                       {newNotifCount}
@@ -321,8 +341,8 @@ export default function DoctorDashboard() {
           </nav>
         </div>
 
-        {/* Logout - Desktop */}
-        <div className="p-6 hidden md:block">
+        {/* Logout */}
+        <div className="p-6 border-t border-[#0a1a32]">
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-700 transition text-white w-full justify-center"
@@ -333,24 +353,8 @@ export default function DoctorDashboard() {
         </div>
       </aside>
 
-      {/* Mobile Sidebar Toggle */}
-      <div
-        className={`md:hidden fixed left-0 top-0 h-full bg-gray-800 transition-all duration-300 ${
-          sidebarOpen ? "w-0" : "w-10"
-        } flex items-start justify-center pt-4`}
-      >
-        {!sidebarOpen && (
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-1 text-white hover:bg-gray-700 rounded"
-          >
-            <Bars3Icon className="w-6 h-6" />
-          </button>
-        )}
-      </div>
-
-      {/* Main Content */}
-      <main className="flex-1 bg-gray-100 p-8 overflow-y-auto">
+      {/* Main content */}
+      <main className="flex-1 bg-gray-100 p-8 overflow-y-auto pt-20 md:pt-8">
         <div className="max-w-5xl flex">
           <Outlet />
         </div>
