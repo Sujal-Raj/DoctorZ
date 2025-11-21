@@ -399,17 +399,7 @@ export const searchDoctors = async (req: Request, res: Response) => {
   }
 };
 
-// export const getDoctorNotifications = async (req : Request, res : Response) => {
-//   try {
-//     const { doctorId } = req.params;
 
-//     const doctor = await doctorModel.findById(doctorId);
-
-//     res.json({ notifications: doctor.notifications });
-//   } catch (err) {
-//     res.json({ message: "Error fetching notifications" });
-//   }
-// };
 
 export const getDoctorNotifications = async (req: Request, res: Response) => {
   try {

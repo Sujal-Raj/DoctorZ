@@ -67,8 +67,7 @@ const UserPrescription = () => {
               <div className="flex items-center gap-3 mb-2">
                 <CalendarDays size={20} className="text-purple-600" />
                 <p className="text-gray-700">
-                  {new Date(item.bookingId.dateTime).toLocaleDateString()} —{" "}
-                  {new Date(item.bookingId.dateTime).toLocaleTimeString()}
+                  {new Date(item.bookingId.dateTime).toLocaleDateString()} 
                 </p>
               </div>
 

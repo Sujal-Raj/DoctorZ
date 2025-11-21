@@ -1,10 +1,11 @@
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { User, CalendarDays, FilePlus2, Bell } from "lucide-react";
+import { User, CalendarDays, FilePlus2, FileText } from "lucide-react";
 import { useContext, useEffect } from "react";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../Context/AuthContext";
 import UserIcon from "../../assets/Icon2.png";
+
 function UserDashboard() {
   const { user } = useContext(AuthContext);
   console.log("User", user);
@@ -110,7 +111,7 @@ function UserDashboard() {
                  }`
               }
             >
-              <Bell size={18} /> My Prescriptions
+            <FileText size={18}/> My Prescriptions
             </NavLink>
           </nav>
         </aside>

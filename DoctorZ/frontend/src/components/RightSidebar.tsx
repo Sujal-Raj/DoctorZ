@@ -5,9 +5,10 @@ import {
   User,
   FilePlus2,
   CalendarDays,
-  Bell,
+
  
   ChevronRight,
+  FileText,
 } from "lucide-react";
 interface SidebarProps {
   open: boolean;
@@ -87,7 +88,7 @@ const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => 
             className="flex items-center justify-between px-5 py-4 border-b hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-4">
-              <Bell size={20}  />
+              <FileText size={20}  />
               <span className="text-gray-800">My Prescriptions</span>
             </div>
             <ChevronRight size={18} className="text-gray-500" />

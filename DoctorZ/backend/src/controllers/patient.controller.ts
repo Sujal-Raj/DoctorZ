@@ -272,22 +272,7 @@ const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
   }
 };
 
-// In your patient controller file
-// const updatePatient = async (req: Request, res: Response) => {
-//   try {
-//     const { id } = req.params;
-//     const updated = await patientModel.findByIdAndUpdate(id, req.body, {
-//       new: true,
-//     });
-//     if (!updated)
-//       return res.status(404).json({ message: "User not found." });
 
-//     return res.status(200).json({ message: "Profile updated", user: updated });
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).json({ message: "Something went wrong." });
-//   }
-// }
 
 const updatePatient = async (req: Request, res: Response) => {
   try {
@@ -295,7 +280,7 @@ const updatePatient = async (req: Request, res: Response) => {
 
     const updateData: any = { ...req.body };
 
-    // Agar image upload hui hai
+   
     if (req.file) {
       updateData.profilePhoto = `/uploads/${req.file.filename}`;
     }
@@ -315,15 +300,55 @@ const updatePatient = async (req: Request, res: Response) => {
 };
 
 
-const getBookedDoctor =async(req:Request,res:Response)=>{
+// const getBookedDoctor =async(req:Request,res:Response)=>{
+//     try {
+//         const {id} = req.params;
+//         const doctor = await Booking.find({userId:id}).populate('doctorId');
+//         console.log(doctor);
+//         return res.status(200).json({
+//             message:"Doctors fetched successfully",
+//             doctor
+//         })
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({ 
+//             message: "Something went wrong." 
+//         });
+//     }
+// }
+
+
+
+
+const getBookedDoctor = async (req: Request, res: Response) => {
     try {
-        const {id} = req.params;
-        const doctor = await Booking.find({userId:id}).populate('doctorId');
+        const { id } = req.params;
+
+        // Sirf pending bookings fetch karenge
+        const bookings = await Booking.find({ 
+            userId: id, 
+            status: 'pending' // yaha sirf pending bookings
+        }).populate('doctorId'); 
+      
+
+        // Agar koi bookings milti hain
+        if (bookings.length === 0) {
+            return res.status(404).json({
+                message: "No pending bookings found"
+            });
+        }
+
+        // Response me doctor details aur booking date bhejna
+        const result = bookings.map(b => ({
+            doctor: b.doctorId,
+            bookingDate: b.dateTime,  
+         
+        }));
 
         return res.status(200).json({
-            message:"Doctors fetched successfully",
-            doctor
-        })
+            message: "Pending bookings fetched successfully",
+            data: result
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ 
@@ -331,6 +356,7 @@ const getBookedDoctor =async(req:Request,res:Response)=>{
         });
     }
 }
+
 
 //------------------------------------Add or Remove Favourite Doctor----------------------------------
 const addFavouriteDoctor = async (req: Request, res: Response) => {

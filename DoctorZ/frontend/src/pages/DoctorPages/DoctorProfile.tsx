@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import api from "../../Services/mainApi";
 
 const PRIMARY = "#0C213E";
 
@@ -42,8 +43,8 @@ const DoctorProfile: React.FC = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get<{ doctor: Doctor }>(
-          `http://localhost:3000/api/doctor/${storedDoctorId}`,
+        const res = await api.get<{ doctor: Doctor }>(
+          `/api/doctor/${storedDoctorId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -65,10 +66,7 @@ const DoctorProfile: React.FC = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      await axios.put(
-        `http://localhost:3000/api/doctor/update/${doctor?._id}`,
-        formData
-      );
+      await api.put(`/api/doctor/update/${doctor?._id}`, formData);
       alert("Profile Updated Successfully!");
       setEditMode(false);
     } catch {
@@ -78,9 +76,7 @@ const DoctorProfile: React.FC = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(
-        `http://localhost:3000/api/doctor/delete/${doctor?._id}`
-      );
+      await api.delete(`/api/doctor/delete/${doctor?._id}`);
 
       localStorage.removeItem("doctorId");
       localStorage.removeItem("token");
@@ -95,10 +91,10 @@ const DoctorProfile: React.FC = () => {
     setUpdatingCreds(true);
 
     try {
-      await axios.put(
-        `http://localhost:3000/api/doctor/updateCreds/${storedDoctorId}`,
-        { doctorId: newDoctorId, password: newPassword }
-      );
+      await api.put(`/api/doctor/updateCreds/${storedDoctorId}`, {
+        doctorId: newDoctorId,
+        password: newPassword,
+      });
 
       alert("Credentials Updated!");
       navigate(`/doctordashboard/${storedDoctorId}`);
@@ -107,6 +103,14 @@ const DoctorProfile: React.FC = () => {
     } finally {
       setUpdatingCreds(false);
     }
+  };
+  const formatDMY = (dateString: string | undefined) => {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   if (loading) return <p className="text-center p-8">Loading...</p>;
@@ -123,16 +127,12 @@ const DoctorProfile: React.FC = () => {
 
       <div className="min-h-screen bg-gray-100 px-4 py-6 md:px-10">
         <div className="mx-auto max-w-20xl">
-
-          
-
           {/* PROFILE TOP COMPACT CARD */}
           <div
             className="rounded-2xl p-5 shadow-lg"
             style={{ backgroundColor: PRIMARY }}
           >
             <div className="flex flex-col md:flex-row items-center gap-6">
-
               {/* Photo */}
               <div className="h-28 w-28 rounded-xl border-4 border-white shadow-md overflow-hidden bg-gray-100">
                 {doctor?.photo ? (
@@ -178,10 +178,8 @@ const DoctorProfile: React.FC = () => {
 
           {/* GRID */}
           <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-
             {/* LEFT COLUMN */}
             <div className="lg:col-span-2 space-y-8">
-
               {/* Professional Info */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
                 <h3
@@ -205,11 +203,19 @@ const DoctorProfile: React.FC = () => {
                       {editMode ? (
                         <input
                           name={field}
-                          type={field === "dob" ? "date" : "text"}
-                          value={(formData as any)[field]}
+                          type={field === "dob" ? "text" : "text"}
+                          value={
+                            field === "dob"
+                              ? formatDMY(formData.dob)
+                              : (formData as any)[field]
+                          }
                           onChange={handleChange}
                           className={inputClass}
                         />
+                      ) : field === "dob" ? (
+                        <p className="p-2 text-gray-700">
+                          {formatDMY(formData.dob)}
+                        </p>
                       ) : (
                         <p className="p-2 text-gray-700">
                           {(formData as any)[field]}
@@ -239,7 +245,7 @@ const DoctorProfile: React.FC = () => {
                   Certificates & Signature
                 </h3>
 
-                <div className="flex flex-wrap gap-10">
+                <div className="flex flex-wrap gap-10 items-end">
                   {doctor?.signature && (
                     <div>
                       <p className="font-semibold mb-2">Digital Signature</p>
@@ -254,7 +260,7 @@ const DoctorProfile: React.FC = () => {
                     <a
                       href={`http://localhost:3000/uploads/${doctor.DegreeCertificate}`}
                       target="_blank"
-                      className="px-6 py-3 rounded-xl shadow-md text-white text-sm"
+                      className="inline-block px-3 py-3 rounded-xl shadow-md text-white text-sm"
                       style={{ backgroundColor: PRIMARY }}
                     >
                       View Degree Certificate
@@ -266,7 +272,6 @@ const DoctorProfile: React.FC = () => {
 
             {/* RIGHT COLUMN */}
             <div className="space-y-8">
-
               {/* Contact Info */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
                 <h3
@@ -368,7 +373,6 @@ const DoctorProfile: React.FC = () => {
               </div>
             </div>
           )}
-
         </div>
       </div>
     </>
