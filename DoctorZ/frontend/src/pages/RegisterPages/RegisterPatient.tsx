@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
 import Swal from "sweetalert2";
-import { Upload, FileText } from "lucide-react";
+import { Upload } from "lucide-react";
 
 import "../../index.css";
 import { registerPatient } from "../../Services/patientApi";
@@ -30,14 +30,17 @@ type PatientFormInputs = {
 };
 
 const RegisterPatient: React.FC = () => {
-  
-  const { register, handleSubmit } = useForm<PatientFormInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<PatientFormInputs>();
 
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
 
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+const [loading, setLoading] = useState(false);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedImage = e.target.files?.[0];
@@ -48,6 +51,8 @@ const RegisterPatient: React.FC = () => {
   };
 
   const onSubmit = async (data: PatientFormInputs) => {
+    setLoading(true);
+    try{
     const formData = new FormData();
 
     formData.append("fullName", data.fullName);
@@ -95,8 +100,13 @@ const RegisterPatient: React.FC = () => {
 
     await registerPatient(formData);
     Swal.fire("✅ Success!", "Patient registered successfully.", "success");
-  };
-
+  }
+  catch (error) {
+    Swal.fire("Error", "Registration failed", "error");
+  } finally {
+    setLoading(false); 
+}
+  }
   const InputField = ({
     id,
     label,
@@ -188,67 +198,89 @@ const RegisterPatient: React.FC = () => {
               placeholder="••••••••"
               registerField={register("password")}
             />
-
-            <InputField
-              id="mobileNumber"
-              label="Mobile Number"
-              placeholder="9876543210"
-              registerField={register("mobileNumber", {
-                required: "Mobile number is required",
-                pattern: {
-                  value: /^[0-9]{10}$/,
-                  message:" Mobile no must be exactly 10 digits",
-                },
-              })}
-           
-            />
-
-            <InputField
-              id="aadhar"
-              label="Aadhar"
-              placeholder="123456789012"
-              registerField={register("aadhar" ,{
-                required: "Aadhar number is required",
-                pattern:{
-                  value:/^[0-9]{12}$/,
-                  message:"Aadhar must be exactly 12 digits"
-                }
-              })}
-            />
-
+            <div>
+              <InputField
+                id="mobileNumber"
+                label="Mobile Number"
+                placeholder="9876543210"
+                registerField={register("mobileNumber", {
+                  required: "Mobile number is required",
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: " Mobile no must be exactly 10 digits",
+                  },
+                })}
+              />
+              {errors.mobileNumber && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.mobileNumber.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <InputField
+                id="aadhar"
+                label="Aadhar"
+                placeholder="123456789012"
+                registerField={register("aadhar", {
+                  required: "Aadhar number is required",
+                  pattern: {
+                    value: /^[0-9]{12}$/,
+                    message: "Aadhar must be exactly 12 digits",
+                  },
+                })}
+              />
+              {errors.aadhar && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.aadhar.message}
+                </p>
+              )}
+            </div>
             <InputField
               id="city"
               label="City"
               placeholder="Bhilai"
               registerField={register("city")}
             />
+            <div>
+              <InputField
+                id="pincode"
+                label="Pincode"
+                placeholder="490001"
+                registerField={register("pincode", {
+                  required: "Pincode is required",
+                  pattern: {
+                    value: /^[0-9]{6}$/,
+                    message: "Pincode must be exactly 6 digits",
+                  },
+                })}
+              />
+              {errors.pincode && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.pincode.message}
+                </p>
+              )}
+            </div>
 
-            <InputField
-              id="pincode"
-              label="Pincode"
-              placeholder="490001"
-              registerField={register("pincode",{
-                required: "Pincode is required",
-                pattern: {
-                  value: /^[0-9]{6}$/,
-                  message: "Pincode must be exactly 6 digits",
-                },
-              })}
-            />
-
-            <InputField
-              id="abhaId"
-              label="ABHA ID"
-              placeholder="ABHA123456"
-              registerField={register("abhaId" ,{
-                required: "ABHA ID is required",
-                pattern:{
-                  value:/^[0-9]{14}$/,
-                  message:"ABHA ID must be exactly 14 digits"
-                }
-              })}
-            />
-
+            <div>
+              <InputField
+                id="abhaId"
+                label="ABHA ID"
+                placeholder="ABHA123456"
+                registerField={register("abhaId", {
+                  required: "ABHA ID is required",
+                  pattern: {
+                    value: /^[0-9]{14}$/,
+                    message: "ABHA ID must be exactly 14 digits",
+                  },
+                })}
+              />
+              {errors.abhaId && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.abhaId.message}
+                </p>
+              )}
+            </div>
             {/* ✅ EMERGENCY */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C]  pt-4 border-b border-[#28328C]/20 pb-2">
               Emergency Contact
@@ -261,19 +293,25 @@ const RegisterPatient: React.FC = () => {
               registerField={register("emergencyName")}
             />
 
-            <InputField
-              id="emergencyNumber"
-              label="Emergency Number"
-              placeholder="9876541230"
-              registerField={register("emergencyNumber" ,{
-                required: "Emergency number is required",
-                pattern: {
-                  value: /^[0-9]{10}$/,
-                  message: "Emergency number must be exactly 10 digits",
-                },
-              })}
-            />
-
+            <div>
+              <InputField
+                id="emergencyNumber"
+                label="Emergency Number"
+                placeholder="9876541230"
+                registerField={register("emergencyNumber", {
+                  required: "Emergency number is required",
+                  pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Emergency number must be exactly 10 digits",
+                  },
+                })}
+              />
+              {errors.emergencyNumber && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.emergencyNumber.message}
+                </p>
+              )}
+            </div>
             {/* ✅ PROFILE PHOTO ONLY */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2">
               Profile Photo
@@ -367,11 +405,15 @@ const RegisterPatient: React.FC = () => {
             {/* ✅ SUBMIT */}
             <div className="md:col-span-2 text-center mt-6">
               <button
-                type="submit"
-                className="px-8 py-2.5 text-white text-lg font-semibold rounded-lg bg-[#28328C] hover:bg-[#1f2775] shadow-md transition"
-              >
-                Register Patient
-              </button>
+  type="submit"
+  disabled={loading}
+  className={`cursor-pointer px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
+    bg-[#28328C] hover:bg-[#1f2775] shadow-md transition 
+    ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+>
+  {loading ? "Submitting..." : "Register Patient"}
+</button>
+
             </div>
           </form>
         </section>
@@ -379,5 +421,6 @@ const RegisterPatient: React.FC = () => {
     </>
   );
 };
+
 
 export default RegisterPatient;

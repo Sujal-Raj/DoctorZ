@@ -233,7 +233,13 @@ const RegisterClinic: React.FC = () => {
               id="contact"
               label="Contact Number"
               placeholder="9876543210"
-              registerField={register("contact")}
+              registerField={register("contact",{
+                 pattern: {
+                    value: /^[0-9]{10}$/,
+                    message: "Contact number must be exactly 10 digits",
+                  },
+              })}
+              error={errors.contact?.message}
             />
             <InputField
               id="email"
