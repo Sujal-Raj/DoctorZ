@@ -73,10 +73,15 @@ export default function ClinicProfile() {
         ? value.split(",").map((item) => item.trim())
         : value;
 
+    // setFormData({
+    //   ...formData,
+    //   [name]: updatedValue,
+    // });
     setFormData({
-      ...formData,
-      [name]: updatedValue,
-    });
+  ...formData,
+  [name as keyof Clinic]: updatedValue,
+});
+
   };
 
   const handleUpdate = async () => {
@@ -292,9 +297,12 @@ export default function ClinicProfile() {
                     value={
                       key === "staffPassword"
                         ? passwordInput
-                        : Array.isArray(formData[key])
-                        ? (formData[key] as string[]).join(", ")
-                        : (formData[key] as string | number | undefined) || ""
+                      
+
+                       : Array.isArray(formData[key as keyof Clinic])
+  ? (formData[key as keyof Clinic] as string[]).join(", ")
+  : (formData[key as keyof Clinic] as string | number | undefined) || ""
+
                     }
                     onChange={handleChange}
                     placeholder={
@@ -306,9 +314,11 @@ export default function ClinicProfile() {
                   <p className="bg-gray-50 border border-gray-200 p-2 rounded-md text-gray-800">
                     {key === "staffPassword"
                       ? "••••••••"
-                      : Array.isArray(formData[key])
-                      ? (formData[key] as string[]).join(", ")
-                      : formData[key] || "-"}
+                     
+                      :Array.isArray(formData[key as keyof Clinic])
+  ? (formData[key as keyof Clinic] as string[]).join(", ")
+  : formData[key as keyof Clinic] || "-"
+                    }
                   </p>
                 )}
               </div>

@@ -24,6 +24,15 @@ export interface IDoctor extends Document {
   photo: string;
   clinic: Types.ObjectId[];
   status?: string;
+
+  notifications: {
+    type: string;
+    clinicId: Types.ObjectId;
+    clinicName: string;
+    message: string;
+    status: "pending" | "accepted" | "rejected";
+    createdAt: Date;
+  }[];
 }
 
 const doctorSchema = new mongoose.Schema<IDoctor>({
@@ -106,8 +115,34 @@ const doctorSchema = new mongoose.Schema<IDoctor>({
     },
   ],
   status: { type: String, default: "pending" },
+
+  // -----------------------
+  // ⭐ Added Notifications
+  // -----------------------
+  notifications: [
+    {
+      type: {
+        type: String, // example: "clinic_request"
+      },
+      clinicId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Clinic",
+      },
+      clinicName: String,
+      message: String,
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending",
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
-const doctorModel = mongoose.model("Doctor", doctorSchema, "Doctor");
+const doctorModel = mongoose.model<IDoctor>("Doctor", doctorSchema, "Doctor");
 
 export default doctorModel;

@@ -384,4 +384,57 @@ export const getClinicStatus = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong", error });
     }
 };
+export const sendDoctorRequest = async (req, res) => {
+    try {
+        const { doctorId, clinicId } = req.body;
+        const doctor = await doctorModel.findById(doctorId);
+        const clinic = await clinicModel.findById(clinicId);
+        if (!doctor || !clinic) {
+            return res.status(400).json({
+                message: "Invalid doctor or clinic"
+            });
+        }
+        doctor.notifications.push({
+            type: "request",
+            clinicId,
+            clinicName: clinic.clinicName,
+            message: `You have been invited to join this ${clinic.clinicName}  clinic. Please accept or reject the invitation.`,
+            status: "pending",
+            createdAt: new Date(),
+        });
+        await doctor.save();
+        res.json({ message: " Request sent successfully" });
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ message: "Something went wrong" });
+    }
+};
+export const getClinicDoctorStatus = async (req, res) => {
+    try {
+        const { clinicId } = req.params;
+        const doctors = await doctorModel.find();
+        const addedDoctors = [];
+        const pendingRequests = [];
+        doctors.forEach((doctor) => {
+            const notif = doctor.notifications.find((n) => n.clinicId?.toString() === clinicId);
+            if (notif) {
+                if (notif.status === "accepted") {
+                    addedDoctors.push(doctor._id.toString());
+                }
+                if (notif.status === "pending") {
+                    pendingRequests.push(doctor._id.toString());
+                }
+            }
+        });
+        return res.json({
+            addedDoctors,
+            pendingRequests,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 //# sourceMappingURL=clinic.controller.js.map

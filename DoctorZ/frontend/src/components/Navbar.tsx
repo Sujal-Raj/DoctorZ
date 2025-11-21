@@ -31,21 +31,24 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
-  const { isLoggedIn, user, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
   const token = Cookies.get("patientToken") || "";
   const decoded = token ? jwtDecode<MyTokenPayload>(token) : null;
-  
+
   // Get patientId from decoded token
   const patientId = decoded?.id || "";
 
   // ---------------- LOCATION ----------------
-  const [userLocation, setUserLocation] = useState<string>("Detecting location...");
+  const [userLocation, setUserLocation] = useState<string>(
+    "Detecting location..."
+  );
   const [isLocating, setIsLocating] = useState<boolean>(true);
   const [locationError, setLocationError] = useState<string>("");
-  const [locationDropdownOpen, setLocationDropdownOpen] = useState<boolean>(false);
+  const [locationDropdownOpen, setLocationDropdownOpen] =
+    useState<boolean>(false);
 
   const popularCities = [
     "Delhi, India",
@@ -86,7 +89,9 @@ export default function Navbar() {
           `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
         );
         const data = await res.json();
-        const locationText = `${data.city || "Unknown"}, ${data.countryName || ""}`;
+        const locationText = `${data.city || "Unknown"}, ${
+          data.countryName || ""
+        }`;
         console.log("Detected location:", locationText);
         setUserLocation(locationText);
         localStorage.setItem("userLocation", locationText);
@@ -100,8 +105,7 @@ export default function Navbar() {
     fetchLocation();
   }, []);
 
-  const handleLocationClick = () => setShowLocationPopup(true);
-  
+
   const handleManualLocationSelect = (city: string) => {
     setUserLocation(city);
     localStorage.setItem("userLocation", city);
@@ -124,7 +128,9 @@ export default function Navbar() {
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
       );
       const data = await res.json();
-      const locationText = `${data.city || "Unknown"}, ${data.countryName || ""}`;
+      const locationText = `${data.city || "Unknown"}, ${
+        data.countryName || ""
+      }`;
       setUserLocation(locationText);
       localStorage.setItem("userLocation", locationText);
       setLocationDropdownOpen(false);
@@ -145,14 +151,26 @@ export default function Navbar() {
 
   // ---------------- DROPDOWN OPTIONS ----------------
   const registerOptions = [
-    { label: "Patient", path: "/patient-register", icon: <UserCircle2 size={18} /> },
-    { label: "Doctor", path: "/doctor-register", icon: <Stethoscope size={18} /> },
+    {
+      label: "Patient",
+      path: "/patient-register",
+      icon: <UserCircle2 size={18} />,
+    },
+    {
+      label: "Doctor",
+      path: "/doctor-register",
+      icon: <Stethoscope size={18} />,
+    },
     { label: "Clinic", path: "/clinic-register", icon: <Hospital size={18} /> },
     { label: "Lab", path: "/lab-register", icon: <FlaskConical size={18} /> },
   ];
 
   const loginOptions = [
-    { label: "Patient", path: "/patient-login", icon: <UserCircle2 size={18} /> },
+    {
+      label: "Patient",
+      path: "/patient-login",
+      icon: <UserCircle2 size={18} />,
+    },
     { label: "Doctor", path: "/doctor-login", icon: <Stethoscope size={18} /> },
     { label: "Clinic", path: "/clinic-login", icon: <Hospital size={18} /> },
     { label: "Lab", path: "/lab-login", icon: <FlaskConical size={18} /> },
@@ -176,7 +194,10 @@ export default function Navbar() {
             </Link>
 
             {/* Location Dropdown */}
-            <DropdownMenu.Root open={locationDropdownOpen} onOpenChange={setLocationDropdownOpen}>
+            <DropdownMenu.Root
+              open={locationDropdownOpen}
+              onOpenChange={setLocationDropdownOpen}
+            >
               <DropdownMenu.Trigger asChild>
                 <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-white hover:bg-gray-50 cursor-pointer rounded-lg border border-gray-200">
                   {isLocating ? (
@@ -191,7 +212,7 @@ export default function Navbar() {
                 </div>
               </DropdownMenu.Trigger>
 
-              <DropdownMenu.Content 
+              <DropdownMenu.Content
                 className="bg-white rounded-xl shadow-2xl border border-gray-100 w-80 z-[60]"
                 align="start"
                 sideOffset={5}
@@ -204,15 +225,21 @@ export default function Navbar() {
                       className="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 text-left transition-colors"
                     >
                       <LocateFixed size={20} className="text-[#28328C]" />
-                      <span className="flex-1 font-medium">Current Location</span>
-                      {isLocating && <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
+                      <span className="flex-1 font-medium">
+                        Current Location
+                      </span>
+                      {isLocating && (
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                      )}
                     </button>
                   </DropdownMenu.Item>
 
                   {/* OR with horizontal lines */}
                   <div className="flex items-center justify-center gap-3">
                     <div className="flex-1 h-px bg-gray-200"></div>
-                    <span className="text-xs font-medium text-gray-500 px-2">OR</span>
+                    <span className="text-xs font-medium text-gray-500 px-2">
+                      OR
+                    </span>
                     <div className="flex-1 h-px bg-gray-200"></div>
                   </div>
 
@@ -228,14 +255,18 @@ export default function Navbar() {
                         className="w-full flex items-center gap-3 p-3 rounded-lg border-2 border-green-200 bg-green-50 hover:bg-green-100 text-left transition-colors mb-3"
                       >
                         <MapPin size={20} className="text-green-600" />
-                        <span className="flex-1 font-medium">Choose a different location</span>
+                        <span className="flex-1 font-medium">
+                          Choose a different location
+                        </span>
                       </button>
                     </DropdownMenu.Item>
                   </div>
 
                   {/* Popular Cities Section */}
                   <div>
-                    <div className="text-sm font-semibold mb-3 text-gray-700">Popular Cities</div>
+                    <div className="text-sm font-semibold mb-3 text-gray-700">
+                      Popular Cities
+                    </div>
                     <div className="grid gap-2">
                       {popularCities.map((city) => (
                         <DropdownMenu.Item asChild key={city}>
@@ -243,7 +274,10 @@ export default function Navbar() {
                             onClick={() => handleManualLocationSelect(city)}
                             className="w-full text-left p-3 rounded-lg border hover:bg-blue-50 transition-colors"
                           >
-                            <MapPin size={16} className="inline mr-2 text-gray-500" />
+                            <MapPin
+                              size={16}
+                              className="inline mr-2 text-gray-500"
+                            />
                             {city}
                           </button>
                         </DropdownMenu.Item>
@@ -385,7 +419,9 @@ export default function Navbar() {
               {/* Register & Login dropdowns in mobile */}
               {!isLoggedIn && (
                 <div className="mt-4">
-                  <div className="text-gray-600 font-semibold mb-3">Register</div>
+                  <div className="text-gray-600 font-semibold mb-3">
+                    Register
+                  </div>
                   {registerOptions.map((opt) => (
                     <Link
                       key={opt.path}
@@ -398,7 +434,9 @@ export default function Navbar() {
                     </Link>
                   ))}
 
-                  <div className="text-gray-600 font-semibold mt-6 mb-3">Login</div>
+                  <div className="text-gray-600 font-semibold mt-6 mb-3">
+                    Login
+                  </div>
                   {loginOptions.map((opt) => (
                     <Link
                       key={opt.path}
@@ -418,6 +456,16 @@ export default function Navbar() {
                 <div className="mt-4 border-t pt-4">
                   <button
                     onClick={() => {
+                      setSidebarOpen(true);
+                      setMobileOpen(false);
+                    }}
+                    className="flex items-center gap-2 py-2 text-gray-700 hover:text-[#28328C] transition-colors"
+                  >
+                    <User size={18} /> Profile
+                  </button>
+
+                  <button
+                    onClick={() => {
                       logout();
                       Cookies.remove("patientToken");
                       navigate("/patient-login");
@@ -435,10 +483,10 @@ export default function Navbar() {
       </nav>
 
       {/* Right Sidebar */}
-      <RightSidebar 
-        open={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-        patientId={patientId} 
+      <RightSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        patientId={patientId}
       />
 
       {/* Location Popup */}
@@ -458,7 +506,9 @@ export default function Navbar() {
               >
                 <Navigation size={20} className="text-blue-500" />
                 <span>Use Current Location</span>
-                {isLocating && <Loader2 className="w-4 h-4 animate-spin text-blue-500" />}
+                {isLocating && (
+                  <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                )}
               </button>
               <div>
                 <div className="text-sm font-semibold mb-3">Popular Cities</div>

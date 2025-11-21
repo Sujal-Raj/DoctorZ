@@ -38,7 +38,7 @@ export default function AllClinicPatients() {
         );
         setPatients(res.data.patients || []);
       } catch {
-        setError("Failed to fetch clinic patients");
+        setError("Error fetching patients.");
       } finally {
         setLoading(false);
       }
@@ -62,7 +62,7 @@ export default function AllClinicPatients() {
 
   if (patients.length === 0)
     return (
-      <div className="text-center text-gray-600 font-medium mt-8 font-poppins">
+      <div className="text-center text-gray-600 font-medium mt-8 font-poppins ">
         No patients found for this clinic.
       </div>
     );

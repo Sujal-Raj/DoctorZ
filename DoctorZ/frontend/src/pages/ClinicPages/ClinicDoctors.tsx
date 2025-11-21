@@ -82,7 +82,9 @@ const ClinicDoctors = () => {
           className="
           grid grid-cols-1
           sm:grid-cols-2
-         lg:grid-cols-3
+          w-170
+          h-88
+        
          
           gap-4 sm:gap-6"
         >
@@ -97,7 +99,7 @@ const ClinicDoctors = () => {
                 <img
                   src={`http://localhost:3000/uploads/${doctor.photo}`}
                   alt={doctor.fullName}
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition duration-300"
+                  className="w-full h-full  transform group-hover:scale-105 transition duration-300"
                 />
               </div>
 

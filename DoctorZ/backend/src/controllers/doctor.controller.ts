@@ -1,13 +1,13 @@
-
 import bcrypt from "bcryptjs";
 import { transporter } from "../utils/email.js";
 import nodemailer from "nodemailer";
-import type {Response,Request} from "express";
-import doctorModel from '../models/doctor.model.js';
-import Booking from '../models/booking.model.js';
+import type { Response, Request } from "express";
+import doctorModel from "../models/doctor.model.js";
+import Booking from "../models/booking.model.js";
 import jwt from "jsonwebtoken";
 import clinicModel from "../models/clinic.model.js";
 import patientModel from "../models/patient.model.js";
+import mongoose from "mongoose";
 
 interface MulterFiles {
   [fieldname: string]: Express.Multer.File[];
@@ -16,7 +16,6 @@ interface MulterFiles {
 interface Params {
   doctorId: string; // this ensures `req.params.doctorId` is typed as string
 }
-
 
 const doctorRegister = async (req: Request, res: Response) => {
   try {
@@ -97,7 +96,9 @@ const doctorLogin = async (req: Request, res: Response) => {
     const { doctorId, password } = req.body;
 
     if (!doctorId || !password) {
-      return res.status(400).json({ message: "doctorId and password are required" });
+      return res
+        .status(400)
+        .json({ message: "doctorId and password are required" });
     }
 
     const doctor = await doctorModel.findOne({ doctorId });
@@ -138,7 +139,6 @@ const doctorLogin = async (req: Request, res: Response) => {
   }
 };
 
-
 // ==========================
 // Get Doctor by ID
 // ==========================
@@ -162,7 +162,6 @@ const getDoctorById = async (req: Request, res: Response) => {
 // Get All Approved Doctors
 // ==========================
 
-
 const getAllDoctors = async (req: Request, res: Response) => {
   try {
     // Fetch all approved doctors
@@ -171,7 +170,7 @@ const getAllDoctors = async (req: Request, res: Response) => {
     const { patientId } = req.params;
 
     // If user not logged in, just return doctors normally
-   if (!patientId || patientId === "null" || patientId === "undefined")  {
+    if (!patientId || patientId === "null" || patientId === "undefined") {
       return res
         .status(200)
         .json({ message: "Approved doctors fetched successfully", doctors });
@@ -215,7 +214,9 @@ const updateDoctor = async (req: Request, res: Response) => {
     const { doctorId, password } = req.body;
 
     if (!doctorId || !password) {
-      return res.status(400).json({ message: "doctorId and password are required" });
+      return res
+        .status(400)
+        .json({ message: "doctorId and password are required" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -274,7 +275,10 @@ Your Hospital Admin Team
 const getClinicDoctors = async (req: Request, res: Response) => {
   try {
     const { clinicId } = req.params;
-    const doctors = await doctorModel.find({ clinic: clinicId, status: "approved" });
+    const doctors = await doctorModel.find({
+      clinic: clinicId,
+      status: "approved",
+    });
 
     return res.status(200).json({
       message: "Doctors fetched successfully",
@@ -289,18 +293,40 @@ const getClinicDoctors = async (req: Request, res: Response) => {
 // ==========================
 // Get Today's Booked Appointments
 // ==========================
-export const getTodaysBookedAppointments = async (req: Request, res: Response) => {
+export const getTodaysBookedAppointments = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const doctorId = req.params.doctorId;
 
     const now = new Date();
-    const startOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0));
-    const endOfDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 23, 59, 59, 999));
+    const startOfDay = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0,
+        0,
+        0
+      )
+    );
+    const endOfDay = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        23,
+        59,
+        59,
+        999
+      )
+    );
 
     const bookedAppointments = await Booking.find({
       doctorId,
       datetime: { $gte: startOfDay, $lte: endOfDay },
-      status: "booked",
+      status: "pending",
     });
 
     res.status(200).json(bookedAppointments);
@@ -310,15 +336,13 @@ export const getTodaysBookedAppointments = async (req: Request, res: Response) =
   }
 };
 
-
-
 export const getTotalPatients = async (req: Request, res: Response) => {
   try {
     const doctorId = req.params.doctorId;
 
     const totalPatients = await Booking.countDocuments({
       doctorId,
-      status: "booked",
+      status: "pending",
     });
 
     res.status(200).json({ totalPatients });
@@ -328,29 +352,143 @@ export const getTotalPatients = async (req: Request, res: Response) => {
   }
 };
 
-const deleteDoctor = async(req:Request,res:Response)=>{
-    try{
-        const {id} = req.params;
+const deleteDoctor = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
 
-        const deletedoctor = await doctorModel.findByIdAndDelete(id);
+    const deletedoctor = await doctorModel.findByIdAndDelete(id);
 
-        if(!deleteDoctor){
-             return res.status(400).json({
-                message:"Doctor not found"
-            })
+    if (!deleteDoctor) {
+      return res.status(400).json({
+        message: "Doctor not found",
+      });
+    }
+
+    return res.status(202).json({
+      message: "doctor deleted successfully",
+      deleteDoctor,
+    });
+  } catch (error) {
+    console.error("Error deleting doctor", error);
+    return res.status(500).json({
+      message: "failed to delete doctor",
+    });
+  }
+};
+
+export const searchDoctors = async (req: Request, res: Response) => {
+  try {
+    const { query } = req.query;
+
+    // Empty search → return all doctors
+    const filter = query
+      ? {
+          fullName: { $regex: query, $options: "i" },
         }
+      : {};
 
-        return res.status(202).json({
-            message:"doctor deleted successfully",deleteDoctor
-        })
+    const doctors = await doctorModel.find(filter);
 
+    return res.status(200).json({
+      message: "Doctors fetched",
+      doctors,
+    });
+  } catch (error) {
+    console.error("Doctor search error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
+
+export const getDoctorNotifications = async (req: Request, res: Response) => {
+  try {
+    const { doctorId } = req.params;
+
+    const doctor = await doctorModel.findById(doctorId);
+
+    // ✅ Null check added
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
     }
-    catch(error){
-        console.error("Error deleting doctor",error);
-        return res.status(500).json({
-            message:"failed to delete doctor"
-        })
-    }
-}
 
-export default {getAllDoctors,doctorRegister,getDoctorById,deleteDoctor,updateDoctor,getClinicDoctors,doctorLogin ,getTodaysBookedAppointments ,getTotalPatients};
+    return res.json({
+      notifications: doctor.notifications || [],
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error fetching notifications" });
+  }
+};
+
+export const acceptDoctorRequest = async (req: Request, res: Response) => {
+  try {
+    const { doctorId, notificationId, clinicId } = req.body;
+
+    const doctor = await doctorModel.findById(doctorId);
+    if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+
+    // update status
+    const notif = doctor.notifications.find(
+      (n: any) => n._id.toString() === notificationId
+    );
+
+    if (!notif) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    notif.status = "accepted";
+
+    // add clinic to doctor profile
+    if (!doctor.clinic.includes(clinicId)) {
+      doctor.clinic.push(clinicId);
+    }
+
+    await doctor.save();
+
+    res.json({ message: "Request accepted" });
+  } catch (error) {
+    res.json({ message: "Error accepting request" });
+  }
+};
+
+export const rejectDoctorRequest = async (req: Request, res: Response) => {
+  try {
+    const { doctorId, notificationId } = req.body;
+
+    const doctor = await doctorModel.findById(doctorId);
+    if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+
+    const notif = doctor.notifications.find(
+      (n: any) => n._id.toString() === notificationId
+    );
+
+    if (!notif) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    notif.status = "rejected";
+
+    await doctor.save();
+
+    res.json({ message: "Request rejected" });
+  } catch (error) {
+    res.json({ message: "Error rejecting request" });
+  }
+};
+
+export default {
+  getAllDoctors,
+  doctorRegister,
+  getDoctorById,
+  deleteDoctor,
+  updateDoctor,
+  getClinicDoctors,
+  doctorLogin,
+  getTodaysBookedAppointments,
+  getTotalPatients,
+  searchDoctors,
+  getDoctorNotifications,
+  acceptDoctorRequest,
+  rejectDoctorRequest,
+};

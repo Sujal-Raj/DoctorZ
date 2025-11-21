@@ -70,6 +70,10 @@ import DoctorAppointments from "./pages/DoctorPages/DoctorAppointments";
 import PatientAppointments from "./pages/UserPages/PatientAppointments";
 import DoctorSearchResults from "./pages/DoctorSearchResults";
 import PatientEMR from "./pages/PatientEMR";
+import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
+import DoctorNotifications from "./pages/DoctorPages/DoctorNotifications";
+import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
+import UserPrescription from "./pages/UserPages/UserPrescription";
 // Admin
 
 const App: React.FC = () => {
@@ -112,6 +116,7 @@ const App: React.FC = () => {
                <Route path="user-profile" element={<UserProfile />} />
                   <Route path="add-emr" element={<AddEmr />} />
                   <Route path="appointments" element={<PatientAppointments/>}/>
+                  <Route path="prescription" element={<UserPrescription/>}/>
               </Route>
           </Route>
 
@@ -140,6 +145,7 @@ const App: React.FC = () => {
              <Route path="all-clinic-doctors/clinic-doctor-profile/:drId" element={<ClinicDoctorProfile />} />
             
             <Route path="all-clinic-patients" element={< AllClinicPatients/>} />
+            {/* <Route path="clinic-doctor-card" element={<ClinicDoctorCard />} /> */}
           </Route>
 
           {/* Doctor Dashboard */}
@@ -149,12 +155,19 @@ const App: React.FC = () => {
                path="doctor-home-dashboard"
                element={<DoctorDashboardHome/>}
              />
-             <Route path="appointments" element={<DoctorAppointments/>} />
+             <Route path="appointments" element={<DoctorAppointments/>}
+              />
+                 <Route
+    path="appointments/addPrescription/:bookingId/:patientAadhar"
+    element={<PrescriptionForm />}
+  />
              <Route path="time-slots" element={<TimeSlots />} />
             <Route path="patients" element={<AllPatient />} />
             <Route path="patientEMR/:aadhar" element={<PatientEMR />} />
             <Route path="editDoctorIdPassword" element={<EditDoctorProfile />} />
             <Route path="doctorProfile" element={<DoctorProfile />} />
+            <Route path= "notifications" element={< DoctorNotifications />} />
+           
           </Route>
 
           {/* Admin Dashboard */}

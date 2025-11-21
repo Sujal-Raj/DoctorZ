@@ -1,9 +1,3 @@
-// ///////////////////// Manish Works ///////////////////////
-// import type { Request, Response } from "express";
-// import bcrypt from "bcryptjs";
-// import jwt from "jsonwebtoken";
-// import mongoose from "mongoose";
-// import { LabModel, LabTestBookingModel, TestModel, LabPackageModel, PackageBookingModel } from "../models/lab.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -23,7 +17,8 @@ const labRegister = async (req, res) => {
             !certificateNumber) {
             return res.status(400).json({ message: "Missing required fields" });
         }
-        const existingLab = await LabModel.findOne({ email });
+        const trimmedEmail = email.trim().toLowerCase();
+        const existingLab = await LabModel.findOne({ trimmedEmail });
         if (existingLab) {
             return res.status(400).json({ message: "Lab already registered with this email" });
         }
@@ -32,7 +27,7 @@ const labRegister = async (req, res) => {
         const lab = new LabModel({
             labId,
             name,
-            email,
+            email: trimmedEmail,
             password: hashedPassword,
             state,
             address,

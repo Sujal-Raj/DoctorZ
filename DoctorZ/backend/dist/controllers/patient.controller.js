@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import EMRModel from "../models/emr.model.js";
 import Booking from "../models/booking.model.js";
 import { FaV } from "react-icons/fa6";
+import PrescriptionModel from "../models/prescription.model.js";
 const patientRegister = async (req, res) => {
     try {
         console.log("Received body:", req.body);
@@ -201,11 +202,14 @@ const getAvailableSlotsByDoctorId = async (req, res) => {
         });
     }
 };
-// In your patient controller file
 const updatePatient = async (req, res) => {
     try {
         const { id } = req.params;
-        const updated = await patientModel.findByIdAndUpdate(id, req.body, {
+        const updateData = { ...req.body };
+        if (req.file) {
+            updateData.profilePhoto = `/uploads/${req.file.filename}`;
+        }
+        const updated = await patientModel.findByIdAndUpdate(id, updateData, {
             new: true,
         });
         if (!updated)
@@ -217,13 +221,44 @@ const updatePatient = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong." });
     }
 };
+// const getBookedDoctor =async(req:Request,res:Response)=>{
+//     try {
+//         const {id} = req.params;
+//         const doctor = await Booking.find({userId:id}).populate('doctorId');
+//         console.log(doctor);
+//         return res.status(200).json({
+//             message:"Doctors fetched successfully",
+//             doctor
+//         })
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({ 
+//             message: "Something went wrong." 
+//         });
+//     }
+// }
 const getBookedDoctor = async (req, res) => {
     try {
         const { id } = req.params;
-        const doctor = await Booking.find({ userId: id }).populate('doctorId');
+        // Sirf pending bookings fetch karenge
+        const bookings = await Booking.find({
+            userId: id,
+            status: 'pending' // yaha sirf pending bookings
+        }).populate('doctorId');
+        // Agar koi bookings milti hain
+        if (bookings.length === 0) {
+            return res.status(404).json({
+                message: "No pending bookings found"
+            });
+        }
+        // Response me doctor details aur booking date bhejna
+        const result = bookings.map(b => ({
+            doctor: b.doctorId,
+            bookingDate: b.dateTime,
+        }));
         return res.status(200).json({
-            message: "Doctors fetched successfully",
-            doctor
+            message: "Pending bookings fetched successfully",
+            data: result
         });
     }
     catch (error) {
@@ -345,5 +380,24 @@ const isFavouriteClinic = async (req, res) => {
         return res.status(500).json({ isFavourite: false });
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor, addfavouriteClinic, isFavouriteClinic };
+//-------------------- Get Prescription---------------------
+const getUserPrescription = async (req, res) => {
+    const { aadhar } = req.params;
+    try {
+        const prescriptions = await PrescriptionModel.find({
+            patientAadhar: aadhar
+        })
+            .populate("doctorId", "fullName MobileNo") // doctor name
+            .populate("bookingId", "dateTime"); // appointment date
+        return res.status(200).json({
+            success: true,
+            prescriptions,
+        });
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json("Something went wrong");
+    }
+};
+export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor, addfavouriteClinic, isFavouriteClinic, getUserPrescription };
 //# sourceMappingURL=patient.controller.js.map

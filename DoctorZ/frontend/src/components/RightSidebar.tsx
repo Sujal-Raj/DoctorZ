@@ -5,9 +5,10 @@ import {
   User,
   FilePlus2,
   CalendarDays,
-  Bell,
-  LogOut,
+
+ 
   ChevronRight,
+  FileText,
 } from "lucide-react";
 interface SidebarProps {
   open: boolean;
@@ -49,7 +50,7 @@ const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => 
         <div className="flex flex-col py-2">
 
           {/* ITEM TEMPLATE */}
-          <Link
+          <Link  onClick={onClose}
             to={`/user-dashboard/${patientId}`}
             className="flex items-center justify-between px-5 py-4 border-b hover:bg-gray-50 transition"
           >
@@ -60,7 +61,7 @@ const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => 
             <ChevronRight size={18} className="text-gray-500" />
           </Link>
 
-          <Link
+          <Link  onClick={onClose}
             to={`/user-dashboard/${patientId}/add-emr`}
             className="flex items-center justify-between px-5 py-4 border-b hover:bg-gray-50 transition"
           >
@@ -71,8 +72,8 @@ const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => 
             <ChevronRight size={18} className="text-gray-500" />
           </Link>
 
-          <Link
-            to="/appointments"
+          <Link  onClick={onClose}
+            to={`/user-dashboard/${patientId}/appointments`}
             className="flex items-center justify-between px-5 py-4 border-b hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-4">
@@ -82,13 +83,13 @@ const RightSidebar: React.FC<SidebarProps>  = ({ open, onClose, patientId }) => 
             <ChevronRight size={18} className="text-gray-500" />
           </Link>
 
-          <Link
-            to="/notifications"
+          <Link  onClick={onClose}
+            to={`/user-dashboard/${patientId}/prescription`}
             className="flex items-center justify-between px-5 py-4 border-b hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-4">
-              <Bell size={20}  />
-              <span className="text-gray-800">Notifications</span>
+              <FileText size={20}  />
+              <span className="text-gray-800">My Prescriptions</span>
             </div>
             <ChevronRight size={18} className="text-gray-500" />
           </Link>

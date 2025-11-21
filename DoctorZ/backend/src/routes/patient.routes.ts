@@ -7,7 +7,7 @@ const router = Router();
 // ✅ Multer Storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/reports/");
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
@@ -27,7 +27,13 @@ router.post(
 router.post("/login",patientController.patientLogin);
 router.get("/:id",patientController.getPatientById);
 router.delete("/:id",patientController.deleteUser);
-router.put("/update/:id", patientController.updatePatient);
+// Agar profilePhoto ke liye single file upload hai
+router.put(
+  "/update/:id",
+  upload.single("profilePhoto"), // ye same name use karo jo React se bhej rahe ho
+  patientController.updatePatient
+);
+
 
 // router.get("/slots/:doctorId/:date",patientController.getAvailableSlotsByDoctorId);
 router.get("/slots/:doctorId",patientController.getAvailableSlotsByDoctorId);
@@ -36,6 +42,7 @@ router.post("/favourite-doctor/:id",patientController.addFavouriteDoctor);
 router.get("/isFavourite/:patientId/:doctorId",patientController.isFavouriteDoctor);
 router.post("/favourite-clinic/:id",patientController.addfavouriteClinic);
 router.get("/isFavouriteClinic/:patientId/:clinicId",patientController.isFavouriteClinic);
+router.get("/getUserPrescription/:aadhar",patientController.getUserPrescription);
 export default router;
 
 

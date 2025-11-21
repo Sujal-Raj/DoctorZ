@@ -73,7 +73,8 @@ io.on("connection", (socket) => {
     });
 });
 app.use(express.json()); // ✅ to parse JSON requests
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+// app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/uploads/reports", express.static(path.join(process.cwd(), "uploads", "reports")));
 app.use("/api/admin", adminRoutes);
 app.use("/api/patient", patientRoutes);

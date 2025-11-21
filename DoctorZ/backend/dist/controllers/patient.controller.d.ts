@@ -11,6 +11,7 @@ declare const _default: {
     isFavouriteDoctor: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     addfavouriteClinic: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
     isFavouriteClinic: (req: Request, res: Response) => Promise<Response<any, Record<string, any>>>;
+    getUserPrescription: (req: Request, res: Response) => Promise<Response<any, Record<string, any>> | undefined>;
 };
 export default _default;
 //# sourceMappingURL=patient.controller.d.ts.map

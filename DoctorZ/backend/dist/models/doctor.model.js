@@ -79,6 +79,31 @@ const doctorSchema = new mongoose.Schema({
         },
     ],
     status: { type: String, default: "pending" },
+    // -----------------------
+    // ⭐ Added Notifications
+    // -----------------------
+    notifications: [
+        {
+            type: {
+                type: String, // example: "clinic_request"
+            },
+            clinicId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Clinic",
+            },
+            clinicName: String,
+            message: String,
+            status: {
+                type: String,
+                enum: ["pending", "accepted", "rejected"],
+                default: "pending",
+            },
+            createdAt: {
+                type: Date,
+                default: Date.now,
+            },
+        },
+    ],
 });
 const doctorModel = mongoose.model("Doctor", doctorSchema, "Doctor");
 export default doctorModel;
