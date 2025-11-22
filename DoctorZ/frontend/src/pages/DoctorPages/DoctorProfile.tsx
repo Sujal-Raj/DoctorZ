@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import api from "../../Services/mainApi";
-import toast, { Toaster } from "react-hot-toast";
+import  { toast,Toaster } from "react-hot-toast";
 
 const PRIMARY = "#0C213E";
 
