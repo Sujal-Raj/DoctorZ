@@ -1,12 +1,27 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { FlaskConical, Users, UserCircle, LogOut, Menu } from "lucide-react";
+import { FlaskConical, Users, UserCircle, LogOut, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function LabDashboard() {
   const location = useLocation();
   const navigate = useNavigate();
   const labId = localStorage.getItem("labId");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  // Resize detection
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Desktop = sidebar always open
+  useEffect(() => {
+    if (isDesktop) setSidebarOpen(true);
+    else setSidebarOpen(false);
+  }, [isDesktop]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -14,100 +29,100 @@ export default function LabDashboard() {
     navigate("/lab-login");
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) setIsSidebarOpen(false);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // Menu items
+  const menuItems = [
+    { name: "Patients", path: "patients", icon: <Users size={18} /> },
+    { name: "Lab Tests", path: "tests", icon: <FlaskConical size={18} /> },
+    { name: "Profile", path: "profile", icon: <UserCircle size={18} /> },
+  ];
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50 text-gray-900 overflow-hidden">
-      {/* SEO Header */}
-      <header>
-        <title>Lab Dashboard | Manage Tests & Patients</title>
-        <meta
-          name="description"
-          content="Access your lab dashboard to manage patients, lab tests, and your profile efficiently."
-        />
-      </header>
+    <div className="flex bg-gray-100 min-h-screen overflow-hidden">
 
-      {/* Mobile Navbar */}
-      <nav className="lg:hidden bg-gray-900 text-white flex items-center justify-between px-4 py-3 shadow-md fixed top-0 left-0 w-full z-50">
+      {/* ---------- Mobile Top Bar ---------- */}
+      <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white 
+        flex items-center justify-between px-4 py-3 z-50 shadow-lg">
         <h1 className="text-lg font-semibold tracking-wide">Lab Dashboard</h1>
+
         <button
-          aria-label="Toggle menu"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="focus:outline-none"
+          onClick={() => setSidebarOpen(true)}
+          className="p-2 rounded hover:bg-[#0a1a32] active:scale-95 transition"
         >
-          <Menu size={24} />
+          <Menu size={26} className="text-white" />
         </button>
-      </nav>
+      </div>
 
-      {/* Sidebar */}
+      {/* ---------- Sidebar ---------- */}
       <aside
-        className={`fixed lg:static top-0 left-0 bg-gray-900 text-white w-64 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-300 ease-in-out z-40 flex flex-col justify-between shadow-lg
-        h-screen lg:h-auto pt-16 lg:pt-0 overflow-y-auto`}
+        className={`bg-[#0c213e] text-white 
+          flex flex-col 
+          fixed md:relative top-0 left-0 
+          h-screen w-72
+          z-40
+          transform transition-transform duration-300 ease-in-out shadow-xl
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+        `}
       >
-        {/* Sidebar top section */}
-        <div className="p-4 flex flex-col">
-          <h2 className="text-2xl font-bold mb-6 hidden lg:block tracking-wide">
-            Lab Dashboard
-          </h2>
 
-          <ul className="space-y-2">
-            {[
-              { path: "patients", label: "Patients", icon: <Users className="mr-2" /> },
-              { path: "tests", label: "Lab Tests", icon: <FlaskConical className="mr-2" /> },
-              { path: "profile", label: "Profile", icon: <UserCircle className="mr-2" /> },
-            ].map((item) => (
-              <li key={item.path}>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="absolute top-4 right-4 p-2 bg-[#0c213e] rounded-md 
+            hover:bg-[#0a1a32] active:scale-95 transition md:hidden"
+        >
+          <X size={20} />
+        </button>
+
+        {/* -------- Sidebar Body -------- */}
+        <div className="flex-1 flex flex-col p-6 overflow-y-auto">
+
+          {/* Desktop title */}
+          <div className="hidden md:flex items-center justify-center mb-10">
+            <h2 className="text-2xl font-bold tracking-wide">Lab Dashboard</h2>
+          </div>
+
+          {/* Navigation */}
+          <nav className="space-y-3">
+            {menuItems.map((item) => {
+              const isActive = location.pathname.includes(item.path);
+
+              return (
                 <Link
+                  key={item.path}
                   to={`/lab-dashboard/${item.path}`}
-                  className={`flex items-center p-2 rounded-md text-sm font-medium transition-all ${
-                    location.pathname.includes(item.path)
-                      ? "bg-gray-700 text-white"
-                      : "hover:bg-gray-800 text-gray-300"
-                  }`}
-                  onClick={() => setIsSidebarOpen(false)} // closes sidebar on link click (mobile UX)
+                  onClick={() => !isDesktop && setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all 
+                    ${isActive
+                      ? "bg-white/20 shadow-md text-white scale-[1.02]"
+                      : "hover:bg-white/10 text-gray-300"
+                    }
+                  `}
                 >
                   {item.icon}
-                  <span>{item.label}</span>
+                  <span className="font-medium">{item.name}</span>
                 </Link>
-              </li>
-            ))}
-          </ul>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Logout button */}
-        <div className="border-t border-gray-700 p-4">
+        {/* ---------- Logout Button (Always Bottom) ---------- */}
+        <div className="p-6 border-t border-[#0a1a32] mt-auto">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 p-2 w-full text-red-400 hover:bg-red-600 hover:text-white transition-all rounded-md"
-            aria-label="Logout"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg 
+              bg-red-500 hover:bg-red-600 active:scale-95 transition 
+              text-white w-full justify-center font-medium shadow-md"
           >
-            <LogOut size={18} /> Logout
+            <LogOut size={18} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm lg:hidden z-30"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Main content area */}
-      <main className="flex-1 overflow-y-auto p-4 lg:p-6 mt-14 lg:mt-0">
-        <section
-          aria-label="Dashboard Content"
-          className="bg-white rounded-2xl shadow-sm p-4 lg:p-6 min-h-[80vh] transition-all"
-        >
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-8 mt-14 md:mt-0 overflow-y-auto">
+        <section className="bg-white rounded-2xl shadow-sm p-4 md:p-6 min-h-[85vh]">
           <Outlet context={{ labId }} />
         </section>
       </main>

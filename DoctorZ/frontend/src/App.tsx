@@ -1,4 +1,5 @@
 import React from "react";
+import { Toaster } from "react-hot-toast";
 import { BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 // Pages
@@ -80,6 +81,7 @@ import DoctorChat from "./pages/DoctorPages/DoctorChat";
 const App: React.FC = () => {
   return (
     <AuthProvider>
+       <Toaster position="top-right" reverseOrder={false} />
       {" "}
       {/* <-- Wrap the app here */}
       <Router>

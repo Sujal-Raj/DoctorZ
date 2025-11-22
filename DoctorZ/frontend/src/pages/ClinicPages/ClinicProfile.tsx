@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Helmet } from "react-helmet";
 import { FileText } from "lucide-react";
+import api from "../../Services/mainApi";
 
 interface Clinic {
   _id: string;
@@ -94,8 +95,8 @@ export default function ClinicProfile() {
         ...(passwordInput ? { staffPassword: passwordInput } : {}),
       };
 
-      await axios.put(
-        `http://localhost:3000/api/clinic/update/${formData._id}`,
+      await api.put(
+        `/api/clinic/update/${formData._id}`,
         payload
       );
 
@@ -115,8 +116,8 @@ export default function ClinicProfile() {
     if (!clinic) return;
     if (window.confirm("Are you sure you want to delete this clinic?")) {
       try {
-        await axios.delete(
-          `http://localhost:3000/api/clinic/delete/${clinic._id}`
+        await api.delete(
+          `/api/clinic/delete/${clinic._id}`
         );
         toast.success("Clinic deleted successfully");
         setClinic(null);
