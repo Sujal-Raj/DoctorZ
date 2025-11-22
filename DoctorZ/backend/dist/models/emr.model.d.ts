@@ -7,7 +7,7 @@ export interface IEMR extends Document {
     pastSurgeries?: string[];
     currentMedications?: string[];
     reports?: string[];
-    prescriptionId?: mongoose.Types.ObjectId;
+    prescriptionId?: mongoose.Types.ObjectId[];
 }
 declare const EMRModel: mongoose.Model<IEMR, {}, {}, {}, mongoose.Document<unknown, {}, IEMR, {}, {}> & IEMR & Required<{
     _id: unknown;
