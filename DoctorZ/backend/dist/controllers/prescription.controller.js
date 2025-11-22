@@ -1,11 +1,13 @@
 import puppeteer from "puppeteer";
 import PrescriptionModel from "../models/prescription.model.js";
 import cloudinary from "../config/cloudinary.js";
+import axios from "axios";
+import EMRModel from "../models/emr.model.js";
 export const addPrescription = async (req, res) => {
     try {
         console.log(req.body);
         const { bookingId } = req.params;
-        const { patientAadhar, doctorId, diagnosis, symptoms, medicines, recommendedTests, notes, name, gender } = req.body;
+        const { patientAadhar, doctorId, diagnosis, symptoms, medicines, recommendedTests, notes, name, gender, } = req.body;
         if (!doctorId || !patientAadhar || !diagnosis || !medicines) {
             return res.status(400).json({
                 message: "doctorId, patientAadhar, diagnosis & medicines are required",
@@ -107,7 +109,7 @@ export const addPrescription = async (req, res) => {
         await page.setViewport({ width: 794, height: 1123 }); // A4 size approx
         const imageBuffer = await page.screenshot({ fullPage: true });
         await browser.close();
-        // STEP 3: Upload to Cloudinary 
+        // STEP 3: Upload to Cloudinary
         const cloudResult = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream({
                 resource_type: "image",
@@ -129,9 +131,28 @@ export const addPrescription = async (req, res) => {
         prescription.pdfUrl = cloudResult.secure_url;
         console.log("Cloudinary Response:", cloudResult);
         await prescription.save();
+        let emr = await EMRModel.findOne({
+            doctorId,
+            aadhar: patientAadhar,
+        });
+        if (!emr) {
+            // New EMR file
+            emr = await EMRModel.create({
+                doctorId,
+                aadhar: patientAadhar,
+                prescriptionId: [],
+            });
+        }
+        // Push the prescription _id into EMR
+        if (!emr.prescriptionId) {
+            emr.prescriptionId = [];
+        }
+        emr.prescriptionId.push(prescription._id);
+        await emr.save();
         return res.status(201).json({
             message: "Prescription saved with PDF",
             data: prescription,
+            emr,
         });
     }
     catch (err) {
@@ -140,6 +161,29 @@ export const addPrescription = async (req, res) => {
             message: "Something went wrong",
             error: err instanceof Error ? err.message : err,
         });
+    }
+};
+export const downloadPrescription = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const prescription = await PrescriptionModel.findById(id);
+        const fileUrl = prescription?.pdfUrl;
+        if (!fileUrl)
+            return res.status(404).send("Image not found");
+        // extract extension (png / jpg / jpeg)
+        const ext = fileUrl.split(".").pop()?.toLowerCase() || "png";
+        // download from cloudinary
+        const response = await axios.get(fileUrl, {
+            responseType: "arraybuffer",
+        });
+        // 🔥 MAIN FIX — Always force download
+        res.setHeader("Content-Disposition", `attachment; filename="prescription_${id}.${ext}"`);
+        res.setHeader("Content-Type", "application/octet-stream");
+        return res.send(response.data);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send("Error downloading image");
     }
 };
 //# sourceMappingURL=prescription.controller.js.map

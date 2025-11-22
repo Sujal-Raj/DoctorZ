@@ -46,8 +46,8 @@ function UserDashboard() {
       >
         {/* ✅ SIDEBAR — hidden on mobile */}
         <aside
-          className="hidden md:block w-72 bg-gradient-to-b 
-                          from-[#4C6EF5] to-[#5A4CF5] text-white p-6 relative"
+          className="hidden md:block w-72 bg-[#0c213e]
+                        text-white p-6 relative"
         >
           <div className="flex items-center gap-3 mb-10 ">
             <img src={UserIcon} className="w-12 h-12 rounded-full" />
@@ -117,7 +117,7 @@ function UserDashboard() {
         </aside>
 
         {/* ✅ CONTENT AREA */}
-        <main className="flex-1 p-3 md:p-0 bg-gray-100 md:bg-[#dadde1]">
+        <main className="flex-1 p-3 md:p-0 bg-gray-50 md:bg-[#e8eaee]">
           <Outlet />
         </main>
       </div>

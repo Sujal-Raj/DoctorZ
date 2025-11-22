@@ -30,9 +30,9 @@ const emrSchema = new mongoose.Schema({
         default: [],
     },
     prescriptionId: {
-        type: Schema.Types.ObjectId,
+        type: [Schema.Types.ObjectId],
         ref: "Prescription",
-        default: null,
+        default: [],
     },
 }, { timestamps: true });
 const EMRModel = mongoose.model("EMR", emrSchema, "EMR");

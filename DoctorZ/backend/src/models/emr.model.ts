@@ -10,7 +10,7 @@ export interface IEMR extends Document {
   currentMedications?: string[];
 
   reports?: string[];               // file URLs / paths
-  prescriptionId?: mongoose.Types.ObjectId;
+  prescriptionId?: mongoose.Types.ObjectId[];
 
  
 }
@@ -57,9 +57,9 @@ const emrSchema = new mongoose.Schema<IEMR>(
     },
 
     prescriptionId: {
-      type: Schema.Types.ObjectId,
+      type: [Schema.Types.ObjectId],
       ref: "Prescription",
-      default: null,
+      default: [],
     },
 
   
