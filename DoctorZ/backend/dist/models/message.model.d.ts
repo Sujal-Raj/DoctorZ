@@ -11,8 +11,8 @@ export interface message extends Document {
 }
 declare const messageModel: mongoose.Model<{
     text: string;
-    roomId: string;
     createdAt: NativeDate;
+    roomId: string;
     senderId: string;
     type?: string | null;
     readby?: string | null;
@@ -20,8 +20,8 @@ declare const messageModel: mongoose.Model<{
     deleted?: boolean | null;
 }, {}, {}, {}, mongoose.Document<unknown, {}, {
     text: string;
-    roomId: string;
     createdAt: NativeDate;
+    roomId: string;
     senderId: string;
     type?: string | null;
     readby?: string | null;
@@ -29,8 +29,8 @@ declare const messageModel: mongoose.Model<{
     deleted?: boolean | null;
 }, {}, mongoose.DefaultSchemaOptions> & {
     text: string;
-    roomId: string;
     createdAt: NativeDate;
+    roomId: string;
     senderId: string;
     type?: string | null;
     readby?: string | null;
@@ -42,8 +42,8 @@ declare const messageModel: mongoose.Model<{
     __v: number;
 }, mongoose.Schema<any, mongoose.Model<any, any, any, any, any, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, {
     text: string;
-    roomId: string;
     createdAt: NativeDate;
+    roomId: string;
     senderId: string;
     type?: string | null;
     readby?: string | null;
@@ -51,8 +51,8 @@ declare const messageModel: mongoose.Model<{
     deleted?: boolean | null;
 }, mongoose.Document<unknown, {}, mongoose.FlatRecord<{
     text: string;
-    roomId: string;
     createdAt: NativeDate;
+    roomId: string;
     senderId: string;
     type?: string | null;
     readby?: string | null;
@@ -60,8 +60,8 @@ declare const messageModel: mongoose.Model<{
     deleted?: boolean | null;
 }>, {}, mongoose.ResolveSchemaOptions<mongoose.DefaultSchemaOptions>> & mongoose.FlatRecord<{
     text: string;
-    roomId: string;
     createdAt: NativeDate;
+    roomId: string;
     senderId: string;
     type?: string | null;
     readby?: string | null;

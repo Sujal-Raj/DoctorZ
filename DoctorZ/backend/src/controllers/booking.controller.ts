@@ -47,7 +47,7 @@ export const bookAppointment = async (req: Request, res: Response) => {
       dateTime: new Date(dateTime),
       mode,
       fees,
-      emrId: newEmr?._id || null,
+      // emrId: newEmr?._id || null,
       // status: "booked",
       roomId,
       status: "pending",

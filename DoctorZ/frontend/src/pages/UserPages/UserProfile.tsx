@@ -3,8 +3,9 @@ import { useParams } from "react-router-dom";
 import api from "../../Services/mainApi";
 import Swal from "sweetalert2";
 import userIcon from "../../assets/UserIcon.png";
-import { Camera } from "lucide-react";
-//  Strong Types
+import { Camera, Mail, Phone, MapPin, CreditCard, User, Calendar, Users } from "lucide-react";
+
+// Strong Types
 interface Address {
   city?: string;
   pincode?: number;
@@ -41,18 +42,19 @@ const fields: {
     | "emergencyContact.name"
     | "emergencyContact.number";
   label: string;
+  icon?: any;
 }[] = [
-  { key: "fullName", label: "Full Name" },
-  { key: "gender", label: "Gender" },
-  { key: "dob", label: "Date of Birth" },
-  { key: "email", label: "Email" },
-  { key: "mobileNumber", label: "Mobile Number" },
-  { key: "aadhar", label: "Aadhar Number" },
-  { key: "address.city", label: "City" },
-  { key: "address.pincode", label: "Pincode" },
-  { key: "abhaId", label: "ABHA ID" },
-  { key: "emergencyContact.name", label: "Emergency Contact Name" },
-  { key: "emergencyContact.number", label: "Emergency Contact Number" },
+  { key: "fullName", label: "Full Name", icon: User },
+  { key: "gender", label: "Gender", icon: Users },
+  { key: "dob", label: "Date of Birth", icon: Calendar },
+  { key: "email", label: "Email", icon: Mail },
+  { key: "mobileNumber", label: "Mobile Number", icon: Phone },
+  { key: "aadhar", label: "Aadhar Number", icon: CreditCard },
+  { key: "address.city", label: "City", icon: MapPin },
+  { key: "address.pincode", label: "Pincode", icon: MapPin },
+  { key: "abhaId", label: "ABHA ID", icon: CreditCard },
+  { key: "emergencyContact.name", label: "Emergency Contact Name", icon: User },
+  { key: "emergencyContact.number", label: "Emergency Contact Number", icon: Phone },
 ];
 
 // ✅ Type Safe value extractor
@@ -73,6 +75,7 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isDark, setIsDark] = useState(false);
 
   const { id } = useParams();
   const userId = localStorage.getItem("userId");
@@ -82,6 +85,7 @@ function UserProfile() {
       try {
         const res = await api.get<UserResponse>(`/api/patient/${id}`);
         let fetchedUser = res.data.user;
+        console.log(fetchedUser);
 
         // Check if address/emergencyContact are strings, then parse
         if (typeof fetchedUser.address === "string") {
@@ -208,107 +212,75 @@ function UserProfile() {
   };
 
   if (loading)
-    return <div className="text-center text-gray-500 mt-8">Loading...</div>;
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0c213e] mx-auto"></div>
+          <p className={`mt-4 text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Loading...</p>
+        </div>
+      </div>
+    );
 
   if (!user)
-    return <div className="text-center text-red-500 mt-8">User Not Found.</div>;
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="text-center text-red-500">User Not Found.</div>
+      </div>
+    );
 
   return (
-    <div className="max-w-6xl mx-auto p-6 md:p-10">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* LEFT PROFILE CARD */}
-
-        <div
-          className="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center 
-                w-full h-auto self-start"
-        >
-          <div className="relative w-48 h-48">
-            <img
-              src={
-                selectedFile
-                  ? URL.createObjectURL(selectedFile)
-                  : user.profilePhoto
-                  ? `http://localhost:3000${user.profilePhoto}`
-                  : userIcon
-              }
-              alt="profile"
-              className="w-50 h-50 object-cover rounded-full shadow-md"
-            />
-
-            {isEditing && (
-              <>
-                {/* Always visible edit icon */}
-                <div className="absolute bottom-2 right-2 bg-blue-500 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-md">
-                  <label htmlFor="profilePhotoInput" className="cursor-pointer">
-                    <Camera className="text-white w-5 h-5" />
-                  </label>
-                </div>
-
-                <input
-                  id="profilePhotoInput"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setSelectedFile(e.target.files[0]);
-                      setEditData(
-                        (prev) =>
-                          prev && {
-                            ...prev,
-                            profilePhoto: URL.createObjectURL(
-                              e.target.files![0]
-                            ),
-                          }
-                      );
-                    }
-                  }}
-                  className="hidden"
-                />
-              </>
-            )}
-          </div>
-
-          <div className="w-full  text-center p-3.5">
-            <h2 className="text-lg font-semibold ">{user?.fullName}</h2>
-            <p className="text-sm text-gray-900 truncate">{user?.email}</p>
-          </div>
-
-          {/* Save / Edit Button */}
-          {!isEditing && (
+  <div className="min-h-screen bg-gray-50 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto">
+      <div className="max-w-3xl mx-auto">
+        {/* Edit Profile Button */}
+        {!isEditing && (
+          <div className="mb-6 flex justify-end">
             <button
               onClick={() => {
-                setEditData({
-                  ...user,
-                  address: user.address || { city: "", pincode: 0 },
-                  emergencyContact: user.emergencyContact || {
-                    name: "",
-                    number: 0,
-                  },
-                });
-                setIsEditing(true);
+                if (user) {
+                  setEditData({
+                    ...user,
+                    address: user.address || { city: "", pincode: 0 },
+                    emergencyContact: user.emergencyContact || {
+                      name: "",
+                      number: 0,
+                    },
+                  });
+                  setIsEditing(true);
+                }
               }}
-              className="mt-6 px-5 py-3 rounded-full bg-blue-500 text-white font-medium shadow hover:scale-105 transition cursor-pointer"
+              className="bg-[#0c213e] text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
               Edit Profile
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* RIGHT DETAILS CARD */}
-        <div className="md:col-span-2 bg-white rounded-2xl shadow-lg p-8">
-          <h2 className="text-xl font-semibold mb-6 text-gray-800">
-            Personal Information
-          </h2>
+        {/* PERSONAL INFORMATION CARD */}
+        <div className={`bg-white rounded-2xl shadow-2xl p-6 sm:p-8 transition-all duration-300`}>
+          <div className="flex items-center justify-between mb-6 sm:mb-8 pb-4 border-b-2 border-gray-200 border-opacity-20">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0c213e]">
+              Personal Information
+            </h2>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {fields.map(({ key, label }) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {fields.map(({ key, label, icon: Icon }) => {
               const value = isEditing
                 ? getValue(editData!, key)
                 : getValue(user!, key);
 
               return (
-                <div key={key} className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">{label}</span>
+                <div
+                  key={key}
+                  className={`bg-gray-50 rounded-xl p-4 transition-all duration-300 hover:shadow-md`}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    {Icon && <Icon className="w-4 h-4 text-gray-500" />}
+                    <span className="text-xs sm:text-sm font-medium text-gray-500">
+                      {label}
+                    </span>
+                  </div>
 
                   {isEditing ? (
                     <input
@@ -316,7 +288,9 @@ function UserProfile() {
                         key === "dob"
                           ? "date"
                           : key === "address.pincode" ||
-                            key === "emergencyContact.number"
+                            key === "emergencyContact.number" ||
+                            key === "mobileNumber" ||
+                            key === "aadhar"
                           ? "number"
                           : "text"
                       }
@@ -327,13 +301,13 @@ function UserProfile() {
                           : value ?? ""
                       }
                       onChange={handleChange}
-                      className="w-full py-2 bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 transition"
+                      className="w-full py-2 px-3 rounded-lg bg-white text-[#0c213e] border-gray-300 focus:border-[#0c213e] border-2 focus:outline-none transition-colors text-sm sm:text-base"
                     />
                   ) : (
-                    <div className="py-2 text-gray-700 border-b border-gray-200">
+                    <div className="py-2 text-sm sm:text-base font-semibold text-[#0c213e] break-words">
                       {key === "dob"
                         ? new Date(String(value)).toLocaleDateString("en-GB")
-                        : value ?? "-"}
+                        : value || "-"}
                     </div>
                   )}
                 </div>
@@ -342,17 +316,20 @@ function UserProfile() {
           </div>
 
           {isEditing && (
-            <div className="flex gap-4 mt-10">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8 pt-6 border-t-2 border-gray-200 border-opacity-20">
               <button
                 onClick={handleSave}
-                className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700"
+                className="flex-1 bg-green-600 text-white py-3 sm:py-4 rounded-xl font-semibold shadow-lg hover:bg-green-700 hover:shadow-xl transition-all duration-300"
               >
-                Save
+                Save Changes
               </button>
 
               <button
-                onClick={() => setIsEditing(false)}
-                className="px-6 py-3 bg-gray-400 text-white rounded-xl hover:bg-gray-500"
+                onClick={() => {
+                  setIsEditing(false);
+                  setSelectedFile(null);
+                }}
+                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-3 sm:py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Cancel
               </button>
@@ -361,7 +338,9 @@ function UserProfile() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 export default UserProfile;

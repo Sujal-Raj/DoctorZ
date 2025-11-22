@@ -51,6 +51,7 @@ const [loading, setLoading] = useState(false);
   };
 
   const onSubmit = async (data: PatientFormInputs) => {
+    console.log(data)
     setLoading(true);
     try{
     const formData = new FormData();

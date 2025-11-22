@@ -22,7 +22,7 @@ import messageModel from "./models/message.model.js";
 import prescriptionRoutes from "./routes/prescription.routes.js";
 // dotenv.config();
  dbConnect();
-const PORT = 3000;
+// const PORT = 3000;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -178,7 +178,7 @@ app.use("/api/availability", timeSlotsRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/lab", labRoutes);
 app.use("/api/emr", emrRoutes);
-app.use("/api/emr",emrRoutes);
+// app.use("/api/emr",emrRoutes);
 app.use("/api/prescription",prescriptionRoutes);
 
 // app.use(express.static(path.join(__dirname, "../../frontend/dist")));
@@ -192,11 +192,11 @@ app.use("/api/prescription",prescriptionRoutes);
 
 
 
-server.listen(PORT,()=>{
-    console.log("Server running at " + PORT);
-    console.log("Socket also started");
+// server.listen(PORT,()=>{
+//     console.log("Server running at " + PORT);
+//     console.log("Socket also started");
 
-})
+// })
 
 
 

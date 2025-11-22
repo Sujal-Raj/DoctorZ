@@ -17,6 +17,10 @@ import adminRoutes from "./routes/admin.routes.js";
 import labRoutes from "./routes/lab.routes.js";
 import emrRoutes from "./routes/emr.routes.js";
 import messageModel from "./models/message.model.js";
+import prescriptionRoutes from "./routes/prescription.routes.js";
+// dotenv.config();
+dbConnect();
+// const PORT = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dbConnect();
@@ -33,6 +37,7 @@ app.use((req, res, next) => {
     next();
 });
 const server = createServer(app);
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173", // restrict in production to your frontend URL
@@ -136,6 +141,10 @@ io.on("connection", (socket) => {
 });
 // Static uploads (if used)
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use(express.json()); // ✅ to parse JSON requests
+// app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads/reports", express.static(path.join(process.cwd(), "uploads", "reports")));
 // Your route mounts (unchanged)
 app.use("/api/admin", adminRoutes);
 app.use("/api/patient", patientRoutes);
@@ -145,6 +154,18 @@ app.use("/api/availability", timeSlotsRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/lab", labRoutes);
 app.use("/api/emr", emrRoutes);
+// app.use("/api/emr",emrRoutes);
+app.use("/api/prescription", prescriptionRoutes);
+// app.use(express.static(path.join(__dirname, "../../frontend/dist")));
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"));
+// });
+// console.log("STATIC PATH:", path.join(__dirname, "../../frontend/dist"));
+// console.log("INDEX PATH:", path.join(__dirname, "../../frontend/dist/index.html"));
+// server.listen(PORT,()=>{
+//     console.log("Server running at " + PORT);
+//     console.log("Socket also started");
+// })
 // Start server
 server.listen(PORT, () => {
     console.log(`Server running at ${PORT}`);

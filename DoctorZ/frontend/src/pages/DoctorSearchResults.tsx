@@ -46,7 +46,7 @@ if (token) {
   console.log("Patient ID:", patientId);
 }
 
-const token = Cookies.get("patientToken");
+// const token = Cookies.get("patientToken");
 const patientId = token ? jwtDecode<DecodedToken>(token)?.id ?? null : null;
 
 const API = `/api/doctor/allDoctors/${patientId}`;
