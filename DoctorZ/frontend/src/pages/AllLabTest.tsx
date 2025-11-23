@@ -73,9 +73,9 @@ export default function LabTestsPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const THEME_COLOR = "#28328C";
+  const THEME_COLOR = "#0c213e";
   const ACCENT_COLOR = "#4F46E5";
-  const GRADIENT = "linear-gradient(135deg, #28328C 0%, #4F46E5 100%)";
+  const GRADIENT = "linear-gradient(135deg, #0c213e 0%, #4F46E5 100%)";
 
   const iconMap: Record<string, string> = {
     heart,
@@ -268,12 +268,12 @@ export default function LabTestsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-blue-100 text-[#28328C] px-4 py-2 rounded-full text-sm font-medium mb-4"
+            className="inline-flex items-center gap-2 bg-blue-100 text-[#0c213e] px-4 py-2 rounded-full text-sm font-medium mb-4"
           >
             <Sparkles className="w-4 h-4" />
             Trusted by 50,000+ Patients
           </motion.div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-[#28328C] to-[#4F46E5] bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-[#0c213e] to-[#4F46E5] bg-clip-text text-transparent">
             Comprehensive Health Tests
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -290,7 +290,7 @@ export default function LabTestsPage() {
             transition={{ delay: 0.1 }}
             className="relative flex items-center bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-500"
           >
-            <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#28328C]">
+            <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#0c213e]">
               <SearchIcon className="w-5 h-5" />
             </div>
 
@@ -304,7 +304,7 @@ export default function LabTestsPage() {
 
             <button
               onClick={() => window.scrollTo({ top: 600, behavior: "smooth" })}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#28328C] to-[#4F46E5] text-white font-semibold px-7 py-3 rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-blue-500/30"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-[#0c213e] to-[#4F46E5] text-white font-semibold px-7 py-3 rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-blue-500/30"
             >
               Search
             </button>
@@ -320,7 +320,7 @@ export default function LabTestsPage() {
         <section className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-blue-100 rounded-lg">
-              <Heart className="w-5 h-5 text-[#28328C]" />
+              <Heart className="w-5 h-5 text-[#0c213e]" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900">
               Doctor-Created Health Checks
@@ -338,13 +338,13 @@ export default function LabTestsPage() {
                   onClick={() => setSelectedHealthCheck(active ? null : hc.key)}
                   className={`relative flex items-center justify-start border border-gray-200/50 rounded-2xl bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 ${
                     active
-                      ? "ring-2 ring-[#28328C] shadow-lg"
+                      ? "ring-2 ring-[#0c213e] shadow-lg"
                       : "shadow-md hover:border-gray-300"
                   }`}
                   style={{ height: "80px", padding: "12px", gap: "12px" }}
                 >
                   {active && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#28328C] rounded-full"></div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#0c213e] rounded-full"></div>
                   )}
                   <div
                     className={`p-3 rounded-xl bg-gradient-to-br ${hc.color} shadow-md`}
@@ -377,7 +377,7 @@ export default function LabTestsPage() {
             </div>
             <button
               onClick={() => setShowAllTests(!showAllTests)}
-              className="group flex items-center gap-2 text-[#28328C] text-sm font-semibold hover:underline transition-all"
+              className="group flex items-center gap-2 text-[#0c213e] text-sm font-semibold hover:underline transition-all"
             >
               {showAllTests ? "Show Less" : "View All"}
               <motion.div
@@ -452,7 +452,7 @@ export default function LabTestsPage() {
                             ₹{t.price ?? "N/A"}
                           </p>
                           {(t.lab?.name || t.labName) && (
-                            <p className="text-[12px] text-[#28328C] font-semibold bg-blue-50 px-2 py-1 rounded-full">
+                            <p className="text-[12px] text-[#0c213e] font-semibold bg-blue-50 px-2 py-1 rounded-full">
                               {t.lab?.name || t.labName}
                             </p>
                           )}
@@ -466,7 +466,7 @@ export default function LabTestsPage() {
                             state: { test: t },
                           })
                         }
-                        className="px-4 py-2 text-[13px] font-semibold text-white bg-gradient-to-r from-[#28328C] to-[#4F46E5] rounded-xl hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md shadow-blue-500/30"
+                        className="px-4 py-2 text-[13px] font-semibold text-white bg-gradient-to-r from-[#0c213e] to-[#4F46E5] rounded-xl hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md shadow-blue-500/30"
                       >
                         View Details
                       </button>
@@ -490,7 +490,7 @@ export default function LabTestsPage() {
             </div>
             <button
               onClick={() => setShowAllPackages(!showAllPackages)}
-              className="group flex items-center gap-2 text-[#28328C] text-sm font-semibold hover:underline transition-all"
+              className="group flex items-center gap-2 text-[#0c213e] text-sm font-semibold hover:underline transition-all"
             >
               {showAllPackages ? "Show Less" : "View All"}
               <motion.div
@@ -560,7 +560,7 @@ export default function LabTestsPage() {
                               ₹{price}
                             </p>
                             {(p.lab?.name || p.labName) && (
-                              <p className="text-[12px] text-[#28328C] font-semibold bg-blue-50 px-2 py-1 rounded-full">
+                              <p className="text-[12px] text-[#0c213e] font-semibold bg-blue-50 px-2 py-1 rounded-full">
                                 {p.lab?.name || p.labName}
                               </p>
                             )}
@@ -589,7 +589,7 @@ export default function LabTestsPage() {
                               state: { pkg: p },
                             })
                           }
-                          className="px-4 py-2 text-[13px] font-semibold text-white bg-gradient-to-r from-[#28328C] to-[#4F46E5] rounded-xl hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md shadow-blue-500/30"
+                          className="px-4 py-2 text-[13px] font-semibold text-white bg-gradient-to-r from-[#0c213e] to-[#4F46E5] rounded-xl hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300 shadow-md shadow-blue-500/30"
                         >
                           View Details
                         </button>

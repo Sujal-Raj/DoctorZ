@@ -69,8 +69,8 @@ export default function Home() {
       title: "Find Doctors Near You",
       subtitle: "Confirmed appointments",
       icon: UserIcon, // was FaUserMd
-      bgColor: "bg-blue-100",
-      iconColor: "text-blue-600",
+      bgColor: "bg-[#0c213e]20",
+      iconColor: "text-[#0c213e]",
       features: ["Verified profiles", "Real reviews", "Easy booking"],
     },
     {
@@ -142,7 +142,7 @@ const handleSearchResults = (data: unknown) => {
       </div>
 
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 -left-1/4 w-[500px] h-[500px] bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
+        <div className="absolute top-0 -left-1/4 w-[500px] h-[500px] bg-[#0c213e] rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
         <div className="absolute -bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
       </div>
 
@@ -243,7 +243,7 @@ const handleSearchResults = (data: unknown) => {
 
      
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 -left-1/4 w-[500px] h-[500px] bg-blue-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
+        <div className="absolute top-0 -left-1/4 w-[500px] h-[500px] bg-[#0c213e] rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
         <div className="absolute -bottom-1/4 right-0 w-[500px] h-[500px] bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-40"></div>
       </div>
 
@@ -336,7 +336,7 @@ const handleSearchResults = (data: unknown) => {
        
         <div className="absolute inset-0 bg-repeat" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239eebff' fill-opacity='0.1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3C/g%3E%3C/svg%3E")` }}></div>
         
-        <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
+        <div className="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-[#0c213e]20 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
     </div>
 
     <div className="container mx-auto px-4 relative z-10 py-20">
@@ -348,13 +348,13 @@ const handleSearchResults = (data: unknown) => {
             <div className="md:col-span-7 lg:col-span-6 text-center md:text-left">
                 
                
-                <div className="inline-block bg-blue-100 text-blue-700 text-sm font-semibold px-3 py-1 rounded-full mb-4">
+                <div className="inline-block bg-[#0c213e]20 text-[#0c213e] text-sm font-semibold px-3 py-1 rounded-full mb-4">
                     ⭐️ Verified Health Network
                 </div>
 
               
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
-                    Find the <span className="text-blue-600">Right Doctor</span>, 
+                    Find the <span className="text-[#0c213e]">Right Doctor</span>, 
                     <span className="block">Right Now.</span>
                 </h1>
 
@@ -375,7 +375,7 @@ const handleSearchResults = (data: unknown) => {
                                 onChange={(e) => handleSearch(e.target.value)} 
                             />
                         </div>
-                        <button className="flex-shrink-0 bg-blue-600 text-white font-bold px-8 py-4 rounded-2xl hover:bg-blue-700 transition-all text-lg shadow-lg">
+                        <button className="flex-shrink-0 bg-[#0c213e] text-white font-bold px-8 py-4 rounded-2xl hover:bg-[#0c213e] transition-all text-lg shadow-lg">
                             Search
                         </button>
                     </div>
@@ -425,15 +425,15 @@ const handleSearchResults = (data: unknown) => {
         <div className="mt-16 pt-8 border-t border-gray-100">
             <div className="flex gap-8 justify-center flex-wrap">
                 <div className="text-center">
-                    <div className="text-4xl font-extrabold text-blue-600">98%</div>
+                    <div className="text-4xl font-extrabold text-[#0c213e]">98%</div>
                     <div className="text-gray-500 text-sm tracking-wide mt-1">Satisfaction Rate</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-4xl font-extrabold text-blue-600">100+</div>
+                    <div className="text-4xl font-extrabold text-[#0c213e]">100+</div>
                     <div className="text-gray-500 text-sm tracking-wide mt-1">Specialties Available</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-4xl font-extrabold text-blue-600">24/7</div>
+                    <div className="text-4xl font-extrabold text-[#0c213e]">24/7</div>
                     <div className="text-gray-500 text-sm tracking-wide mt-1">Support & Booking</div>
                 </div>
             </div>
@@ -542,7 +542,7 @@ const handleSearchResults = (data: unknown) => {
             
             {/* Headline: Now Centered */}
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight">
-                Your Health, <span className="text-blue-700">Simplified.</span>
+                Your Health, <span className="text-[#0c213e]">Simplified.</span>
                 <span className="block text-4xl md:text-5xl mt-2 font-semibold text-gray-800/90">
                     Book Verified Professionals Instantly.
                 </span>
@@ -556,15 +556,15 @@ const handleSearchResults = (data: unknown) => {
             {/* Trust Seals/Badges: Now Centered */}
             <div className="flex justify-center gap-8 mt-6 mb-10 flex-wrap">
                 <div className="flex items-center text-base font-semibold text-gray-800">
-                    <span className="text-blue-500 mr-2 text-xl">✅</span> 100% Verified Reviews
+                    <span className="text-[#0c213e] mr-2 text-xl">✅</span> 100% Verified Reviews
                 </div>
                 <div className="flex items-center text-base font-semibold text-gray-800">
-                    <span className="text-blue-500 mr-2 text-xl">🛡️</span> HIPAA Compliant Security
+                    <span className="text-[#0c213e] mr-2 text-xl">🛡️</span> HIPAA Compliant Security
                 </div>
             </div>
 
             {/* Integrated Search Bar (Now Full-Width Focused Below Text) */}
-            <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-3xl shadow-2xl shadow-blue-200/60 border-t-4 border-blue-600">
+            <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-3xl shadow-2xl shadow-[#0c213e]/60 border-t-4 border-[#0c213e]">
                 <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
                     Start Your Search Instantly
                 </h3>
@@ -573,15 +573,15 @@ const handleSearchResults = (data: unknown) => {
                     <input 
                         type="text" 
                         placeholder="Specialty, Doctor, or Symptom..." 
-                        className="flex-1 text-lg p-4 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 placeholder-gray-500 text-gray-800"
+                        className="flex-1 text-lg p-4 rounded-xl border border-gray-300 focus:border-[#0c213e] focus:ring-4 focus:ring-blue-500/30 placeholder-gray-500 text-gray-800"
                         onChange={(e) => handleSearch(e.target.value)} 
                     />
                     <input 
                         type="text" 
                         placeholder="City or Zip Code" 
-                        className="flex-1 text-lg p-4 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 placeholder-gray-500 text-gray-800"
+                        className="flex-1 text-lg p-4 rounded-xl border border-gray-300 focus:border-[#0c213e] focus:ring-4 focus:ring-blue-500/30 placeholder-gray-500 text-gray-800"
                     />
-                    <button className="flex-shrink-0 bg-blue-600 text-white font-extrabold px-8 py-4 rounded-xl hover:bg-blue-700 transition-all text-xl shadow-lg shadow-blue-400/50">
+                    <button className="flex-shrink-0 bg-[#0c213e] text-white font-extrabold px-8 py-4 rounded-xl hover:bg-[#0c213e] transition-all text-xl shadow-lg shadow-[#0c213e]/50">
                         Find My Appointment 🔍
                     </button>
                 </div>
@@ -593,15 +593,15 @@ const handleSearchResults = (data: unknown) => {
         <div className="mt-20 pt-8 pb-12 border-t border-gray-200">
             <div className="flex gap-12 justify-center flex-wrap">
                 <div className="text-center">
-                    <div className="text-5xl font-extrabold text-blue-700">1M+</div>
+                    <div className="text-5xl font-extrabold text-[#0c213e]">1M+</div>
                     <div className="text-gray-500 text-sm tracking-widest uppercase mt-1">Total Bookings</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-5xl font-extrabold text-blue-700">4.9/5</div>
+                    <div className="text-5xl font-extrabold text-[#0c213e]">4.9/5</div>
                     <div className="text-gray-500 text-sm tracking-widest uppercase mt-1">User Rating</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-5xl font-extrabold text-blue-700">200+</div>
+                    <div className="text-5xl font-extrabold text-[#0c213e]">200+</div>
                     <div className="text-gray-500 text-sm tracking-widest uppercase mt-1">Top Specialties</div>
                 </div>
             </div>
@@ -651,9 +651,9 @@ const handleSearchResults = (data: unknown) => {
     
 
         {/* Enhanced CTA */}
-        <button className="group/btn w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:border-blue-500 hover:text-blue-600 transition-all duration-300 flex items-center justify-between text-sm">
+        <button className="group/btn w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-semibold hover:border-[#0c213e] hover:text-[#0c213e] transition-all duration-300 flex items-center justify-between text-sm">
           <span>Start Consultation</span>
-          <span className="group-hover/btn:translate-x-1 transition-transform duration-300 text-blue-500">
+          <span className="group-hover/btn:translate-x-1 transition-transform duration-300 text-[#0c213e]">
             &rarr;
           </span>
         </button>
@@ -699,10 +699,10 @@ const handleSearchResults = (data: unknown) => {
                 key={clinic._id}
                 className="bg-white border border-gray-200 p-6 rounded-lg shadow-md hover:shadow-xl transition-all text-left"
               >
-                <h3 className="text-xl font-bold text-blue-800 mb-1">
+                <h3 className="text-xl font-bold text-[#0c213e] mb-1">
                   {clinic.clinicName}
                 </h3>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-600">
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#0c213e]20 text-[#0c213e]">
                   Clinic
                 </span>
                 <p className="mt-3 text-sm text-gray-600">
@@ -723,7 +723,7 @@ const handleSearchResults = (data: unknown) => {
                 </p>
                 <button
                   onClick={() => console.log("View Profile:", clinic._id)}
-                  className="mt-4 w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all text-sm"
+                  className="mt-4 w-full px-4 py-2 bg-[#0c213e] text-white font-semibold rounded-lg shadow-md hover:bg-[#0c213e] transition-all text-sm"
                 >
                   View Clinic
                 </button>
@@ -796,7 +796,7 @@ const handleSearchResults = (data: unknown) => {
       </div>
       <Link
         to="/specialities"
-        className="group relative px-8 py-4 bg-white border border-blue-500 text-blue-600 rounded-xl hover:bg-blue-50 transition-all duration-300 font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+        className="group relative px-8 py-4 bg-white border border-[#0c213e] text-[#0c213e] rounded-xl hover:bg-blue-50 transition-all duration-300 font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
       >
         View All Specialities
         <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -821,7 +821,7 @@ const handleSearchResults = (data: unknown) => {
           </h3>
           <Link
             to="/consult/womens-health"
-            className="text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
+            className="text-[#0c213e] text-sm font-semibold hover:text-[#0c213e] transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
           >
             CONSULT NOW
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -834,7 +834,7 @@ const handleSearchResults = (data: unknown) => {
         <div className="flex flex-col items-center text-center">
           <div className="relative mb-5">
             <div className="w-20 h-20 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 border border-blue-100">
-              <Droplet className="w-10 h-10 text-blue-500" />
+              <Droplet className="w-10 h-10 text-[#0c213e]" />
             </div>
           </div>
           <h3 className="font-semibold text-gray-800 text-base mb-3 leading-tight">
@@ -842,7 +842,7 @@ const handleSearchResults = (data: unknown) => {
           </h3>
           <Link
             to="/consult/dermatology"
-            className="text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
+            className="text-[#0c213e] text-sm font-semibold hover:text-[#0c213e] transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
           >
             CONSULT NOW
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -866,7 +866,7 @@ const handleSearchResults = (data: unknown) => {
           </h3>
           <Link
             to="/consult/sexual-health"
-            className="text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
+            className="text-[#0c213e] text-sm font-semibold hover:text-[#0c213e] transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
           >
             CONSULT NOW
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -887,7 +887,7 @@ const handleSearchResults = (data: unknown) => {
           </h3>
           <Link
             to="/consult/general-physician"
-            className="text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
+            className="text-[#0c213e] text-sm font-semibold hover:text-[#0c213e] transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
           >
             CONSULT NOW
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -911,7 +911,7 @@ const handleSearchResults = (data: unknown) => {
           </h3>
           <Link
             to="/consult/pediatrics"
-            className="text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
+            className="text-[#0c213e] text-sm font-semibold hover:text-[#0c213e] transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
           >
             CONSULT NOW
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -935,7 +935,7 @@ const handleSearchResults = (data: unknown) => {
           </h3>
           <Link
             to="/consult/mental-health"
-            className="text-blue-600 text-sm font-semibold hover:text-blue-700 transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
+            className="text-[#0c213e] text-sm font-semibold hover:text-[#0c213e] transition-colors duration-300 flex items-center justify-center gap-1 group-hover:gap-2"
           >
             CONSULT NOW
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-1">→</span>
@@ -955,7 +955,7 @@ const handleSearchResults = (data: unknown) => {
           <p className="text-gray-600 text-sm">Top specialists from leading hospitals</p>
         </div>
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+          <div className="w-12 h-12 bg-[#0c213e]20 rounded-full flex items-center justify-center mb-3">
             <span className="text-2xl">🛡️</span>
           </div>
           <h4 className="font-semibold text-gray-800 mb-2">100% Private & Secure</h4>
@@ -980,7 +980,7 @@ const handleSearchResults = (data: unknown) => {
     {/* Header Section */}
     <div className="text-center mb-12">
       <h2 className="text-4xl font-bold text-gray-900 mb-4">
-        Book an <span className="text-blue-600">In-Clinic Consultation</span>
+        Book an <span className="text-[#0c213e]">In-Clinic Consultation</span>
       </h2>
       <p className="text-lg text-gray-600 max-w-2xl mx-auto">
         Find experienced doctors across all specialties for personalized, face-to-face care at our partner clinics
@@ -999,15 +999,15 @@ const handleSearchResults = (data: unknown) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute top-4 right-4">
-            <span className="bg-white/90 backdrop-blur-sm text-blue-600 text-xs font-semibold px-3 py-1 rounded-full">
+            <span className="bg-white/90 backdrop-blur-sm text-[#0c213e] text-xs font-semibold px-3 py-1 rounded-full">
               🦷 Dental
             </span>
           </div>
         </div>
         <div className="p-6">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <span className="text-blue-600 text-lg">🦷</span>
+            <div className="w-10 h-10 bg-[#0c213e]20 rounded-lg flex items-center justify-center">
+              <span className="text-[#0c213e] text-lg">🦷</span>
             </div>
             <h3 className="font-bold text-gray-900 text-lg">Dentist</h3>
           </div>
@@ -1144,10 +1144,10 @@ const handleSearchResults = (data: unknown) => {
           We have 50+ medical specialties and 1000+ experienced doctors ready to help you
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300 shadow-lg hover:shadow-xl">
+          <button className="bg-[#0c213e] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#030b4d] transition-colors duration-300 shadow-lg hover:shadow-xl">
             Browse All Specialties
           </button>
-          <button className="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors duration-300">
+          <button className="border border-[#0c213e] text-[#0c213e] px-8 py-3 rounded-lg font-semibold hover:bg-[#e0e7ff] transition-colors duration-300">
             Call: 1800-HELP-NOW
           </button>
         </div>
@@ -1184,7 +1184,7 @@ const handleSearchResults = (data: unknown) => {
               </p>
               <Link
                 to="/articles"
-                className="w-full sm:w-auto self-start px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition duration-300 text-center"
+                className="w-full sm:w-auto self-start px-6 py-3 bg-[#0c213e] text-white font-semibold rounded-lg shadow-md hover:bg-[#0c213e] transition duration-300 text-center"
               >
                 See all articles
               </Link>
@@ -1201,7 +1201,7 @@ const handleSearchResults = (data: unknown) => {
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">
-                  <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-bg-[#0c213e] uppercase tracking-wider">
                     CORONAVIRUS
                   </span>
                   <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2 leading-snug">

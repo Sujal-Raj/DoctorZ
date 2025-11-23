@@ -121,7 +121,7 @@ const RegisterDoctor: React.FC = () => {
         icon: "success",
         title: "Doctor Registered!",
         text: "Your details have been submitted for verification.",
-        confirmButtonColor: "#28328C",
+        confirmButtonColor: "#0c213e",
       });
       reset();
       setDegreeFile(null);
@@ -135,7 +135,7 @@ const RegisterDoctor: React.FC = () => {
         icon: "error",
         title: "Registration Failed",
         text: error?.response?.data?.message || "Something went wrong!",
-        confirmButtonColor: "#28328C",
+        confirmButtonColor: "#0c213e",
       });
     } finally {
       setLoading(false);
@@ -169,7 +169,7 @@ const RegisterDoctor: React.FC = () => {
         type={type}
         placeholder={placeholder}
         {...registerField}
-        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] transition-all"
+        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#0c213e] focus:border-[#0c213e] transition-all"
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
@@ -203,7 +203,7 @@ const RegisterDoctor: React.FC = () => {
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
         <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-[#28328C]">
+            <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🩺 Doctor Registration
             </h1>
             <p className="mt-2 text-gray-600 text-sm md:text-base">
@@ -217,7 +217,7 @@ const RegisterDoctor: React.FC = () => {
             encType="multipart/form-data"
           >
             {/* --- Doctor Info --- */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2">
               Doctor Information
             </h2>
 
@@ -236,7 +236,7 @@ const RegisterDoctor: React.FC = () => {
               </label>
               <select
                 {...register("gender", { required: "Gender is required" })}
-                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C]"
+                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#0c213e]"
               >
                 <option value="">Select Gender</option>
                 <option>Male</option>
@@ -318,7 +318,7 @@ const RegisterDoctor: React.FC = () => {
             />
 
             {/* --- Personal Info --- */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pt-4 pb-2">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pt-4 pb-2">
               Personal Details
             </h2>
 
@@ -380,7 +380,7 @@ const RegisterDoctor: React.FC = () => {
             />
 
             {/* --- Documents --- */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pt-4 pb-2">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pt-4 pb-2">
               Upload Documents
             </h2>
 
@@ -416,8 +416,8 @@ const RegisterDoctor: React.FC = () => {
                   {fileInput.label}
                 </label>
                 <div className="flex items-center gap-4">
-                  <label className="flex items-center justify-center w-full h-28 border-2 border-dashed border-[#28328C]/40 rounded-lg cursor-pointer hover:bg-[#28328C]/5 transition">
-                    <Upload className="text-[#28328C] mr-2" size={20} />
+                  <label className="flex items-center justify-center w-full h-28 border-2 border-dashed border-[#0c213e]/40 rounded-lg cursor-pointer hover:bg-[#0c213e]/5 transition">
+                    <Upload className="text-[#0c213e] mr-2" size={20} />
                     <span className="text-gray-600 text-sm">
                       {fileInput.file ? "Change File" : "Upload"}
                     </span>
@@ -436,7 +436,7 @@ const RegisterDoctor: React.FC = () => {
                   </label>
 
                   {fileInput.file && (
-                    <div className="border border-[#28328C]/30 rounded-lg p-2 bg-gray-50 shadow-sm flex items-center justify-center w-28 h-28">
+                    <div className="border border-[#0c213e]/30 rounded-lg p-2 bg-gray-50 shadow-sm flex items-center justify-center w-28 h-28">
                       {fileInput.preview ? (
                         <img
                           src={fileInput.preview}
@@ -463,7 +463,7 @@ const RegisterDoctor: React.FC = () => {
                 className={`px-8 py-2.5 text-white text-base font-semibold rounded-lg shadow-md transition-all duration-300 ${
                   loading
                     ? "bg-[#3a49c9] cursor-not-allowed"
-                    : "bg-[#28328C] hover:bg-[#1f2775] hover:scale-[1.02]"
+                    : "bg-[#0c213e] hover:bg-[#1f2775] hover:scale-[1.02]"
                 }`}
               >
                 {loading ? "Submitting..." : "Register Doctor"}
