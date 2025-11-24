@@ -123,7 +123,7 @@ const [loading, setLoading] = useState(false);
         type={type}
         placeholder={placeholder}
         {...registerField}
-        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#28328C] focus:border-[#28328C] transition-all"
+        className="w-full rounded-lg border border-gray-300 bg-white p-2.5 text-gray-800 shadow-sm focus:ring-2 focus:ring-[#0c213e] focus:border-[#0c213e] transition-all"
       />
     </div>
   );
@@ -137,7 +137,7 @@ const [loading, setLoading] = useState(false);
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
         <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-extrabold text-[#28328C]">
+            <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🏥 Patient Registration
             </h1>
             <p className="mt-2 text-gray-600 text-sm md:text-base">
@@ -150,7 +150,7 @@ const [loading, setLoading] = useState(false);
             className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800"
           >
             {/* ✅ PERSONAL INFO */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2">
               Personal Information
             </h2>
 
@@ -167,7 +167,7 @@ const [loading, setLoading] = useState(false);
               </label>
               <select
                 {...register("gender")}
-                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 shadow-sm focus:ring-2 focus:ring-[#28328C]"
+                className="w-full rounded-lg border border-gray-300 bg-white p-2.5 shadow-sm focus:ring-2 focus:ring-[#0c213e]"
               >
                 <option value="">Select Gender</option>
                 <option>Male</option>
@@ -282,7 +282,7 @@ const [loading, setLoading] = useState(false);
               )}
             </div>
             {/* ✅ EMERGENCY */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C]  pt-4 border-b border-[#28328C]/20 pb-2">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e]  pt-4 border-b border-[#0c213e]/20 pb-2">
               Emergency Contact
             </h2>
 
@@ -313,13 +313,13 @@ const [loading, setLoading] = useState(false);
               )}
             </div>
             {/* ✅ PROFILE PHOTO ONLY */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2">
               Profile Photo
             </h2>
 
             <div className="md:col-span-2 flex items-center gap-6">
-              <label className="w-40 h-40 border-2 border-dashed border-[#28328C]/40 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#28328C]/5 transition">
-                <Upload className="text-[#28328C]" size={22} />
+              <label className="w-40 h-40 border-2 border-dashed border-[#0c213e]/40 rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#0c213e]/5 transition">
+                <Upload className="text-[#0c213e]" size={22} />
                 <input
                   type="file"
                   accept="image/*"
@@ -337,7 +337,7 @@ const [loading, setLoading] = useState(false);
             </div>
 
             {/* ✅ MEDICAL RECORDS SECTION (unchanged) */}
-            <h2 className="md:col-span-2 text-lg font-semibold text-[#28328C] border-b border-[#28328C]/20 pb-2 pt-4 ">
+            <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2 pt-4 ">
               Medical Records
             </h2>
 
@@ -408,7 +408,7 @@ const [loading, setLoading] = useState(false);
   type="submit"
   disabled={loading}
   className={`cursor-pointer px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
-    bg-[#28328C] hover:bg-[#1f2775] shadow-md transition 
+    bg-[#0c213e] hover:bg-[#1f2775] shadow-md transition 
     ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
 >
   {loading ? "Submitting..." : "Register Patient"}

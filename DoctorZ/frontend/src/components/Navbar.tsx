@@ -185,9 +185,9 @@ export default function Navbar() {
           <div className="flex items-center gap-6">
             <Link
               to="/"
-              className="flex items-center gap-2 text-2xl font-bold text-[#28328C] hover:text-[#1f2673]"
+              className="flex items-center gap-2 text-2xl font-bold text-[#0c213e] hover:text-[#1f2673]"
             >
-              <div className="w-8 h-8 bg-[#28328C] rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#0c213e] rounded-full flex items-center justify-center">
                 <Stethoscope className="w-4 h-4 text-white" />
               </div>
               DoctorZ
@@ -201,9 +201,9 @@ export default function Navbar() {
               <DropdownMenu.Trigger asChild>
                 <div className="hidden lg:flex items-center gap-2 px-3 py-2 bg-white hover:bg-gray-50 cursor-pointer rounded-lg border border-gray-200">
                   {isLocating ? (
-                    <Loader2 className="w-4 h-4 text-[#28328C] animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#0c213e] animate-spin" />
                   ) : (
-                    <MapPin size={16} className="text-[#28328C]" />
+                    <MapPin size={16} className="text-[#0c213e]" />
                   )}
                   <span className="text-sm font-semibold text-gray-800">
                     {isLocating ? "Detecting..." : userLocation}
@@ -224,7 +224,7 @@ export default function Navbar() {
                       onClick={handleUseCurrentLocation}
                       className="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 text-left transition-colors"
                     >
-                      <LocateFixed size={20} className="text-[#28328C]" />
+                      <LocateFixed size={20} className="text-[#0c213e]" />
                       <span className="flex-1 font-medium">
                         Current Location
                       </span>
@@ -298,29 +298,40 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`font-medium transition-colors relative py-2 ${
-                  location.pathname === item.path
-                    ? "text-[#28328C] font-semibold"
-                    : "text-gray-600 hover:text-[#28328C]"
-                }`}
-              >
-                {item.label}
-                {location.pathname === item.path && (
-                  <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#28328C]" />
-                )}
-              </Link>
-            ))}
+          {/* DESKTOP NAV */}
+    <div className="hidden md:flex items-center gap-8">
+      {navItems.map((item) => {
+        const active = location.pathname === item.path;
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`relative py-2 font-medium transition-all ${
+              active
+                ? "text-[#0C213E]"
+                : "text-gray-600 hover:text-[#0C213E]"
+            }`}
+          >
+            {item.label}
+
+            {/* SLIDING UNDERLINE */}
+            <span
+              className={`absolute left-0 bottom-0 h-[2px] bg-[#0C213E] transition-all duration-300 ${
+                active
+                  ? "w-full"
+                  : "w-0 group-hover:w-full"
+              }`}
+            />
+          </Link>
+        );
+      })}
+
 
             {/* Register Dropdown */}
             {!isLoggedIn && (
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
-                  <button className="bg-[#28328C] text-white px-5 py-2.5 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[#1f2673] transition-colors">
+                  <button className="bg-[#0c213e] text-white px-5 py-2.5 rounded-lg shadow-lg flex items-center gap-2 hover:bg-[#1f2673] transition-colors">
                     <UserPlus size={18} />
                     Register
                     <ChevronDown size={16} />
@@ -331,7 +342,7 @@ export default function Navbar() {
                     <DropdownMenu.Item asChild key={opt.path}>
                       <Link
                         to={opt.path}
-                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-[#28328C] transition-colors first:rounded-t-xl last:rounded-b-xl"
+                        className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-[#0c213e] transition-colors first:rounded-t-xl last:rounded-b-xl"
                       >
                         {opt.icon}
                         {opt.label}
@@ -408,8 +419,8 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className={`py-2 transition-colors ${
                     location.pathname === item.path
-                      ? "text-[#28328C] font-semibold"
-                      : "text-gray-700 hover:text-[#28328C]"
+                      ? "text-[#0c213e] font-semibold"
+                      : "text-gray-700 hover:text-[#0c213e]"
                   }`}
                 >
                   {item.label}
@@ -427,7 +438,7 @@ export default function Navbar() {
                       key={opt.path}
                       to={opt.path}
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2 py-2 text-gray-700 hover:text-[#28328C] transition-colors"
+                      className="flex items-center gap-2 py-2 text-gray-700 hover:text-[#0c213e] transition-colors"
                     >
                       {opt.icon}
                       {opt.label}
@@ -459,7 +470,7 @@ export default function Navbar() {
                       setSidebarOpen(true);
                       setMobileOpen(false);
                     }}
-                    className="flex items-center gap-2 py-2 text-gray-700 hover:text-[#28328C] transition-colors"
+                    className="flex items-center gap-2 py-2 text-gray-700 hover:text-[#0c213e] transition-colors"
                   >
                     <User size={18} /> Profile
                   </button>

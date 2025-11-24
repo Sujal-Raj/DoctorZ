@@ -180,6 +180,13 @@
 //   );
 // }
 
+
+
+
+
+
+
+
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -218,13 +225,10 @@ export default function DoctorDashboard() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ⭐ FIX: Ensure correct sidebar behavior on mobile vs desktop
+  // Auto open/close depending on screen
   useEffect(() => {
-    if (isDesktop) {
-      setSidebarOpen(true); // always open on desktop
-    } else {
-      setSidebarOpen(false); // always closed initially on mobile
-    }
+    if (isDesktop) setSidebarOpen(true);
+    else setSidebarOpen(false);
   }, [isDesktop]);
 
   const handleLogout = () => {
@@ -283,12 +287,28 @@ export default function DoctorDashboard() {
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* --- BACKDROP (CLICK OUTSIDE TO CLOSE SIDEBAR) --- */}
+      {!isDesktop && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+        />
+      )}
+
+      {/* SIDEBAR */}
       <aside
         className={`
           bg-[#0c213e] text-white flex flex-col justify-between
-          fixed md:relative top-0 left-0 h-full z-40 w-64 
+          fixed md:relative 
+          left-0
+          z-40 
+          w-64 h-[calc(100vh-56px)] md:h-full
           transform transition-transform duration-300
+
+          /* mobile top spacing (below topbar) */
+          top-[56px] md:top-0
+
+          /* sliding animation */
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
       >
@@ -313,7 +333,7 @@ export default function DoctorDashboard() {
               const isActive =
                 (item.name === "Dashboard" &&
                   (location.pathname === dashboardPath ||
-                    location.pathname === `${dashboardPath}/`)) ||
+                  location.pathname === `${dashboardPath}/`)) ||
                 (item.path !== "" && location.pathname.includes(item.path));
 
               return (
@@ -353,9 +373,16 @@ export default function DoctorDashboard() {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 bg-gray-100 p-8 overflow-y-auto pt-20 md:pt-8">
-        <div className="max-w-5xl flex">
+      {/* MAIN CONTENT */}
+      <main
+        className="
+          flex-1 bg-gray-100 
+          p-8 overflow-y-auto 
+          pt-[56px] md:pt-8
+          
+        "
+      >
+        <div className="max-w-5xl mx-auto">
           <Outlet />
         </div>
       </main>

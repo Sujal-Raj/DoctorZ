@@ -132,7 +132,7 @@ const ClinicDetails: React.FC = () => {
   if (loading)
     return (
       <div className="flex items-center justify-center h-60">
-        <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-8 w-8 border-4 border-bg-[#0c213e] border-t-transparent rounded-full"></div>
       </div>
     );
 
@@ -441,7 +441,7 @@ const ClinicDetails: React.FC = () => {
                       onClick={() => {
                         // Reset all filters logic would go here
                       }}
-                      className="text-sm text-[#28328C] hover:text-[#28328C] font-medium"
+                      className="text-sm text-[#0c213e] hover:text-[#0c213e] font-medium"
                     >
                       Reset All
                     </button>
@@ -468,8 +468,8 @@ const ClinicDetails: React.FC = () => {
                               <div
                                 className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
                                   filters.gender.includes(g)
-                                    ? "bg-[#28328C] border-[#28328C]"
-                                    : "border-gray-300 group-hover:border-[#28328C]"
+                                    ? "bg-[#0c213e] border-[#0c213e]"
+                                    : "border-gray-300 group-hover:border-[#0c213e]"
                                 }`}
                               >
                                 {filters.gender.includes(g) && (
@@ -489,7 +489,7 @@ const ClinicDetails: React.FC = () => {
                                 )}
                               </div>
                             </div>
-                            <span className="text-gray-700 group-hover:text-[#28328C] transition-colors">
+                            <span className="text-gray-700 group-hover:text-[#0c213e] transition-colors">
                               {g}
                             </span>
                           </label>
@@ -524,8 +524,8 @@ const ClinicDetails: React.FC = () => {
                               <div
                                 className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
                                   filters.fees.includes(value)
-                                    ? "bg-indigo-600 border-indigo-600"
-                                    : "border-gray-300 group-hover:border-indigo-400"
+                                    ? "bg-bg-[#0c213e] border-bg-[#0c213e]"
+                                    : "border-gray-300 group-hover:border-bg-[#0c213e]"
                                 }`}
                               >
                                 {filters.fees.includes(value) && (
@@ -580,7 +580,7 @@ const ClinicDetails: React.FC = () => {
                               <div
                                 className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
                                   filters.experience.includes(value)
-                                    ? "bg-indigo-600 border-indigo-600"
+                                    ? "bg-bg-[#0c213e] border-bg-[#0c213e]"
                                     : "border-gray-300 group-hover:border-indigo-400"
                                 }`}
                               >
@@ -687,7 +687,7 @@ const ClinicDetails: React.FC = () => {
                       onClick={() => {
                         // Reset filters logic
                       }}
-                      className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-[#28328C] transition-colors"
+                      className="bg-bg-[#0c213e] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0c213e] transition-colors"
                     >
                       Reset All Filters
                     </button>
@@ -714,7 +714,7 @@ const ClinicDetails: React.FC = () => {
                               />
                             ) : (
                               <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
-                                <span className="text-[#28328C] font-bold text-lg">
+                                <span className="text-[#0c213e] font-bold text-lg">
                                   {doc.fullName
                                     .split(" ")
                                     .map((n) => n[0])
@@ -728,10 +728,10 @@ const ClinicDetails: React.FC = () => {
                           </div>
                         </div>
 
-                        <h3 className="font-bold text-xl text-gray-900 mb-1 group-hover:text-[#28328C] transition-colors">
+                        <h3 className="font-bold text-xl text-gray-900 mb-1 group-hover:text-[#0c213e] transition-colors">
                           {doc.fullName}
                         </h3>
-                        <p className="text-indigo-600 font-semibold mb-2">
+                        <p className="text-bg-[#0c213e] font-semibold mb-2">
                           {doc.specialization}
                         </p>
 
@@ -785,7 +785,7 @@ const ClinicDetails: React.FC = () => {
                         </div>
 
                         <div className="flex gap-3 w-full">
-                          <button className="flex-1 bg-[#28328C] text-white py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                          <button className="flex-1 bg-[#0c213e] text-white py-3 rounded-lg font-medium hover:bg-[#0a1a33] transition-colors">
                             Book Appointment
                           </button>
                           <button className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
@@ -834,7 +834,7 @@ const ClinicDetails: React.FC = () => {
                   description:
                     "Comprehensive evaluation and management of neurological disorders with personalized treatment plans.",
                   // icon: "🧠",
-                  color: "from-purple-500 to-indigo-600",
+                  color: "from-purple-500 to-bg-[#0c213e]",
                 },
                 {
                   title: "Electroencephalogram (EEG)",
@@ -883,7 +883,7 @@ const ClinicDetails: React.FC = () => {
                       {service.title}
                     </h3>
                     <p className="text-gray-600">{service.description}</p>
-                    <button className="mt-6 text-[#28328C] font-semibold flex items-center gap-2 group-hover:text-[#28328C] transition-colors">
+                    <button className="mt-6 text-[#0c213e] font-semibold flex items-center gap-2 group-hover:text-[#0c213e] transition-colors">
                       Learn more
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

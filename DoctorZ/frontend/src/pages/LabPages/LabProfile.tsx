@@ -401,10 +401,10 @@
 
 // export default LabProfile;
 
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import {
   Building2,
   Mail,
@@ -433,12 +433,10 @@ interface LabDashboardContext {
 
 interface GetLabResponse {
   labDetails: Lab;
-  message: string;
 }
 
 interface UpdateLabResponse {
   lab: Lab;
-  message: string;
 }
 
 const LabProfile = () => {
@@ -463,7 +461,7 @@ const LabProfile = () => {
     message: string;
   } | null>(null);
 
-  // ✅ Fetch Lab Data
+  // Fetch Data
   useEffect(() => {
     if (!contextLabId) return;
 
@@ -474,12 +472,10 @@ const LabProfile = () => {
           `http://localhost:3000/api/lab/getLabById/${contextLabId}`
         );
         setLab(res.data.labDetails);
-      } catch (err) {
-        console.error("Error fetching lab:", err);
+      } catch {
         showNotification("error", "Failed to load lab data");
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     fetchLab();
@@ -487,23 +483,16 @@ const LabProfile = () => {
 
   const showNotification = (type: "success" | "error", message: string) => {
     setNotification({ type, message });
-    setTimeout(() => setNotification(null), 4000);
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLab((prevLab) => ({
-      ...prevLab,
-      [name]: value,
-    }));
+    setLab({ ...lab, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contextLabId) {
-      showNotification("error", "Lab ID not found!");
-      return;
-    }
+    if (!contextLabId) return;
 
     setSaving(true);
     try {
@@ -514,223 +503,155 @@ const LabProfile = () => {
       setLab(res.data.lab);
       setIsEditing(false);
       showNotification("success", "Profile updated successfully!");
-    } catch (err) {
-      console.error("Error updating lab:", err);
+    } catch {
       showNotification("error", "Failed to update profile");
-    } finally {
-      setSaving(false);
     }
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
+    setSaving(false);
   };
 
   return (
-    <div className="p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#070738] via-[#0a0a4a] to-[#070738] rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-40"></div>
-          <div className="relative px-10 py-8 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="bg-white/10 backdrop-blur-xl p-5 rounded-2xl border border-white/20 shadow-2xl">
-                <Building2 className="w-11 h-11 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold text-white tracking-tight">
-                  Laboratory Profile
-                </h1>
-                <p className="text-blue-200 text-base mt-1.5">
-                  Manage your laboratory information
-                </p>
-              </div>
-            </div>
-            {!isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="bg-white text-[#070738] hover:bg-gray-100 font-bold px-8 py-4 rounded-xl transition-all duration-200 flex items-center gap-3 shadow-xl hover:shadow-2xl hover:scale-105 text-lg"
-              >
-                <Edit3 className="w-6 h-6" />
-                Edit Profile
-              </button>
-            )}
+    <div className="p-4 sm:p-6 max-w-5xl mx-auto">
+
+      {/* SEO */}
+      <Helmet>
+        <title>Lab Profile | Dashboard</title>
+        <meta
+          name="description"
+          content="Manage your laboratory profile, update information, and keep your lab details accurate."
+        />
+      </Helmet>
+
+      {/* HEADER */}
+      <div className="bg-[#0C213E] rounded-2xl shadow-xl p-5 mb-6 flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-4">
+          <div className="bg-white/10 p-3 rounded-xl">
+            <Building2 className="w-8 h-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              Laboratory Profile
+            </h1>
+            <p className="text-gray-200 text-sm sm:text-base">
+              Manage your lab information
+            </p>
           </div>
         </div>
 
-        {/* Main Form */}
-        {loading ? (
-          <p>Loading profile...</p>
-        ) : (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-200"
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="bg-white text-[#0C213E] px-5 py-2.5 rounded-xl font-semibold shadow hover:shadow-lg text-sm sm:text-base transition flex items-center gap-2"
           >
-            <div className="space-y-7">
-              {/* Lab Name */}
-              <div>
-                <label className="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-widest">
-                  Laboratory Name
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                    <Building2
-                      className={`w-6 h-6 ${
-                        isEditing ? "text-[#070738]" : "text-gray-400"
-                      }`}
-                    />
-                  </div>
-                  <input
-                    name="name"
-                    value={lab.name}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`w-full pl-14 pr-5 py-4 border-2 rounded-xl transition-all outline-none text-gray-900 font-medium text-lg ${
-                      isEditing
-                        ? "border-gray-300 bg-white focus:border-[#070738] focus:ring-4 focus:ring-[#070738]/10"
-                        : "border-gray-200 bg-gray-50 cursor-default"
-                    }`}
-                    placeholder="Enter laboratory name"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-widest">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                    <Mail
-                      className={`w-6 h-6 ${
-                        isEditing ? "text-[#070738]" : "text-gray-400"
-                      }`}
-                    />
-                  </div>
-                  <input
-                    name="email"
-                    type="email"
-                    value={lab.email}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`w-full pl-14 pr-5 py-4 border-2 rounded-xl transition-all outline-none text-gray-900 font-medium text-lg ${
-                      isEditing
-                        ? "border-gray-300 bg-white focus:border-[#070738] focus:ring-4 focus:ring-[#070738]/10"
-                        : "border-gray-200 bg-gray-50 cursor-default"
-                    }`}
-                    placeholder="lab@example.com"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Address */}
-              <div>
-                <label className="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-widest">
-                  Street Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                    <MapPin
-                      className={`w-6 h-6 ${
-                        isEditing ? "text-[#070738]" : "text-gray-400"
-                      }`}
-                    />
-                  </div>
-                  <input
-                    name="address"
-                    value={lab.address}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className={`w-full pl-14 pr-5 py-4 border-2 rounded-xl transition-all outline-none text-gray-900 font-medium text-lg ${
-                      isEditing
-                        ? "border-gray-300 bg-white focus:border-[#070738] focus:ring-4 focus:ring-[#070738]/10"
-                        : "border-gray-200 bg-gray-50 cursor-default"
-                    }`}
-                    placeholder="Enter street address"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* City, State, Pincode */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-                {["city", "state", "pincode"].map((field) => (
-                  <div key={field}>
-                    <label className="block text-sm font-bold text-gray-600 mb-3 uppercase tracking-widest">
-                      {field.charAt(0).toUpperCase() + field.slice(1)}
-                    </label>
-                    <input
-                      name={field}
-                      value={(lab as any)[field]}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                      className={`w-full px-5 py-4 border-2 rounded-xl transition-all outline-none text-gray-900 font-medium text-lg ${
-                        isEditing
-                          ? "border-gray-300 bg-white focus:border-[#070738] focus:ring-4 focus:ring-[#070738]/10"
-                          : "border-gray-200 bg-gray-50 cursor-default"
-                      }`}
-                      placeholder={`Enter ${field}`}
-                      required
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Buttons */}
-            {isEditing && (
-              <div className="mt-8 pt-6 border-t-2 border-gray-200 flex gap-4">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3"
-                >
-                  <X className="w-5 h-5" />
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="flex-1 bg-gradient-to-r from-[#070738] to-[#0a0a4a] hover:scale-105 text-white font-bold py-4 rounded-xl shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-60"
-                >
-                  {saving ? (
-                    <>
-                      <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5" />
-                      Save Changes
-                    </>
-                  )}
-                </button>
-              </div>
-            )}
-          </form>
-        )}
-
-        {/* ✅ Notification */}
-        {notification && (
-          <div
-            className={`fixed bottom-6 right-6 px-5 py-4 rounded-xl text-white flex items-center gap-3 shadow-xl ${
-              notification.type === "success"
-                ? "bg-green-600"
-                : "bg-red-600"
-            }`}
-          >
-            {notification.type === "success" ? (
-              <CheckCircle2 className="w-6 h-6" />
-            ) : (
-              <AlertCircle className="w-6 h-6" />
-            )}
-            <span>{notification.message}</span>
-          </div>
+            <Edit3 className="w-5 h-5" />
+            Edit
+          </button>
         )}
       </div>
+
+      {/* FORM */}
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-xl rounded-2xl p-5 sm:p-7 border border-gray-200 text-sm sm:text-base"
+      >
+        <div className="grid gap-6">
+
+          {/* Single Input Reusable */}
+          {[
+            { label: "Laboratory Name", field: "name", icon: Building2 },
+            { label: "Email", field: "email", icon: Mail, type: "email" },
+            { label: "Address", field: "address", icon: MapPin },
+          ].map((item) => (
+            <div key={item.field}>
+              <label className="font-semibold text-gray-700 mb-1 block">
+                {item.label}
+              </label>
+              <div className="relative">
+                <item.icon
+                  className="absolute left-3 top-3 h-5 w-5 text-gray-400"
+                />
+                <input
+                  type={item.type || "text"}
+                  name={item.field}
+                  value={(lab as any)[item.field]}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`w-full pl-10 pr-3 py-2.5 rounded-xl border outline-none transition ${
+                    isEditing
+                      ? "border-gray-300 focus:border-[#0C213E] focus:ring-2 focus:ring-[#0C213E]/20"
+                      : "bg-gray-100 border-gray-200 cursor-default"
+                  }`}
+                />
+              </div>
+            </div>
+          ))}
+
+          {/* CITY / STATE / PINCODE */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {["city", "state", "pincode"].map((field) => (
+              <div key={field}>
+                <label className="font-semibold text-gray-700 mb-1 block capitalize">
+                  {field}
+                </label>
+                <input
+                  name={field}
+                  value={(lab as any)[field]}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={`w-full px-3 py-2.5 rounded-xl border outline-none transition ${
+                    isEditing
+                      ? "border-gray-300 focus:border-[#0C213E] focus:ring-2 focus:ring-[#0C213E]/20"
+                      : "bg-gray-100 border-gray-200 cursor-default"
+                  }`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* BUTTONS */}
+        {isEditing && (
+          <div className="mt-6 flex gap-4">
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="flex-1 bg-gray-200 py-2.5 rounded-xl font-semibold hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 bg-[#0C213E] text-white py-2.5 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2"
+            >
+              {saving ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  Save
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </form>
+
+      {/* NOTIFICATION */}
+      {notification && (
+        <div
+          className={`fixed bottom-6 right-6 px-4 py-3 rounded-lg text-white flex items-center gap-3 shadow-lg ${
+            notification.type === "success" ? "bg-green-600" : "bg-red-600"
+          }`}
+        >
+          {notification.type === "success" ? (
+            <CheckCircle2 className="w-5 h-5" />
+          ) : (
+            <AlertCircle className="w-5 h-5" />
+          )}
+          {notification.message}
+        </div>
+      )}
     </div>
   );
 };

@@ -101,7 +101,7 @@ const [loading, setLoading] = useState(false);
           className="w-full max-w-3xl bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 p-10 animate-fade-in"
           aria-label="Lab registration form"
         >
-          <h1 className="text-3xl font-extrabold text-[#28328C] text-center mb-8  tracking-tight">
+          <h1 className="text-3xl font-extrabold text-[#0c213e] text-center mb-8  tracking-tight">
             🧪 Register Your Laboratory
           </h1>
           <p className="text-center text-gray-600 mb-10">
@@ -198,7 +198,7 @@ const [loading, setLoading] = useState(false);
   type="submit"
   disabled={loading}
   className={`px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
-    bg-[#28328C] hover:bg-[#1f2775] shadow-md transition 
+    bg-[#0c213e] hover:bg-[#1f2775] shadow-md transition 
     ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
 >
   {loading ? "Submitting..." : "Register Lab"}

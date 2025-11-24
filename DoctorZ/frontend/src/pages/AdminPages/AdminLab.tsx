@@ -106,7 +106,7 @@ export default function AdminLab() {
       {/* Header */}
       <div className="mb-6 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#28328C] mb-1">Lab Approval Management</h1>
+          <h1 className="text-3xl font-bold text-[#0c213e] mb-1">Lab Approval Management</h1>
           <p className="text-gray-600">Review and approve pending laboratory registrations.</p>
         </div>
         <div className="bg-white px-6 py-4 rounded-2xl shadow border border-gray-200 text-center min-w-[140px]">
@@ -132,7 +132,7 @@ export default function AdminLab() {
       {/* Table */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow-md border border-gray-200">
         <table className="min-w-full text-left">
-          <thead className="bg-[#28328C] text-white text-xs uppercase">
+          <thead className="bg-[#0c213e] text-white text-xs uppercase">
             <tr>
               <th className="py-3 px-4">Lab Name</th>
               <th className="py-3 px-4">Email</th>

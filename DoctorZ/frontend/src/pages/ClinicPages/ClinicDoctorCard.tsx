@@ -103,7 +103,7 @@ Swal.fire({
       className="w-32 h-32 rounded-lg object-cover border mb-4"
     />
   ) : (
-    <div className="w-32 h-32 rounded-lg bg-[#28328C] text-white flex items-center justify-center text-3xl font-bold mb-4">
+    <div className="w-32 h-32 rounded-lg bg-[#0c213e] text-white flex items-center justify-center text-3xl font-bold mb-4">
       {doctor.fullName.charAt(0)}
     </div>
   )}
@@ -114,7 +114,7 @@ Swal.fire({
   </h2>
 
   {/* SPECIALIZATION */}
-  <p className="text-[#28328C] font-medium mt-1">
+  <p className="text-[#0c213e] font-medium mt-1">
     {doctor.specialization}
   </p>
 
@@ -167,7 +167,7 @@ Swal.fire({
         e.stopPropagation();
         handleAddDoctor(doctor);
       }}
-      className="px-4 py-2 bg-[#28328C] text-white rounded-lg w-full"
+      className="px-4 py-2 bg-[#0c213e] text-white rounded-lg w-full"
     >
       Add Doctor
     </button>

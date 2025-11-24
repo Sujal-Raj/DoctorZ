@@ -330,7 +330,7 @@ const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
             className={`w-full py-2 mt-4 rounded-lg font-semibold text-white ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-[#28328C] hover:bg-[#1e2675]"
+                : "bg-[#0c213e] hover:bg-[#030b4d]"
             }`}
           >
             {loading ? "Processing..." : "Book Appointment"}

@@ -92,7 +92,7 @@ const ClinicDoctors = () => {
             <div
               key={doctor._id}
               onClick={() => navigate(`clinic-doctor-profile/${doctor._id}`)}
-              className="cursor-pointer bg-white rounded-xl shadow-md border border-transparent hover:border-blue-500 hover:shadow-lg transition duration-200 group relative overflow-hidden"
+              className="cursor-pointer bg-white rounded-xl shadow-md border border-transparent hover:border-bg-[#0c213e]hover:shadow-lg transition duration-200 group relative overflow-hidden"
             >
               {/* Doctor Image */}
               <div className="w-full h-52 sm:h-60 md:h-64 overflow-hidden rounded-t-xl">
@@ -104,7 +104,7 @@ const ClinicDoctors = () => {
               </div>
 
               {/* Doctor Info */}
-              <div className="p-3 sm:p-4 group-hover:bg-blue-500 transition duration-200">
+              <div className="p-3 sm:p-4 group-hover:bg-[#0c213e] transition duration-200">
                 {/* Status */}
                 <div className="flex items-center mb-1">
                   <span
@@ -128,7 +128,7 @@ const ClinicDoctors = () => {
 
               {/* 💬 Chat Icon */}
               <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs sm:text-sm group-hover:bg-white group-hover:text-blue-500 transition">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-100 text-bg-[#0c213e] rounded-full flex items-center justify-center text-xs sm:text-sm group-hover:bg-white group-hover:text-blue-500 transition">
                   💬
                 </div>
               </div>
