@@ -454,11 +454,11 @@ hover:bg-[#0c213e]/10 transition-all"
               Need help consulting the right doctor?
             </h3>
             <p className="text-sm mt-2 leading-snug">
-              Call <span className="font-medium">+91-8040245807</span> to book
+              Call <span className="font-medium">+91-9294748480</span> to book
               instantly
             </p>
             <a
-              href="tel:+918040245807"
+              href="tel:+919294748480"
               className="inline-block mt-3 bg-white text-[#08263a] font-medium px-3 py-1.5 rounded"
             >
               Call Now
@@ -466,6 +466,21 @@ hover:bg-[#0c213e]/10 transition-all"
           </div>
         </aside>
       </div>
+      {/* Mobile Help Card */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#08263a] text-white p-4 shadow-lg z-40">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Need help finding a doctor?</p>
+              <p className="text-xs opacity-90">Call +91-9294748480</p>
+            </div>
+            <a
+              href="tel:+919294748480"
+              className="bg-white text-[#08263a] font-medium px-4 py-2 rounded text-sm hover:bg-gray-100 transition-colors"
+            >
+              Call Now
+            </a>
+          </div>
+        </div>
 
       {/* Mobile Filter Drawer */}
       {mobileFilterOpen && (

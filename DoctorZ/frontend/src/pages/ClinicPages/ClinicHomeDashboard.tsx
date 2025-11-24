@@ -133,7 +133,7 @@ const ClinicHomeDashboard: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-[#F9FAFB] min-h-screen space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="bg-[#0B1D3B] text-white p-5 sm:p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="bg-[#0c213e] text-white p-5 sm:p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold">
             Welcome, {clinic?.clinicName}
@@ -147,21 +147,30 @@ const ClinicHomeDashboard: React.FC = () => {
 
       {/* Action Buttons */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        {[
-          { label: "Add Doctor", color: "bg-[#00D09C]", onclick: () => navigate("add-doctor") },
-          { label: "View Patients", color: "bg-indigo-600", onclick: () => navigate("all-clinic-patients") },
-          { label: "Manage Slots", color: "bg-amber-500" },
-          { label: "Export Report", color: "bg-gray-700" },
-        ].map((btn, i) => (
-          <button
-            key={i}
-            onClick={btn.onclick}
-            className={`${btn.color} hover:opacity-90 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition`}
-          >
-            {btn.label}
-          </button>
-        ))}
-      </div>
+  {[
+    {
+      label: "Add Doctor",
+      color: "bg-[#00D09C]",
+      onclick: () => navigate(`/clinicDashboard/${clinicId}/add-doctor`)
+    },
+    {
+      label: "View Patients",
+      color: "bg-indigo-600",
+      onclick: () => navigate(`/clinicDashboard/${clinicId}/all-clinic-patients`)
+    },
+    { label: "Manage Slots", color: "bg-amber-500" },
+    { label: "Export Report", color: "bg-gray-700" },
+  ].map((btn, i) => (
+    <button
+      key={i}
+      onClick={btn.onclick}
+      className={`${btn.color} hover:opacity-90 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition`}
+    >
+      {btn.label}
+    </button>
+  ))}
+</div>
+
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

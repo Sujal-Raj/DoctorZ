@@ -140,9 +140,61 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
       {/* Clinic Info */}
       <div className="pl-32 sm:pl-40 pr-4 sm:pr-6 py-4 sm:py-6">
         <div className="mb-3 sm:mb-4">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-[#132d54] transition-colors duration-300 line-clamp-1">
-            {clinic.clinicName}
-          </h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 group-hover:text-[#132d54] transition-colors duration-300 line-clamp-1 flex items-center gap-2">
+  {clinic.clinicName}
+
+  {/* Verified Badge (best quality) */}
+<div className="relative group/verify">
+  {/* Badge */}
+  <div
+    className="
+      w-6 h-6 
+      rounded-full 
+      bg-gradient-to-br from-blue-500 to-blue-700 
+      flex items-center justify-center 
+      shadow-md shadow-blue-300/40
+      border border-white
+      hover:scale-110 transition-transform
+      cursor-pointer
+    "
+  >
+    <svg
+      className="w-3.5 h-3.5 text-white"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path
+        fillRule="evenodd"
+        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  </div>
+
+  {/* Tooltip: Right Side */}
+  <span
+    className="
+      absolute left-8 top-1/2 -translate-y-1/2
+      opacity-0 group-hover/verify:opacity-100
+      transition-all duration-200
+      bg-[#0c213e] text-white text-xs 
+      px-2 py-1 rounded-md 
+      shadow-lg whitespace-nowrap z-50
+    "
+  >
+    Verified Clinic
+  </span>
+</div>
+
+
+
+
+
+  
+</h2>
+
+
+
           <div className="flex items-center text-gray-500 text-xs sm:text-sm mb-1">
             <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 text-blue-500 flex-shrink-0" />
             <span className="line-clamp-1">
@@ -196,7 +248,7 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
 
         {/* Verified Status + Button */}
         <div className="flex flex-col space-y-2 sm:space-y-3 mt-4 sm:mt-6">
-          <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4">
+          {/* <div className="flex items-center justify-center bg-green-50 border border-green-200 rounded-lg py-1.5 sm:py-2 px-3 sm:px-4">
             <svg
               className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 mr-1 sm:mr-2 flex-shrink-0"
               fill="currentColor"
@@ -211,7 +263,7 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
             <span className="text-xs sm:text-sm font-medium text-green-700">
               Verified Healthcare Provider
             </span>
-          </div>
+          </div> */}
 
           <button
             onClick={(e) => {
