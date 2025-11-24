@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useMatch } from "react-router-dom";
 import { Home, User, UserPlus, Users, LogOut, Menu } from "lucide-react";
 
 interface MenuItem {
@@ -33,19 +33,35 @@ const ClinicSidebar: React.FC = () => {
   };
 
   const menuItems: MenuItem[] = [
-    { name: "Dashboard", path: "clinic-home-dashboard", icon: <Home size={18} /> },
-    { name: "All Doctor Profiles", path: "all-clinic-doctors", icon: <User size={18} /> },
+    {
+      name: "Dashboard",
+      path: "clinic-home-dashboard",
+      icon: <Home size={18} />,
+    },
+    {
+      name: "All Doctor Profiles",
+      path: "all-clinic-doctors",
+      icon: <User size={18} />,
+    },
     { name: "Add Doctor", path: "add-doctor", icon: <UserPlus size={18} /> },
     { name: "My Profile", path: "clinic-profile", icon: <User size={18} /> },
-    { name: "Patients", path: "all-clinic-patients", icon: <Users size={18} /> },
+    {
+      name: "Patients",
+      path: "all-clinic-patients",
+      icon: <Users size={18} />,
+    },
   ];
 
   return (
     <>
       {/* ---------- MOBILE TOP BAR ---------- */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white 
-        flex items-center justify-between px-4 py-3 z-50 shadow-lg">
-        <h1 className="text-lg font-semibold tracking-wide">Clinic Dashboard</h1>
+      <div
+        className="md:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white 
+        flex items-center justify-between px-4 py-3 z-50 shadow-lg"
+      >
+        <h1 className="text-lg font-semibold tracking-wide">
+          Clinic Dashboard
+        </h1>
 
         <button
           onClick={() => setSidebarOpen(true)}
@@ -75,7 +91,9 @@ const ClinicSidebar: React.FC = () => {
           flex flex-col
           z-50
           transform transition-transform duration-300 ease-in-out shadow-xl
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+          ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }
         `}
       >
         <div className="flex-1 p-6 overflow-y-auto">
@@ -87,7 +105,37 @@ const ClinicSidebar: React.FC = () => {
           {/* Navigation */}
           <nav className="space-y-3">
             {menuItems.map((item: MenuItem) => {
-              const isActive = location.pathname.includes(item.path);
+              // let isActive = false;
+
+              // if (item.path === "clinic-home-dashboard") {
+              //   // Dashboard special case
+              //   isActive = location.pathname === location.pathname.split("/").slice(0, 3).join("/");
+              // } else {
+              //   // Normal route matching
+              //   isActive = location.pathname.endsWith(item.path);
+              // }
+
+              const isActive = (() => {
+                // FULL CURRENT PATH
+                const fullPath = location.pathname;
+
+                // BASE DASHBOARD URL => /clinicDashboard/:id
+                const baseDashboard = fullPath.split("/").slice(0, 3).join("/");
+
+                // -------- DASHBOARD LOGIC --------
+                if (item.path === "clinic-home-dashboard") {
+                  // Case 1: Direct dashboard load
+                  if (fullPath === baseDashboard) return true;
+
+                  // Case 2: Dashboard clicked -> /clinic-home-dashboard
+                  if (fullPath.endsWith("clinic-home-dashboard")) return true;
+
+                  return false;
+                }
+
+                // -------- OTHER MENU ITEMS --------
+                return fullPath.endsWith(item.path);
+              })();
 
               return (
                 <Link
@@ -95,9 +143,10 @@ const ClinicSidebar: React.FC = () => {
                   to={item.path}
                   onClick={() => !isDesktop && setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all
-                    ${isActive
-                      ? "bg-white/20 shadow-md text-white scale-[1.02]"
-                      : "hover:bg-white/10 text-gray-300"
+                    ${
+                      isActive
+                        ? "bg-white/20 shadow-md text-white scale-[1.02]"
+                        : "hover:bg-white/10 text-gray-300"
                     }
                   `}
                 >

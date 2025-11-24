@@ -17,12 +17,14 @@ interface Doctor {
 interface DoctorWithBooking {
   doctor: Doctor;
   bookingDate: string;
+  roomId:string;
 }
 
 interface DoctorApiResponse {
   data: Array<{
     doctor: Doctor;
     bookingDate: string;
+     roomId:string;
   }>;
 }
 
@@ -37,10 +39,12 @@ const PatientAppointments: React.FC = () => {
       try {
         const res = await api.get<DoctorApiResponse>(`/api/patient/appointments/doctors/${patientId}`);
            console.log("hie",res)
+          //  console.log()
         // ✅ extract doctorId + bookingDate from each booking
         const extractedDoctors: DoctorWithBooking[] = res.data.data.map(item => ({
           doctor: item.doctor,
-          bookingDate: item.bookingDate
+          bookingDate: item.bookingDate,
+          roomId:item.roomId
         }));
 
         setDoctors(extractedDoctors);
@@ -74,7 +78,7 @@ const PatientAppointments: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {doctors.map(({ doctor, bookingDate }) => (
+              {doctors.map(({ doctor, bookingDate,roomId }) => (
                 <tr key={doctor._id} className="border-t hover:bg-gray-50">
                   <td className="px-3 sm:px-4 py-2 font-medium flex items-center gap-2">
                     <UserCircleIcon className="w-6 h-6 text-gray-500" />
@@ -109,7 +113,7 @@ const PatientAppointments: React.FC = () => {
                       </a>
 
                       <button
-                        onClick={() => navigate("/doctor-chat")}
+                        onClick={() => navigate(`/doctor-chat/${roomId}`)}
                         className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                       >
                         Chat

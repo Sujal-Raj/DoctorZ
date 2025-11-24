@@ -23,13 +23,30 @@ type SearchState = {
   specialty?: string;
   date?: string;
 };
+// interface DecodedToken {
+//   id: string;
+// }
+
+// // ✅ Get patient ID from token safely
+
+//   const token = Cookies.get("patientToken");
+//   console.log(token)
+//   const patientId = token ? (jwtDecode<DecodedToken>(token)?.id ?? null) : null;
 interface DecodedToken {
-  id: string;
+  sub: string;
+  id:string,
 }
 
-// ✅ Get patient ID from token safely
-
 const token = Cookies.get("patientToken");
+console.log("Token:", token);
+if (token) {
+  const decoded = jwtDecode<DecodedToken>(token);
+  console.log("Decoded token:", decoded);
+  const patientId = decoded?.id ?? null;
+  console.log("Patient ID:", patientId);
+}
+
+// const token = Cookies.get("patientToken");
 const patientId = token ? jwtDecode<DecodedToken>(token)?.id ?? null : null;
 
 const API = `/api/doctor/allDoctors/${patientId}`;

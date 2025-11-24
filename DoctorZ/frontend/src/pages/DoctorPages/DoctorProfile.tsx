@@ -284,7 +284,7 @@ const DoctorProfile: React.FC = () => {
             {/* RIGHT */}
             <div className="space-y-8">
               {/* Contact */}
-              <div className="rounded-2xl bg-white p-6 shadow-md">
+              <div className="rounded-2xl bg-white p-2 shadow-md">
                 <h3 className="text-xl font-bold mb-5" style={{ color: PRIMARY }}>
                   Contact Information
                 </h3>

@@ -37,17 +37,18 @@ function UserDashboard() {
   }, [location.pathname, user, navigate]);
 
   return (
-    <div className="w-full flex justify-center bg-gray-100 py-4 md:py-10">
+    <div className="w-full flex justify-center bg-gray-100">
+    {/* <div className="w-full flex justify-center bg-gray-100 py-2"> */}
       {/* ✅ Responsive Wrapper */}
       <div
-        className="flex w-full md:w-[90%] max-w-7xl 
-                      bg-white md:rounded-lg md:shadow-xl 
+        className="flex w-full
+                      bg-white md:shadow-xl 
                       overflow-hidden md:flex-row flex-col"
       >
         {/* ✅ SIDEBAR — hidden on mobile */}
         <aside
-          className="hidden md:block w-72 bg-[#0c213e]
-                        text-white p-6 relative"
+          className="h-screen fixed left-0 hidden md:block w-72 bg-gradient-to-b 
+                          from-[#0c213e] to-[#08172c] text-white p-6 relative"
         >
           <div className="flex items-center gap-3 mb-10 ">
             <img src={UserIcon} className="w-12 h-12 rounded-full" />
@@ -97,7 +98,7 @@ function UserDashboard() {
                  }`
               }
             >
-              <FilePlus2 size={18} /> Add EMR
+              <FilePlus2 size={18} /> EMR
             </NavLink>
 
             <NavLink
@@ -117,7 +118,7 @@ function UserDashboard() {
         </aside>
 
         {/* ✅ CONTENT AREA */}
-        <main className="flex-1 p-3 md:p-0 bg-gray-50 md:bg-[#e8eaee]">
+        <main className="flex-1 h-screen p-3 md:p-0 bg-gray-100 md:bg-[#dadde1] overflow-auto">
           <Outlet />
         </main>
       </div>

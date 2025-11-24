@@ -37,6 +37,7 @@ export default function DoctorAppointments() {
       const { data } = await api.get<{ bookings: Booking[] }>(
         `/api/booking/doctor/${doctorId}`
       );
+      console.log(data)
       setBookings(data.bookings);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
