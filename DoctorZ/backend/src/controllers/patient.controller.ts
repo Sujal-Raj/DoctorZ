@@ -329,6 +329,7 @@ const getBookedDoctor = async (req: Request, res: Response) => {
             userId: id, 
             status: 'pending' // yaha sirf pending bookings
         }).populate('doctorId'); 
+        console.log("here",bookings)
       
 
         // Agar koi bookings milti hain
@@ -342,6 +343,8 @@ const getBookedDoctor = async (req: Request, res: Response) => {
         const result = bookings.map(b => ({
             doctor: b.doctorId,
             bookingDate: b.dateTime,  
+            roomId:b.roomId,
+            
          
         }));
 
