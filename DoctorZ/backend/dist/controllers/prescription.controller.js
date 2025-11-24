@@ -106,7 +106,7 @@ export const addPrescription = async (req, res) => {
         });
         const page = await browser.newPage();
         await page.setContent(htmlContent);
-        await page.setViewport({ width: 794, height: 1123 }); // A4 size approx
+        await page.setViewport({ width: 794, height: 1123 });
         const imageBuffer = await page.screenshot({ fullPage: true });
         await browser.close();
         // STEP 3: Upload to Cloudinary
@@ -176,7 +176,7 @@ export const downloadPrescription = async (req, res) => {
         const response = await axios.get(fileUrl, {
             responseType: "arraybuffer",
         });
-        // 🔥 MAIN FIX — Always force download
+        //  force download
         res.setHeader("Content-Disposition", `attachment; filename="prescription_${id}.${ext}"`);
         res.setHeader("Content-Type", "application/octet-stream");
         return res.send(response.data);
