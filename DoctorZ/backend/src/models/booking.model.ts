@@ -22,7 +22,7 @@ export interface IBooking extends Document {
   status: "pending" | "completed";
   createdAt: Date;
   updatedAt: Date;
- 
+  roomId:string;
 }
 
 const bookingSchema = new Schema<IBooking>(
@@ -56,6 +56,10 @@ const bookingSchema = new Schema<IBooking>(
       default: "pending", // ✔ default to pending
       required: true,
     },
+    roomId:{
+      type:String,
+      required:true,
+    }
     
   },
   { timestamps: true }

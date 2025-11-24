@@ -21,6 +21,10 @@ const bookingSchema = new Schema({
         default: "pending", // ✔ default to pending
         required: true,
     },
+    roomId: {
+        type: String,
+        required: true,
+    }
 }, { timestamps: true });
 const Booking = mongoose.model("Booking", bookingSchema);
 export default Booking;

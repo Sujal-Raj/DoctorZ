@@ -18,6 +18,12 @@ export const bookAppointment = async (req, res) => {
         if (!patient || !doctorId || !slot || !dateTime || !mode || !userId || !fees) {
             return res.status(400).json({ message: "Missing required fields" });
         }
+        const roomId = `room_${doctorId}_${userId}_${Date.now()}`;
+        // ✅ Check if patient already has booking today
+        const existingAadharBooking = await BookingModel.findOne({
+            "patient.aadhar": patient.aadhar,
+            status: "booked"
+        });
         const { name, age, gender, aadhar, contact, relation } = patient;
         const { allergies, diseases, pastSurgeries, currentMedications } = emr || {};
         // Create Booking
@@ -29,6 +35,9 @@ export const bookAppointment = async (req, res) => {
             dateTime: new Date(dateTime),
             mode,
             fees,
+            // emrId: newEmr?._id || null,
+            // status: "booked",
+            roomId,
             status: "pending",
             patient: { name, age, gender, aadhar, contact, relation },
         });

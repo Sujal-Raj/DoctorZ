@@ -77,9 +77,10 @@ export default function DoctorDashboard() {
     fetchNotificationCount();
     const interval = setInterval(fetchNotificationCount, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [doctorId]);
 
   const menuItems = [
+    { name: "Appointments", path: "appointments", icon: <CalendarIcon className="w-5 h-5" /> },
     { name: "Dashboard", path: "", icon: <HomeIcon className="w-5 h-5" /> },
     {
       name: "Profile",
@@ -170,11 +171,16 @@ export default function DoctorDashboard() {
           <nav className="space-y-2">
             {menuItems.map((item) => {
               const dashboardPath = `/doctordashboard/${doctorId}`;
+              const to = item.path === "" ? dashboardPath : item.path;
 
               const isActive =
                 item.path === ""
                   ? !!useMatch(`/doctorDashboard/${doctorId}`)
                   : !!useMatch(`/doctorDashboard/${doctorId}/${item.path}`);
+
+              const handleMenuClick = () => {
+                if (!isDesktop) setSidebarOpen(false);
+              };
 
               return (
                 <Link
