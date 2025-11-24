@@ -87,10 +87,10 @@ const DoctorNotifications: React.FC = () => {
 
     {/* Page Title */}
     <div className="flex items-center gap-3 mb-8">
-      <div className="bg-[#28328C]/10 p-3 rounded-full">
-        <Bell className="text-[#28328C]" size={26} />
+      <div className="bg-[#0c213e]/10 p-3 rounded-full">
+        <Bell className="text-[#0c213e]" size={26} />
       </div>
-      <h1 className="text-3xl font-extrabold text-[#28328C] tracking-tight">
+      <h1 className="text-3xl font-extrabold text-[#0c213e] tracking-tight">
         Notifications
       </h1>
     </div>
@@ -115,7 +115,7 @@ const DoctorNotifications: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-xl font-bold text-gray-900">
                 Clinic:{" "}
-                <span className="text-[#28328C]">{n.clinicName}</span>
+                <span className="text-[#0c213e]">{n.clinicName}</span>
               </h2>
 
               {/* Status Chip */}
@@ -138,7 +138,7 @@ const DoctorNotifications: React.FC = () => {
             <p className="text-gray-700 mt-3 leading-relaxed">{n.message}</p>
 
             {/* Date */}
-            <div className="mt-3 text-sm text-gray-500 border-l-4 border-[#28328C] pl-3 italic">
+            <div className="mt-3 text-sm text-gray-500 border-l-4 border-[#0c213e] pl-3 italic">
               {new Date(n.createdAt).toLocaleString()}
             </div>
 

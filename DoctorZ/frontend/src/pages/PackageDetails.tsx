@@ -186,7 +186,7 @@ export const PackageDetails: React.FC = () => {
           <p className="text-gray-600 line-through text-sm">
             MRP ₹{Math.round(packageDetails.totalPrice * 1.6)}
           </p>
-          <p className="text-2xl font-bold text-indigo-700">₹{packageDetails.totalPrice}</p>
+          <p className="text-2xl font-bold text-bg-[#0c213e]">₹{packageDetails.totalPrice}</p>
           <p className="text-green-600 font-medium text-sm">60% off</p>
         </div>
 
@@ -199,7 +199,7 @@ export const PackageDetails: React.FC = () => {
                 : packageDetails.labId._id
             )
           }
-          className="mt-6 w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:bg-indigo-700 transition"
+          className="mt-6 w-full bg-[#0c213e] text-white font-semibold py-3 rounded-xl bg-[#0c213e]transition"
         >
           {loading ? "Booking..." : "Book Now"}
         </button>

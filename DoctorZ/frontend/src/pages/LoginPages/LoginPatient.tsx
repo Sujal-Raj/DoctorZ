@@ -91,7 +91,7 @@ export default function LoginPatient() {
           </h1>
           <p className="text-gray-500 text-sm sm:text-base mb-6">
             Sign in to manage your{" "}
-            <span className="font-semibold text-[#28328C]">
+            <span className="font-semibold text-[#0c213e]">
               health records and appointments
             </span>
             .
@@ -112,7 +112,7 @@ export default function LoginPatient() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#28328C] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
                 required
               />
             </div>
@@ -132,13 +132,13 @@ export default function LoginPatient() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#28328C] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
+                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-[#28328C] focus:outline-none"
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-[#0c213e] focus:outline-none"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -154,7 +154,7 @@ export default function LoginPatient() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#28328C] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 ${
+              className={`w-full bg-[#0c213e] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 ${
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -166,7 +166,7 @@ export default function LoginPatient() {
             Don’t have an account?{" "}
             <a
               href="/patient-register"
-              className="text-[#28328C] font-medium hover:underline hover:text-[#1f2870]"
+              className="text-[#0c213e] font-medium hover:underline hover:text-[#1f2870]"
             >
               Register
             </a>

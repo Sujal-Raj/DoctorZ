@@ -1,229 +1,342 @@
+import React, { useEffect, useState, type JSX } from "react";
+import { Helmet } from "react-helmet";
+import ClinicDoctorCard from "../pages/ClinicPages/ClinicDoctorCard";
+import api from "../Services/mainApi";
+import { Search as SearchIcon, Filter } from "lucide-react";
 
-
-import { Award, Calendar, Clock, Filter, Search, Stethoscope, Users, X } from "lucide-react";
-import BookingDrawer from "../components/BookingDrawer";
-import DoctorCard, { type Doctor } from "../components/DoctorCard";
-import SlidingBanner from "../components/SlidingBanner";
-import { useEffect, useMemo, useState } from "react";
-
-// 🔹 Type Definitions
-interface DoctorForBooking {
+export interface Doctor {
   _id: string;
   fullName: string;
-  photo?: string;
   specialization: string;
-  fees: number;
-  availability?: Record<string, string[]>;
+  qualification?: string;
+  location?: string;
+  city?: string;
+  photo?: string;
+  gender?: string;
+}
+interface SearchResponse {
+  doctors: Doctor[];
 }
 
-interface FilterState {
-  specialization: string | null;
-  gender: string[];
-  fees: string[];
-  experience: string[];
-}
+// Apple-Style Minimal Luxury UI — AddDoctor page
+export default function AddDoctor(): JSX.Element {
+  const [addedDoctors, setAddedDoctors] = useState<string[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<string[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
 
-// 🔹 Helper Function
-const mapToBookingDoctor = (doc: Doctor): DoctorForBooking => ({
-  _id: doc._id,
-  fullName: doc.fullName,
-  photo: doc.photo,
-  specialization: doc.specialization,
-  fees: doc.consultationFee, 
-  availability: undefined,
-});
+  const [genderFilter, setGenderFilter] = useState("");
+  const [specialization, setSpecialization] = useState("");
 
-//   // small UI-only state
-//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // Pagination (client side simple)
+  const [page, setPage] = useState(1);
+  const pageSize = 12;
 
-  // ✅ Fetch doctors from backend
-  useEffect(() => {
-    const fetchDoctors = async (p0: Doctor[]): Promise<void> => {
-      try {
-        setLoading(true);
-        const response = await fetch("http://localhost:3000/api/doctor/allDoctors");
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
+  // Fetch doctors (only when searching)
+  const fetchDoctors = async (query: string = "") => {
+    if (!query.trim()) {
+      setDoctors([]);
+      return;
+    }
 
-        if (Array.isArray(data.doctors)) {
-          const validDoctors = data.doctors.filter((doc: unknown) => 
-            doc && typeof doc === 'object' && 'fullName' in doc
-          );
-          fetchDoctors(validDoctors as Doctor[]);
-        } else {
-          fetchDoctors([]);
-        }
-      } catch (err) {
-        console.error("Error fetching doctors:", err);
-        fetchDoctors([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDoctors();
-  }, []);
-
-  // Filter logic with TypeScript
-  const filteredDoctors = useMemo((): Doctor[] => {
-    return doctors.filter((doctor: Doctor) => {
-      const matchesSearch: boolean =
-        Search.trim() === "" ||
-        doctor.fullName?.toLowerCase().includes(Search.toLowerCase()) ||
-        doctor.specialization?.toLowerCase().includes(Search.toLowerCase());
-
-      const matchesSpecialization: boolean =
-        !filters.specialization || 
-        doctor.specialization?.trim().toLowerCase() === filters.specialization.toLowerCase();
-
-      const matchesGender: boolean =
-        filters.gender.length === 0 || 
-        (doctor.gender != null && filters.gender.includes(doctor.gender));
-
-      const matchesFees: boolean =
-        filters.fees.length === 0 ||
-        filters.fees.some((range: string) => {
-          const fee: number = doctor.consultationFee;
-          switch (range) {
-            case "0-500": return fee >= 0 && fee <= 500;
-            case "500-1000": return fee > 500 && fee <= 1000;
-            case "1000+": return fee > 1000;
-            default: return false;
-          }
-        });
-
-      const matchesExperience: boolean =
-        filters.experience.length === 0 ||
-        filters.experience.some((range: string) => {
-          const exp: number = Number(doctor.experience) || 0;
-          switch (range) {
-            case "0-2": return exp >= 0 && exp <= 2;
-            case "3-5": return exp >= 3 && exp <= 5;
-            case "5+": return exp > 5;
-            default: return false;
-          }
-        });
-
-      return matchesSearch && matchesSpecialization && matchesGender && matchesFees && matchesExperience;
-    });
-  }, [doctors, Search, Filter]);
-
-  // Event handlers with proper typing
-  const handleConsult = (doctor: Doctor): void => {
-    setSelectedDoctor(doctor);
-    setDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = (): void => {
-    setDrawerOpen(false);
-    setTimeout(() => setSelectedDoctor(null), 300);
-  };
-
-  const handleFilterChange = (filterType: keyof FilterState, value: string): void => {
-    setFilters((prev: FilterState) => {
-      if (filterType === 'specialization') {
-        return { ...prev, specialization: value === '' ? null : value };
-      }
-      
-      const currentArray = prev[filterType] as string[];
-      const isChecked = currentArray.includes(value);
-      
-      return {
-        ...prev,
-        [filterType]: isChecked 
-          ? currentArray.filter(item => item !== value)
-          : [...currentArray, value]
-      };
-    });
-  };
-
-  const clearAllFilters = (): void => {
-    setFilters({
-      specialization: null,
-      gender: [],
-      fees: [],
-      experience: []
-    });
-    setSearch("");
-  };
-
-  const removeFilter = (filterType: keyof FilterState, value?: string): void => {
-    if (filterType === 'specialization') {
-      setFilters((prev: FilterState) => ({ ...prev, specialization: null }));
-    } else if (value) {
-      setFilters((prev: FilterState) => ({
-        ...prev,
-        [filterType]: (prev[filterType] as string[]).filter(item => item !== value)
-      }));
+    setLoading(true);
+    try {
+      const res = await api.get<SearchResponse>(`/api/doctor/search?query=${encodeURIComponent(query)}`);
+      setDoctors(res.data.doctors || []);
+      setPage(1);
+    } catch (error) {
+      console.error("fetchDoctors error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleRequestSent = (doctorId: string) => {
+    // optimistic UI update
+    setPendingRequests((prev) => (prev.includes(doctorId) ? prev : [...prev, doctorId]));
+  };
 
-function setLoading(arg0: boolean) {
-  throw new Error("Function not implemented.");
+  // load clinic status once
+  useEffect(() => {
+    const clinicId = localStorage.getItem("clinicId");
+    if (!clinicId) return;
+
+    api
+      .get<{ addedDoctors: string[]; pendingRequests: string[] }>(`/api/clinic/doctor-status/${clinicId}`)
+      .then((res) => {
+        setAddedDoctors(res.data.addedDoctors || []);
+        setPendingRequests(res.data.pendingRequests || []);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  // debounce search
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (search.trim()) fetchDoctors(search.trim());
+      else setDoctors([]);
+    }, 420);
+
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // filters
+  const filtered = doctors.filter((d) => {
+    const genderOk = genderFilter ? d.gender === genderFilter : true;
+    const specOk = specialization
+      ? d.specialization?.toLowerCase().includes(specialization.toLowerCase())
+      : true;
+    return genderOk && specOk;
+  });
+
+  // pagination slice
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const visibleDoctors = filtered.slice((page - 1) * pageSize, page * pageSize);
+
+  // reset pagination when filters change
+  useEffect(() => setPage(1), [genderFilter, specialization, doctors]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 text-gray-800">
+      <Helmet>
+        <title>Add Doctors — Clinic • Professional</title>
+        <meta name="description" content="Search, filter and add verified doctors to your clinic. Fast search, smart filters and clean professional UI." />
+        <meta name="keywords" content="add doctor, clinic, doctors, search doctors, healthcare, medical staff" />
+        <script type="application/ld+json">
+          {`{
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Add Doctors",
+            "description": "Search, filter and add verified doctors to your clinic.",
+            "publisher": { "@type": "Organization", "name": "Your Clinic" }
+          }`}
+        </script>
+      </Helmet>
+
+      {/* HEADER */}
+      <header className="max-w-7xl mx-auto px-6 pt-10 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-extrabold text-[#0C213E] leading-tight">Add Doctors</h1>
+            <p className="mt-2 text-gray-600 max-w-xl">
+              Discover verified doctors, filter by specialization or gender and add them to your clinic with one click.
+            </p>
+          </div>
+
+          <div className="w-full sm:w-[480px]">
+  <label htmlFor="search" className="sr-only">Search doctors</label>
+
+  <div
+    className="
+      group flex items-center
+      bg-white
+      border border-gray-200
+      rounded-3xl
+      px-5 py-4
+      shadow-sm
+      transition-all duration-300
+      focus-within:border-[#0C213E]
+      focus-within:shadow-[0_4px_18px_rgba(12,33,62,0.15)]
+      hover:shadow-md
+    "
+  >
+    <SearchIcon 
+      className="
+        w-6 h-6 
+        text-gray-400 
+        group-focus-within:text-[#0C213E]
+        transition-colors
+      " 
+    />
+
+    <input
+      id="search"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="
+        ml-4 w-full
+        placeholder-gray-400
+        text-base
+        bg-transparent outline-none
+        font-medium
+      "
+      placeholder="Search doctors..."
+      aria-label="Search doctors"
+      autoComplete="off"
+    />
+  </div>
+</div>
+
+        </div>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* SIDEBAR */}
+          <aside className="lg:col-span-3">
+            <div className="sticky top-6 bg-white/70 backdrop-blur py-6 px-4 rounded-2xl border border-gray-200 shadow-md">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-[#0C213E]">Filters</h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGenderFilter("");
+                    setSpecialization("");
+                  }}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  Reset
+                </button>
+              </div>
+
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { key: "", label: "Any" },
+                      { key: "Male", label: "Male" },
+                      { key: "Female", label: "Female" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => setGenderFilter(opt.key)}
+                        className={`text-sm py-2 px-3 rounded-xl border transition ${genderFilter === opt.key ? "bg-[#0C213E] text-white border-transparent" : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"}`}
+                        aria-pressed={genderFilter === opt.key}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Specialization</label>
+                  <input
+                    value={specialization}
+                    onChange={(e) => setSpecialization(e.target.value)}
+                    placeholder="e.g. Dentist, Cardiologist"
+                    className="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:ring-2 focus:ring-[#0C213E] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Clinic Status</label>
+                  <div className="flex flex-col gap-2">
+                    <div className="text-sm text-gray-600">Added: <span className="font-medium text-gray-800">{addedDoctors.length}</span></div>
+                    <div className="text-sm text-gray-600">Pending: <span className="font-medium text-gray-800">{pendingRequests.length}</span></div>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      setGenderFilter("");
+                      setSpecialization("");
+                      setSearch("");
+                      fetchDoctors("");
+                    }}
+                    className="w-full rounded-2xl py-2 bg-[#0C213E] hover:bg-[#08182d] text-white font-semibold shadow-sm transition"
+                  >
+                    Apply & Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* subtle note */}
+            <div className="mt-6 text-xs text-gray-500">
+              Tip: Start typing a doctor's name or specialization in the search box to discover matches. Results appear fast and are filtered locally for best UX.
+            </div>
+          </aside>
+
+          {/* CONTENT */}
+          <section className="lg:col-span-9">
+            <div className="space-y-6">
+              {/* Result header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">{doctors.length} result{doctors.length !== 1 ? "s" : ""}</p>
+                  <h3 className="text-xl font-semibold text-gray-800">Available Doctors</h3>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-gray-500">Sort</div>
+                  <select
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "name") setDoctors((s) => [...s].sort((a, b) => a.fullName.localeCompare(b.fullName)));
+                      if (v === "spec") setDoctors((s) => [...s].sort((a, b) => (a.specialization || "").localeCompare(b.specialization || "")));
+                    }}
+                    className="rounded-xl border border-gray-200 px-3 py-2 text-sm bg-white"
+                  >
+                    <option value="">Relevance</option>
+                    <option value="name">Name (A–Z)</option>
+                    <option value="spec">Specialization</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Cards grid */}
+              {loading ? (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="animate-pulse bg-white rounded-2xl p-6 border border-gray-200 h-44" />
+                  ))}
+                </div>
+              ) : visibleDoctors.length === 0 ? (
+                <div className="bg-white rounded-2xl p-10 border border-gray-200 text-center shadow-sm">
+                  <h4 className="text-lg font-medium text-gray-800">No doctors found</h4>
+                  <p className="mt-2 text-gray-500">Try a different search term or clear filters.</p>
+                </div>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {visibleDoctors.map((d) => (
+                    <ClinicDoctorCard
+                      key={d._id}
+                      doctor={d}
+                      doctorStatus={
+                        addedDoctors.includes(d._id) ? "added" : pendingRequests.includes(d._id) ? "pending" : "none"
+                      }
+                      onRequestSent={handleRequestSent}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* pagination */}
+              {visibleDoctors.length > 0 && (
+                <nav className="flex items-center justify-center gap-3 mt-4" aria-label="Pagination">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="px-3 py-2 rounded-lg border border-gray-200 bg-white disabled:opacity-50"
+                  >
+                    Prev
+                  </button>
+
+                  <div className="px-4 py-2 rounded-lg bg-white border border-gray-200">
+                    Page <span className="font-semibold">{page}</span> of {totalPages}
+                  </div>
+
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="px-3 py-2 rounded-lg border border-gray-200 bg-white disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </nav>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer className="max-w-7xl mx-auto px-6 pb-10 text-center text-sm text-gray-500">
+        © {new Date().getFullYear()} Your Clinic. All rights reserved.
+      </footer>
+    </div>
+  );
 }
-
-function setFilters(arg0: { specialization: null; gender: never[]; fees: never[]; experience: never[]; }) {
-  throw new Error("Function not implemented.");
-}
-//             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-//               {SPECIALTIES.map((s) => (
-//                 <button
-//                   key={s}
-//                   onClick={() =>
-//                     navigate("/search-results", {
-//                       state: { specialty: s, location: location || "", date: date || "", visitType },
-//                     })
-//                   }
-//                   className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 bg-white hover:shadow-md transition text-left"
-//                   aria-label={`Search ${s}`}
-//                 >
-//                   <div className="bg-[#f1fbfc] text-[#106C89] p-2 rounded-lg">
-//                     <Stethoscope className="w-5 h-5" />
-//                   </div>
-//                   <div className="flex-1">
-//                     <div className="text-sm font-medium text-slate-900">{s}</div>
-//                     <div className="text-xs text-gray-500 mt-0.5">Expert care</div>
-//                   </div>
-//                 </button>
-//               ))}
-//             </div>
-//           </div>
-//         </section>
-
-//         {/* Optional promotional / info row */}
-//         <section className="mt-6">
-//           <div className="rounded-2xl bg-gradient-to-r from-[#f7fdfd] to-white p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-//             <div>
-//               <h4 className="text-lg font-semibold text-slate-900">Trusted healthcare, at your convenience</h4>
-//               <p className="text-sm text-gray-600 mt-1">Verified doctors · Secure payments · Easy rescheduling</p>
-//             </div>
-//             <div className="flex gap-3">
-//               <button
-//                 onClick={() => navigate("/about")}
-//                 className="px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm"
-//               >
-//                 Learn more
-//               </button>
-//               <button
-//                 onClick={() =>
-//                   navigate("/search-results", {
-//                     state: { specialty: "", location: "", date: "", visitType },
-//                   })
-//                 }
-//                 className="px-4 py-2 rounded-lg bg-[#28328C] text-white text-sm"
-//               >
-//                 Start searching
-//               </button>
-//             </div>
-//           </div>
-//         </section>
-//       </main>
-//     </div>
-//   );
-// };
-

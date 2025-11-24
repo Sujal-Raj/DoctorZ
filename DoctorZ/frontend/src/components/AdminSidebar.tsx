@@ -13,103 +13,93 @@ const AdminSidebar = () => {
   };
 
   const handleNavClick = () => {
-    // Close sidebar on mobile after clicking a link
     if (window.innerWidth < 1024) setIsOpen(false);
   };
 
+  const menuItems = [
+    { name: "Home", path: "/", icon: <Home size={18} /> },
+    { name: "Labs", path: "admin-lab", icon: <User size={18} /> },
+    { name: "Doctors", path: "admin-doctor", icon: <UserPlus size={18} /> },
+    { name: "Clinics", path: "admin-clinic", icon: <UserPlus size={18} /> },
+  ];
+
   return (
     <>
-      {/* Mobile Top Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#28328C] text-white flex items-center justify-between px-4 py-3 shadow-md z-50">
-        <h2 className="text-lg font-semibold">Admin Dashboard</h2>
+      {/* ---------- MOBILE TOP BAR ---------- */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white 
+        flex items-center justify-between px-4 py-3 z-50 shadow-lg">
+        <h1 className="text-lg font-semibold tracking-wide">Admin Dashboard</h1>
+
         <button
-          className="p-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
           onClick={() => setIsOpen(!isOpen)}
+          className="p-2 rounded hover:bg-[#0a1a32] active:scale-95 transition"
         >
-          {isOpen ? <X size={22} /> : <Menu size={22} />}
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* ---------- SIDEBAR ---------- */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-[#28328C] text-gray-200 flex flex-col justify-between shadow-lg transform transition-transform duration-300 z-40
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+        className={`fixed top-0 left-0 h-full w-64 bg-[#0c213e] text-white
+          flex flex-col justify-between shadow-xl transform
+          transition-transform duration-300 z-40
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
-        {/* Sidebar content */}
-        <div className="px-6 py-8 mt-12 lg:mt-0">
-          <h2 className="hidden lg:block text-2xl font-bold mb-8 text-white text-center">
-            Admin Dashboard
-          </h2>
+        {/* Sidebar Content */}
+        <div className="flex-1 flex flex-col px-6 py-6 mt-12 lg:mt-0 overflow-y-auto">
 
-          <nav className="flex flex-col space-y-3">
-            <Link
-              to="/"
-              onClick={handleNavClick}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
-                location.pathname === "/"
-                  ? "bg-white text-black"
-                  : "hover:bg-white hover:text-black"
-              }`}
-            >
-              <Home size={18} /> Home
-            </Link>
+          {/* Desktop Title */}
+          <div className="hidden lg:flex items-center justify-center mb-10">
+            <h2 className="text-2xl font-bold">Admin Dashboard</h2>
+          </div>
 
-            <Link
-              to="admin-lab"
-              onClick={handleNavClick}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
-                location.pathname.includes("admin-lab")
-                  ? "bg-white text-black"
-                  : "hover:bg-white hover:text-black"
-              }`}
-            >
-              <User size={18} /> Lab
-            </Link>
+          {/* ---------- MENU ---------- */}
+          <nav className="space-y-3">
+            {menuItems.map((item) => {
+              const isActive = location.pathname.includes(item.path);
 
-            <Link
-              to="admin-doctor"
-              onClick={handleNavClick}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
-                location.pathname.includes("admin-doctor")
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700"
-              }`}
-            >
-              <UserPlus size={18} /> Doctor
-            </Link>
-
-            <Link
-              to="admin-clinic"
-              onClick={handleNavClick}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition ${
-                location.pathname.includes("admin-clinic")
-                  ? "bg-gray-700 text-white"
-                  : "hover:bg-gray-700"
-              }`}
-            >
-              <UserPlus size={18} /> Clinic
-            </Link>
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={handleNavClick}
+                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all
+                    ${
+                      isActive
+                        ? "bg-white/20 shadow-md text-white scale-[1.02]"
+                        : "hover:bg-white/10 text-gray-300"
+                    }
+                  `}
+                >
+                  {item.icon}
+                  <span className="font-medium">{item.name}</span>
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
-        {/* Bottom Logout Button */}
-        <div className="px-6 py-6 border-t border-gray-700">
+        {/* ---------- LOGOUT BUTTON ---------- */}
+        <div className="p-6 border-t border-[#0a1a32] bg-[#0c213e]">
           <button
             onClick={() => {
               handleLogout();
               handleNavClick();
             }}
-            className="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-700 transition text-red-500"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg 
+              bg-red-500 hover:bg-red-600 active:scale-95 transition 
+              text-white w-full justify-center font-medium shadow-md"
           >
-            <LogOut size={18} /> Logout
+            <LogOut size={18} />
+            Logout
           </button>
         </div>
       </aside>
 
-      {/* Overlay when sidebar open (mobile only) */}
+      {/* ---------- MOBILE OVERLAY ---------- */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/40 z-30 lg:hidden"
           onClick={() => setIsOpen(false)}
         ></div>
       )}

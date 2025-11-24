@@ -245,6 +245,7 @@ const getBookedDoctor = async (req, res) => {
             userId: id,
             status: 'pending' // yaha sirf pending bookings
         }).populate('doctorId');
+        console.log("here", bookings);
         // Agar koi bookings milti hain
         if (bookings.length === 0) {
             return res.status(404).json({
@@ -255,6 +256,7 @@ const getBookedDoctor = async (req, res) => {
         const result = bookings.map(b => ({
             doctor: b.doctorId,
             bookingDate: b.dateTime,
+            roomId: b.roomId,
         }));
         return res.status(200).json({
             message: "Pending bookings fetched successfully",

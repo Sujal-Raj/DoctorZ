@@ -83,7 +83,7 @@ export default function DoctorLogin() {
           <h1 className="text-3xl font-bold text-black mb-3">Doctor Login</h1>
           <p className="text-gray-500 text-sm sm:text-base mb-6">
             Access your{" "}
-            <span className="font-semibold text-[#28328C]">
+            <span className="font-semibold text-[#0c213e]">
               appointments and dashboard
             </span>
             .
@@ -104,7 +104,7 @@ export default function DoctorLogin() {
                 placeholder="Enter your Doctor ID"
                 value={doctorId}
                 onChange={(e) => setDoctorId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#28328C] bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400"
                 required
               />
             </div>
@@ -125,14 +125,14 @@ export default function DoctorLogin() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#28328C] bg-gray-50 text-gray-800 placeholder-gray-400"
+                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400"
                   required
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 inset-y-0 flex items-center text-gray-500 hover:text-[#28328C]"
+                  className="absolute right-3 inset-y-0 flex items-center text-gray-500 hover:text-[#0c213e]"
                 >
                   {showPassword ? (
                     <EyeOff size={20} strokeWidth={1.8} />
@@ -147,7 +147,7 @@ export default function DoctorLogin() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#28328C] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 ${
+              className={`w-full bg-[#0c213e] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 ${
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -159,7 +159,7 @@ export default function DoctorLogin() {
             Don’t have an account?{" "}
             <a
               href="/doctor-register"
-              className="text-[#28328C] font-medium hover:underline"
+              className="text-[#0c213e] font-medium hover:underline"
             >
               Register
             </a>

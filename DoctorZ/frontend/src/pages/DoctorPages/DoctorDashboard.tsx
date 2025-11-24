@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useMatch,
+  useNavigate,
+} from "react-router-dom";
 import {
   HomeIcon,
   UserIcon,
@@ -36,13 +42,10 @@ export default function DoctorDashboard() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ⭐ FIX: Ensure correct sidebar behavior on mobile vs desktop
+  // Auto open/close depending on screen
   useEffect(() => {
-    if (isDesktop) {
-      setSidebarOpen(true); // always open on desktop
-    } else {
-      setSidebarOpen(false); // always closed initially on mobile
-    }
+    if (isDesktop) setSidebarOpen(true);
+    else setSidebarOpen(false);
   }, [isDesktop]);
 
   const handleLogout = () => {
@@ -76,20 +79,43 @@ export default function DoctorDashboard() {
     return () => clearInterval(interval);
   }, [doctorId]);
 
-  // Menu Items - Appointments first
   const menuItems = [
     { name: "Appointments", path: "appointments", icon: <CalendarIcon className="w-5 h-5" /> },
     { name: "Dashboard", path: "", icon: <HomeIcon className="w-5 h-5" /> },
-    { name: "Profile", path: "doctorProfile", icon: <UserIcon className="w-5 h-5" /> },
-    { name: "Add Availability", path: "time-slots", icon: <ClockIcon className="w-5 h-5" /> },
-    { name: "Edit ID & Password", path: "editDoctorIdPassword", icon: <KeyIcon className="w-5 h-5" /> },
-    { name: "My Patients", path: "patients", icon: <UsersIcon className="w-5 h-5" /> },
-    { name: "Notifications", path: "notifications", icon: <BellIcon className="w-5 h-5" /> },
+    {
+      name: "Profile",
+      path: "doctorProfile",
+      icon: <UserIcon className="w-5 h-5" />,
+    },
+    {
+      name: "Add Availability",
+      path: "time-slots",
+      icon: <ClockIcon className="w-5 h-5" />,
+    },
+    {
+      name: "Appointments",
+      path: "appointments",
+      icon: <CalendarIcon className="w-5 h-5" />,
+    },
+    {
+      name: "Edit ID & Password",
+      path: "editDoctorIdPassword",
+      icon: <KeyIcon className="w-5 h-5" />,
+    },
+    {
+      name: "My Patients",
+      path: "patients",
+      icon: <UsersIcon className="w-5 h-5" />,
+    },
+    {
+      name: "Notifications",
+      path: "notifications",
+      icon: <BellIcon className="w-5 h-5" />,
+    },
   ];
 
   return (
     <div className="flex h-screen bg-gray-100 relative">
-
       {/* --- MOBILE TOP BAR --- */}
       <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white flex items-center justify-between px-4 py-3 z-50 shadow-lg">
         <h1 className="text-lg font-semibold">Doctor Dashboard</h1>
@@ -102,13 +128,34 @@ export default function DoctorDashboard() {
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* --- BACKDROP (CLICK OUTSIDE TO CLOSE SIDEBAR) --- */}
+      {!isDesktop && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+        />
+      )}
+
+      {/* SIDEBAR */}
       <aside
-        className={`bg-[#0c213e] text-white flex flex-col justify-between transition-all duration-300 
-          ${sidebarOpen ? "w-64" : "w-0"} 
-          md:w-64 overflow-hidden fixed md:relative z-40 h-full`}
+        className={`
+          bg-[#0c213e] text-white flex flex-col justify-between
+          fixed md:relative 
+          left-0
+          z-40 
+          w-64 h-[calc(100vh-56px)] md:h-full
+          transform transition-transform duration-300
+
+          /* mobile top spacing (below topbar) */
+          top-[56px] md:top-0
+
+          /* sliding animation */
+          ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }
+        `}
       >
-        {/* Close Button Mobile */}
+        {/* Mobile Close Button */}
         <button
           onClick={() => setSidebarOpen(false)}
           className="absolute top-4 right-4 p-2 bg-[#0c213e] rounded-md hover:bg-[#0a1a32] transition md:hidden"
@@ -127,9 +174,9 @@ export default function DoctorDashboard() {
               const to = item.path === "" ? dashboardPath : item.path;
 
               const isActive =
-                (item.name === "Dashboard" &&
-                  (location.pathname === dashboardPath || location.pathname === `${dashboardPath}/`)) ||
-                (item.path !== "" && location.pathname.includes(item.path));
+                item.path === ""
+                  ? !!useMatch(`/doctorDashboard/${doctorId}`)
+                  : !!useMatch(`/doctorDashboard/${doctorId}/${item.path}`);
 
               const handleMenuClick = () => {
                 if (!isDesktop) setSidebarOpen(false);
@@ -138,8 +185,8 @@ export default function DoctorDashboard() {
               return (
                 <Link
                   key={item.name}
-                  to={to}
-                  onClick={handleMenuClick}
+                  to={item.path === "" ? dashboardPath : item.path}
+                  onClick={() => !isDesktop && setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
                     isActive
                       ? "bg-gray-700 text-white"
@@ -147,7 +194,9 @@ export default function DoctorDashboard() {
                   }`}
                 >
                   {item.icon}
-                  <span className="font-medium text-sm md:text-base">{item.name}</span>
+                  <span className="font-medium text-sm md:text-base">
+                    {item.name}
+                  </span>
 
                   {item.name === "Notifications" && newNotifCount > 0 && (
                     <span className="ml-auto bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -172,9 +221,16 @@ export default function DoctorDashboard() {
         </div>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 bg-gray-100 p-8 overflow-y-auto pt-20 md:pt-8">
-        <div className="max-w-5xl flex">
+      {/* MAIN CONTENT */}
+      <main
+        className="
+          flex-1 bg-gray-100 
+          p-8 overflow-y-auto 
+          pt-[56px] md:pt-8
+          
+        "
+      >
+        <div className="max-w-5xl mx-auto">
           <Outlet />
         </div>
       </main>

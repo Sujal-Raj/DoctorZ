@@ -193,8 +193,8 @@
 //                     onClick={() => setMode("online")}
 //                     className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
 //                       mode === "online"
-//                         ? "bg-[#28328C] text-white shadow"
-//                         : "bg-white text-gray-700 hover:border-[#28328C]/40"
+//                         ? "bg-[#0c213e] text-white shadow"
+//                         : "bg-white text-gray-700 hover:border-[#0c213e]/40"
 //                     }`}
 //                   >
 //                     <Video className="w-4 h-4" /> Online
@@ -203,8 +203,8 @@
 //                     onClick={() => setMode("offline")}
 //                     className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
 //                       mode === "offline"
-//                         ? "bg-[#28328C] text-white shadow"
-//                         : "bg-white text-gray-700 hover:border-[#28328C]/40"
+//                         ? "bg-[#0c213e] text-white shadow"
+//                         : "bg-white text-gray-700 hover:border-[#0c213e]/40"
 //                     }`}
 //                   >
 //                     <Phone className="w-4 h-4" /> Offline
@@ -296,7 +296,7 @@
 //                         className={`min-w-[72px] p-3 text-center rounded-lg border transition-all
 //                           ${
 //                             active
-//                               ? "bg-[#28328C] text-white shadow"
+//                               ? "bg-[#0c213e] text-white shadow"
 //                               : "bg-white text-gray-800 hover:shadow-sm"
 //                           }
 //                           ${
@@ -353,7 +353,7 @@
 //                             disabled={isBooked}
 //                             className={`p-2 rounded border text-sm transition-all ${
 //                               selected
-//                                 ? "bg-[#28328C] text-white shadow "
+//                                 ? "bg-[#0c213e] text-white shadow "
 //                                 : "bg-white text-gray-800 hover:shadow-sm border-green-300"
 //                             } ${
 //                               isBooked
@@ -515,7 +515,7 @@
 //             className={`w-full py-2 mt-4 rounded-lg font-semibold text-white ${
 //               loading
 //                 ? "bg-gray-400 cursor-not-allowed"
-//                 : "bg-[#28328C] hover:bg-[#1e2675]"
+//                 : "bg-[#0c213e] hover:bg-[#1e2675]"
 //             }`}
 //           >
 //             {loading ? "Processing..." : "Book Appointment"}
@@ -845,7 +845,7 @@ const BookingDrawer: React.FC<Props> = ({
                   className="h-14 w-14 rounded-full object-cover border border-gray-200"
                 />
               ) : (
-                <div className="h-14 w-14 flex items-center justify-center rounded-full bg-[#28328C] text-white text-lg font-semibold">
+                <div className="h-14 w-14 flex items-center justify-center rounded-full bg-[#0c213e] text-white text-lg font-semibold">
                   {doctor.fullName.charAt(0)}
                 </div>
               )}
@@ -884,8 +884,8 @@ const BookingDrawer: React.FC<Props> = ({
                     onClick={() => setMode("online")}
                     className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                       mode === "online"
-                        ? "bg-[#28328C] text-white shadow"
-                        : "bg-white text-gray-700 hover:border-[#28328C]/40"
+                        ? "bg-[#0c213e] text-white shadow"
+                        : "bg-white text-gray-700 hover:border-[#0c213e]/40"
                     }`}
                   >
                     <Video className="w-4 h-4" /> Consult Online
@@ -894,8 +894,8 @@ const BookingDrawer: React.FC<Props> = ({
                     onClick={() => setMode("offline")}
                     className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                       mode === "offline"
-                        ? "bg-[#28328C] text-white shadow"
-                        : "bg-white text-gray-700 hover:border-[#28328C]/40"
+                        ? "bg-[#0c213e] text-white shadow"
+                        : "bg-white text-gray-700 hover:border-[#0c213e]/40"
                     }`}
                   >
                     <Phone className="w-4 h-4" /> Visit Doctor
@@ -979,7 +979,7 @@ const BookingDrawer: React.FC<Props> = ({
                         className={`min-w-[72px] p-3 text-center rounded-lg border transition-all
                           ${
                             active
-                              ? "bg-[#28328C] text-white shadow"
+                              ? "bg-[#0c213e] text-white shadow"
                               : "bg-white text-gray-800 hover:shadow-sm"
                           }
                           ${
@@ -1035,7 +1035,7 @@ const BookingDrawer: React.FC<Props> = ({
                             disabled={isBooked}
                             className={`p-2 rounded border text-sm transition-all ${
                               selected
-                                ? "bg-[#28328C] text-white shadow"
+                                ? "bg-[#0c213e] text-white shadow"
                                 : "bg-white text-gray-800 hover:shadow-sm"
                             } ${
                               isBooked
@@ -1058,7 +1058,7 @@ const BookingDrawer: React.FC<Props> = ({
             <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
               <button
                 onClick={() => setShowForm(true)}
-                className="w-full bg-[#28328C] text-white py-2 rounded-lg font-medium hover:bg-[#1e2675] transition-all"
+                className="w-full bg-[#0c213e] text-white py-2 rounded-lg font-medium hover:bg-[#0f1650] transition-all"
               >
                 Continue
               </button>
