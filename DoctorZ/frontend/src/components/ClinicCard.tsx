@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 import api from "../Services/mainApi";
+import Swal from "sweetalert2";
 
 // ---------------------------
 // Type definitions
@@ -72,7 +73,13 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
     e.stopPropagation();
 
     if (!patientId) {
-      alert("Please log in as patient to use favourites.");
+     Swal.fire({
+        title: "Error",
+        text: "Please login to favourite a clinic",
+        icon: "error",
+        confirmButtonText: "Ok",
+      });
+      navigate("/patient-login")
       return;
     }
 
