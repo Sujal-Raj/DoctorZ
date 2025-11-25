@@ -152,7 +152,7 @@ const App: React.FC = () => {
 
           {/* Doctor Dashboard */}
           <Route path="/doctordashboard/:drId" element={<DoctorDashboard />}>
-           <Route index element={<DoctorDashboardHome />} />
+           <Route index element={<DoctorAppointments />} />
           <Route
                path="doctor-home-dashboard"
                element={<DoctorDashboardHome/>}

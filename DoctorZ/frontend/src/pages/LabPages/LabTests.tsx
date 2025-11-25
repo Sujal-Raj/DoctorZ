@@ -4,6 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Box, Edit3, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 /**
  * LabManagementPro.tsx
@@ -131,7 +132,7 @@ const LabManagementPro: React.FC = () => {
       setPackages(pRes.data.packages || []);
     } catch (err) {
       console.error("Load error:", err);
-      alert("Unable to load tests/packages. Check backend.");
+    
     } finally {
       setLoading(false);
     }
@@ -224,7 +225,7 @@ const LabManagementPro: React.FC = () => {
         const res = await axios.put<{ updatedTest?: Test }>(API.updateTest(editingId), payload);
         const updated = res.data?.updatedTest ?? ({ ...(payload as any), _id: editingId } as Test);
         setTests((prev) => prev.map((x) => (x._id === editingId ? updated : x)));
-        alert("Test updated");
+        Swal.fire("Success", "Test updated", "success");
       } else {
         const payload = [
           {
@@ -242,28 +243,39 @@ const LabManagementPro: React.FC = () => {
         const res = await axios.post<AddTestResponse>(API.addTest(), payload);
         const created = res.data.tests || [];
         setTests((prev) => [...created, ...prev]);
-        alert("Test added");
+        Swal.fire("Success", "Test added", "success");
       }
       setModalOpen(false);
       loadAll();
     } catch (err) {
       console.error("Test submit error:", err);
-      alert("Failed to save test");
+      Swal.fire("Error", "Failed to save test", "error");
     }
   };
 
   const removeTest = async (testId?: string) => {
     if (!testId) return;
-    if (!confirm("Delete test? This also removes it from any package.")) return;
+    const result = await Swal.fire({
+  title: "Are you sure?",
+  text: "Delete test? This also removes it from any package.",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#d33",
+  cancelButtonColor: "#3085d6",
+  confirmButtonText: "Yes, delete it!",
+});
+
+if (!result.isConfirmed) return;
+
     try {
       await axios.delete(API.deleteTest(testId));
       setTests((prev) => prev.filter((x) => x._id !== testId));
       // remove references in packages UI
       setPackages((prev) => prev.map((p) => ({ ...p, tests: (p.tests || []).filter((t) => (typeof t === "string" ? t !== testId : (t as any)._id !== testId)) })));
-      alert("Deleted");
+     Swal.fire("Deleted", "Test has been deleted", "success");
     } catch (err) {
       console.error("Delete test error:", err);
-      alert("Failed to delete test");
+     Swal.fire("Error", "Failed to delete test", "error");
     }
   };
 
@@ -316,16 +328,16 @@ const LabManagementPro: React.FC = () => {
 
       if (isEditMode && editingId) {
         await axios.put(API.updatePackage(editingId), payload);
-        alert("Package updated");
+        Swal.fire("Success", "Package updated", "success");
       } else {
         await axios.post(API.addPackage(), payload);
-        alert("Package created");
+        Swal.fire("Success", "Package created", "success");
       }
       setModalOpen(false);
       loadAll();
     } catch (err) {
       console.error("Package submit error:", err);
-      alert("Failed to save package");
+      Swal.fire("Error", "Failed to save package", "error");
     }
   };
 
@@ -335,10 +347,10 @@ const LabManagementPro: React.FC = () => {
     try {
       await axios.delete(API.deletePackage(packageId));
       setPackages((prev) => prev.filter((p) => p._id !== packageId));
-      alert("Deleted package");
+      Swal.fire("Deleted", "Package has been deleted", "success");
     } catch (err) {
       console.error("Delete package error:", err);
-      alert("Failed to delete package");
+      Swal.fire("Error", "Failed to delete package", "error");
     }
   };
 

@@ -40,7 +40,7 @@ export default function LoginLab() {
         });
 
         setTimeout(() => {
-          window.location.href = "/lab-dashboard";
+          window.location.href = "/lab-dashboard/patients";
         }, 1500);
       } else {
         throw new Error("Invalid credentials");

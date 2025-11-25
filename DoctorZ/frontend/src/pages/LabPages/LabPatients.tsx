@@ -105,24 +105,24 @@ const Patients: React.FC = memo(() => {
   }, [filtered, page, pageSize]);
 
   // Export CSV
-    const exportCSV = () => {
-      // Build CSV manually to avoid an external dependency and missing types
-      const headers = ["Patient Name", "Test Name", "Booking Date"];
-      const rows = filtered.map((p) => [
-        // Quote and escape values to ensure CSV is valid
-        `"${safeFullName(p.userId).replace(/"/g, '""')}"`,
-        `"${(p.testName || "").replace(/"/g, '""')}"`,
-        `"${p.bookingDate ? new Date(p.bookingDate).toISOString() : ""}"`,
-      ]);
-      const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `lab_patients_${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
+    // const exportCSV = () => {
+    //   // Build CSV manually to avoid an external dependency and missing types
+    //   const headers = ["Patient Name", "Test Name", "Booking Date"];
+    //   const rows = filtered.map((p) => [
+    //     // Quote and escape values to ensure CSV is valid
+    //     `"${safeFullName(p.userId).replace(/"/g, '""')}"`,
+    //     `"${(p.testName || "").replace(/"/g, '""')}"`,
+    //     `"${p.bookingDate ? new Date(p.bookingDate).toISOString() : ""}"`,
+    //   ]);
+    //   const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    //   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    //   const url = URL.createObjectURL(blob);
+    //   const a = document.createElement("a");
+    //   a.href = url;
+    //   a.download = `lab_patients_${new Date().toISOString().slice(0, 10)}.csv`;
+    //   a.click();
+    //   URL.revokeObjectURL(url);
+    // };
 
   if (loading)
     return (
@@ -179,7 +179,7 @@ const Patients: React.FC = memo(() => {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          {/* <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setDarkMode((d) => !d)}
               aria-label="Toggle dark mode"
@@ -195,7 +195,7 @@ const Patients: React.FC = memo(() => {
             >
               ⬇ Export CSV
             </button>
-          </div>
+          </div> */}
         </header>
 
         {/* Summary Cards */}
