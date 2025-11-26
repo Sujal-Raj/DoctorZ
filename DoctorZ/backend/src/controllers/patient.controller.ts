@@ -229,35 +229,49 @@ const deleteUser = async(req:Request,res:Response)=>{
 }
 
 
+
+//--------------------------------------------Get Available Slots By Doctor Id-------------------------
+
 const getAvailableSlotsByDoctorId = async (req: Request, res: Response) => {
   try {
     const { doctorId } = req.params;
 
     if (!doctorId) {
-      return res.status(400).json({
-        message: "doctorId is required",
-      });
+      return res.status(400).json({ message: "doctorId is required" });
     }
 
-    // Find all slots for this doctor
-    const slots = await timeSlotsModel.find({ doctorId });
+    // Fetch only documents for this doctor
+    const timeSlotDocs = await timeSlotsModel.find({ doctorId });
 
-    if (!slots || slots.length === 0) {
+    if (!timeSlotDocs || timeSlotDocs.length === 0) {
       return res.status(200).json({
         message: "No slots found for this doctor",
-        availableData: [],
+        availableMonths: [],
       });
     }
 
-    
     const slotsByMonth: Record<string, any[]> = {};
 
-    slots.forEach(slot => {
-      const d = new Date(slot.date);
-      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    timeSlotDocs.forEach(doc => {
+      // Skip if slots array is empty
+      if (!doc.slots || doc.slots.length === 0) return;
+
+      const dateObj = new Date(doc.date);
+      const monthKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}`;
+      const dateKey = dateObj.toISOString().split("T")[0];
+
       if (!slotsByMonth[monthKey]) slotsByMonth[monthKey] = [];
-      slotsByMonth[monthKey].push(slot);
+
+      slotsByMonth[monthKey].push({
+        date: dateKey,
+        slots: doc.slots.map(s => ({
+          _id: s._id,
+          time: s.time,
+          isActive: s.isActive,
+        })),
+      });
     });
+
 
     return res.status(200).json({
       message: "Available months and slots fetched successfully",
@@ -299,23 +313,6 @@ const updatePatient = async (req: Request, res: Response) => {
   }
 };
 
-
-// const getBookedDoctor =async(req:Request,res:Response)=>{
-//     try {
-//         const {id} = req.params;
-//         const doctor = await Booking.find({userId:id}).populate('doctorId');
-//         console.log(doctor);
-//         return res.status(200).json({
-//             message:"Doctors fetched successfully",
-//             doctor
-//         })
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({ 
-//             message: "Something went wrong." 
-//         });
-//     }
-// }
 
 
 

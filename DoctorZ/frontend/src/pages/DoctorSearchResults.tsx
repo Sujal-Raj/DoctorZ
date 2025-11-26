@@ -250,12 +250,7 @@ const DoctorSearchResults: React.FC = () => {
       replace: true,
     });
   };
-  // const handleFavouriteToggle = (doctorId: string, isFavourite: boolean) => {
-  //   setDoctors((prev) =>
-  //     prev.map((d) => (d._id === doctorId ? { ...d, isFavourite } : d))
-  //   );
-  // };
-
+  
   const clearFilters = () => {
     setSpecialty("");
     setLocationValue("");
