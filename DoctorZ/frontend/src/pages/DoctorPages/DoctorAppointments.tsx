@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import {
@@ -43,14 +42,13 @@ export default function DoctorAppointments() {
       if (data.bookings && data.bookings.length > 0) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-const startOfWeek = new Date(today);
-startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
-startOfWeek.setHours(0, 0, 0, 0);
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
+        startOfWeek.setHours(0, 0, 0, 0);
 
-const endOfWeek = new Date(startOfWeek);
-endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
-endOfWeek.setHours(23, 59, 59, 999);
-
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+        endOfWeek.setHours(23, 59, 59, 999);
 
         const todayBookings: Booking[] = [];
         const thisWeekBookings: Booking[] = [];
@@ -69,11 +67,24 @@ endOfWeek.setHours(23, 59, 59, 999);
         });
 
         // Sort each group by date ascending
-        todayBookings.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
-        thisWeekBookings.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
-        upcomingBookings.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
+        todayBookings.sort(
+          (a, b) =>
+            new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()
+        );
+        thisWeekBookings.sort(
+          (a, b) =>
+            new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()
+        );
+        upcomingBookings.sort(
+          (a, b) =>
+            new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()
+        );
 
-        setBookings([...todayBookings, ...thisWeekBookings, ...upcomingBookings]);
+        setBookings([
+          ...todayBookings,
+          ...thisWeekBookings,
+          ...upcomingBookings,
+        ]);
       } else {
         setBookings([]);
       }
@@ -205,21 +216,24 @@ endOfWeek.setHours(23, 59, 59, 999);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const startOfWeek = new Date(today);
-startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
-startOfWeek.setHours(0, 0, 0, 0);
+  startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
+  startOfWeek.setHours(0, 0, 0, 0);
 
-const endOfWeek = new Date(startOfWeek);
-endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
-endOfWeek.setHours(23, 59, 59, 999);
-
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+  endOfWeek.setHours(23, 59, 59, 999);
 
   const todayAppointments = bookings.filter(
     (b) => new Date(b.dateTime).toDateString() === today.toDateString()
   );
- const thisWeekAppointments = bookings.filter((b) => {
-  const date = new Date(b.dateTime);
-  return date.toDateString() !== today.toDateString() && date >= startOfWeek && date <= endOfWeek;
-});
+  const thisWeekAppointments = bookings.filter((b) => {
+    const date = new Date(b.dateTime);
+    return (
+      date.toDateString() !== today.toDateString() &&
+      date >= startOfWeek &&
+      date <= endOfWeek
+    );
+  });
 
   const upcomingAppointments = bookings.filter(
     (b) => new Date(b.dateTime) > endOfWeek
@@ -237,7 +251,6 @@ endOfWeek.setHours(23, 59, 59, 999);
 
   return (
     <div className="p-4 ml-5 lg:p-8 flex flex-col w-full">
-    
       {renderGroup("Today's  Appointments", todayAppointments)}
       {renderGroup("This Week's Appointments", thisWeekAppointments)}
       {renderGroup("Upcoming Appointments", upcomingAppointments)}
