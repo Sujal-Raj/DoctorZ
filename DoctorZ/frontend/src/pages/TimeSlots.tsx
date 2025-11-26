@@ -743,7 +743,7 @@ const TimeSlots: React.FC = () => {
                       type="time"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       value={workingHours.start}
-                      onChange={(e) => setWorkingHours({ ...workingHours, start: e.target.value })}
+                      onChange={(e:React.ChangeEvent<HTMLInputElement>) => setWorkingHours({ ...workingHours, start: e.target.value })}
                     />
                   </div>
                   <div>
@@ -752,7 +752,7 @@ const TimeSlots: React.FC = () => {
                       type="time"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                       value={workingHours.end}
-                      onChange={(e) => setWorkingHours({ ...workingHours, end: e.target.value })}
+                      onChange={(e:React.ChangeEvent<HTMLInputElement>) => setWorkingHours({ ...workingHours, end: e.target.value })}
                     />
                   </div>
                 </div>

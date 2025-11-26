@@ -268,280 +268,250 @@ const DoctorSearchResults: React.FC = () => {
   };
 
   return (
-    <div className="w-full bg-gray-50 ">
-      <Helmet>
-        <title>Consult Doctors Online | DoctorZ</title>
-        <meta
-          name="description"
-          content="Find and consult top doctors online by specialization, experience, and location on DoctorZ."
-        />
-      </Helmet>
+    <div className="w-full bg-white text-gray-900">
+  <Helmet>
+    <title>Consult Doctors Online | DoctorZ</title>
+    <meta name="description" content="Find and consult top doctors online by specialization, experience, and location on DoctorZ." />
+  </Helmet>
 
-      {/* Main Grid Container */}
-      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Sidebar Filters (Desktop) */}
-        <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
-          <FilterPanel
-            showNearMe={showNearMe}
-            clearFilters={clearFilters}
-            modeHospital={modeHospital}
-            setModeHospital={setModeHospital}
-            modeOnline={modeOnline}
-            setModeOnline={setModeOnline}
-            expFilters={expFilters}
-            toggleExp={toggleExp}
-            feeFilters={feeFilters}
-            toggleFee={toggleFee}
-            languageFilters={languageFilters}
-            toggleLang={toggleLang}
-          />
-        </aside>
+  <div className="max-w-[1500px] mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    {/* Sidebar Filters */}
+    <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
+      <FilterPanel
+        showNearMe={showNearMe}
+        clearFilters={clearFilters}
+        modeHospital={modeHospital}
+        setModeHospital={setModeHospital}
+        modeOnline={modeOnline}
+        setModeOnline={setModeOnline}
+        expFilters={expFilters}
+        toggleExp={toggleExp}
+        feeFilters={feeFilters}
+        toggleFee={toggleFee}
+        languageFilters={languageFilters}
+        toggleLang={toggleLang}
+      />
+    </aside>
 
-        {/* Main Content */}
-        <main className="lg:col-span-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {specialty
-                  ? `Consult ${specialty}s Online`
-                  : "Available Doctors"}
-              </h1>
-              <p className="text-sm text-gray-600 mt-0.5">
-                {filtered.length} doctors found
-              </p>
-            </div>
-            <button
-              onClick={() => setMobileFilterOpen(true)}
-              className="lg:hidden flex items-center gap-2 px-3 py-2 
-border border-[#0c213e] text-[#0c213e] 
-rounded-md text-sm font-medium 
-hover:bg-[#0c213e]/10 transition-all"
-            >
-              <SlidersHorizontal size={16} />
-              Filters
-            </button>
-          </div>
-
-          {/* Search Bar */}
-          <div className="bg-white border border-gray-400 rounded-lg p-3 mb-4 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-              <SearchInput
-                icon={<Stethoscope className="w-4 h-4 text-gray-400" />}
-                placeholder="Specialty"
-                value={specialty}
-                onChange={setSpecialty}
-              />
-              <SearchInput
-                icon={<MapPin className="w-4 h-4 text-gray-400" />}
-                placeholder="Location"
-                value={locationValue}
-                onChange={setLocationValue}
-              />
-              <SearchInput
-                icon={<Calendar className="w-4 h-4 text-gray-400" />}
-                type="date"
-                value={date}
-                onChange={setDate}
-              />
-              <button
-                onClick={handleSearch}
-                className="flex items-center justify-center gap-2 bg-[#0c213e] hover:bg-[#132d54] text-white font-medium rounded-lg px-4 py-1.5 border border-[#1f286f] transition-all duration-200"
-              >
-                <SearchIcon className="w-4 h-4" />
-                Search
-              </button>
-            </div>
-          </div>
-
-          {/* 🔵 Online / Visit Buttons */}
-          <div className="flex gap-3 mb-4">
-            {/* Online Consult */}
-            <button
-              onClick={() =>
-                setConsultMode((prev) => (prev === "online" ? null : "online"))
-              }
-              className={`
-      px-4 py-2 rounded-lg border font-medium
-      ${
-        consultMode === "online"
-          ? "bg-[#0c213e] text-white border-[#0c213e]"
-          : "bg-white text-gray-700 border-gray-400"
-      }
-    `}
-            >
-              Online Consult
-            </button>
-
-            {/* Visit Doctor */}
-            <button
-              onClick={() =>
-                setConsultMode((prev) =>
-                  prev === "hospital" ? null : "hospital"
-                )
-              }
-              className={`
-      px-4 py-2 rounded-lg border font-medium
-      ${
-        consultMode === "hospital"
-          ? "bg-[#0c213e] text-white border-[#0c213e]"
-          : "bg-white text-gray-700 border-gray-400"
-      }
-    `}
-            >
-              Visit Doctor
-            </button>
-          </div>
-
-          {/* Doctor Cards */}
-          {loading ? (
-            <div className="bg-white rounded-lg p-6 shadow-sm text-center border border-gray-200">
-              <div className="inline-block w-8 h-8 border-4 border-[#0c213e] border-t-transparent rounded-full animate-spin mb-2" />
-
-              <div className="text-gray-600">Loading doctors...</div>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-lg p-6 shadow-sm text-center border border-gray-200">
-              <div className="text-gray-700">
-                No doctors found matching your filters.
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-7">
-              {currentDoctors.map((doc) => (
-                <DoctorCard
-                  key={doc._id}
-                  doctor={doc}
-                  onConsult={openBooking}
-                  onFavouriteToggle={(doctorId, isFav) => {
-                    setDoctors((prev) =>
-                      prev.map((d) =>
-                        d._id === doctorId ? { ...d, isFavourite: isFav } : d
-                      )
-                    );
-                  }}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-5">
-              <div className="inline-flex gap-1.5">
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all duration-200 ${
-                      currentPage === i + 1
-                        ? "bg-[#0c213e] text-white border-[#0c213e] shadow-lg shadow-[#0c213e]/30 scale-105"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e] hover:bg-[#0c213e]/10"
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </main>
-
-        {/* Right Help Card */}
-        <aside className="lg:col-span-2 hidden lg:block">
-          <div className="bg-[#08263a] text-white rounded-lg p-4 shadow-md border border-gray-200">
-            <h3 className="font-semibold text-base">
-              Need help consulting the right doctor?
-            </h3>
-            <p className="text-sm mt-2 leading-snug">
-              Call <span className="font-medium">+91-8040245807</span> to book
-              instantly
-            </p>
-            <a
-              href="tel:+918040245807"
-              className="inline-block mt-3 bg-white text-[#08263a] font-medium px-3 py-1.5 rounded"
-            >
-              Call Now
-            </a>
-          </div>
-        </aside>
+    {/* Main Content */}
+    <main className="lg:col-span-6">
+      {/* Header with count and filters toggle */}
+      <div className="flex items-center justify-between mb-5 px-2">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {specialty ? `Consult ${specialty}s Online` : "Available Doctors"}
+          </h1>
+          <p className="text-sm text-gray-500 mt-0.5">{filtered.length} doctors found</p>
+        </div>
+        <button
+          onClick={() => setMobileFilterOpen(true)}
+          className="lg:hidden flex items-center gap-2 px-3 py-2 border border-[#0c213e] text-[#0c213e] rounded-md text-sm font-medium hover:bg-[#0c213e]/10 transition"
+          aria-label="Open Filters"
+          type="button"
+        >
+          <SlidersHorizontal size={16} />
+          Filters
+        </button>
       </div>
 
-      {/* Mobile Filter Drawer */}
-      {mobileFilterOpen && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex justify-end">
-          <div className="bg-white w-80 max-w-full h-full p-5 overflow-y-auto shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
-              <button
-                onClick={() => setMobileFilterOpen(false)}
-                className="p-1 rounded-full hover:bg-gray-100"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      {/* Search Filters Bar */}
+      <div className="border border-gray-300 rounded-lg bg-white p-3 mb-6 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <SearchInput
+            icon={<Stethoscope className="w-4 h-4 text-gray-400" />}
+            placeholder="Specialty"
+            value={specialty}
+            onChange={setSpecialty}
+          />
+          <SearchInput
+            icon={<MapPin className="w-4 h-4 text-gray-400" />}
+            placeholder="Location"
+            value={locationValue}
+            onChange={setLocationValue}
+          />
+          <SearchInput
+            icon={<Calendar className="w-4 h-4 text-gray-400" />}
+            placeholder="Date"
+            type="date"
+            value={date}
+            onChange={setDate}
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-[#0c213e] hover:bg-[#132d54] text-white rounded-lg px-5 py-2 font-medium flex items-center justify-center gap-2 transition"
+            type="button"
+            aria-label="Search doctors"
+          >
+            <SearchIcon className="w-4 h-4" />
+            Search
+          </button>
+        </div>
+      </div>
 
-            <FilterPanel
-              showNearMe={showNearMe}
-              clearFilters={clearFilters}
-              modeHospital={modeHospital}
-              setModeHospital={setModeHospital}
-              modeOnline={modeOnline}
-              setModeOnline={setModeOnline}
-              expFilters={expFilters}
-              toggleExp={toggleExp}
-              feeFilters={feeFilters}
-              toggleFee={toggleFee}
-              languageFilters={languageFilters}
-              toggleLang={toggleLang}
+      {/* Consult Mode Toggle Buttons */}
+      <div className="flex gap-3 mb-6 px-2">
+        <button
+          onClick={() => setConsultMode(consultMode === "online" ? null : "online")}
+          className={`flex-1 py-2 rounded-lg text-center font-medium border transition ${
+            consultMode === "online"
+              ? "bg-[#0c213e] text-white border-[#0c213e]"
+              : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e]"
+          }`}
+          type="button"
+          aria-pressed={consultMode === "online"}
+        >
+          Online Consult
+        </button>
+        <button
+          onClick={() => setConsultMode(consultMode === "hospital" ? null : "hospital")}
+          className={`flex-1 py-2 rounded-lg text-center font-medium border transition ${
+            consultMode === "hospital"
+              ? "bg-[#0c213e] text-white border-[#0c213e]"
+              : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e]"
+          }`}
+          type="button"
+          aria-pressed={consultMode === "hospital"}
+        >
+          Visit Doctor
+        </button>
+      </div>
+
+      {/* Doctor Cards List */}
+      {loading ? (
+        <div className="p-6 bg-white rounded-lg shadow text-center border border-gray-200">
+          <div className="mx-auto w-10 h-10 border-4 border-[#0c213e] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-gray-600">Loading doctors...</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="p-6 bg-white rounded-lg shadow text-center border border-gray-200 text-gray-700">
+          No doctors found matching your filters.
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {currentDoctors.map((doc) => (
+            <DoctorCard
+              key={doc._id}
+              doctor={doc}
+              onConsult={openBooking}
+              onFavouriteToggle={(doctorId, isFav) =>
+                setDoctors((prev) =>
+                  prev.map((d) => (d._id === doctorId ? { ...d, isFavourite: isFav } : d))
+                )
+              }
             />
-
-            <button
-              onClick={() => setMobileFilterOpen(false)}
-              className="
-  mt-5 w-full 
-  bg-[#0c213e] 
-  text-white 
-  py-2 
-  rounded-md 
-  font-medium
-  border border-[#1a2f4a]
-  shadow-sm
-  hover:bg-[#10273f]
-  hover:border-[#254466]
-  transition-all duration-200
-"
-            >
-              Apply Filters
-            </button>
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Booking Drawer */}
-      <BookingDrawer
-        open={drawerOpen}
-        doctor={
-          selectedDoctor
-            ? {
-                _id: selectedDoctor._id,
-                fullName: selectedDoctor.fullName,
-                photo: selectedDoctor.photo,
-                specialization: selectedDoctor.specialization,
-                fees: selectedDoctor.consultationFee,
-              }
-            : null
-        }
-        onClose={() => {
-          setDrawerOpen(false);
-          setSelectedDoctor(null);
-        }}
-        onBooked={() => {
-          setDrawerOpen(false);
-          setSelectedDoctor(null);
-        }}
-      />
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav className="flex justify-center mt-6" aria-label="Pagination">
+          <div className="inline-flex gap-1">
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentPage(idx + 1)}
+                className={`px-3 py-1.5 rounded-md border text-sm font-medium transition ${
+                  currentPage === idx + 1
+                    ? "bg-[#0c213e] text-white border-[#0c213e] shadow-lg shadow-[#0c213e]/30 scale-105"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e] hover:bg-[#0c213e]/10"
+                }`}
+                aria-current={currentPage === idx + 1 ? "page" : undefined}
+                aria-label={`Go to page ${idx + 1}`}
+                type="button"
+              >
+                {idx + 1}
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
+    </main>
+
+    {/* Right side Help Card */}
+    <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
+      <div className="bg-[#08263a] text-white rounded-lg p-5 shadow-md border border-gray-200">
+        <h3 className="text-base font-semibold">Need help consulting the right doctor?</h3>
+        <p className="text-sm mt-2 leading-relaxed">
+          Call <span className="font-semibold">+91-8040245807</span> to book instantly
+        </p>
+        <a
+          href="tel:+918040245807"
+          className="inline-block mt-4 bg-white text-[#08263a] font-semibold px-4 py-2 rounded-md hover:bg-gray-200 transition"
+        >
+          Call Now
+        </a>
+      </div>
+    </aside>
+  </div>
+
+  {/* Mobile Filter Drawer */}
+  {mobileFilterOpen && (
+    <div className="fixed inset-0 bg-black/50 z-50 flex justify-end" role="dialog" aria-modal="true">
+      <div className="bg-white w-80 max-w-full h-full p-5 overflow-y-auto shadow-lg">
+        <div className="flex justify-between items-center mb-5">
+          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+          <button
+            onClick={() => setMobileFilterOpen(false)}
+            className="p-1 rounded-full hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0c213e]"
+            aria-label="Close filters"
+            type="button"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <FilterPanel
+          showNearMe={showNearMe}
+          clearFilters={clearFilters}
+          modeHospital={modeHospital}
+          setModeHospital={setModeHospital}
+          modeOnline={modeOnline}
+          setModeOnline={setModeOnline}
+          expFilters={expFilters}
+          toggleExp={toggleExp}
+          feeFilters={feeFilters}
+          toggleFee={toggleFee}
+          languageFilters={languageFilters}
+          toggleLang={toggleLang}
+        />
+
+        <button
+          onClick={() => setMobileFilterOpen(false)}
+          className="mt-6 w-full bg-[#0c213e] text-white py-3 rounded-md font-semibold border border-[#1a2f4a] shadow-sm hover:bg-[#10273f] hover:border-[#254466] transition-all"
+          type="button"
+        >
+          Apply Filters
+        </button>
+      </div>
     </div>
+  )}
+
+  {/* Booking Drawer */}
+  <BookingDrawer
+    open={drawerOpen}
+    doctor={
+      selectedDoctor
+        ? {
+            _id: selectedDoctor._id,
+            fullName: selectedDoctor.fullName,
+            photo: selectedDoctor.photo,
+            specialization: selectedDoctor.specialization,
+            fees: selectedDoctor.consultationFee,
+          }
+        : null
+    }
+    onClose={() => {
+      setDrawerOpen(false);
+      setSelectedDoctor(null);
+    }}
+    onBooked={() => {
+      setDrawerOpen(false);
+      setSelectedDoctor(null);
+    }}
+  />
+</div>
+
   );
 };
 

@@ -248,56 +248,34 @@ const sortedClinics = useMemo(() => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Helmet>
-        <title>Find Clinics Near You | DoctorZ</title>
-        <meta
-          name="description"
-          content="Find and book appointments at top clinics by specialization, location, and services on DoctorZ."
-        />
-      </Helmet>
+    <div className="min-h-screen bg-white text-gray-900">
+  <Helmet>
+    <title>Find Clinics Near You | DoctorZ</title>
+    <meta
+      name="description"
+      content="Find and book appointments at top clinics by specialization, location, and services on DoctorZ."
+    />
+  </Helmet>
 
-      {/* Mobile Filter Overlay */}
-      {showMobileFilters && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
-          <div className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white shadow-xl overflow-y-auto">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
-                <button
-                  onClick={() => setShowMobileFilters(false)}
-                  className="p-2 text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Mobile Filter Content */}
-              <MobileFilterPanel
-                modeHospital={modeHospital}
-                setModeHospital={setModeHospital}
-                modeOnline={modeOnline}
-                setModeOnline={setModeOnline}
-                typeFilters={typeFilters}
-                toggleFilter={toggleFilter}
-                setTypeFilters={setTypeFilters}
-                specialty={specialty}
-                setSpecialty={setSpecialty}
-                specialityOptions={specialityOptions}
-                expFilters={expFilters}
-                setExpFilters={setExpFilters}
-                clearFilters={clearFilters}
-                onClose={() => setShowMobileFilters(false)}
-              />
-            </div>
+  {/* Mobile Filters Overlay */}
+  {showMobileFilters && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden">
+      <div className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white shadow-xl overflow-y-auto">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+            <button
+              onClick={() => setShowMobileFilters(false)}
+              className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#0c213e] rounded"
+              aria-label="Close filters"
+              type="button"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-        </div>
-      )}
 
-      <div className="max-w-[1500px] mx-auto px-3 sm:px-4 py-5 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-        {/* === FILTERS - Desktop === */}
-        <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
-          <FilterPanel
+          {/* Mobile Filter Panel */}
+          <MobileFilterPanel
             modeHospital={modeHospital}
             setModeHospital={setModeHospital}
             modeOnline={modeOnline}
@@ -311,178 +289,195 @@ const sortedClinics = useMemo(() => {
             expFilters={expFilters}
             setExpFilters={setExpFilters}
             clearFilters={clearFilters}
+            onClose={() => setShowMobileFilters(false)}
           />
-        </aside>
-
-        {/* === MAIN CONTENT === */}
-        <main className="lg:col-span-7">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {specialty ? `Find ${specialty} Clinics` : "Available Clinics"}
-              </h1>
-              <p className="text-sm text-gray-600 mt-0.5">
-                {filtered.length} clinics found
-              </p>
-            </div>
-            
-            {/* Mobile Filter Button */}
-            <button
-              onClick={() => setShowMobileFilters(true)}
-              className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              <Menu className="w-4 h-4" />
-              Filters
-            </button>
-          </div>
-
-          {/* Search bar */}
-          <div className="bg-white border border-gray-200 rounded-lg p-3 mb-4 shadow-sm">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <SearchInput
-                icon={<Stethoscope className="w-4 h-4 text-gray-400" />}
-                placeholder="Specialty"
-                value={specialty}
-                onChange={setSpecialty}
-              />
-              <SearchInput
-                icon={<MapPin className="w-4 h-4 text-gray-400" />}
-                placeholder="Location"
-                value={locationValue}
-                onChange={setLocationValue}
-              />
-              <SearchInput
-                icon={<Calendar className="w-4 h-4 text-gray-400" />}
-                type="date"
-                value={date}
-                onChange={setDate}
-              />
-              <button
-                onClick={handleSearch}
-                className="flex items-center justify-center gap-2 bg-[#0c213e] hover:bg-[#132d54] text-white font-medium rounded-lg px-4 py-2 sm:py-1.5 text-sm sm:text-base"
-              >
-                <SearchIcon className="w-4 h-4" />
-                <span className="sm:hidden">Search</span>
-                <span className="hidden sm:inline">Search</span>
-              </button>
-            </div>
-          </div>
-          {/* 🔵 Online / Visit Buttons */}
-          <div className="flex gap-3 mb-4">
-            {/* Online Consult */}
-            <button
-              onClick={() =>
-                setConsultMode((prev) => (prev === "online" ? null : "online"))
-              }
-              className={`
-      px-4 py-2 rounded-lg border font-medium
-      ${
-        consultMode === "online"
-          ? "bg-[#0c213e] text-white border-[#0c213e]"
-          : "bg-white text-gray-700 border-gray-400"
-      }
-    `}
-            >
-              Online Consult
-            </button>
-
-            {/* Visit Doctor */}
-            <button
-              onClick={() =>
-                setConsultMode((prev) =>
-                  prev === "hospital" ? null : "hospital"
-                )
-              }
-              className={`
-      px-4 py-2 rounded-lg border font-medium
-      ${
-        consultMode === "hospital"
-          ? "bg-[#0c213e] text-white border-[#0c213e]"
-          : "bg-white text-gray-700 border-gray-400"
-      }
-    `}
-            >
-              Visit Doctor
-            </button>
-          </div>
-
-          {/* === Clinic Cards === */}
-          {loading ? (
-            <div className="bg-white rounded-lg p-6 shadow-sm text-center">
-              <div className="inline-block w-8 h-8 border-4 border-[#0c213e] border-t-transparent rounded-full animate-spin mb-2" />
-              <div className="text-gray-600">Loading clinics...</div>
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-lg p-6 shadow-sm text-center text-gray-700">
-              No clinics found matching your filters.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {currentClinics.map((clinic) => (
-                <ClinicCard key={clinic._id} clinic={clinic} navigate={navigate} onFavouriteToggle={handleFavouriteToggle}/>
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-5">
-              <div className="inline-flex gap-1 flex-wrap justify-center">
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-1.5 rounded-md border text-sm font-medium transition-all duration-200 ${
-  currentPage === i + 1
-    ? "bg-[#0c213e] text-white border-[#0c213e] shadow-lg shadow-[#0c213e]/30 scale-105"
-    : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e] hover:bg-[#0c213e]/10"
-}`}
-
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </main>
-
-        {/* === Help Card - Desktop === */}
-        <aside className="lg:col-span-2 hidden lg:block sticky top-24 self-start">
-          <div className="bg-[#08263a] text-white rounded-lg p-4 shadow-md">
-            <h3 className="font-semibold text-base mb-2">
-              Need help finding the right clinic?
-            </h3>
-            <p className="text-sm leading-snug">
-              Call <span className="font-medium">+91-8040245807</span> to book instantly
-            </p>
-            <a
-              href="tel:+918040245807"
-              className="inline-block mt-3 bg-white text-[#08263a] font-medium px-3 py-1.5 rounded text-sm hover:bg-gray-100 transition-colors"
-            >
-              Call Now
-            </a>
-          </div>
-        </aside>
-
-        {/* Mobile Help Card */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#08263a] text-white p-4 shadow-lg z-40">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium">Need help finding a clinic?</p>
-              <p className="text-xs opacity-90">Call +91-8040245807</p>
-            </div>
-            <a
-              href="tel:+918040245807"
-              className="bg-white text-[#08263a] font-medium px-4 py-2 rounded text-sm hover:bg-gray-100 transition-colors"
-            >
-              Call Now
-            </a>
-          </div>
         </div>
       </div>
     </div>
+  )}
+
+  <div className="max-w-[1500px] mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    {/* Sidebar - Filters */}
+    <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
+      <FilterPanel
+        modeHospital={modeHospital}
+        setModeHospital={setModeHospital}
+        modeOnline={modeOnline}
+        setModeOnline={setModeOnline}
+        typeFilters={typeFilters}
+        toggleFilter={toggleFilter}
+        setTypeFilters={setTypeFilters}
+        specialty={specialty}
+        setSpecialty={setSpecialty}
+        specialityOptions={specialityOptions}
+        expFilters={expFilters}
+        setExpFilters={setExpFilters}
+        clearFilters={clearFilters}
+      />
+    </aside>
+
+    {/* Main Content */}
+    <main className="lg:col-span-7">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3 px-2">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {specialty ? `Find ${specialty} Clinics` : "Available Clinics"}
+          </h1>
+          <p className="text-sm text-gray-600 mt-0.5">{filtered.length} clinics found</p>
+        </div>
+
+        {/* Mobile Filter Button */}
+        <button
+          onClick={() => setShowMobileFilters(true)}
+          className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+          aria-label="Open filters"
+          type="button"
+        >
+          <Menu className="w-4 h-4" />
+          Filters
+        </button>
+      </div>
+
+      {/* Search Bar */}
+      <div className="bg-white border border-gray-200 rounded-lg p-3 mb-6 shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <SearchInput
+            icon={<Stethoscope className="w-4 h-4 text-gray-400" />}
+            placeholder="Specialty"
+            value={specialty}
+            onChange={setSpecialty}
+          />
+          <SearchInput
+            icon={<MapPin className="w-4 h-4 text-gray-400" />}
+            placeholder="Location"
+            value={locationValue}
+            onChange={setLocationValue}
+          />
+          <SearchInput
+            icon={<Calendar className="w-4 h-4 text-gray-400" />}
+            placeholder="Date"
+            type="date"
+            value={date}
+            onChange={setDate}
+          />
+          <button
+            onClick={handleSearch}
+            className="flex items-center justify-center gap-2 bg-[#0c213e] hover:bg-[#132d54] text-white font-medium rounded-lg px-4 py-2 sm:py-1.5 text-sm sm:text-base transition"
+            type="button"
+            aria-label="Search clinics"
+          >
+            <SearchIcon className="w-4 h-4" />
+            Search
+          </button>
+        </div>
+      </div>
+
+      {/* Consult Mode Buttons */}
+      <div className="flex gap-3 mb-6 px-2">
+        <button
+          onClick={() => setConsultMode(consultMode === "online" ? null : "online")}
+          className={`flex-1 py-2 rounded-lg text-center font-medium border transition ${
+            consultMode === "online"
+              ? "bg-[#0c213e] text-white border-[#0c213e]"
+              : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e]"
+          }`}
+          type="button"
+          aria-pressed={consultMode === "online"}
+        >
+          Online Consult
+        </button>
+        <button
+          onClick={() => setConsultMode(consultMode === "hospital" ? null : "hospital")}
+          className={`flex-1 py-2 rounded-lg text-center font-medium border transition ${
+            consultMode === "hospital"
+              ? "bg-[#0c213e] text-white border-[#0c213e]"
+              : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e]"
+          }`}
+          type="button"
+          aria-pressed={consultMode === "hospital"}
+        >
+          Visit Doctor
+        </button>
+      </div>
+
+      {/* Clinic Cards */}
+      {loading ? (
+        <div className="bg-white rounded-lg p-6 shadow-sm text-center border border-gray-200">
+          <div className="mx-auto w-10 h-10 border-4 border-[#0c213e] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-gray-600">Loading clinics...</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="bg-white rounded-lg p-6 shadow-sm text-center border border-gray-200 text-gray-700">
+          No clinics found matching your filters.
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {currentClinics.map((clinic) => (
+            <ClinicCard key={clinic._id} clinic={clinic} navigate={navigate} onFavouriteToggle={handleFavouriteToggle} />
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav className="flex justify-center mt-6" aria-label="Pagination">
+          <div className="inline-flex gap-1 flex-wrap justify-center">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1.5 rounded-md border text-sm font-medium transition ${
+                  currentPage === i + 1
+                    ? "bg-[#0c213e] text-white border-[#0c213e] shadow-lg shadow-[#0c213e]/30 scale-105"
+                    : "bg-white text-gray-700 border-gray-300 hover:border-[#0c213e] hover:text-[#0c213e] hover:bg-[#0c213e]/10"
+                }`}
+                aria-current={currentPage === i + 1 ? "page" : undefined}
+                aria-label={`Go to page ${i + 1}`}
+                type="button"
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </nav>
+      )}
+    </main>
+
+    {/* Help Sidebar Desktop */}
+    <aside className="lg:col-span-2 hidden lg:block sticky top-24 self-start">
+      <div className="bg-[#08263a] text-white rounded-lg p-5 shadow-md">
+        <h3 className="text-base font-semibold mb-2">Need help finding the right clinic?</h3>
+        <p className="text-sm leading-relaxed">
+          Call <span className="font-semibold">+91-8040245807</span> to book instantly
+        </p>
+        <a
+          href="tel:+918040245807"
+          className="inline-block mt-4 bg-white text-[#08263a] font-semibold px-4 py-2 rounded hover:bg-gray-200 transition"
+        >
+          Call Now
+        </a>
+      </div>
+    </aside>
+
+    {/* Help Card Mobile */}
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#08263a] text-white p-4 shadow-lg z-40">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold">Need help finding a clinic?</p>
+          <p className="text-xs opacity-90">Call +91-8040245807</p>
+        </div>
+        <a
+          href="tel:+918040245807"
+          className="bg-white text-[#08263a] font-semibold px-4 py-2 rounded hover:bg-gray-200 transition"
+        >
+          Call Now
+        </a>
+      </div>
+    </div>
+  </div>
+  </div>
+
   );
 };
 

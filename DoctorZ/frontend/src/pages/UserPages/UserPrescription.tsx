@@ -1,6 +1,6 @@
 
 
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../Context/AuthContext";
 import api from "../../Services/mainApi";
 import {
@@ -131,8 +131,9 @@ const UserPrescription = () => {
               type="date"
               className="w-full px-3 py-2 border rounded-lg"
               value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+                const target = e.target as HTMLInputElement;
+                setStartDate(target.value);
                 setCurrentPage(1);
               }}
             />
@@ -145,8 +146,9 @@ const UserPrescription = () => {
               type="date"
               className="w-full px-3 py-2 border rounded-lg"
               value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+                const target = e.target as HTMLInputElement;
+                setEndDate(target.value);
                 setCurrentPage(1);
               }}
             />
@@ -158,8 +160,9 @@ const UserPrescription = () => {
             <select
               className="w-full px-3 py-2 border rounded-lg"
               value={filterMonth}
-              onChange={(e) => {
-                setFilterMonth(e.target.value);
+              onChange={(e:React.ChangeEvent<HTMLSelectElement>) => {
+                const target = e.target as HTMLSelectElement;
+                setFilterMonth(target.value);
                 setCurrentPage(1);
               }}
             >
@@ -185,8 +188,9 @@ const UserPrescription = () => {
             <select
               className="w-full px-3 py-2 border rounded-lg"
               value={filterYear}
-              onChange={(e) => {
-                setFilterYear(e.target.value);
+              onChange={(e:React.ChangeEvent<HTMLSelectElement>) => {
+                const target = e.target as HTMLSelectElement;
+                setFilterYear(target.value);
                 setCurrentPage(1);
               }}
             >
@@ -223,8 +227,9 @@ const UserPrescription = () => {
               placeholder="Search by doctor name..."
               className="outline-none w-full"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const target = e.target as HTMLInputElement;
+                setSearch(target.value);
                 setCurrentPage(1);
               }}
             />
@@ -233,7 +238,7 @@ const UserPrescription = () => {
           <select
             className="border-gray-300 px-3 py-2 rounded-lg bg-white shadow-sm"
             value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortOrder(e.target.value)}
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>

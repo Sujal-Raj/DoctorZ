@@ -69,7 +69,7 @@
 
 
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateDoctor } from "../Services/doctorApi";
 
@@ -119,7 +119,7 @@ function EditDoctorProfile() {
               type="text"
               className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               value={doctorId}
-              onChange={(e) => setDoctorId(e.target.value)}
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => setDoctorId(e.target.value)}
               placeholder="Enter new Doctor ID"
               required
             />
@@ -134,7 +134,7 @@ function EditDoctorProfile() {
               type="password"
               className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e:React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               placeholder="Enter new password"
               required
             />

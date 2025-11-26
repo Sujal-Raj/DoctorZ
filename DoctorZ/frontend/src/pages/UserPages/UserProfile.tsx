@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../Services/mainApi";
 import Swal from "sweetalert2";
-import userIcon from "../../assets/UserIcon.png";
-import { Camera, Mail, Phone, MapPin, CreditCard, User, Calendar, Users } from "lucide-react";
+// import userIcon from "../../assets/UserIcon.png";
+import { Mail, Phone, MapPin, CreditCard, User, Calendar, Users } from "lucide-react";
 
 // Strong Types
 interface Address {
@@ -75,7 +75,6 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isDark, setIsDark] = useState(false);
 
   const { id } = useParams();
   const userId = localStorage.getItem("userId");
@@ -213,17 +212,17 @@ function UserProfile() {
 
   if (loading)
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0c213e] mx-auto"></div>
-          <p className={`mt-4 text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Loading...</p>
+          <p className="mt-4 text-lg text-gray-600">Loading...</p>
         </div>
       </div>
     );
 
   if (!user)
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center text-red-500">User Not Found.</div>
       </div>
     );
