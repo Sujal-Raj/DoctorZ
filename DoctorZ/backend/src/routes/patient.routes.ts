@@ -25,8 +25,10 @@ router.post(
   patientController.patientRegister
 );
 router.post("/login",patientController.patientLogin);
-router.get("/:id",patientController.getPatientById);
-router.delete("/:id",patientController.deleteUser);
+
+router.get("/getUserPrescription/:aadhar",patientController.getUserPrescription);
+router.get("/getUserLabTest/:id",patientController.getUserLabTest);
+
 // Agar profilePhoto ke liye single file upload hai
 router.put(
   "/update/:id",
@@ -42,7 +44,10 @@ router.post("/favourite-doctor/:id",patientController.addFavouriteDoctor);
 router.get("/isFavourite/:patientId/:doctorId",patientController.isFavouriteDoctor);
 router.post("/favourite-clinic/:id",patientController.addfavouriteClinic);
 router.get("/isFavouriteClinic/:patientId/:clinicId",patientController.isFavouriteClinic);
-router.get("/getUserPrescription/:aadhar",patientController.getUserPrescription);
+
+
+router.get("/:id",patientController.getPatientById);
+router.delete("/:id",patientController.deleteUser);
 export default router;
 
 

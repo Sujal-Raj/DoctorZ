@@ -102,8 +102,8 @@ const [loading, setLoading] = useState(false);
     await registerPatient(formData);
     Swal.fire("✅ Success!", "Patient registered successfully.", "success");
   }
-  catch (error) {
-    Swal.fire("Error", "Registration failed", "error");
+  catch (error:any) {
+    Swal.fire("Error", error.response?.data?.message || "Registration failed","error");
   } finally {
     setLoading(false); 
 }
