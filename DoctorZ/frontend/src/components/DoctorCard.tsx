@@ -5,6 +5,7 @@ import { AuthContext } from "../Context/AuthContext";
 import api from "../Services/mainApi";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import Swal from "sweetalert2";
 
 export interface Doctor {
   clinic: any;
@@ -79,10 +80,17 @@ const DoctorCard: React.FC<Props> = ({
     e.stopPropagation();
 
     if (!isLoggedIn || !patientId) {
-      const confirmed = window.confirm(
-        "You need to be logged in to add favourite doctors. Login now?"
-      );
-      if (confirmed) navigate("/patient-login");
+  const result = await Swal.fire({
+    title: "Login Required",
+    text: "You need to be logged in to add favourite doctors. Login now?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, Login",
+    cancelButtonText: "Cancel",
+    confirmButtonColor: "#28328C",
+  });
+
+      if (result.isConfirmed) navigate("/patient-login");
       return;
     }
 
@@ -100,17 +108,28 @@ const DoctorCard: React.FC<Props> = ({
   };
 
   // ----------------- CONSULT -----------------
-  const handleConsultClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isLoggedIn) {
-      const confirmed = window.confirm(
-        "You need to be logged in to consult. Do you want to login or register now?"
-      );
-      if (confirmed) navigate("/patient-login");
-      return;
+ const handleConsultClick = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+
+  if (!isLoggedIn) {
+    const result = await Swal.fire({
+      title: "Not Logged In",
+      text: "You need to be logged in to consult. Do you want to login or register now?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Login",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#28328C",
+    });
+
+    if (result.isConfirmed) {
+      navigate("/patient-login");
     }
-    onConsult(doctor);
-  };
+    return;
+  }
+
+  onConsult(doctor);
+};
 
   const handleCardClick = () => {
     navigate(`/view-doctor-profile/${doctor._id}`);

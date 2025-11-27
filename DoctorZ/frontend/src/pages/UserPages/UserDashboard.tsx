@@ -22,6 +22,7 @@ function UserDashboard() {
     try {
       jwtDecode(token);
     } catch (err) {
+      console.log(err);
       Cookies.remove("patientToken");
       navigate("/patient-login");
     }
@@ -47,7 +48,7 @@ function UserDashboard() {
       >
         {/* ✅ SIDEBAR — hidden on mobile */}
         <aside
-          className="h-screen fixed left-0 hidden md:block w-72 bg-gradient-to-b 
+          className="h-screen left-0 hidden md:block w-72 bg-gradient-to-b 
                           from-[#0c213e] to-[#08172c] text-white p-6 relative"
         >
           <div className="flex items-center gap-3 mb-10 ">
@@ -113,6 +114,20 @@ function UserDashboard() {
               }
             >
             <FileText size={18}/> My Prescriptions
+            </NavLink>
+
+            <NavLink
+              to={`lab-test/${ user?.id}`}
+              className={({ isActive }) =>
+                `flex items-center gap-2 px-4 py-3 rounded-lg transition 
+                 ${
+                   isActive
+                     ? "bg-white text-indigo-700 shadow-md"
+                     : "text-blue-100 hover:bg-white/10"
+                 }`
+              }
+            >
+              <FilePlus2 size={18} /> Lab Test
             </NavLink>
           </nav>
         </aside>
