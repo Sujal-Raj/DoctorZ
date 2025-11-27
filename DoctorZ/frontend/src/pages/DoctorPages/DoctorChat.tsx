@@ -1,24 +1,31 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import io from "socket.io-client";
-import api from "../../Services/mainApi";
+// import api from "../../Services/mainApi";
 
 // Initialize socket outside component to avoid multiple connections
 const socket = io("http://localhost:3000", {
   transports: ["websocket"],
-  withCredentials: true,
 });
 
 const DoctorChat = () => {
   const { roomId } = useParams(); // gets from path `/doctor-chat/:roomId`
   const location = useLocation();
-  const { patient, doctorId } = location.state || {};
+  const {  doctorId } = location.state || {};
   // Set user id: usually from auth context, but fallback for example
   const userId = doctorId || "doctor";
 
-  const [messages, setMessages] = useState([]); // each message: { _id?, roomId, senderId, message, createdAt }
+  interface ChatMessage {
+    _id?: string;
+    roomId: string;
+    senderId: string;
+    message: string;
+    createdAt?: string;
+  }
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]); // each message: { _id?, roomId, senderId, message, createdAt }
   const [msg, setMsg] = useState("");
-  const chatEndRef = useRef(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Register current user with server so server's onlineUsers map is populated
   useEffect(() => {
@@ -31,32 +38,55 @@ const DoctorChat = () => {
     if (!roomId) return;
 
     // history handler: server sends an array of normalized messages
-    const handleHistory = (history) => {
+    interface ChatMessage {
+      _id?: string;
+      roomId: string;
+      senderId: string;
+      message: string;
+      createdAt?: string;
+    }
+
+    type HistoryEvent = ChatMessage[];
+
+    const handleHistory = (history: HistoryEvent) => {
       // history expected shape: [{ _id, roomId, senderId, message, createdAt }, ...]
       if (Array.isArray(history)) {
-        setMessages(history);
+      setMessages(history);
       } else {
-        setMessages([]);
+      setMessages([]);
       }
     };
 
     // incoming message handler
-    const handleReceive = (data) => {
-      // data expected shape: { _id, roomId, senderId, message, createdAt }
-      setMessages((prev) => [
-        ...prev,
-        {
-          _id: data._id,
-          roomId: data.roomId,
-          senderId: data.senderId,
-          message: data.message,
-          createdAt: data.createdAt || new Date().toISOString(),
-        },
+    interface ReceiveMessageData {
+      _id: string;
+      roomId: string;
+      senderId: string;
+      message: string;
+      createdAt?: string;
+    }
+
+    const handleReceive = (data: ReceiveMessageData) => {
+      setMessages((prev: ChatMessage[]) => [
+      ...prev,
+      {
+        _id: data._id,
+        roomId: data.roomId,
+        senderId: data.senderId,
+        message: data.message,
+        createdAt: data.createdAt || new Date().toISOString(),
+      },
       ]);
     };
 
     // error handler (optional)
-    const handleError = (err) => {
+    interface SocketError {
+      message?: string;
+      code?: string | number;
+      [key: string]: any;
+    }
+
+    const handleError = (err: SocketError) => {
       console.error("Socket error:", err);
     };
 

@@ -43,10 +43,10 @@ interface Clinic {
   establishedYear?: number;
   isFavourite?: boolean;
 }
-interface ClinicResponse {
-  clinic: Clinic[];
-  message: string;
-}
+// interface ClinicResponse {
+//   clinic: Clinic[];
+//   message: string;
+// }
 interface DecodedToken {
   id: string;
 }
@@ -497,10 +497,6 @@ const SearchInput = ({ icon, placeholder, value, onChange, type = "text" }: any)
 );
 
 const FilterPanel = ({
-  modeHospital,
-  setModeHospital,
-  modeOnline,
-  setModeOnline,
   typeFilters,
   toggleFilter,
   specialty,

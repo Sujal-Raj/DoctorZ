@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import {
   Search,
   MapPin,
@@ -103,12 +103,12 @@ export default function HealthcareHomepage() {
   ];
 
   // Stats
-  const stats = [
-    { value: "50,000+", label: "Verified Doctors" },
-    { value: "5M+", label: "Happy Patients" },
-    { value: "1000+", label: "Cities Covered" },
-    { value: "4.8/5", label: "Average Rating" },
-  ];
+  // const stats = [
+  //   { value: "50,000+", label: "Verified Doctors" },
+  //   { value: "5M+", label: "Happy Patients" },
+  //   { value: "1000+", label: "Cities Covered" },
+  //   { value: "4.8/5", label: "Average Rating" },
+  // ];
   const healthcareIcons = [
   { icon: Heart, label: "Compassionate Care" },
   { icon: Stethoscope, label: "Expert Doctors" },

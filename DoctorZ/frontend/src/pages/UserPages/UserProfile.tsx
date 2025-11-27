@@ -116,40 +116,85 @@ function UserProfile() {
     if (userId) fetchUser();
   }, [userId, id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!editData) return;
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (!editData) return;
 
-    const { name, value } = e.target;
+  //   const { name, value } = e.currentTarget;
 
-    if (name.startsWith("address.")) {
-      const key = name.split(".")[1] as keyof Address;
-      setEditData({
-        ...editData,
-        address: {
-          ...editData.address,
-          [key]: key === "pincode" ? Number(value) : value,
-        },
-      });
-    } else if (name.startsWith("emergencyContact.")) {
-      const key = name.split(".")[1] as keyof EmergencyContact;
-      setEditData({
-        ...editData,
-        emergencyContact: {
-          ...editData.emergencyContact,
-          [key]: key === "number" ? Number(value) : value,
-        },
-      });
-    } else {
-      const key = name as keyof User;
-      const finalValue =
-        key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
+  //   if (name.startsWith("address.")) {
+  //     const key = name.split(".")[1] as keyof Address;
+  //     setEditData({
+  //       ...editData,
+  //       address: {
+  //         ...editData.address,
+  //         [key]: key === "pincode" ? Number(value) : value,
+  //       },
+  //     });
+  //   } else if (name.startsWith("emergencyContact.")) {
+  //     const key = name.split(".")[1] as keyof EmergencyContact;
+  //     setEditData({
+  //       ...editData,
+  //       emergencyContact: {
+  //         ...editData.emergencyContact,
+  //         [key]: key === "number" ? Number(value) : value,
+  //       },
+  //     });
+  //   } else {
+  //     const key = name as keyof User;
+  //     const finalValue =
+  //       key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
 
-      setEditData({
-        ...editData,
-        [key]: finalValue,
-      });
-    }
-  };
+  //     setEditData({
+  //       ...editData,
+  //       [key]: finalValue,
+  //     });
+  //   }
+  // };
+
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  if (!editData) return;
+
+  const target = e.currentTarget;
+  const { name, value } = target;
+
+  if (!name) return; // safety guard
+
+  if (name.startsWith("address.")) {
+    const key = name.split(".")[1] as keyof Address;
+
+    setEditData({
+      ...editData,
+      address: {
+        ...editData.address,
+        [key]: key === "pincode" ? Number(value) : value,
+      },
+    });
+
+  } else if (name.startsWith("emergencyContact.")) {
+    const key = name.split(".")[1] as keyof EmergencyContact;
+
+    setEditData({
+      ...editData,
+      emergencyContact: {
+        ...editData.emergencyContact,
+        [key]: key === "number" ? Number(value) : value,
+      },
+    });
+
+  } else {
+    const key = name as keyof User;
+    const finalValue =
+      key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
+
+    setEditData({
+      ...editData,
+      [key]: finalValue,
+    });
+  }
+};
+
 
   const handleSave = async () => {
     try {

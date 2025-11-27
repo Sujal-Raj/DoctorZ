@@ -51,7 +51,7 @@ const LabProfile = () => {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  // Removed unused loading state
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [notification, setNotification] = useState<{
@@ -64,7 +64,6 @@ const LabProfile = () => {
     if (!contextLabId) return;
 
     const fetchLab = async () => {
-      setLoading(true);
       try {
         const res = await axios.get<GetLabResponse>(
           `http://localhost:3000/api/lab/getLabById/${contextLabId}`
@@ -73,7 +72,6 @@ const LabProfile = () => {
       } catch {
         showNotification("error", "Failed to load lab data");
       }
-      setLoading(false);
     };
 
     fetchLab();

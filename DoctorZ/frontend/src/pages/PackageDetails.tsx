@@ -106,7 +106,7 @@ export const PackageDetails: React.FC = () => {
     try {
       const token = document.cookie
         .split("; ")
-        .find((row) => row.startsWith("patientToken="))
+        .find((row:string) => row.startsWith("patientToken="))
         ?.split("=")[1];
 
       if (!token) {

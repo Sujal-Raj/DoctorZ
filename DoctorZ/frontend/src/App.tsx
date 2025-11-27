@@ -72,7 +72,7 @@ import DoctorSearchResults from "./pages/DoctorSearchResults";
 import PatientEMR from "./pages/PatientEMR";
 import PrescriptionForm from "./pages/DoctorPages/PrescriptionForm";
 import DoctorNotifications from "./pages/DoctorPages/DoctorNotifications";
-import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
+// import ClinicDoctorCard from "./pages/ClinicPages/ClinicDoctorCard";
 import UserPrescription from "./pages/UserPages/UserPrescription";
 import PatientChat from "./pages/PatientChat";
 import DoctorChat from "./pages/DoctorPages/DoctorChat";
