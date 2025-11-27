@@ -6,7 +6,7 @@ export interface IPatient extends Document {
     email: string;
     password: string;
     mobileNumber: number;
-    aadhar: number;
+    aadhar: string;
     address: {
         city: string;
         pincode: number;

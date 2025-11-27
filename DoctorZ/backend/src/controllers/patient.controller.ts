@@ -318,41 +318,47 @@ const updatePatient = async (req: Request, res: Response) => {
 
 
 
-const getBookedDoctor =async(req:Request,res:Response)=>{
+const getBookedDoctor = async (req: Request, res: Response) => {
     try {
-        const {id} = req.params;
-        const doctor = await Booking.find({userId:id}).populate('doctorId');
+        const { id } = req.params;
+
+        // Sirf pending bookings fetch karenge
+        const bookings = await Booking.find({ 
+            userId: id, 
+            status: 'pending' // yaha sirf pending bookings
+        }).populate('doctorId'); 
+        console.log("here",bookings)
+      
+
+        // Agar koi bookings milti hain
+        if (bookings.length === 0) {
+            return res.status(404).json({
+                message: "No pending bookings found"
+            });
+        }
+
+        // Response me doctor details aur booking date bhejna
+        const result = bookings.map(b => ({
+            doctor: b.doctorId,
+            bookingDate: b.dateTime,  
+            roomId:b.roomId,
+            
+         
+        }));
+
         return res.status(200).json({
-            message:"Doctors fetched successfully",
-            doctor
-    }).populate("doctorId");
-    console.log("here", bookings);
-
-    // Agar koi bookings milti hain
-    if (bookings.length === 0) {
-      return res.status(404).json({
-        message: "No pending bookings found",
-      });
+            message: "Pending bookings fetched successfully",
+            data: result
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ 
+            message: "Something went wrong." 
+        });
     }
+}
 
-    // Response me doctor details aur booking date bhejna
-    const result = bookings.map((b) => ({
-      doctor: b.doctorId,
-      bookingDate: b.dateTime,
-      roomId: b.roomId,
-    }));
 
-    return res.status(200).json({
-      message: "Pending bookings fetched successfully",
-      data: result,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "Something went wrong.",
-    });
-  }
-};
 
 //------------------------------------Add or Remove Favourite Doctor----------------------------------
 const addFavouriteDoctor = async (req: Request, res: Response) => {

@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const patientSchema = new mongoose.Schema({
     fullName: {
         type: String,
-        required: true
+        required: true,
     },
     gender: {
         type: String,
@@ -10,15 +10,15 @@ const patientSchema = new mongoose.Schema({
     },
     dob: {
         type: Date,
-        required: true
+        required: true,
     },
     email: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     profilePhoto: {
         type: String,
@@ -28,7 +28,11 @@ const patientSchema = new mongoose.Schema({
         required: true,
     },
     aadhar: {
-        type: Number,
+        type: String,
+        unique: true, // ✅ UNIQUE AADHAR
+        trim: true,
+        required: true,
+        match: [/^[0-9]{12}$/, "Invalid aadhar number"],
     },
     address: {
         city: {
@@ -37,7 +41,7 @@ const patientSchema = new mongoose.Schema({
         },
         pincode: {
             type: Number,
-        }
+        },
     },
     abhaId: {
         type: String,
@@ -47,8 +51,8 @@ const patientSchema = new mongoose.Schema({
             type: String,
         },
         number: {
-            type: Number
-        }
+            type: Number,
+        },
     },
     favouriteDoctors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Doctor" }],
     favouriteClinics: [{ type: mongoose.Schema.Types.ObjectId, ref: "Clinic" }],
