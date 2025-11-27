@@ -1,5 +1,6 @@
 import timeSlotsModel from "../models/timeSlots.model.js";
 import { generateTimeSlots } from "../utils/slotGenerator.js";
+//------------------------Create time slots ------------------------
 export const createTimeSlot = async (req, res) => {
     try {
         console.log("Request Body:", req.body);
@@ -53,6 +54,7 @@ export const createTimeSlot = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 };
+//------------------------Get all slots ------------------------
 export const getTimeSlots = async (req, res) => {
     try {
         const { doctorId } = req.params;
@@ -64,6 +66,7 @@ export const getTimeSlots = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
+// -------------------------Update a  slot------------------------
 export const updateSlot = async (req, res) => {
     try {
         const { time, isActive } = req.body;
@@ -88,79 +91,6 @@ export const updateSlot = async (req, res) => {
     }
 };
 //------------------------Edit slots for a date------------------------
-// export const editTimeSlot = async (req: Request, res: Response) => {
-//   try {
-//     const { doctorId, date, workingHours } = req.body;
-//     if (!doctorId || !date || !workingHours) {
-//       return res.status(400).json({ message: "doctorId, date & workingHours are required" });
-//     }
-//     const { start, end } = workingHours;
-//     if (!start || !end) {
-//       return res.status(400).json({ message: "Start and end time are required" });
-//     }
-//     // Find the existing slot for this doctor + date
-//     const existing = await timeSlotsModel.findOne({ doctorId, date });
-//     if (!existing) {
-//       return res.status(404).json({ message: "No slot found for this date" });
-//     }
-//     // Regenerate NEW 15-minute based time slots
-//     const updatedSlots = generateTimeSlots(start, end);
-//     existing.slots = updatedSlots;
-//     await existing.save();
-//     return res.status(200).json({
-//       success: true,
-//       message: "Time slots updated successfully",
-//       data: existing,
-//     });
-//   } catch (err) {
-//     console.error("Edit Slot Error:", err);
-//     return res.status(500).json({ message: "Server error", error: err });
-//   }
-// };
-// export const editTimeSlot = async (req: Request, res: Response) => {
-//   try {
-//     const { doctorId, date, workingHours } = req.body;
-//     if (!doctorId || !date || !workingHours) {
-//       return res.status(400).json({ message: "doctorId, date & workingHours are required" });
-//     }
-//     const { start, end } = workingHours;
-//     if (!start || !end) {
-//       return res.status(400).json({ message: "Start and end time are required" });
-//     }
-//     // Fetch existing slots
-//     const existing = await timeSlotsModel.findOne({ doctorId, date });
-//     if (!existing) {
-//       return res.status(404).json({ message: "No slot found for this date" });
-//     }
-//     // Generate new 15-minute slots based on updated time range
-//     const generatedSlots = generateTimeSlots(start, end);
-//     // Preserve old active/inactive states
-//     const mergedSlots = generatedSlots.map((newSlot) => {
-//       const oldSlot = existing.slots.find((s) => s.time === newSlot.time);
-//       if (oldSlot) {
-//         // preserve old state
-//         return {
-//           time: newSlot.time,
-//           isActive: oldSlot.isActive,
-//           _id: oldSlot._id,      // keep Mongo _id
-//         };
-//       }
-//       // new slot → active by default
-//       return { ...newSlot };
-//     });
-//     existing.slots = mergedSlots;
-//     existing.workingHours = { start, end };
-//     await existing.save();
-//     return res.status(200).json({
-//       success: true,
-//       message: "Time slots updated successfully",
-//       data: existing,
-//     });
-//   } catch (err) {
-//     console.error("Edit Slot Error:", err);
-//     return res.status(500).json({ message: "Server error", error: err });
-//   }
-// };
 export const editTimeSlot = async (req, res) => {
     try {
         const { doctorId, date, workingHours } = req.body;

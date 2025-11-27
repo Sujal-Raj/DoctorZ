@@ -218,27 +218,73 @@ Your Hospital Admin Team
         return res.status(500).json({ message: "Failed to update doctor" });
     }
 };
+// const updateDoctorData = async (req: Request, res: Response) => {
+//   try {
+//     const doctorId = req.params.id;
+//     const updates = { ...req.body };
+//     // convert number fields if they exist
+//     const numberFields = [
+//       "experience",
+//       "consultationFee",
+//       "MobileNo",
+//       "Aadhar",
+//     ];
+//     numberFields.forEach((field) => {
+//       if (updates[field] !== undefined) {
+//         updates[field] = Number(updates[field]);
+//       }
+//     });
+//     // Date field fix
+//     if (updates.dob) {
+//       updates.dob = new Date(updates.dob);
+//     }
+//     // If new photo uploaded
+//     if (req.file) {
+//       updates.photo = req.file.filename;
+//     }
+//     const updatedDoctor = await doctorModel.findByIdAndUpdate(
+//       doctorId,
+//       { $set: updates },
+//       { new: true }
+//     );
+//     if (!updatedDoctor) {
+//       return res.status(404).json({ message: "Doctor not found" });
+//     }
+//     return res.json({
+//       message: "Profile updated successfully",
+//       doctor: updatedDoctor,
+//     });
+//   } catch (err) {
+//     console.error("Update error:", err);
+//     return res.status(500).json({ message: "Server error" });
+//   }
+// };
+// ==========================
+// Get Doctors by Clinic ID
+// ==========================
 const updateDoctorData = async (req, res) => {
     try {
         const doctorId = req.params.id;
         const updates = { ...req.body };
-        // convert number fields if they exist
-        const numberFields = [
-            "experience",
-            "consultationFee",
-            "MobileNo",
-            "Aadhar",
-        ];
+        // ❌ Block fields that should never be updated directly
+        const blockedFields = ["notifications", "clinic", "DegreeCertificate", "signature", "doctorId"];
+        blockedFields.forEach((field) => delete updates[field]);
+        // convert number fields
+        const numberFields = ["experience", "consultationFee", "Aadhar"];
         numberFields.forEach((field) => {
             if (updates[field] !== undefined) {
                 updates[field] = Number(updates[field]);
             }
         });
-        // Date field fix
+        // MobileNo should always be string
+        if (updates.MobileNo) {
+            updates.MobileNo = String(updates.MobileNo);
+        }
+        // Date field
         if (updates.dob) {
             updates.dob = new Date(updates.dob);
         }
-        // If new photo uploaded
+        // photo upload
         if (req.file) {
             updates.photo = req.file.filename;
         }
@@ -256,9 +302,6 @@ const updateDoctorData = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
-// ==========================
-// Get Doctors by Clinic ID
-// ==========================
 const getClinicDoctors = async (req, res) => {
     try {
         const { clinicId } = req.params;

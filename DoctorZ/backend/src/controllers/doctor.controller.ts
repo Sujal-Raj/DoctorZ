@@ -272,33 +272,38 @@ Your Hospital Admin Team
 
 
 
+
+
 const updateDoctorData = async (req: Request, res: Response) => {
   try {
     const doctorId = req.params.id;
 
-    const updates = { ...req.body };
+    const updates: any = { ...req.body };
 
-    // convert number fields if they exist
-    const numberFields = [
-      "experience",
-      "consultationFee",
-      "MobileNo",
-      
-      "Aadhar",
-    ];
+    //  Block fields that should never be updated directly
+    const blockedFields = ["notifications", "clinic", "DegreeCertificate", "signature", "doctorId"];
 
+    blockedFields.forEach((field) => delete updates[field]);
+
+    // convert number fields
+    const numberFields = ["experience", "consultationFee", "Aadhar"];
     numberFields.forEach((field) => {
       if (updates[field] !== undefined) {
         updates[field] = Number(updates[field]);
       }
     });
 
-    // Date field fix
+    // MobileNo should always be string
+    if (updates.MobileNo) {
+      updates.MobileNo = String(updates.MobileNo);
+    }
+
+    // Date field
     if (updates.dob) {
       updates.dob = new Date(updates.dob);
     }
 
-    // If new photo uploaded
+    // photo upload
     if (req.file) {
       updates.photo = req.file.filename;
     }
@@ -324,9 +329,7 @@ const updateDoctorData = async (req: Request, res: Response) => {
 };
 
 
-// ==========================
-// Get Doctors by Clinic ID
-// ==========================
+
 const getClinicDoctors = async (req: Request, res: Response) => {
   try {
     const { clinicId } = req.params;
