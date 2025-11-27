@@ -453,7 +453,7 @@ const DoctorSearchResults: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
           <button
             onClick={() => setMobileFilterOpen(false)}
-            className="p-1 rounded-full hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0c213e]"
+            className="p-1 rounded-full hover:bg-gray-100 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#0c213e]"
             aria-label="Close filters"
             type="button"
           >

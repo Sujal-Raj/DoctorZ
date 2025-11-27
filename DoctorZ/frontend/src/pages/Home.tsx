@@ -511,7 +511,7 @@ export default function HealthcareHomepage() {
                     <div className="absolute -top-4 -right-4 w-12 h-12 bg-green-400 rounded-full flex items-center justify-center shadow-lg animate-bounce">
                       <CheckCircle className="w-6 h-6 text-white" />
                     </div>
-                    <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                    <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center shadow-lg animate-bounce">
                       <Heart className="w-6 h-6 text-white" />
                     </div>
                   </div>
