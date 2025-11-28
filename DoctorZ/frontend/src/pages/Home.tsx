@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import HealthcareHero from "../components/HeroSection";
 // import { CheckCircle } from "lucide-react";
 
 export default function HealthcareHomepage() {
@@ -241,6 +242,8 @@ export default function HealthcareHomepage() {
           </div>
         </div>
       </section>
+
+      {/* <HealthcareHero/> */}
 
       {/* Main Services Grid - CTA #1 */}
       <section className="py-20 bg-gray-50">
