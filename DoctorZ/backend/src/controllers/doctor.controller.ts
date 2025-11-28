@@ -357,7 +357,7 @@ export const getTodaysBookedAppointments = async (
 ) => {
   try {
     const doctorId = req.params.doctorId;
-
+    console.log("Fetching appointments for doctorId:", doctorId);
     const now = new Date();
     const startOfDay = new Date(
       Date.UTC(
@@ -380,13 +380,13 @@ export const getTodaysBookedAppointments = async (
         999
       )
     );
-
+ 
     const bookedAppointments = await Booking.find({
       doctorId,
-      datetime: { $gte: startOfDay, $lte: endOfDay },
+      dateTime: { $gte: startOfDay, $lte: endOfDay },
       status: "pending",
     });
-
+     
     res.status(200).json(bookedAppointments);
   } catch (error) {
     console.error("Error fetching today's booked appointments:", error);

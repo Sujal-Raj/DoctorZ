@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
 import Swal from "sweetalert2";
@@ -31,55 +31,6 @@ interface ClinicContext {
   clinicId?: string;
 }
 
-/* -------------------------- Reusable Inputs -------------------------- */
-// const FormInput = ({ label, name, register, error, placeholder, type = "text" }: any) => (
-//   <div className="flex flex-col">
-//     <label className="text-gray-700 font-medium">{label}</label>
-//     <input
-//       type={type}
-//       {...register(name, { required: `${label} is required` })}
-//       placeholder={placeholder}
-//       className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
-//     />
-//     {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
-//   </div>
-// );
-
-// const SelectInput = ({ label, name, register, error }: any) => (
-//   <div className="flex flex-col">
-//     <label className="text-gray-700 font-medium">{label}</label>
-//     <select
-//       {...register(name, { required: `${label} is required` })}
-//       className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
-//     >
-//       <option value="">Select Gender</option>
-//       <option>Male</option>
-//       <option>Female</option>
-//       <option>Other</option>
-//     </select>
-//     {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
-//   </div>
-// );
-
-// const FileUpload = ({ label, fileName, setFile, setFileName, accept }: any) => (
-//   <div className="flex flex-col">
-//     <label className="text-gray-700 font-medium">{label}</label>
-//     <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all text-sm sm:text-base">
-//       Upload File
-//       <input
-//         type="file"
-//         accept={accept}
-//         className="hidden"
-//         onChange={(e) => {
-//           const file = e.target.files?.[0];
-//           setFile(file || null);
-//           setFileName(file?.name || "No file selected");
-//         }}
-//       />
-//     </label>
-//     <p className="mt-2 text-xs sm:text-sm text-gray-500 truncate">{fileName}</p>
-//   </div>
-// );
 
 const RegisterDoctor: React.FC = () => {
   const {
@@ -88,6 +39,7 @@ const RegisterDoctor: React.FC = () => {
     formState: { errors },
     reset,
   } = useForm<DoctorFormInputs>();
+
 
   const context = useOutletContext<ClinicContext | null>();
   const clinicId = context?.clinicId || null;
@@ -200,8 +152,8 @@ const RegisterDoctor: React.FC = () => {
         />
       </Helmet>
 
-      <main className="min-h-screen bg-white flex items-center justify-center p-4">
-        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+      <main className="min-h-screen bg-white flex items-center justify-center p-4 overflow-y-auto">
+        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8 my-10 md:my-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🩺 Doctor Registration

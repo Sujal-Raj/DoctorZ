@@ -140,7 +140,7 @@ const RegisterClinic: React.FC = () => {
       {/* ✅ White page background */}
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
         {/* ✅ Smaller card */}
-        <section className="w-full max-w-4xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+        <section className="w-full max-w-4xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8 my-10 md:my-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🏥 Register Your Clinic

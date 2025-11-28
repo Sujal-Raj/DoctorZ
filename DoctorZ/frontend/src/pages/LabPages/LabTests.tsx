@@ -386,7 +386,7 @@ if (!result.isConfirmed) return;
             </div>
 
             <button onClick={openAddTest} className="bg-sky-600 hover:bg-sky-700 text-white rounded-lg px-4 py-2 inline-flex items-center gap-2 shadow">
-              <Plus className="w-4 h-4" /> Add Test
+              <Plus className="w-4 h-4" /> Add Test 
             </button>
             <button onClick={openAddPackage} className="bg-amber-500 hover:bg-amber-600 text-white rounded-lg px-4 py-2 inline-flex items-center gap-2 shadow">
               <Box className="w-4 h-4" /> Create Package

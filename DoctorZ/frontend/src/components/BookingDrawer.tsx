@@ -533,10 +533,10 @@ const BookingDrawer: React.FC<Props> = ({
                             className={`p-2 rounded border text-sm transition-all ${
                               selected
                                 ? "bg-[#0c213e] text-white shadow"
-                                : "bg-white text-gray-800 hover:shadow-sm"
+                                : "bg-white border-green-600 border-2  text-gray-600 hover:shadow-sm"
                             } ${
                               isBooked
-                                ? "!bg-gray-200 text-gray-950 cursor-not-allowed"
+                                ? "!bg-gray-300 !text-white !border-white cursor-not-allowed"
                                 : ""
                             }`}
                           >
