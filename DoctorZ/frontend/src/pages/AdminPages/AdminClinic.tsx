@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import api from "../../Services/mainApi";
+import { Toaster, toast } from "react-hot-toast"; // ✅ Toastify added
 
 type ClinicStatus = "pending" | "approved" | "rejected";
 
@@ -35,52 +34,44 @@ export default function AdminClinic() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
-  // ✅ Fetch pending clinics
-  const fetchClinicDetails = async (): Promise<void> => {
+  // 🔹 Fetch clinics
+  const fetchClinicDetails = async () => {
     try {
       setLoading(true);
-      const response = await api.get<ApiClinicsResponse>("/api/admin/clinics/pending");
+      const response = await api.get<ApiClinicsResponse>(
+        "/api/admin/clinics/pending"
+      );
       setClinics(response.data.Clinics ?? []);
       setError("");
     } catch (err: any) {
-      console.error(err);
       setError(err?.response?.data?.message || "Failed to fetch clinic data.");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Approve or reject clinic
-  const handleAction = async (id: string, action: "approve" | "reject"): Promise<void> => {
+  // 🔹 Approve / Reject Action with Toastify
+  const handleAction = async (id: string, action: "approve" | "reject") => {
     try {
       setProcessing({ id, action });
-      const url = action === "approve"
-        ? `/api/admin/clinic/${id}/approve`
-        : `/api/admin/clinic/${id}/reject`;
+      const url =
+        action === "approve"
+          ? `/api/admin/clinic/${id}/approve`
+          : `/api/admin/clinic/${id}/reject`;
 
       const response = await api.put(url);
 
       if (response.status === 200) {
-        Swal.fire({
-          title: action === "approve" ? "Clinic Approved ✅" : "Clinic Rejected ❌",
-          text:
-            action === "approve"
-              ? "The clinic can now log in using its credentials."
-              : "The clinic registration has been rejected.",
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false,
-        });
+        toast.success(
+          action === "approve"
+            ? "Clinic approved successfully! ✅"
+            : "Clinic rejected! ❌"
+        );
+
         await fetchClinicDetails();
       }
     } catch (err: any) {
-      console.error(err);
-      Swal.fire({
-        title: "Error!",
-        text: err?.response?.data?.message || `Failed to ${action} the clinic.`,
-        icon: "error",
-        confirmButtonText: "Ok",
-      });
+      toast.error(err?.response?.data?.message || "Action failed!");
     } finally {
       setProcessing(null);
     }
@@ -90,7 +81,7 @@ export default function AdminClinic() {
     fetchClinicDetails();
   }, []);
 
-  // ✅ Filtering and pagination
+  // 🔹 Filter + Pagination
   const filteredClinics = clinics.filter(
     (c) =>
       c.clinicName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,10 +94,10 @@ export default function AdminClinic() {
   const endIndex = startIndex + itemsPerPage;
   const currentClinics = filteredClinics.slice(startIndex, endIndex);
 
-  const goToPage = (page: number): void =>
+  const goToPage = (page: number) =>
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
 
-  // ✅ Loading state
+  // 🔹 Loading
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50 text-gray-700 text-lg">
@@ -115,30 +106,59 @@ export default function AdminClinic() {
     );
   }
 
-  // ✅ Error state
+  // 🔹 Error state
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen text-red-600 font-semibold">
         {error}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3400,
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          }}
+        />
       </div>
     );
   }
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6">
+      {/* ✅ Toastify Component */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       {/* Header */}
       <div className="mb-6 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Clinic Approval Management</h1>
-          <p className="text-gray-600">Review and approve pending clinic registrations.</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">
+            Clinic Approval Management
+          </h1>
+          <p className="text-gray-600">
+            Review and approve pending clinic registrations.
+          </p>
         </div>
+
         <div className="bg-white px-6 py-4 rounded-2xl shadow border border-gray-200 text-center min-w-[140px]">
           <p className="text-sm text-gray-500 uppercase">Total Pending</p>
           <p className="text-2xl font-bold text-gray-900">{clinics.length}</p>
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search Box */}
       <div className="mb-4 max-w-md relative">
         <input
           type="text"
@@ -148,14 +168,17 @@ export default function AdminClinic() {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-4 pr-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-700 placeholder-gray-400"
+          className="w-full pl-4 pr-3 py-2 rounded-xl border border-gray-300 
+          focus:outline-none focus:ring-2 focus:ring-gray-700 placeholder-gray-400"
         />
       </div>
 
       {/* Table */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow-md border border-gray-200">
         {currentClinics.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">No pending clinics found.</div>
+          <div className="p-6 text-center text-gray-500">
+            No pending clinics found.
+          </div>
         ) : (
           <table className="min-w-full text-left">
             <thead className="bg-gray-800 text-white text-xs uppercase">
@@ -168,18 +191,27 @@ export default function AdminClinic() {
                 <th className="py-3 px-4 text-center">Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {currentClinics.map((clinic, i) => (
                 <tr
                   key={clinic._id}
-                  className={`border-b hover:bg-gray-50 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                  className={`border-b hover:bg-gray-50 ${
+                    i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  }`}
                 >
-                  <td className="py-3 px-4 font-semibold">{clinic.clinicName}</td>
+                  <td className="py-3 px-4 font-semibold">
+                    {clinic.clinicName}
+                  </td>
+
                   <td className="py-3 px-4">{clinic.email}</td>
+
                   <td className="py-3 px-4">
                     {clinic.district}, {clinic.state} ({clinic.pincode})
                   </td>
+
                   <td className="py-3 px-4">{clinic.operatingHours}</td>
+
                   <td className="py-3 px-4 text-center">
                     <span
                       className={`px-2 py-1 rounded-md text-xs ${
@@ -193,9 +225,11 @@ export default function AdminClinic() {
                       {clinic.status}
                     </span>
                   </td>
+
                   <td className="py-3 px-4 text-center">
                     {clinic.status === "pending" ? (
                       <div className="flex justify-center gap-2">
+                        {/* Approve */}
                         <button
                           onClick={() => handleAction(clinic._id, "approve")}
                           disabled={
@@ -214,6 +248,8 @@ export default function AdminClinic() {
                             ? "Approving..."
                             : "Approve"}
                         </button>
+
+                        {/* Reject */}
                         <button
                           onClick={() => handleAction(clinic._id, "reject")}
                           disabled={
@@ -252,9 +288,11 @@ export default function AdminClinic() {
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2 p-4 bg-gray-50 border-t border-gray-200 mt-4 rounded-b-lg">
           <div className="text-sm text-gray-600">
-            Showing {startIndex + 1} to {Math.min(endIndex, filteredClinics.length)} of{" "}
+            Showing {startIndex + 1} to{" "}
+            {Math.min(endIndex, filteredClinics.length)} of{" "}
             {filteredClinics.length} results
           </div>
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => goToPage(currentPage - 1)}
@@ -263,19 +301,23 @@ export default function AdminClinic() {
             >
               &lt;
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => goToPage(page)}
-                className={`px-3 py-1 rounded ${
-                  currentPage === page
-                    ? "bg-gray-800 text-white"
-                    : "bg-white text-gray-800 border"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  onClick={() => goToPage(page)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === page
+                      ? "bg-gray-800 text-white"
+                      : "bg-white text-gray-800 border"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            )}
+
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
@@ -286,6 +328,8 @@ export default function AdminClinic() {
           </div>
         </div>
       )}
+
+      
     </main>
   );
 }

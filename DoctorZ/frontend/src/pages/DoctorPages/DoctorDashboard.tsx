@@ -93,11 +93,6 @@ export default function DoctorDashboard() {
       icon: <ClockIcon className="w-5 h-5" />,
     },
     {
-      name: "Appointments",
-      path: "appointments",
-      icon: <CalendarIcon className="w-5 h-5" />,
-    },
-    {
       name: "Edit ID & Password",
       path: "editDoctorIdPassword",
       icon: <KeyIcon className="w-5 h-5" />,
@@ -113,6 +108,7 @@ export default function DoctorDashboard() {
       icon: <BellIcon className="w-5 h-5" />,
     },
   ];
+  
 
   return (
     <div className="flex h-screen bg-gray-100 relative">

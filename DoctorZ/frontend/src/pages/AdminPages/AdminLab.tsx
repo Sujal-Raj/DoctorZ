@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import api from "../../Services/mainApi";
+import { Toaster, toast } from "react-hot-toast";
 
 interface Timings {
   open: string;
@@ -44,9 +43,9 @@ export default function AdminLab() {
     try {
       setLoading(true);
       const res = await api.get<ApiLabsResponse>("/api/admin/labs/pending");
-      setLabs(res.data.data ?? res.data); // depends on backend shape
+      setLabs(res.data.data ?? res.data);
     } catch (err) {
-      console.error(err);
+      toast.error("Failed to load labs");
     } finally {
       setLoading(false);
     }
@@ -55,20 +54,18 @@ export default function AdminLab() {
   const handleAction = async (id: string, action: "approve" | "reject"): Promise<void> => {
     try {
       setProcessing({ id, action });
+
       await api.put(`/api/admin/lab/${id}/${action}`);
-      Swal.fire({
-        title: action === "approve" ? "✅ Lab Approved" : "❌ Lab Rejected",
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+
+      if (action === "approve") {
+        toast.success("Lab Approved Successfully!");
+      } else {
+        toast.error("Lab Rejected!");
+      }
+
       await fetchLabs();
     } catch (err: any) {
-      Swal.fire({
-        title: "Error",
-        text: err?.response?.data?.message || `Failed to ${action} lab.`,
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message || `Failed to ${action} lab.`);
     } finally {
       setProcessing(null);
     }
@@ -78,7 +75,6 @@ export default function AdminLab() {
     fetchLabs();
   }, []);
 
-  // Filtered & paginated labs
   const filteredLabs: Lab[] = labs.filter(
     (l) =>
       l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -103,6 +99,16 @@ export default function AdminLab() {
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6">
+
+      {/* 🔥 Toastify */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: { borderRadius: "10px", background: "#333", color: "#fff" },
+        }}
+      />
+
       {/* Header */}
       <div className="mb-6 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
         <div>
@@ -179,7 +185,9 @@ export default function AdminLab() {
                             : "bg-green-500 hover:bg-green-600"
                         }`}
                       >
-                        {processing?.id === lab._id && processing.action === "approve" ? "Approving..." : "Approve"}
+                        {processing?.id === lab._id && processing.action === "approve"
+                          ? "Approving..."
+                          : "Approve"}
                       </button>
                       <button
                         onClick={() => handleAction(lab._id, "reject")}
@@ -190,7 +198,9 @@ export default function AdminLab() {
                             : "bg-red-500 hover:bg-red-600"
                         }`}
                       >
-                        {processing?.id === lab._id && processing.action === "reject" ? "Rejecting..." : "Reject"}
+                        {processing?.id === lab._id && processing.action === "reject"
+                          ? "Rejecting..."
+                          : "Reject"}
                       </button>
                     </div>
                   ) : (

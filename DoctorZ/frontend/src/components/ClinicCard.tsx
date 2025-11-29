@@ -6,6 +6,8 @@ import { jwtDecode } from "jwt-decode";
 
 import api from "../Services/mainApi";
 
+
+
 // ---------------------------
 // Type definitions
 // ---------------------------
@@ -185,9 +187,6 @@ const ClinicCard: React.FC<ClinicCardProps> = ({
     Verified Clinic
   </span>
 </div>
-
-
-
 
 
   

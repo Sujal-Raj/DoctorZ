@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Swal from "sweetalert2";
 import { registerLab } from "../../Services/labApi";
 
+// ✅ Toastify
+import { toast, Toaster } from "react-hot-toast";
 
 interface Timings {
   open: string;
@@ -21,7 +22,7 @@ interface Lab {
 
 export default function RegisterLab() {
   const [pincodeError, setPincodeError] = useState("");
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [lab, setLab] = useState<Lab & { certificateNumber?: string }>({
     name: "",
@@ -52,38 +53,52 @@ const [loading, setLoading] = useState(false);
       setPincodeError("Pincode must be exactly 6 digits");
       return;
     }
-  setLoading(true); 
+
+    setLoading(true);
     setPincodeError("");
+
     const cleanedData = {
-  ...lab,
-  email: lab.email.trim().toLowerCase(),
-};
+      ...lab,
+      email: lab.email.trim().toLowerCase(),
+    };
 
     try {
       const response = await registerLab(cleanedData);
       if (response.status === 201) {
-        Swal.fire({
-          title: "Registration Successful!",
-          text: "Your lab details have been submitted for admin approval. You’ll be notified once approved.",
-          icon: "success",
-          confirmButtonText: "OK",
-        }).then(() => (window.location.href = "/"));
+        toast.success(
+          "Registration Successful! Your lab details have been submitted for admin approval.",
+          { duration: 3500 }
+        );
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1000);
       }
     } catch (error: any) {
-      Swal.fire({
-        title: "Error",
-        text: error?.response?.data?.message || "Error registering lab",
-        icon: "error",
-        confirmButtonText: "OK",
+      toast.error(error?.response?.data?.message || "Error registering lab", {
+        duration: 3500,
       });
-    }finally {
-    setLoading(false); 
-  }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-      {/* ✅ SEO meta tags */}
+      {/* ✅ Toastify Toaster */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
+      {/* SEO */}
       <head>
         <title>Register Your Diagnostic Lab | HealthCare Platform</title>
         <meta
@@ -101,7 +116,7 @@ const [loading, setLoading] = useState(false);
           className="w-full max-w-3xl bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 p-10 animate-fade-in"
           aria-label="Lab registration form"
         >
-          <h1 className="text-3xl font-extrabold text-[#0c213e] text-center mb-8  tracking-tight">
+          <h1 className="text-3xl font-extrabold text-[#0c213e] text-center mb-8 tracking-tight">
             🧪 Register Your Laboratory
           </h1>
           <p className="text-center text-gray-600 mb-10">
@@ -116,19 +131,8 @@ const [loading, setLoading] = useState(false);
             }}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-            <Input
-              label="Lab Name"
-              name="name"
-              value={lab.name}
-              onChange={handleOnChange}
-            />
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              value={lab.email}
-              onChange={handleOnChange}
-            />
+            <Input label="Lab Name" name="name" value={lab.name} onChange={handleOnChange} />
+            <Input label="Email" type="email" name="email" value={lab.email} onChange={handleOnChange} />
             <Input
               label="Password"
               type="password"
@@ -143,41 +147,26 @@ const [loading, setLoading] = useState(false);
               value={lab.certificateNumber}
               onChange={handleOnChange}
             />
-            <Input
-              label="State"
-              name="state"
-              value={lab.state}
-              onChange={handleOnChange}
-            />
-            <Input
-              label="City"
-              name="city"
-              value={lab.city}
-              onChange={handleOnChange}
-            />
-            <Input
-              label="Address"
-              name="address"
-              value={lab.address}
-              onChange={handleOnChange}
-            />
+            <Input label="State" name="state" value={lab.state} onChange={handleOnChange} />
+            <Input label="City" name="city" value={lab.city} onChange={handleOnChange} />
+            <Input label="Address" name="address" value={lab.address} onChange={handleOnChange} />
+
             <div>
               <Input
                 label="Pincode"
                 name="pincode"
                 value={lab.pincode}
                 onChange={(e) => {
-                  setPincodeError(""); // remove error when user types again
+                  setPincodeError("");
                   handleOnChange(e);
                 }}
                 placeholder="Enter 6-digit pincode"
-              
-               
               />
               {pincodeError && (
                 <p className="text-red-500 text-xs mt-1">{pincodeError}</p>
               )}
             </div>
+
             <Input
               label="Opening Time"
               name="open"
@@ -195,15 +184,14 @@ const [loading, setLoading] = useState(false);
 
             <div className="md:col-span-2 text-center mt-6">
               <button
-  type="submit"
-  disabled={loading}
-  className={`px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
-    bg-[#0c213e] hover:bg-[#1f2775] shadow-md transition 
-    ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
->
-  {loading ? "Submitting..." : "Register Lab"}
-</button>
-
+                type="submit"
+                disabled={loading}
+                className={`px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
+                  bg-[#0c213e] hover:bg-[#1f2775] shadow-md transition 
+                  ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              >
+                {loading ? "Submitting..." : "Register Lab"}
+              </button>
             </div>
           </form>
 
@@ -222,7 +210,7 @@ const [loading, setLoading] = useState(false);
   );
 }
 
-/* ✅ Reusable Input Component for clean UI */
+/* Reusable Input Component */
 function Input({
   label,
   name,

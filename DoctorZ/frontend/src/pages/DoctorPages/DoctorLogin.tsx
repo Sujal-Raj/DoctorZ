@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { Eye, EyeOff } from "lucide-react";
 import { loginDoctor } from "../../Services/doctorApi";
@@ -12,18 +11,19 @@ export default function DoctorLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setErrorMsg("");
+    setSuccessMsg("");
+
     if (!doctorId || !password) {
-      Swal.fire({
-        title: "Missing Information!",
-        text: "Please enter both Doctor ID and Password.",
-        icon: "warning",
-        confirmButtonText: "Ok",
-      });
+      setErrorMsg("Please enter both Doctor ID and Password.");
       return;
     }
 
@@ -32,30 +32,20 @@ export default function DoctorLogin() {
 
       const res = await loginDoctor(doctorId, password);
 
-      // ✅ Save token in cookies
+      // Save token
       Cookies.set("doctorToken", res.token, { expires: 7 });
 
-      // ✅ Save info in localStorage (optional)
+      // Optional save
       localStorage.setItem("doctorId", res.doctor._id);
 
-      Swal.fire({
-        title: "Login Successful!",
-        text: `Welcome Dr. ${res.doctor.fullName}`,
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      setSuccessMsg(`Welcome Dr. ${res.doctor.fullName}! Redirecting...`);
 
       setTimeout(() => {
         navigate(`/doctorDashboard/${res.doctor._id}`);
-      }, 1500);
+      }, 1200);
+
     } catch (err: any) {
-      Swal.fire({
-        title: "Login Failed!",
-        text: err?.message || "Invalid Doctor ID or Password.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-      });
+      setErrorMsg(err?.message || "Invalid Doctor ID or Password.");
     } finally {
       setLoading(false);
     }
@@ -63,24 +53,14 @@ export default function DoctorLogin() {
 
   return (
     <>
-      {/* ✅ SEO Optimization */}
       <Helmet>
         <title>Doctor Login | DoctorZ Healthcare</title>
-        <meta
-          name="description"
-          content="Login to your DoctorZ doctor account to manage appointments, schedules, prescriptions, and consultations."
-        />
-        <meta
-          name="keywords"
-          content="Doctor Login, Healthcare Portal, DoctorZ, Medical Dashboard"
-        />
-        <meta name="robots" content="index, follow" />
       </Helmet>
 
-      {/* ✅ Center Layout */}
       <div className="fixed inset-0 flex items-center justify-center bg-white z-10">
         <div className="w-[90%] max-w-md bg-white rounded-2xl shadow-lg border border-[#dfe3f7] p-8 sm:p-10 text-center">
           <h1 className="text-3xl font-bold text-black mb-3">Doctor Login</h1>
+
           <p className="text-gray-500 text-sm sm:text-base mb-6">
             Access your{" "}
             <span className="font-semibold text-[#0c213e]">
@@ -89,43 +69,53 @@ export default function DoctorLogin() {
             .
           </p>
 
+          {/* ❌ Error Message */}
+          {errorMsg && (
+            <p className="mb-4 text-red-600 text-sm font-medium bg-red-100 py-2 rounded-lg">
+              {errorMsg}
+            </p>
+          )}
+
+          {/* ✅ Success Message */}
+          {successMsg && (
+            <p className="mb-4 text-green-600 text-sm font-medium bg-green-100 py-2 rounded-lg">
+              {successMsg}
+            </p>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5 text-left">
+
             {/* Doctor ID */}
             <div>
-              <label
-                htmlFor="doctorId"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Doctor ID
               </label>
+
               <input
-                id="doctorId"
                 type="text"
+                id="doctorId"
                 placeholder="Enter your Doctor ID"
                 value={doctorId}
                 onChange={(e) => setDoctorId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800"
                 required
               />
             </div>
 
             {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
 
               <div className="relative">
                 <input
-                  id="password"
                   type={showPassword ? "text" : "password"}
+                  id="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400"
+                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800"
                   required
                 />
 
