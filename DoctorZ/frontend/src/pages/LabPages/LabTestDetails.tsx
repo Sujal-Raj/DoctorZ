@@ -13,6 +13,7 @@ import Liver from "../../assets/Liver.png";
 import kidney from "../../assets/kidney.png";
 import Heart from "../../assets/Heart.png";
 import Imaging from "../../assets/Imaging.png";
+import Swal from "sweetalert2";
 
 interface Test {
   _id: string;
@@ -33,7 +34,7 @@ export default function LabTestDetails() {
   const test = location.state?.test as Test | undefined;
 
   const [loading, setLoading] = useState(false);
-  const [bookingStatus, setBookingStatus] = useState<string | null>(null);
+  // const [bookingStatus, setBookingStatus] = useState<string | null>(null);
   const [otherTests, setOtherTests] = useState<Test[]>([]);
 
   const categoryImages: Record<string, string> = {
@@ -77,7 +78,7 @@ export default function LabTestDetails() {
 
   const handleBookTest = async () => {
     setLoading(true);
-    setBookingStatus(null);
+    // setBookingStatus(null);
 
     try {
       const token = document.cookie
@@ -117,10 +118,13 @@ export default function LabTestDetails() {
       });
 
       console.log("✅ Booking response:", res.data);
-      setBookingStatus("Booking successful!");
+      Swal.fire({ icon: "success", title: "Booking successful!" });
+      // setBookingStatus("Booking successful!");
+
     } catch (error) {
       console.error("❌ Booking error:", error);
-      setBookingStatus("Booking failed. Try again.");
+      Swal.fire({ icon: "error", title: "Booking failed. Try again." });
+      // setBookingStatus("Booking failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -221,7 +225,7 @@ export default function LabTestDetails() {
                 )}
               </button>
 
-              {bookingStatus && (
+              {/* {bookingStatus && (
                 <p
                   className={`mt-3 text-sm font-medium ${
                     bookingStatus.includes("successful")
@@ -231,7 +235,7 @@ export default function LabTestDetails() {
                 >
                   {bookingStatus}
                 </p>
-              )}
+              )} */}
 
               {test.reportFile && (
                 <a

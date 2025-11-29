@@ -140,7 +140,7 @@ const RegisterPatient: React.FC = () => {
       />
 
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
-        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8 my-10 md:my-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🏥 Patient Registration

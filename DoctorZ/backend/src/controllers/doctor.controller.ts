@@ -269,9 +269,67 @@ Your Hospital Admin Team
   }
 };
 
-// ==========================
-// Get Doctors by Clinic ID
-// ==========================
+
+
+
+
+
+const updateDoctorData = async (req: Request, res: Response) => {
+  try {
+    const doctorId = req.params.id;
+
+    const updates: any = { ...req.body };
+
+    //  Block fields that should never be updated directly
+    const blockedFields = ["notifications", "clinic", "DegreeCertificate", "signature", "doctorId"];
+
+    blockedFields.forEach((field) => delete updates[field]);
+
+    // convert number fields
+    const numberFields = ["experience", "consultationFee", "Aadhar"];
+    numberFields.forEach((field) => {
+      if (updates[field] !== undefined) {
+        updates[field] = Number(updates[field]);
+      }
+    });
+
+    // MobileNo should always be string
+    if (updates.MobileNo) {
+      updates.MobileNo = String(updates.MobileNo);
+    }
+
+    // Date field
+    if (updates.dob) {
+      updates.dob = new Date(updates.dob);
+    }
+
+    // photo upload
+    if (req.file) {
+      updates.photo = req.file.filename;
+    }
+
+    const updatedDoctor = await doctorModel.findByIdAndUpdate(
+      doctorId,
+      { $set: updates },
+      { new: true }
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    return res.json({
+      message: "Profile updated successfully",
+      doctor: updatedDoctor,
+    });
+  } catch (err) {
+    console.error("Update error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
 const getClinicDoctors = async (req: Request, res: Response) => {
   try {
     const { clinicId } = req.params;
@@ -299,7 +357,7 @@ export const getTodaysBookedAppointments = async (
 ) => {
   try {
     const doctorId = req.params.doctorId;
-
+    console.log("Fetching appointments for doctorId:", doctorId);
     const now = new Date();
     const startOfDay = new Date(
       Date.UTC(
@@ -322,13 +380,13 @@ export const getTodaysBookedAppointments = async (
         999
       )
     );
-
+ 
     const bookedAppointments = await Booking.find({
       doctorId,
-      datetime: { $gte: startOfDay, $lte: endOfDay },
+      dateTime: { $gte: startOfDay, $lte: endOfDay },
       status: "pending",
     });
-
+     
     res.status(200).json(bookedAppointments);
   } catch (error) {
     console.error("Error fetching today's booked appointments:", error);
@@ -480,6 +538,7 @@ export const rejectDoctorRequest = async (req: Request, res: Response) => {
 export default {
   getAllDoctors,
   doctorRegister,
+  updateDoctorData,
   getDoctorById,
   deleteDoctor,
   updateDoctor,

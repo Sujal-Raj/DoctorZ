@@ -12,6 +12,7 @@ router.get('/search', doctorController.searchDoctors);
 router.get('/allDoctors/:patientId', doctorController.getAllDoctors);
 router.get('/:id', doctorController.getDoctorById);
 router.delete('/delete/:id', doctorController.deleteDoctor);
+router.put('/updateDoctor/:id', upload.single("photo"), doctorController.updateDoctorData);
 router.put('/update/:id', doctorController.updateDoctor);
 router.get('/getClinicDoctors/:clinicId', doctorController.getClinicDoctors);
 router.post('/login', doctorController.doctorLogin);

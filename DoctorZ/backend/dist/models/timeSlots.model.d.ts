@@ -1,6 +1,6 @@
 import mongoose, { Document } from "mongoose";
 interface Slot {
-    _id: string;
+    _id?: mongoose.Types.ObjectId | string | undefined;
     time: string;
     isActive: boolean;
 }

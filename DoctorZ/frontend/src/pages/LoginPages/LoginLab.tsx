@@ -28,7 +28,17 @@ export default function LoginLab() {
         localStorage.setItem("labId", response.data.lab._id);
         localStorage.setItem("labName", response.data.lab.name);
 
-        window.location.href = "/lab-dashboard";
+        Swal.fire({
+          title: "Login Successful!",
+          text: `Welcome ${response.data.lab.name}! Redirecting...`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        setTimeout(() => {
+          window.location.href = "/lab-dashboard/patients";
+        }, 1500);
       } else {
         throw new Error("Invalid credentials");
       }

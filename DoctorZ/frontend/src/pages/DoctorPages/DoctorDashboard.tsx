@@ -80,8 +80,16 @@ export default function DoctorDashboard() {
   }, [doctorId]);
 
   const menuItems = [
-    { name: "Appointments", path: "appointments", icon: <CalendarIcon className="w-5 h-5" /> },
-    { name: "Dashboard", path: "", icon: <HomeIcon className="w-5 h-5" /> },
+    {
+      name: "Appointments",
+      path: "appointments",
+      icon: <CalendarIcon className="w-5 h-5" />,
+    },
+    {
+      name: "Dashboard",
+      path: "doctor-home-dashboard",
+      icon: <HomeIcon className="w-5 h-5" />,
+    },
     {
       name: "Profile",
       path: "doctorProfile",
@@ -92,6 +100,7 @@ export default function DoctorDashboard() {
       path: "time-slots",
       icon: <ClockIcon className="w-5 h-5" />,
     },
+
     {
       name: "Edit ID & Password",
       path: "editDoctorIdPassword",
@@ -169,10 +178,17 @@ export default function DoctorDashboard() {
               const dashboardPath = `/doctordashboard/${doctorId}`;
               const to = item.path === "" ? dashboardPath : item.path;
 
+              // const isActive =
+              //   item.path === ""
+              //     ? !!useMatch(`/doctorDashboard/${doctorId}`)
+              //     : !!useMatch(`/doctorDashboard/${doctorId}/${item.path}`);
+              const basePath = `/doctorDashboard/${doctorId}`;
+
               const isActive =
-                item.path === ""
-                  ? !!useMatch(`/doctorDashboard/${doctorId}`)
-                  : !!useMatch(`/doctorDashboard/${doctorId}/${item.path}`);
+                item.path === "appointments"
+                  ? location.pathname === basePath ||
+                    location.pathname.startsWith(`${basePath}/appointments`)
+                  : location.pathname.startsWith(`${basePath}/${item.path}`);
 
               const handleMenuClick = () => {
                 if (!isDesktop) setSidebarOpen(false);
@@ -181,7 +197,11 @@ export default function DoctorDashboard() {
               return (
                 <Link
                   key={item.name}
-                  to={item.path === "" ? dashboardPath : item.path}
+                  to={
+                    item.path === "appointments"
+                      ? `${basePath}/appointments`
+                      : `${basePath}/${item.path}`
+                  }
                   onClick={() => !isDesktop && setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
                     isActive

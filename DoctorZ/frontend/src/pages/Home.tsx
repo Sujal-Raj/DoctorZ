@@ -128,7 +128,7 @@ const handleSearchResults = (data: unknown) => {
   const doctorImageUrl = "/doctor.webp";
 
   return (
-    <div className="flex flex-col max-w-[1500px] bg-gray-50">
+    <div className="flex flex-col w-full bg-gray-50">
       {/* --- Main Search/Hero Section (Inspired by image_7f854e.png) --- */}
       {/* design 1 ...... */}
 {/* <header className="relative bg-gray-900 min-h-[85vh] flex items-center overflow-hidden">
