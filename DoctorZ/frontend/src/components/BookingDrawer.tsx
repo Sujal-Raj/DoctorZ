@@ -4,7 +4,7 @@ import { formatDayShort, formatDateNumber } from "../utils/date.js";
 import api from "../Services/mainApi.js";
 import { startOfMonth, endOfMonth } from "date-fns";
 import AppointmentFormModal from "./AppointmentFormModal.js";
-import Swal from "sweetalert2";
+import { toast } from "react-toastify";        // ⬅️ Toastify added
 import { Helmet } from "react-helmet";
 
 interface Slot {
@@ -60,28 +60,8 @@ const BookingDrawer: React.FC<Props> = ({
   const [availableMonthKeys, setAvailableMonthKeys] = useState<string[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
-  // const days = useMemo(() => {
-  //   const start = startOfMonth(currentMonth);
-  //   const end = endOfMonth(currentMonth);
-
-  //   const today = new Date();
-  //   today.setHours(0, 0, 0, 0);
-
-  //   const arr: Date[] = [];
-  //   const d = new Date(start);
-
-  //   while (d <= end) {
-  //     if (d >= today) arr.push(new Date(d));
-  //     d.setDate(d.getDate() + 1);
-  //   }
-
-  //   return arr;
-  // }, [currentMonth]);
-
   const days = useMemo(() => {
     if (!availableDates || availableDates.length === 0) return [];
-
-    // Convert strings to Date objects
     return availableDates.map((dateStr) => new Date(dateStr));
   }, [availableDates]);
 
@@ -164,6 +144,7 @@ const BookingDrawer: React.FC<Props> = ({
     fetchSlots();
   }, [doctor, selectedDate]);
 
+  // ⭐ BOOK APPOINTMENT — Toastify Version
   const handleBook = async (formData: {
     name: string;
     age: number;
@@ -174,36 +155,34 @@ const BookingDrawer: React.FC<Props> = ({
     diseases?: string[];
     pastSurgeries?: string[];
     currentMedications?: string[];
-    reports?: FileList | null; // uploaded reports
+    reports?: FileList | null;
   }) => {
     const token = document.cookie
       .split("; ")
       .find((r) => r.startsWith("patientToken="))
       ?.split("=")[1];
+
     const payloadBase64 = token?.split(".")[1];
     const pay = payloadBase64 ? JSON.parse(atob(payloadBase64)) : null;
     const userId = pay?.id;
 
+    // ⛔ Not logged in
     if (!token) {
-      Swal.fire({
-        icon: "info",
-        title: "Login Required",
-        text: "Please login to book an appointment.",
-        confirmButtonText: "OK",
-      }).then(() => (window.location.href = "/patient-login"));
+      toast.info("Please login to book an appointment.");
+      setTimeout(() => {
+        window.location.href = "/patient-login";
+      }, 1200);
       return;
     }
 
+    // ⛔ Missing data
     if (!doctor || !selectedDate || !selectedTime) {
-      Swal.fire({
-        icon: "warning",
-        title: "Incomplete Data",
-        text: "Please select date & time.",
-      });
+      toast.warn("Please select date & time.");
       return;
     }
 
     const selectedSlotId = slots.find((s) => s.time === selectedTime)?._id;
+
     setBookingLoading(true);
 
     try {
@@ -211,9 +190,9 @@ const BookingDrawer: React.FC<Props> = ({
       data.append("doctorId", doctor._id);
       data.append("userId", userId);
       data.append("mode", mode);
+
       const [hour, minute] = selectedTime.split(":");
 
-      // Create local datetime without shifting to UTC
       const localDateTime = new Date(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
@@ -221,15 +200,13 @@ const BookingDrawer: React.FC<Props> = ({
         Number(hour),
         Number(minute),
         0
-      ).toISOString(); // safe to send now
+      ).toISOString();
 
       data.append("dateTime", localDateTime);
-
       data.append("fees", String(doctor.fees ?? 0));
       data.append("slot", selectedTime);
       data.append("slotId", selectedSlotId ?? "");
 
-      // Patient info → Booking model only
       data.append(
         "patient",
         JSON.stringify({
@@ -241,16 +218,16 @@ const BookingDrawer: React.FC<Props> = ({
         })
       );
 
-      // EMR details → EMR model only
-      const emrDetails = {
-        allergies: formData.allergies,
-        diseases: formData.diseases,
-        pastSurgeries: formData.pastSurgeries,
-        currentMedications: formData.currentMedications,
-      };
-      data.append("emr", JSON.stringify(emrDetails));
+      data.append(
+        "emr",
+        JSON.stringify({
+          allergies: formData.allergies,
+          diseases: formData.diseases,
+          pastSurgeries: formData.pastSurgeries,
+          currentMedications: formData.currentMedications,
+        })
+      );
 
-      // EMR file uploads
       if (formData.reports) {
         Array.from(formData.reports).forEach((file) => {
           data.append("reports", file);
@@ -261,25 +238,18 @@ const BookingDrawer: React.FC<Props> = ({
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      await Swal.fire({
-        icon: "success",
-        title: "Appointment Confirmed!",
-        text: `Your appointment with Dr. ${doctor.fullName} is booked successfully`,
-      });
+      toast.success(
+        `Appointment booked successfully with Dr. ${doctor.fullName}!`
+      );
 
       onBooked?.(formData);
       onClose();
     } catch (err: any) {
       console.error("Booking error", err);
-      const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        "Something went wrong while booking.";
-      await Swal.fire({
-        icon: "error",
-        title: "Booking Failed",
-        text: errorMessage,
-      });
+      const msg =
+        err.response?.data?.message || err.message || "Something went wrong.";
+
+      toast.error(msg);
     } finally {
       setBookingLoading(false);
     }
@@ -353,7 +323,7 @@ const BookingDrawer: React.FC<Props> = ({
 
           {/* Content */}
           <div className="p-5 space-y-5 overflow-y-auto h-[calc(100%-4rem)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-            {/* 🩵 Check if slots exist */}
+            {/* If no slots */}
             {availableMonthKeys.length === 0 ? (
               <div className="text-center py-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
                 <h2 className="text-lg font-semibold text-gray-800 mb-1">
@@ -365,7 +335,7 @@ const BookingDrawer: React.FC<Props> = ({
               </div>
             ) : (
               <>
-                {/* Mode Buttons */}
+                {/* Mode buttons */}
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => setMode("online")}
@@ -389,7 +359,7 @@ const BookingDrawer: React.FC<Props> = ({
                   </button>
                 </div>
 
-                {/* Month Navigation */}
+                {/* Month navigation */}
                 <div className="flex justify-between items-center mb-3">
                   <button
                     className={`p-2 rounded ${
@@ -445,45 +415,23 @@ const BookingDrawer: React.FC<Props> = ({
                   </button>
                 </div>
 
-                {/* Date Selection */}
+                {/* Date selection */}
                 <div className="flex gap-2 overflow-x-auto py-2">
                   {days.map((d) => {
                     const key = formatDate(d);
                     const active =
                       selectedDate && formatDate(selectedDate) === key;
-                    // const disabled = !availableDates.includes(key);
 
                     return (
-                      // <button
-                      //   key={key}
-                      //   onClick={() => {
-                      //     if (!disabled) {
-                      //       setSelectedDate(d);
-                      //       setSelectedTime(null);
-                      //     }
-                      //   }}
-                      //   disabled={disabled}
-                      //   className={`min-w-[72px] p-3 text-center rounded-lg border transition-all
-                      //     ${
-                      //       active
-                      //         ? "bg-[#0c213e] text-white shadow"
-                      //         : "bg-white text-gray-800 hover:shadow-sm"
-                      //     }
-                      //     ${
-                      //       disabled
-                      //         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      //         : ""
-                      //     }`}
-                      // >
                       <button
                         key={key}
                         onClick={() => setSelectedDate(d)}
                         className={`min-w-[72px] p-3 text-center rounded-lg border transition-all
-        ${
-          active
-            ? "bg-[#0c213e] text-white shadow"
-            : "bg-white text-gray-800 hover:shadow-sm"
-        }`}
+                          ${
+                            active
+                              ? "bg-[#0c213e] text-white shadow"
+                              : "bg-white text-gray-800 hover:shadow-sm"
+                          }`}
                       >
                         <div className="text-xs opacity-80">
                           {formatDayShort(d)}
