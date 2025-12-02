@@ -12,6 +12,7 @@ import {
   Edit3,
   Lock,
 } from "lucide-react";
+import api from "../../Services/mainApi";
 
 interface Lab {
   labId: string;
@@ -63,8 +64,8 @@ const LabProfile = () => {
 
     const fetchLab = async () => {
       try {
-        const res = await axios.get<GetLabResponse>(
-          `http://localhost:3000/api/lab/getLabById/${contextLabId}`
+        const res = await api.get<GetLabResponse>(
+          `/api/lab/getLabById/${contextLabId}`
         );
         setLab(res.data.labDetails);
       } catch {
@@ -86,8 +87,8 @@ const LabProfile = () => {
     setSaving(true);
 
     try {
-      const res = await axios.put<UpdateLabResponse>(
-        `http://localhost:3000/api/lab/updateLabProfile/${contextLabId}`,
+      const res = await api.put<UpdateLabResponse>(
+        `/api/lab/updateLabProfile/${contextLabId}`,
         { ...lab, ...(passwordInput ? { password: passwordInput } : {}) }
       );
 
@@ -102,9 +103,9 @@ const LabProfile = () => {
     setSaving(false);
   };
 
-  if (loading) {
-    return <p className="text-center p-10 font-medium">Loading...</p>;
-  }
+  // if (loading) {
+  //   return <p className="text-center p-10 font-medium">Loading...</p>;
+  // }
 
   const inputClass =
     "w-full rounded-xl border border-gray-300 p-3 focus:border-[#0C213E] focus:ring-2 focus:ring-blue-200 bg-white transition";
