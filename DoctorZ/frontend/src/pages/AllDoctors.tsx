@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { Helmet } from "react-helmet";
 import ClinicDoctorCard from "../pages/ClinicPages/ClinicDoctorCard";
 import api from "../Services/mainApi";

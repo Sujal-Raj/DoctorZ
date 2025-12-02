@@ -261,6 +261,16 @@ const ViewDoctorProfile: React.FC = () => {
                 >
                   <Calendar size={18} /> Book Appointment
                 </button>
+                <button
+                  onClick={handleFavouriteToggle}
+                  className={`border-2 px-4 sm:px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-200 text-sm sm:text-base ${
+                    isFavourite
+                      ? "border-yellow-300 text-yellow-300 bg-white/10"
+                      : "border-white text-white hover:bg-white/10"
+                  }`}
+                >
+                  <Star size={18} fill={isFavourite ? "currentColor" : "none"} /> {isFavourite ? "Favourite" : "Add to Favourite"}
+                </button>
                 <button className="border-2 border-white text-white px-4 sm:px-6 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-white/10 transition-all duration-200 text-sm sm:text-base">
                   <MapPin size={18} /> Clinic Location
                 </button>

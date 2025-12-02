@@ -399,7 +399,7 @@ const RegisterPatient: React.FC = () => {
                   multiple
                   accept="image/*,application/pdf"
                   {...register("medicalReports")}
-                  onChange={(e) => {
+                  onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
                     const files = Array.from(e.target.files || []);
                     setSelectedFiles(files);
                   }}

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Link,
   Outlet,
-  useLocation,
+  // useLocation,
   useMatch,
   useNavigate,
 } from "react-router-dom";
@@ -28,7 +28,7 @@ interface Notification {
 }
 
 export default function DoctorDashboard() {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
@@ -176,7 +176,7 @@ export default function DoctorDashboard() {
           <nav className="space-y-2">
             {menuItems.map((item) => {
               const dashboardPath = `/doctordashboard/${doctorId}`;
-              const to = item.path === "" ? dashboardPath : item.path;
+              // const to = item.path === "" ? dashboardPath : item.path;
 
               // const isActive =
               //   item.path === ""
@@ -190,9 +190,9 @@ export default function DoctorDashboard() {
                     location.pathname.startsWith(`${basePath}/appointments`)
                   : location.pathname.startsWith(`${basePath}/${item.path}`);
 
-              const handleMenuClick = () => {
-                if (!isDesktop) setSidebarOpen(false);
-              };
+              // const handleMenuClick = () => {
+              //   if (!isDesktop) setSidebarOpen(false);
+              // };
 
               return (
                 <Link

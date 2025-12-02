@@ -28,6 +28,12 @@ export default function Navbar() {
     id: string;
   }
 
+  interface LocationData {
+  city?: string;
+  countryName?: string;
+}
+
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLocationPopup, setShowLocationPopup] = useState(false);
@@ -88,7 +94,7 @@ export default function Navbar() {
         const res = await fetch(
           `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
         );
-        const data = await res.json();
+        const data:LocationData = await res.json();
         const locationText = `${data.city || "Unknown"}, ${
           data.countryName || ""
         }`;

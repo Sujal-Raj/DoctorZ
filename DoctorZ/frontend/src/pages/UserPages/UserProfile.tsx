@@ -76,7 +76,7 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isDark] = useState(false);
+  // const [isDark] = useState(false);
 
   const { id } = useParams();
   const userId = localStorage.getItem("userId");
@@ -121,40 +121,85 @@ function UserProfile() {
     if (userId) fetchUser();
   }, [userId, id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!editData) return;
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (!editData) return;
 
-    const { name, value } = e.target;
+  //   const { name, value } = e.currentTarget;
 
-    if (name.startsWith("address.")) {
-      const key = name.split(".")[1] as keyof Address;
-      setEditData({
-        ...editData,
-        address: {
-          ...editData.address,
-          [key]: key === "pincode" ? Number(value) : value,
-        },
-      });
-    } else if (name.startsWith("emergencyContact.")) {
-      const key = name.split(".")[1] as keyof EmergencyContact;
-      setEditData({
-        ...editData,
-        emergencyContact: {
-          ...editData.emergencyContact,
-          [key]: key === "number" ? Number(value) : value,
-        },
-      });
-    } else {
-      const key = name as keyof User;
-      const finalValue =
-        key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
+  //   if (name.startsWith("address.")) {
+  //     const key = name.split(".")[1] as keyof Address;
+  //     setEditData({
+  //       ...editData,
+  //       address: {
+  //         ...editData.address,
+  //         [key]: key === "pincode" ? Number(value) : value,
+  //       },
+  //     });
+  //   } else if (name.startsWith("emergencyContact.")) {
+  //     const key = name.split(".")[1] as keyof EmergencyContact;
+  //     setEditData({
+  //       ...editData,
+  //       emergencyContact: {
+  //         ...editData.emergencyContact,
+  //         [key]: key === "number" ? Number(value) : value,
+  //       },
+  //     });
+  //   } else {
+  //     const key = name as keyof User;
+  //     const finalValue =
+  //       key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
 
-      setEditData({
-        ...editData,
-        [key]: finalValue,
-      });
-    }
-  };
+  //     setEditData({
+  //       ...editData,
+  //       [key]: finalValue,
+  //     });
+  //   }
+  // };
+
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  if (!editData) return;
+
+  const target = e.currentTarget;
+  const { name, value } = target;
+
+  if (!name) return; // safety guard
+
+  if (name.startsWith("address.")) {
+    const key = name.split(".")[1] as keyof Address;
+
+    setEditData({
+      ...editData,
+      address: {
+        ...editData.address,
+        [key]: key === "pincode" ? Number(value) : value,
+      },
+    });
+
+  } else if (name.startsWith("emergencyContact.")) {
+    const key = name.split(".")[1] as keyof EmergencyContact;
+
+    setEditData({
+      ...editData,
+      emergencyContact: {
+        ...editData.emergencyContact,
+        [key]: key === "number" ? Number(value) : value,
+      },
+    });
+
+  } else {
+    const key = name as keyof User;
+    const finalValue =
+      key === "mobileNumber" || key === "aadhar" ? Number(value) : value;
+
+    setEditData({
+      ...editData,
+      [key]: finalValue,
+    });
+  }
+};
+
 
   const handleSave = async () => {
     try {
@@ -217,17 +262,17 @@ function UserProfile() {
 
   if (loading)
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0c213e] mx-auto"></div>
-          <p className={`mt-4 text-lg ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Loading...</p>
+          <p className="mt-4 text-lg text-gray-600">Loading...</p>
         </div>
       </div>
     );
 
   if (!user)
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center text-red-500">User Not Found.</div>
       </div>
     );

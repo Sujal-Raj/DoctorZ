@@ -54,7 +54,7 @@ const AddEmr: React.FC = () => {
     
     setLoading(true);
     try {
-      const response = await api.get(`/api/emr/${aadhar}`);
+      const response = await api.get<{ emr: EMRRecord[] }>(`/api/emr/${aadhar}`);
       
       if (response.data) {
         setEmrRecords(response.data.emr || []);
@@ -192,7 +192,7 @@ const AddEmr: React.FC = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#0c213e] focus:outline-none transition"
                   placeholder="Dust, Pollen"
                   value={formData.allergies}
-                  onChange={(e) => handleInputChange("allergies", e.target.value)}
+                  onChange={(e:React.ChangeEvent<HTMLInputElement>) => handleInputChange("allergies", e.target.value)}
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate multiple items with commas</p>
               </div>
@@ -206,7 +206,9 @@ const AddEmr: React.FC = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#0c213e] focus:outline-none transition"
                   placeholder="Diabetes, BP"
                   value={formData.diseases}
-                  onChange={(e) => handleInputChange("diseases", e.target.value)}
+                  onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+                    const target = e.target as HTMLInputElement;
+                    handleInputChange("diseases", target.value)}}
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate multiple items with commas</p>
               </div>
@@ -220,7 +222,9 @@ const AddEmr: React.FC = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#0c213e] focus:outline-none transition"
                   placeholder="Knee Surgery"
                   value={formData.pastSurgeries}
-                  onChange={(e) => handleInputChange("pastSurgeries", e.target.value)}
+                  onChange={(e:React.ChangeEvent<HTMLInputElement>) => {
+                    const target = e.target as HTMLInputElement;
+                    handleInputChange("pastSurgeries", target.value)}}
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate multiple items with commas</p>
               </div>
@@ -234,7 +238,9 @@ const AddEmr: React.FC = () => {
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-[#0c213e] focus:outline-none transition"
                   placeholder="Paracetamol"
                   value={formData.currentMedications}
-                  onChange={(e) => handleInputChange("currentMedications", e.target.value)}
+                  onChange={(e:React.ChangeEvent<HTMLInputElement>) =>{ 
+                    const target = e.target as HTMLInputElement;
+                    handleInputChange("currentMedications", target.value)}}
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate multiple items with commas</p>
               </div>
