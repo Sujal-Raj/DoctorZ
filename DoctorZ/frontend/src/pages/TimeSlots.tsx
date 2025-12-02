@@ -148,11 +148,11 @@ const TimeSlots: React.FC = () => {
         };
 
         const res = await api.put("/api/availability/editTimeSlot", payload);
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: res.data.message,
-        });
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "Success",
+        //   text: res.data.message,
+        // });
 
         setEditingSlotId(null); // reset editing state
       } else {

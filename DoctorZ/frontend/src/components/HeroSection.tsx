@@ -24,7 +24,7 @@ const HealthcareHero = () => {
       <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-7xl mx-auto">
           {/* Left Content */}
-          <div className="text-center lg:text-left order-2 lg:order-1">
+          <div className="text-center lg:text-left order-1 lg:order-1">
             <motion.div
               initial={{ scale: 1 }}
               whileHover={{
@@ -100,7 +100,7 @@ const HealthcareHero = () => {
           </div>
 
           {/* Right Illustration - Professional Healthcare Dashboard */}
-          <div className="flex items-center justify-center order-1 lg:order-2">
+          <div className="flex items-center justify-center order-2 lg:order-2">
             <div className="relative w-full max-w-lg mx-auto">
               
               {/* Main Dashboard Container */}

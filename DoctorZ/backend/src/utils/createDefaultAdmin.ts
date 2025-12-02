@@ -9,7 +9,7 @@ export const createDefaultAdmin=async()=>{
     return;
   }
 const adminId = "admin" + Math.floor(Math.random() * 1000);
-const password = randomBytes(4).toString("hex"); 
+const password = "123456"; 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newAdmin = new AdminModel({
