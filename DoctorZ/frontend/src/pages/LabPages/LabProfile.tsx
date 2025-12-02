@@ -1,17 +1,16 @@
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import toast, { Toaster } from "react-hot-toast";
+
 import {
   Building2,
   Mail,
   MapPin,
-  Edit3,
   Save,
-  
-  CheckCircle2,
-  AlertCircle,
+  Edit3,
+  Lock,
 } from "lucide-react";
 
 interface Lab {
@@ -37,6 +36,8 @@ interface UpdateLabResponse {
   lab: Lab;
 }
 
+const PRIMARY = "#0C213E";
+
 const LabProfile = () => {
   const { labId: contextLabId } = useOutletContext<LabDashboardContext>();
 
@@ -54,12 +55,9 @@ const LabProfile = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
+  const [passwordInput, setPasswordInput] = useState("");
 
-  // Fetch Data
+  // Fetch lab details
   useEffect(() => {
     if (!contextLabId) return;
 
@@ -71,18 +69,13 @@ const LabProfile = () => {
         );
         setLab(res.data.labDetails);
       } catch {
-        showNotification("error", "Failed to load lab data");
+        toast.error("Failed to load lab profile");
       }
       setLoading(false);
     };
 
     fetchLab();
   }, [contextLabId]);
-
-  const showNotification = (type: "success" | "error", message: string) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 3000);
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLab({ ...lab, [e.target.name]: e.target.value });
@@ -93,164 +86,223 @@ const LabProfile = () => {
     if (!contextLabId) return;
 
     setSaving(true);
+
     try {
       const res = await axios.put<UpdateLabResponse>(
         `http://localhost:3000/api/lab/updateLabProfile/${contextLabId}`,
-        lab
+        { ...lab, ...(passwordInput ? { password: passwordInput } : {}) }
       );
+
       setLab(res.data.lab);
+      toast.success("Lab profile updated successfully!");
       setIsEditing(false);
-      showNotification("success", "Profile updated successfully!");
+      setPasswordInput("");
     } catch {
-      showNotification("error", "Failed to update profile");
+      toast.error("Failed to update profile");
     }
+
     setSaving(false);
   };
 
+  if (loading) {
+    return <p className="text-center p-10 font-medium">Loading...</p>;
+  }
+
+  const inputClass =
+    "w-full rounded-xl border border-gray-300 p-3 focus:border-[#0C213E] focus:ring-2 focus:ring-blue-200 bg-white transition";
+  const inputDisabled =
+    "w-full rounded-xl p-3 bg-gray-100 border border-gray-200 cursor-not-allowed";
+
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto">
+    <>
+      {/* Toaster Settings */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: { borderRadius: "10px", background: "#333", color: "#fff" },
+        }}
+      />
 
       {/* SEO */}
       <Helmet>
         <title>Lab Profile | Dashboard</title>
-        <meta
-          name="description"
-          content="Manage your laboratory profile, update information, and keep your lab details accurate."
-        />
       </Helmet>
 
-      {/* HEADER */}
-      <div className="bg-[#0C213E] rounded-2xl shadow-xl p-5 mb-6 flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-4">
-          <div className="bg-white/10 p-3 rounded-xl">
-            <Building2 className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white">
-              Laboratory Profile
-            </h1>
-            <p className="text-gray-200 text-sm sm:text-base">
-              Manage your lab information
-            </p>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gray-100 px-4 py-6 md:px-10">
+        <div className="mx-auto max-w-6xl">
 
-        {!isEditing && (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="bg-white text-[#0C213E] px-5 py-2.5 rounded-xl font-semibold shadow hover:shadow-lg text-sm sm:text-base transition flex items-center gap-2"
+          {/* HEADER */}
+          <div
+            className="rounded-2xl p-6 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6"
+            style={{ backgroundColor: PRIMARY }}
           >
-            <Edit3 className="w-5 h-5" />
-            Edit
-          </button>
-        )}
-      </div>
+            <div className="flex items-center gap-5 text-white">
+              <div className="bg-white/20 p-4 rounded-xl">
+                <Building2 className="w-9 h-9 text-white" />
+              </div>
 
-      {/* FORM */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-xl rounded-2xl p-5 sm:p-7 border border-gray-200 text-sm sm:text-base"
-      >
-        <div className="grid gap-6">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold">
+                  Laboratory Profile
+                </h1>
+                <p className="text-gray-300 text-sm">
+                  Manage your laboratory information
+                </p>
+              </div>
+            </div>
 
-          {/* Single Input Reusable */}
-          {[
-            { label: "Laboratory Name", field: "name", icon: Building2 },
-            { label: "Email", field: "email", icon: Mail, type: "email" },
-            { label: "Address", field: "address", icon: MapPin },
-          ].map((item) => (
-            <div key={item.field}>
-              <label className="font-semibold text-gray-700 mb-1 block">
-                {item.label}
-              </label>
-              <div className="relative">
-                <item.icon
-                  className="absolute left-3 top-3 h-5 w-5 text-gray-400"
-                />
+            {!isEditing && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-yellow-400 hover:bg-yellow-500 text-black px-5 py-2.5 rounded-lg shadow font-semibold transition flex items-center gap-2"
+              >
+                <Edit3 className="w-5 h-5" />
+                Edit
+              </button>
+            )}
+          </div>
+
+          {/* MAIN FORM CARD */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white mt-10 rounded-2xl shadow-md p-6 border border-gray-200"
+          >
+            {/* BASIC DETAILS */}
+            <h3
+              className="text-xl font-bold mb-5"
+              style={{ color: PRIMARY }}
+            >
+              Laboratory Details
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* NAME */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Lab Name
+                </label>
+                <div className="relative mt-1">
+                  <Building2 className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                  <input
+                    name="name"
+                    value={lab.name}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className={isEditing ? "pl-10 " + inputClass : "pl-10 " + inputDisabled}
+                  />
+                </div>
+              </div>
+
+              {/* EMAIL */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Email
+                </label>
+                <div className="relative mt-1">
+                  <Mail className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={lab.email}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className={isEditing ? "pl-10 " + inputClass : "pl-10 " + inputDisabled}
+                  />
+                </div>
+              </div>
+
+              {/* ADDRESS */}
+              <div className="md:col-span-2">
+                <label className="text-sm font-semibold text-gray-700">
+                  Address
+                </label>
+                <div className="relative mt-1">
+                  <MapPin className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                  <input
+                    name="address"
+                    value={lab.address}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className={isEditing ? "pl-10 " + inputClass : "pl-10 " + inputDisabled}
+                  />
+                </div>
+              </div>
+
+              {/* CITY */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  City
+                </label>
                 <input
-                  type={item.type || "text"}
-                  name={item.field}
-                  value={(lab as any)[item.field]}
+                  name="city"
+                  value={lab.city}
                   onChange={handleChange}
                   disabled={!isEditing}
-                  className={`w-full pl-10 pr-3 py-2.5 rounded-xl border outline-none transition ${
-                    isEditing
-                      ? "border-gray-300 focus:border-[#0C213E] focus:ring-2 focus:ring-[#0C213E]/20"
-                      : "bg-gray-100 border-gray-200 cursor-default"
-                  }`}
+                  className={isEditing ? inputClass : inputDisabled}
+                />
+              </div>
+
+              {/* STATE */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  State
+                </label>
+                <input
+                  name="state"
+                  value={lab.state}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={isEditing ? inputClass : inputDisabled}
+                />
+              </div>
+
+              {/* PINCODE */}
+              <div>
+                <label className="text-sm font-semibold text-gray-700">
+                  Pincode
+                </label>
+                <input
+                  name="pincode"
+                  value={lab.pincode}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className={isEditing ? inputClass : inputDisabled}
                 />
               </div>
             </div>
-          ))}
 
-          {/* CITY / STATE / PINCODE */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {["city", "state", "pincode"].map((field) => (
-              <div key={field}>
-                <label className="font-semibold text-gray-700 mb-1 block capitalize">
-                  {field}
-                </label>
-                <input
-                  name={field}
-                  value={(lab as any)[field]}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className={`w-full px-3 py-2.5 rounded-xl border outline-none transition ${
-                    isEditing
-                      ? "border-gray-300 focus:border-[#0C213E] focus:ring-2 focus:ring-[#0C213E]/20"
-                      : "bg-gray-100 border-gray-200 cursor-default"
-                  }`}
-                />
+            {/* BUTTONS */}
+            {isEditing && (
+              <div className="mt-8 flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="flex-1 bg-gray-200 py-3 rounded-xl font-semibold hover:bg-gray-300 transition"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 bg-[#0C213E] text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 hover:opacity-90"
+                >
+                  {saving ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <Save className="w-5 h-5" />
+                      Save Changes
+                    </>
+                  )}
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </form>
         </div>
-
-        {/* BUTTONS */}
-        {isEditing && (
-          <div className="mt-6 flex gap-4">
-            <button
-              type="button"
-              onClick={() => setIsEditing(false)}
-              className="flex-1 bg-gray-200 py-2.5 rounded-xl font-semibold hover:bg-gray-300 transition"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex-1 bg-[#0C213E] text-white py-2.5 rounded-xl font-semibold hover:opacity-90 transition flex items-center justify-center gap-2"
-            >
-              {saving ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" />
-                  Save
-                </>
-              )}
-            </button>
-          </div>
-        )}
-      </form>
-
-      {/* NOTIFICATION */}
-      {notification && (
-        <div
-          className={`fixed bottom-6 right-6 px-4 py-3 rounded-lg text-white flex items-center gap-3 shadow-lg ${
-            notification.type === "success" ? "bg-green-600" : "bg-red-600"
-          }`}
-        >
-          {notification.type === "success" ? (
-            <CheckCircle2 className="w-5 h-5" />
-          ) : (
-            <AlertCircle className="w-5 h-5" />
-          )}
-          {notification.message}
-        </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 

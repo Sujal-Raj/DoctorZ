@@ -77,10 +77,19 @@ import DoctorChat from "./pages/DoctorPages/DoctorChat";
 import LabTestInUser from "./pages/UserPages/LabTestInUser";
 // Admin
 
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Toaster position="top-right" reverseOrder={false} />{" "}
+      <ToastContainer
+       position="top-right"
+        
+      />
       {/* <-- Wrap the app here */}
       <Router>
         <Routes>
