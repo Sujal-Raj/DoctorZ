@@ -243,7 +243,7 @@ export default function HealthcareHomepage() {
         </div>
       </section>
 
-      {/* <HealthcareHero/> */}
+      <HealthcareHero/>
 
       {/* Main Services Grid - CTA #1 */}
       <section className="py-20 bg-gray-50">
