@@ -1,6 +1,5 @@
 // 📁 src/pages/LoginLab.tsx
 import { useState } from "react";
-import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
 import { Eye, EyeOff } from "lucide-react";
 import { loginLab } from "../../Services/labApi";
@@ -10,15 +9,13 @@ export default function LoginLab() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(""); // ❗ Inline error message
 
   const handleLogin = async () => {
+    setErrorMsg("");
+
     if (!labId || !password) {
-      Swal.fire({
-        title: "Missing Info!",
-        text: "Please enter both Lab ID and Password.",
-        icon: "warning",
-        confirmButtonText: "Ok",
-      });
+      setErrorMsg("Please enter both Lab ID and Password.");
       return;
     }
 
@@ -40,19 +37,14 @@ export default function LoginLab() {
         });
 
         setTimeout(() => {
-          window.location.href = "/lab-dashboard";
+          window.location.href = "/lab-dashboard/patients";
         }, 1500);
       } else {
         throw new Error("Invalid credentials");
       }
     } catch (error) {
       console.error("Error:", error);
-      Swal.fire({
-        title: "Login Failed!",
-        text: "Invalid credentials or your lab is not approved yet.",
-        icon: "error",
-        confirmButtonText: "Try Again",
-      });
+      setErrorMsg("Invalid credentials or your lab is not approved yet.");
     } finally {
       setLoading(false);
     }
@@ -60,7 +52,7 @@ export default function LoginLab() {
 
   return (
     <>
-      {/* ✅ SEO Optimization */}
+      {/* SEO */}
       <Helmet>
         <title>Lab Login | DoctorZ Healthcare</title>
         <meta
@@ -74,23 +66,18 @@ export default function LoginLab() {
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      {/* ✅ Centered Modern Layout */}
+      {/* UI */}
       <div className="fixed inset-0 flex items-center justify-center bg-white z-40">
-        <div
-          className="w-[90%] max-w-md bg-white rounded-2xl shadow-lg border border-[#dfe3f7] p-8 sm:p-10 text-center transition-all duration-300"
-          aria-label="Lab Login Section"
-        >
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#000000] mb-3">
+        <div className="w-[90%] max-w-md bg-white rounded-2xl shadow-lg border border-[#dfe3f7] p-8 sm:p-10 text-center">
+
+          <h1 className="text-3xl sm:text-4xl font-bold text-black mb-3">
             Lab Login
           </h1>
           <p className="text-gray-500 text-sm sm:text-base mb-6">
             Use your{" "}
             <span className="font-semibold text-[#0c213e]">Lab ID</span> and
             password to access your{" "}
-            <span className="font-semibold text-[#0c213e]">
-              dashboard and reports
-            </span>
-            .
+            <span className="font-semibold text-[#0c213e]">dashboard</span>.
           </p>
 
           <form
@@ -100,7 +87,7 @@ export default function LoginLab() {
             }}
             className="space-y-5 text-left"
           >
-            {/* Lab ID Field */}
+            {/* Lab ID */}
             <div>
               <label
                 htmlFor="labId"
@@ -114,12 +101,11 @@ export default function LoginLab() {
                 placeholder="Enter your Lab ID"
                 value={labId}
                 onChange={(e) => setLabId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
-                required
+                className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50"
               />
             </div>
 
-            {/* Password Field */}
+            {/* Password */}
             <div>
               <label
                 htmlFor="password"
@@ -127,6 +113,7 @@ export default function LoginLab() {
               >
                 Password
               </label>
+
               <div className="relative">
                 <input
                   id="password"
@@ -134,29 +121,29 @@ export default function LoginLab() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50 text-gray-800 placeholder-gray-400 transition"
-                  required
+                  className="w-full border border-gray-300 rounded-lg p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-[#0c213e] bg-gray-50"
                 />
+
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-[#0c213e] focus:outline-none"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500"
                 >
-                  {showPassword ? (
-                    <EyeOff size={20} strokeWidth={1.8} />
-                  ) : (
-                    <Eye size={20} strokeWidth={1.8} />
-                  )}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
+
+            {/* Error Message */}
+            {errorMsg && (
+              <p className="text-red-600 text-sm font-medium">{errorMsg}</p>
+            )}
 
             {/* Login Button */}
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-[#0c213e] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 ${
+              className={`w-full bg-[#0c213e] hover:bg-[#1f2870] text-white font-semibold py-3 rounded-lg shadow-md transition ${
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -164,11 +151,11 @@ export default function LoginLab() {
             </button>
           </form>
 
-          <p className="text-center text-gray-600 mt-6 text-sm sm:text-base">
-            Don’t have an account?{" "}
+          <p className="text-center text-gray-600 mt-6 text-sm">
+            Don't have an account?{" "}
             <a
               href="/lab-register"
-              className="text-[#0c213e] font-medium hover:underline hover:text-[#1f2870]"
+              className="text-[#0c213e] font-medium hover:underline"
             >
               Register
             </a>

@@ -2,7 +2,7 @@ import { MapPin, Mail, Phone, Facebook, Linkedin, Youtube, Instagram } from "luc
 
 function Footer() {
   return (
-   <footer className="bg-[#0c213e] text-black">
+   <footer className="bg-[#0c213e] text-black w-full">
   {/* Top Section */}
   <div className="container mx-auto px-6 py-12 md:py-16">
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">

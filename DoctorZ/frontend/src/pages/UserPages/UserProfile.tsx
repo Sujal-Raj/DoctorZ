@@ -75,6 +75,7 @@ function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState<User | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // const [isDark] = useState(false);
 
   const { id } = useParams();
   const userId = localStorage.getItem("userId");
@@ -83,14 +84,16 @@ function UserProfile() {
     const fetchUser = async () => {
       try {
         const res = await api.get<UserResponse>(`/api/patient/${id}`);
-        let fetchedUser = res.data.user;
+        const fetchedUser = res.data.user;
         console.log(fetchedUser);
 
         // Check if address/emergencyContact are strings, then parse
         if (typeof fetchedUser.address === "string") {
           try {
             fetchedUser.address = JSON.parse(fetchedUser.address);
-          } catch (e) {
+          } catch (err) {
+            console.log(err);
+
             fetchedUser.address = { city: "", pincode: 0 };
           }
         }
@@ -100,7 +103,8 @@ function UserProfile() {
             fetchedUser.emergencyContact = JSON.parse(
               fetchedUser.emergencyContact
             );
-          } catch (e) {
+          } catch (err) {
+            console.log(err);
             fetchedUser.emergencyContact = { name: "", number: 0 };
           }
         }
@@ -224,7 +228,7 @@ function UserProfile() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      let updatedUser = res.data.user;
+      const updatedUser = res.data.user;
 
       // Parse nested objects
       if (typeof updatedUser.address === "string") {

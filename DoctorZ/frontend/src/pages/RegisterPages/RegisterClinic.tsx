@@ -2,8 +2,8 @@ import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Eye, EyeOff, Upload, FileText } from "lucide-react";
-import Swal from "sweetalert2";
 import { registerClinic } from "../../Services/mainClinicApi";
+import { toast, Toaster } from "react-hot-toast";
 
 type ClinicFormInputs = {
   clinicName: string;
@@ -70,25 +70,17 @@ const RegisterClinic: React.FC = () => {
         registrationCert: certFile || undefined,
       });
 
-      Swal.fire({
-        icon: "success",
-        title: "Clinic Registered!",
-        text: "Your registration has been submitted for admin approval.",
-        confirmButtonColor: "#0c213e",
-      });
+      toast.success("Clinic submitted for verification!");
 
       reset();
       setCertFile(null);
       setCertPreview(null);
     } catch (err: any) {
       console.error("❌ Error submitting form:", err);
-      Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text:
-          err?.response?.data?.message || "Something went wrong. Try again.",
-        confirmButtonColor: "#0c213e",
-      });
+      toast.error(
+        err?.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -129,6 +121,19 @@ const RegisterClinic: React.FC = () => {
 
   return (
     <>
+      {/* ✅ Toastify Component */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       <Helmet>
         <title>Clinic Registration | Health Connect Portal</title>
         <meta
@@ -137,10 +142,9 @@ const RegisterClinic: React.FC = () => {
         />
       </Helmet>
 
-      {/* ✅ White page background */}
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
         {/* ✅ Smaller card */}
-        <section className="w-full max-w-4xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+        <section className="w-full max-w-4xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8 my-10 md:my-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🏥 Register Your Clinic
@@ -221,7 +225,7 @@ const RegisterClinic: React.FC = () => {
               placeholder="400001"
               type="number"
               registerField={register("pincode", {
-                required: "Aadhar number is required",
+                required: "Pincode is required",
                 pattern: {
                   value: /^[0-9]{6}$/,
                   message: "Pincode must be exactly 6 digits",
@@ -233,11 +237,11 @@ const RegisterClinic: React.FC = () => {
               id="contact"
               label="Contact Number"
               placeholder="9876543210"
-              registerField={register("contact",{
-                 pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: "Contact number must be exactly 10 digits",
-                  },
+              registerField={register("contact", {
+                pattern: {
+                  value: /^[0-9]{10}$/,
+                  message: "Contact number must be exactly 10 digits",
+                },
               })}
               error={errors.contact?.message}
             />
@@ -315,7 +319,6 @@ const RegisterClinic: React.FC = () => {
               registerField={register("staffEmail")}
             />
 
-            {/* --- Password --- */}
             <div className="relative">
               <label
                 htmlFor="staffPassword"
@@ -391,8 +394,8 @@ const RegisterClinic: React.FC = () => {
                 disabled={loading}
                 className={`px-8 py-2.5 text-white text-base font-semibold rounded-lg shadow-md transition-all duration-300 ${
                   loading
-                    ? "bg-[#3a49c9] cursor-not-allowed"
-                    : "bg-[#0c213e] hover:bg-[#1f2775] hover:scale-[1.02]"
+                    ? "bg-[#0c213e] cursor-not-allowed"
+                    : "bg-[#0c213e] hover:bg-[#0c213e] hover:scale-[1.02]"
                 }`}
               >
                 {loading ? "Submitting..." : "Register Clinic"}

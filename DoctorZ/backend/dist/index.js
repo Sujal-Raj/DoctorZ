@@ -18,6 +18,7 @@ import labRoutes from "./routes/lab.routes.js";
 import emrRoutes from "./routes/emr.routes.js";
 import messageModel from "./models/message.model.js";
 import prescriptionRoutes from "./routes/prescription.routes.js";
+import { createDefaultAdmin } from "./utils/createDefaultAdmin.js";
 // dotenv.config();
 dbConnect();
 // const PORT = 3000;
@@ -166,6 +167,7 @@ app.use("/api/prescription", prescriptionRoutes);
 //     console.log("Server running at " + PORT);
 //     console.log("Socket also started");
 // })
+createDefaultAdmin();
 // Start server
 server.listen(PORT, () => {
     console.log(`Server running at ${PORT}`);

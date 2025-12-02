@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
-import Swal from "sweetalert2";
+import toast, { Toaster } from "react-hot-toast";   // ✅ added toastify
 import { Upload } from "lucide-react";
 
 import "../../index.css";
@@ -37,10 +37,9 @@ const RegisterPatient: React.FC = () => {
   } = useForm<PatientFormInputs>();
 
   const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
-
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedImage = e.target.files?.[0];
@@ -51,70 +50,62 @@ const [loading, setLoading] = useState(false);
   };
 
   const onSubmit = async (data: PatientFormInputs) => {
-    console.log(data)
     setLoading(true);
-    try{
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    formData.append("fullName", data.fullName);
-    formData.append("gender", data.gender);
-    formData.append("dob", data.dob);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("mobileNumber", data.mobileNumber);
-    formData.append("aadhar", data.aadhar);
-    formData.append("city", data.city);
-    formData.append("pincode", data.pincode);
-    formData.append("abhaId", data.abhaId);
+      formData.append("fullName", data.fullName);
+      formData.append("gender", data.gender);
+      formData.append("dob", data.dob);
+      formData.append("email", data.email);
+      formData.append("password", data.password);
+      formData.append("mobileNumber", data.mobileNumber);
+      formData.append("aadhar", data.aadhar);
+      formData.append("city", data.city);
+      formData.append("pincode", data.pincode);
+      formData.append("abhaId", data.abhaId);
 
-    formData.append("name", data.emergencyName);
-    formData.append("number", data.emergencyNumber);
+      formData.append("name", data.emergencyName);
+      formData.append("number", data.emergencyNumber);
 
-    formData.append(
-      "allergies",
-      JSON.stringify(data.allergies?.split(",").map((s) => s.trim()) || [])
-    );
-    formData.append(
-      "diseases",
-      JSON.stringify(data.diseases?.split(",").map((s) => s.trim()) || [])
-    );
-    formData.append(
-      "pastSurgeries",
-      JSON.stringify(data.pastSurgeries?.split(",").map((s) => s.trim()) || [])
-    );
-    formData.append(
-      "currentMedications",
-      JSON.stringify(
-        data.currentMedications?.split(",").map((s) => s.trim()) || []
-      )
-    );
+      formData.append(
+        "allergies",
+        JSON.stringify(data.allergies?.split(",").map((s) => s.trim()) || [])
+      );
+      formData.append(
+        "diseases",
+        JSON.stringify(data.diseases?.split(",").map((s) => s.trim()) || [])
+      );
+      formData.append(
+        "pastSurgeries",
+        JSON.stringify(data.pastSurgeries?.split(",").map((s) => s.trim()) || [])
+      );
+      formData.append(
+        "currentMedications",
+        JSON.stringify(
+          data.currentMedications?.split(",").map((s) => s.trim()) || []
+        )
+      );
 
-    // ✅ ONLY PROFILE PHOTO
-    if (photoFile) {
-      formData.append("photo", photoFile);
+      if (photoFile) {
+        formData.append("photo", photoFile);
+      }
+
+      selectedFiles.forEach((file) => {
+        formData.append("medicalReports", file);
+      });
+
+      await registerPatient(formData);
+
+      toast.success("Patient registered successfully!");  // ✅ replaced Swal
+    } catch (error) {
+      toast.error("Registration failed");                 // ✅ replaced Swal
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // ✅ Medical Reports (same as old UI)
-    selectedFiles.forEach((file) => {
-      formData.append("medicalReports", file);
-    });
-
-    await registerPatient(formData);
-    Swal.fire("✅ Success!", "Patient registered successfully.", "success");
-  }
-  catch (error) {
-    Swal.fire("Error", "Registration failed", "error");
-  } finally {
-    setLoading(false); 
-}
-  }
-  const InputField = ({
-    id,
-    label,
-    type = "text",
-    placeholder,
-    registerField,
-  }: any) => (
+  const InputField = ({ id, label, type = "text", placeholder, registerField }: any) => (
     <div className="relative">
       <label className="block text-sm font-semibold text-gray-700 mb-1">
         {label}
@@ -135,8 +126,21 @@ const [loading, setLoading] = useState(false);
         <title>Patient Registration</title>
       </Helmet>
 
+      {/* ✅ TOASTIFY */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       <main className="min-h-screen bg-white flex items-center justify-center p-4">
-        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8 my-10 md:my-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🏥 Patient Registration
@@ -150,7 +154,7 @@ const [loading, setLoading] = useState(false);
             onSubmit={handleSubmit(onSubmit)}
             className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800"
           >
-            {/* ✅ PERSONAL INFO */}
+            {/* PERSONAL INFO */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2">
               Personal Information
             </h2>
@@ -199,6 +203,7 @@ const [loading, setLoading] = useState(false);
               placeholder="••••••••"
               registerField={register("password")}
             />
+
             <div>
               <InputField
                 id="mobileNumber"
@@ -208,7 +213,7 @@ const [loading, setLoading] = useState(false);
                   required: "Mobile number is required",
                   pattern: {
                     value: /^[0-9]{10}$/,
-                    message: " Mobile no must be exactly 10 digits",
+                    message: "Mobile no must be exactly 10 digits",
                   },
                 })}
               />
@@ -218,6 +223,7 @@ const [loading, setLoading] = useState(false);
                 </p>
               )}
             </div>
+
             <div>
               <InputField
                 id="aadhar"
@@ -237,12 +243,14 @@ const [loading, setLoading] = useState(false);
                 </p>
               )}
             </div>
+
             <InputField
               id="city"
               label="City"
               placeholder="Bhilai"
               registerField={register("city")}
             />
+
             <div>
               <InputField
                 id="pincode"
@@ -282,7 +290,8 @@ const [loading, setLoading] = useState(false);
                 </p>
               )}
             </div>
-            {/* ✅ EMERGENCY */}
+
+            {/* EMERGENCY */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e]  pt-4 border-b border-[#0c213e]/20 pb-2">
               Emergency Contact
             </h2>
@@ -313,7 +322,8 @@ const [loading, setLoading] = useState(false);
                 </p>
               )}
             </div>
-            {/* ✅ PROFILE PHOTO ONLY */}
+
+            {/* PROFILE PHOTO */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2">
               Profile Photo
             </h2>
@@ -337,7 +347,7 @@ const [loading, setLoading] = useState(false);
               )}
             </div>
 
-            {/* ✅ MEDICAL RECORDS SECTION (unchanged) */}
+            {/* MEDICAL */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2 pt-4 ">
               Medical Records
             </h2>
@@ -348,18 +358,21 @@ const [loading, setLoading] = useState(false);
               placeholder="Dust, Peanuts"
               registerField={register("allergies")}
             />
+
             <InputField
               id="diseases"
               label="Diseases"
               placeholder="Diabetes, Asthma"
               registerField={register("diseases")}
             />
+
             <InputField
               id="pastSurgeries"
               label="Past Surgeries"
               placeholder="Appendix Removal"
               registerField={register("pastSurgeries")}
             />
+
             <InputField
               id="currentMedications"
               label="Current Medications"
@@ -367,7 +380,7 @@ const [loading, setLoading] = useState(false);
               registerField={register("currentMedications")}
             />
 
-            {/* ✅ Medical Reports */}
+            {/* MEDICAL REPORTS */}
             <div className="md:col-span-2">
               <label className="font-medium text-gray-700">
                 Upload Medical Reports
@@ -403,18 +416,17 @@ const [loading, setLoading] = useState(false);
               )}
             </div>
 
-            {/* ✅ SUBMIT */}
+            {/* SUBMIT */}
             <div className="md:col-span-2 text-center mt-6">
               <button
-  type="submit"
-  disabled={loading}
-  className={`cursor-pointer px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
-    bg-[#0c213e] hover:bg-[#1f2775] shadow-md transition 
-    ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
->
-  {loading ? "Submitting..." : "Register Patient"}
-</button>
-
+                type="submit"
+                disabled={loading}
+                className={`cursor-pointer px-8 py-2.5 text-white text-lg font-semibold rounded-lg 
+                  bg-[#0c213e] hover:bg-[#1f2775] shadow-md transition 
+                  ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              >
+                {loading ? "Submitting..." : "Register Patient"}
+              </button>
             </div>
           </form>
         </section>
@@ -422,6 +434,5 @@ const [loading, setLoading] = useState(false);
     </>
   );
 };
-
 
 export default RegisterPatient;

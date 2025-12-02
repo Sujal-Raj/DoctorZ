@@ -1,8 +1,6 @@
-
-
-
 import { useEffect, useState } from "react";
 import { Check, X, User, Search } from "lucide-react";
+import { Toaster, toast } from "react-hot-toast";
 
 interface Doctor {
   _id: string;
@@ -33,9 +31,11 @@ export default function AdminDoctor() {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
+
       const data = await res.json();
       setDoctors(data);
     } catch (error) {
+      toast.error("Failed to fetch doctors");
       console.error("Failed to fetch doctors:", error);
     } finally {
       setLoading(false);
@@ -45,9 +45,18 @@ export default function AdminDoctor() {
   const handleAction = async (id: string, action: "approve" | "reject") => {
     try {
       setActionLoading(id);
-      await fetch(`http://localhost:3000/api/admin/doctor/${id}/${action}`, { method: "POST" });
+
+      await fetch(`http://localhost:3000/api/admin/doctor/${id}/${action}`, {
+        method: "POST",
+      });
+
+      toast.success(
+        action === "approve" ? "Doctor Approved Successfully!" : "Doctor Rejected!"
+      );
+
       await fetchDoctors();
     } catch (error) {
+      toast.error(`Failed to ${action} doctor`);
       console.error(`Failed to ${action} doctor:`, error);
     } finally {
       setActionLoading(null);
@@ -62,7 +71,8 @@ export default function AdminDoctor() {
     (doc) =>
       doc.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (doc.MedicalRegistrationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
+      (doc.MedicalRegistrationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+        false)
   );
 
   const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
@@ -74,10 +84,24 @@ export default function AdminDoctor() {
 
   return (
     <main className="min-h-screen bg-gray-50 py-8 overflow-x-hidden">
+
+      {/* 🔥 Global Toast Provider */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       <title>Admin Doctor Approval | Dashboard</title>
       <meta
         name="description"
-        content="Admin dashboard for approving pending doctor registration requests. View doctor details, approve or reject requests easily."
+        content="Admin dashboard for approving pending doctor registration requests."
       />
 
       {loading ? (
@@ -86,7 +110,7 @@ export default function AdminDoctor() {
         </div>
       ) : (
         <div className="w-full px-2 sm:px-6">
-          {/* Sticky Header */}
+          {/* Header */}
           <div className="sticky top-0 bg-gray-50 z-30 pb-4 border-b border-gray-200">
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
               <div>
@@ -97,6 +121,7 @@ export default function AdminDoctor() {
                   Review and approve pending doctor registration requests
                 </p>
               </div>
+
               <div className="bg-white px-6 py-4 rounded-2xl shadow border border-gray-200 min-w-[180px] text-center">
                 <p className="text-sm text-gray-500 font-medium uppercase tracking-wide">
                   Total Pending
@@ -105,7 +130,7 @@ export default function AdminDoctor() {
               </div>
             </div>
 
-            {/* Sticky Search */}
+            {/* Search */}
             <div className="relative max-w-2xl mt-6 mx-auto lg:mx-0">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -121,38 +146,46 @@ export default function AdminDoctor() {
             </div>
           </div>
 
-          {/* Responsive Table (same design, scrollable on small screens) */}
+          {/* Table */}
           <div className="bg-white shadow-sm overflow-x-auto mt-6 rounded-lg">
             <table className="w-full text-left min-w-[900px] border-collapse">
               <thead className="bg-gray-800 text-white">
                 <tr>
-                  <th className="px-4 py-3 whitespace-nowrap">Doctor</th>
-                  <th className="px-4 py-3 whitespace-nowrap">Medical Reg. No.</th>
-                  <th className="px-4 py-3 whitespace-nowrap">Qualification</th>
-                  <th className="px-4 py-3 whitespace-nowrap">Experience</th>
-                  <th className="px-4 py-3 whitespace-nowrap">Fee</th>
-                  <th className="px-4 py-3 whitespace-nowrap text-center">Status</th>
-                  <th className="px-4 py-3 whitespace-nowrap text-center">Actions</th>
+                  <th className="px-4 py-3">Doctor</th>
+                  <th className="px-4 py-3">Medical Reg. No.</th>
+                  <th className="px-4 py-3">Qualification</th>
+                  <th className="px-4 py-3">Experience</th>
+                  <th className="px-4 py-3">Fee</th>
+                  <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
+
               <tbody>
                 {currentDoctors.map((doc) => (
                   <tr key={doc._id} className="border-b border-gray-200 hover:bg-gray-50">
                     <td className="px-4 py-4 flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center">
                         <User className="w-6 h-6 text-white" />
                       </div>
-                      <div className="min-w-[150px]">
+                      <div>
                         <p className="font-semibold">{doc.fullName}</p>
                         <p className="text-sm text-gray-500">{doc.specialization}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-4">{doc.MedicalRegistrationNumber || "Not Provided"}</td>
+
+                    <td className="px-4 py-4">
+                      {doc.MedicalRegistrationNumber || "Not Provided"}
+                    </td>
+
                     <td className="px-4 py-4">{doc.qualification}</td>
+
                     <td className="px-4 py-4">
                       {doc.experience} {doc.experience === 1 ? "Year" : "Years"}
                     </td>
+
                     <td className="px-4 py-4">₹{doc.consultationFee.toLocaleString()}</td>
+
                     <td className="px-4 py-4 text-center">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -166,6 +199,7 @@ export default function AdminDoctor() {
                         {doc.status}
                       </span>
                     </td>
+
                     <td className="px-4 py-4 flex justify-center gap-2">
                       <button
                         onClick={() => handleAction(doc._id, "approve")}
@@ -175,9 +209,10 @@ export default function AdminDoctor() {
                         {actionLoading === doc._id ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
-                          <Check className="w-4 h-4 inline" />
+                          <Check className="w-4 h-4" />
                         )}
                       </button>
+
                       <button
                         onClick={() => handleAction(doc._id, "reject")}
                         disabled={actionLoading === doc._id}
@@ -186,7 +221,7 @@ export default function AdminDoctor() {
                         {actionLoading === doc._id ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
-                          <X className="w-4 h-4 inline" />
+                          <X className="w-4 h-4" />
                         )}
                       </button>
                     </td>
@@ -211,6 +246,7 @@ export default function AdminDoctor() {
                 >
                   &lt;
                 </button>
+
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <button
                     key={page}
@@ -224,6 +260,7 @@ export default function AdminDoctor() {
                     {page}
                   </button>
                 ))}
+
                 <button
                   onClick={() => goToPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
@@ -239,4 +276,3 @@ export default function AdminDoctor() {
     </main>
   );
 }
-

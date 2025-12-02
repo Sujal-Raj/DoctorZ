@@ -49,6 +49,7 @@ const UserPrescription = () => {
         const res = await api.get<{ prescriptions: Prescription[] }>(
           `/api/patient/getUserPrescription/${aadhar}`
         );
+        console.log(res)
         setPrescriptions(res.data.prescriptions);
       } catch (err) {
         console.error(err);
@@ -65,7 +66,7 @@ const UserPrescription = () => {
 
   /* 2️⃣ Date, Month, Year Filter */
   const dateFiltered = searchFiltered.filter((item) => {
-    const itemDate = new Date(item.bookingId.dateTime);
+    const itemDate = new Date(item?.bookingId?.dateTime || "");
 
     // Start + End Date
     if (startDate && itemDate < new Date(startDate)) return false;
@@ -81,6 +82,8 @@ const UserPrescription = () => {
 
     return true;
   });
+
+  console.log(dateFiltered)
 
   /* 3️⃣ Sorting */
   const sortedPrescriptions = [...dateFiltered].sort((a, b) => {
@@ -269,7 +272,7 @@ const UserPrescription = () => {
                 <div className="flex items-center gap-2 text-gray-700">
                   <CalendarDays size={18} className="text-purple-600" />
                   <span className="font-medium">
-                    {new Date(item.bookingId.dateTime).toLocaleDateString("en-GB")}
+                    {new Date(item?.bookingId.dateTime).toLocaleDateString("en-GB")}
                   </span>
                 </div>
 

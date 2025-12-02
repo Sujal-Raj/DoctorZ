@@ -6,6 +6,8 @@ import nodemailer from "nodemailer";
 import { LabModel } from "../models/lab.model.js";
 import clinicModel from "../models/clinic.model.js";
 import Admin from "../models/adminModel.js";
+import bcrypt from "bcryptjs";
+import AdminModel from "../models/adminModel.js";
 dotenv.config();
 
 // 🔹 Generate Token
@@ -344,47 +346,40 @@ export const rejectClinic = async (req: Request, res: Response) => {
 
 // admin login controllers
 
-// 🔹 Admin Login (using DB model)
-export const adminLogin = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
 
-  // Check if fields are present
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password are required" });
-  }
 
+export const adminLogin = async (req:Request, res:Response) => {
   try {
-    // Find admin by email
-    const admin = await Admin.findOne({ email });
+    const { adminId, password } = req.body;
 
+    if (!adminId || !password) {
+      return res.status(400).json({ message: "Admin ID and password are required" });
+    }
+
+    const admin = await AdminModel.findOne({ adminId });
     if (!admin) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid admin credentials" });
     }
 
-    // Compare password
-    const isMatch = await (admin as any).comparePassword(password);
+    const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Invalid admin credentials" });
     }
 
-    // Generate JWT
-    const token = generateToken(
-      (admin as any)._id.toString(),
-      (admin as any).email,
-      "admin"
+    // ✅ Generate JWT token
+    const token = jwt.sign(
+      { adminId: admin.adminId, id: admin._id },
+      process.env.JWT_SECRET as string, 
+      { expiresIn: "1d" } // Token valid for 1 day
     );
 
     return res.status(200).json({
-      message: "Admin Login Successful",
+      message: "Login successful",
       token,
-      user: {
-        id: admin._id,
-        email: admin.email,
-        name: admin.name,
-      },
     });
-  } catch (err) {
-    console.error("Admin login error:", err);
-    return res.status(500).json({ message: "Server Error" });
+
+  } catch (error) {
+    console.error("Admin login error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

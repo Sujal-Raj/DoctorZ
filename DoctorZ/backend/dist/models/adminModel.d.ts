@@ -1,11 +1,9 @@
 import { Document, Model } from 'mongoose';
 export interface IAdmin extends Document {
-    name: string;
-    email: string;
+    adminId: string;
     password: string;
     createdAt: Date;
-    comparePassword(candidatePassword: string): Promise<boolean>;
 }
-declare const Admin: Model<IAdmin>;
-export default Admin;
+declare const AdminModel: Model<IAdmin>;
+export default AdminModel;
 //# sourceMappingURL=adminModel.d.ts.map

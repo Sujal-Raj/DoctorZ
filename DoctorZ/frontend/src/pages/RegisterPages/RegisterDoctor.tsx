@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Helmet } from "react-helmet";
-import Swal from "sweetalert2";
 import { useOutletContext } from "react-router-dom";
 
 import { registerDoctor } from "../../Services/doctorApi";
 import { FileText, Upload } from "lucide-react";
+
+// ✅ Toastify
+import { toast, Toaster } from "react-hot-toast";
 
 type DoctorFormInputs = {
   fullName: string;
@@ -31,55 +33,6 @@ interface ClinicContext {
   clinicId?: string;
 }
 
-/* -------------------------- Reusable Inputs -------------------------- */
-// const FormInput = ({ label, name, register, error, placeholder, type = "text" }: any) => (
-//   <div className="flex flex-col">
-//     <label className="text-gray-700 font-medium">{label}</label>
-//     <input
-//       type={type}
-//       {...register(name, { required: `${label} is required` })}
-//       placeholder={placeholder}
-//       className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
-//     />
-//     {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
-//   </div>
-// );
-
-// const SelectInput = ({ label, name, register, error }: any) => (
-//   <div className="flex flex-col">
-//     <label className="text-gray-700 font-medium">{label}</label>
-//     <select
-//       {...register(name, { required: `${label} is required` })}
-//       className="mt-2 w-full rounded-xl border border-gray-300 p-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-400 shadow-sm"
-//     >
-//       <option value="">Select Gender</option>
-//       <option>Male</option>
-//       <option>Female</option>
-//       <option>Other</option>
-//     </select>
-//     {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
-//   </div>
-// );
-
-// const FileUpload = ({ label, fileName, setFile, setFileName, accept }: any) => (
-//   <div className="flex flex-col">
-//     <label className="text-gray-700 font-medium">{label}</label>
-//     <label className="mt-2 flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md cursor-pointer hover:bg-blue-700 transition-all text-sm sm:text-base">
-//       Upload File
-//       <input
-//         type="file"
-//         accept={accept}
-//         className="hidden"
-//         onChange={(e) => {
-//           const file = e.target.files?.[0];
-//           setFile(file || null);
-//           setFileName(file?.name || "No file selected");
-//         }}
-//       />
-//     </label>
-//     <p className="mt-2 text-xs sm:text-sm text-gray-500 truncate">{fileName}</p>
-//   </div>
-// );
 
 const RegisterDoctor: React.FC = () => {
   const {
@@ -88,6 +41,7 @@ const RegisterDoctor: React.FC = () => {
     formState: { errors },
     reset,
   } = useForm<DoctorFormInputs>();
+
 
   const context = useOutletContext<ClinicContext | null>();
   const clinicId = context?.clinicId || null;
@@ -100,14 +54,11 @@ const RegisterDoctor: React.FC = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [sigPreview, setSigPreview] = useState<string | null>(null);
 
-  // const [degreeName, setDegreeName] = useState<string>("No file selected");
-  // const [photoName, setPhotoName] = useState<string>("No file selected");
-  // const [sigName, setSigName] = useState<string>("No file selected");
-
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: DoctorFormInputs) => {
     setLoading(true);
+
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => formData.append(key, value));
     if (clinicId) formData.append("clinicId", clinicId);
@@ -117,12 +68,11 @@ const RegisterDoctor: React.FC = () => {
 
     try {
       await registerDoctor(formData);
-      Swal.fire({
-        icon: "success",
-        title: "Doctor Registered!",
-        text: "Your details have been submitted for verification.",
-        confirmButtonColor: "#0c213e",
+
+      toast.success("Your details have been submitted for verification !", {
+        duration: 3500,
       });
+
       reset();
       setDegreeFile(null);
       setPhotoFile(null);
@@ -131,12 +81,10 @@ const RegisterDoctor: React.FC = () => {
       setPhotoPreview(null);
       setSigPreview(null);
     } catch (error: any) {
-      Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text: error?.response?.data?.message || "Something went wrong!",
-        confirmButtonColor: "#0c213e",
-      });
+      toast.error(
+        error?.response?.data?.message || "Registration failed. Try again!",
+        { duration: 3500 }
+      );
     } finally {
       setLoading(false);
     }
@@ -185,13 +133,25 @@ const RegisterDoctor: React.FC = () => {
 
     setFile(file);
 
-    // Show preview for images
     const previewUrl = URL.createObjectURL(file);
     setPreview(previewUrl);
   }
 
   return (
     <>
+      {/* ✅ Toastify Toaster Added Here */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3400,
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        }}
+      />
+
       <Helmet>
         <title>Doctor Registration | Clinic Portal</title>
         <meta
@@ -200,8 +160,8 @@ const RegisterDoctor: React.FC = () => {
         />
       </Helmet>
 
-      <main className="min-h-screen bg-white flex items-center justify-center p-4">
-        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8">
+      <main className="min-h-screen bg-white flex items-center justify-center p-4 overflow-y-auto">
+        <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-gray-300 p-6 md:p-8 my-10 md:my-10">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-extrabold text-[#0c213e]">
               🩺 Doctor Registration
@@ -216,7 +176,7 @@ const RegisterDoctor: React.FC = () => {
             className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-800"
             encType="multipart/form-data"
           >
-            {/* --- Doctor Info --- */}
+            {/* --- Doctor Info Title --- */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pb-2">
               Doctor Information
             </h2>
@@ -230,6 +190,7 @@ const RegisterDoctor: React.FC = () => {
               })}
               error={errors.fullName?.message}
             />
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Gender
@@ -250,19 +211,9 @@ const RegisterDoctor: React.FC = () => {
               )}
             </div>
 
-            <InputField
-              id="dob"
-              label="Date of Birth"
-              type="date"
-              registerField={register("dob")}
-            />
-            <InputField
-              id="email"
-              label="Email"
-              type="email"
-              placeholder="doctor@example.com"
-              registerField={register("email")}
-            />
+            <InputField id="dob" label="Date of Birth" type="date" registerField={register("dob")} />
+            <InputField id="email" label="Email" type="email" placeholder="doctor@example.com" registerField={register("email")} />
+
             <InputField
               id="mobileNo"
               label="Mobile Number"
@@ -276,48 +227,15 @@ const RegisterDoctor: React.FC = () => {
               })}
               error={errors.mobileNo?.message}
             />
-            <InputField
-              id="regNumber"
-              label="Medical Registration Number"
-              placeholder="MED123456"
-              registerField={register("regNumber")}
-            />
-            <InputField
-              id="qualification"
-              label="Qualification"
-              placeholder="MBBS, MD"
-              registerField={register("qualification")}
-            />
-            <InputField
-              id="specialization"
-              label="Specialization"
-              placeholder="Dermatology"
-              registerField={register("specialization")}
-            />
 
-            <InputField
-              id="experience"
-              label="Experience (Years)"
-              placeholder="5"
-              type="number"
-              registerField={register("experience")}
-            />
-            <InputField
-              id="fees"
-              label="Consultation Fees"
-              placeholder="500"
-              type="number"
-              registerField={register("fees")}
-            />
+            <InputField id="regNumber" label="Medical Registration Number" placeholder="MED123456" registerField={register("regNumber")} />
+            <InputField id="qualification" label="Qualification" placeholder="MBBS, MD" registerField={register("qualification")} />
+            <InputField id="specialization" label="Specialization" placeholder="Dermatology" registerField={register("specialization")} />
+            <InputField id="experience" label="Experience (Years)" placeholder="5" type="number" registerField={register("experience")} />
+            <InputField id="fees" label="Consultation Fees" placeholder="500" type="number" registerField={register("fees")} />
+            <InputField id="languages" label="Languages Known" placeholder="English, Hindi" registerField={register("languages")} />
 
-            <InputField
-              id="languages"
-              label="Languages Known"
-              placeholder="English, Hindi"
-              registerField={register("languages")}
-            />
-
-            {/* --- Personal Info --- */}
+            {/* --- Personal Details Title --- */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pt-4 pb-2">
               Personal Details
             </h2>
@@ -336,6 +254,7 @@ const RegisterDoctor: React.FC = () => {
               })}
               error={errors.aadhar?.message}
             />
+
             <InputField
               id="pan"
               label="PAN Number"
@@ -349,24 +268,10 @@ const RegisterDoctor: React.FC = () => {
               })}
               error={errors.pan?.message}
             />
-            <InputField
-              id="address"
-              label="Address"
-              placeholder="123 Main Street"
-              registerField={register("address")}
-            />
-            <InputField
-              id="city"
-              label="City"
-              placeholder="Bhilai"
-              registerField={register("city")}
-            />
-            <InputField
-              id="state"
-              label="State"
-              placeholder="Chhattisgarh"
-              registerField={register("state")}
-            />
+
+            <InputField id="address" label="Address" placeholder="123 Main Street" registerField={register("address")} />
+            <InputField id="city" label="City" placeholder="Bhilai" registerField={register("city")} />
+            <InputField id="state" label="State" placeholder="Chhattisgarh" registerField={register("state")} />
 
             <InputField
               id="password"
@@ -379,12 +284,11 @@ const RegisterDoctor: React.FC = () => {
               error={errors.password?.message}
             />
 
-            {/* --- Documents --- */}
+            {/* --- Upload Documents --- */}
             <h2 className="md:col-span-2 text-lg font-semibold text-[#0c213e] border-b border-[#0c213e]/20 pt-4 pb-2">
               Upload Documents
             </h2>
 
-            {/* File Uploads */}
             {[
               {
                 label: "Degree Certificate",
@@ -415,6 +319,7 @@ const RegisterDoctor: React.FC = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   {fileInput.label}
                 </label>
+
                 <div className="flex items-center gap-4">
                   <label className="flex items-center justify-center w-full h-28 border-2 border-dashed border-[#0c213e]/40 rounded-lg cursor-pointer hover:bg-[#0c213e]/5 transition">
                     <Upload className="text-[#0c213e] mr-2" size={20} />
@@ -426,11 +331,7 @@ const RegisterDoctor: React.FC = () => {
                       accept={fileInput.accept}
                       className="hidden"
                       onChange={(e) =>
-                        handleFileChange(
-                          e,
-                          fileInput.setFile,
-                          fileInput.setPreview
-                        )
+                        handleFileChange(e, fileInput.setFile, fileInput.setPreview)
                       }
                     />
                   </label>
@@ -455,7 +356,7 @@ const RegisterDoctor: React.FC = () => {
               </div>
             ))}
 
-            {/* Submit Button */}
+            {/* --- Submit Button --- */}
             <div className="md:col-span-2 text-center mt-6">
               <button
                 type="submit"

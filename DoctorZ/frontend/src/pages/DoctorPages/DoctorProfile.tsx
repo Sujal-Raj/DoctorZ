@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import api from "../../Services/mainApi";
-import  { toast,Toaster } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 
 const PRIMARY = "#0C213E";
 
@@ -17,7 +17,7 @@ interface Doctor {
   language: string;
   MobileNo: string;
   email: string;
-  MedicalRegistrationNumber: number;
+  MedicalRegistrationNumber: string;
   Aadhar: number;
   photo?: string;
   signature?: string;
@@ -27,6 +27,8 @@ interface Doctor {
 const DoctorProfile: React.FC = () => {
   const navigate = useNavigate();
   const storedDoctorId = localStorage.getItem("doctorId");
+  console.log("Stored Doctor ID:", storedDoctorId);
+  const [newPhoto, setNewPhoto] = useState<File | null>(null);
 
   const [doctor, setDoctor] = useState<Doctor | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ const DoctorProfile: React.FC = () => {
           `/api/doctor/${storedDoctorId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
+        console.log("Fetched Doctor Data:", res.data.doctor);
         setDoctor(res.data.doctor);
         setFormData(res.data.doctor);
       } catch {
@@ -62,6 +64,17 @@ const DoctorProfile: React.FC = () => {
 
     fetchDoctor();
   }, []);
+  const handlePhotoChange = (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setNewPhoto(file);
+
+    // show preview immediately
+    setDoctor((prev) =>
+      prev ? { ...prev, photo: URL.createObjectURL(file) } : prev
+    );
+  };
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -74,14 +87,47 @@ const DoctorProfile: React.FC = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // UPDATE PROFILE
+  //UPDATE PROFILE
   const handleProfileUpdate = async () => {
     try {
-      await api.put(`/api/doctor/update/${doctor?._id}`, formData);
+      const form = new FormData();
+
+      // append text fields safely
+      Object.entries(formData).forEach(([key, value]) => {
+        if (
+          value !== undefined &&
+          value !== null &&
+          value !== "" &&
+          !(Array.isArray(value) && value.length === 0)
+        ) {
+          form.append(key, String(value));
+        }
+      });
+
+      // append new photo only if selected
+      if (newPhoto) {
+        form.append("photo", newPhoto);
+      }
+
+      const res = await api.put(
+        `/api/doctor/updateDoctor/${doctor?._id}`,
+        form,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       toast.success("Profile updated successfully!");
+
+      // update UI without reload
+      setDoctor(res.data.doctor);
+
       setEditMode(false);
-    } catch {
+      setNewPhoto(null);
+    } catch (err) {
+      console.error(err);
       toast.error("Update failed");
     }
   };
@@ -153,18 +199,49 @@ const DoctorProfile: React.FC = () => {
       <div className="min-h-screen bg-gray-100 px-4 py-6 md:px-10">
         <div className="mx-auto max-w-20xl">
           {/* PROFILE HEADER */}
-          <div className="rounded-2xl p-5 shadow-lg" style={{ backgroundColor: PRIMARY }}>
+          <div
+            className="rounded-2xl p-5 shadow-lg"
+            style={{ backgroundColor: PRIMARY }}
+          >
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="h-28 w-28 rounded-xl border-4 border-white shadow-md overflow-hidden bg-gray-100">
-                {doctor?.photo ? (
+              <div className="relative h-28 w-28 rounded-xl border-4 border-white shadow-md overflow-hidden bg-gray-100">
+                {newPhoto ? (
                   <img
-                    src={`http://localhost:3000/uploads/${doctor.photo}`}
+                    src={URL.createObjectURL(newPhoto)}
+                    className="w-full h-full object-cover"
+                  />
+                ) : doctor?.photo ? (
+                  <img
+                    src={`http://localhost:3000/uploads/${
+                      doctor.photo
+                    }?t=${Date.now()}`}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white">
+                  <div className="w-full h-full flex items-center justify-center text-gray-500">
                     No Photo
                   </div>
+                )}
+
+                {editMode && (
+                  <label className="absolute bottom-2 right-2 z-20 bg-white p-2 rounded-full shadow cursor-pointer hover:bg-gray-200 transition">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handlePhotoChange}
+                    />
+                    <svg
+                      className="w-5 h-5 text-black"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M3 7h4l2-3h6l2 3h4v12H3V7z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                  </label>
                 )}
               </div>
 
@@ -201,7 +278,10 @@ const DoctorProfile: React.FC = () => {
             <div className="lg:col-span-2 space-y-8">
               {/* DETAILS */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
-                <h3 className="text-xl font-bold mb-4" style={{ color: PRIMARY }}>
+                <h3
+                  className="text-xl font-bold mb-4"
+                  style={{ color: PRIMARY }}
+                >
                   Professional Details
                 </h3>
 
@@ -231,9 +311,13 @@ const DoctorProfile: React.FC = () => {
                           className={inputClass}
                         />
                       ) : field === "dob" ? (
-                        <p className="p-2 text-gray-700">{formatDMY(formData.dob)}</p>
+                        <p className="p-2 text-gray-700">
+                          {formatDMY(formData.dob)}
+                        </p>
                       ) : (
-                        <p className="p-2 text-gray-700">{(formData as any)[field]}</p>
+                        <p className="p-2 text-gray-700">
+                          {(formData as any)[field]}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -252,7 +336,10 @@ const DoctorProfile: React.FC = () => {
 
               {/* Certificates */}
               <div className="rounded-2xl bg-white p-6 shadow-md">
-                <h3 className="text-xl font-bold mb-4" style={{ color: PRIMARY }}>
+                <h3
+                  className="text-xl font-bold mb-4"
+                  style={{ color: PRIMARY }}
+                >
                   Certificates & Signature
                 </h3>
 
@@ -285,7 +372,10 @@ const DoctorProfile: React.FC = () => {
             <div className="space-y-8">
               {/* Contact */}
               <div className="rounded-2xl bg-white p-2 shadow-md">
-                <h3 className="text-xl font-bold mb-5" style={{ color: PRIMARY }}>
+                <h3
+                  className="text-xl font-bold mb-5"
+                  style={{ color: PRIMARY }}
+                >
                   Contact Information
                 </h3>
 

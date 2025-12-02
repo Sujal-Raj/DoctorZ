@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 const slotSchema = new Schema({
     time: { type: String, required: true },
-    isActive: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: false }
 });
 const timeSlotSchema = new Schema({
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: "Doctor", required: true },

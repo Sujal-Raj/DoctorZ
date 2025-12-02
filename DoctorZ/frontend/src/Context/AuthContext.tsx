@@ -97,7 +97,7 @@ interface User {
   name: string;
   email: string;
   aadhar:string;
-  mobileNumber:Number;
+  mobileNumber:number;
   gender:string;
 }
 
@@ -108,6 +108,7 @@ interface AuthContextType {
   login: (token: string) => void;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType>({
   isLoggedIn: false,
   user: null,

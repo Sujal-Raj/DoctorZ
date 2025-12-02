@@ -9,6 +9,7 @@ import EMRModel from "../models/emr.model.js";
 import Booking from "../models/booking.model.js";
 import { FaV } from "react-icons/fa6";
 import PrescriptionModel from "../models/prescription.model.js";
+import { LabModel, LabTestBookingModel } from "../models/lab.model.js";
 const patientRegister = async (req, res) => {
     try {
         console.log("Received body:", req.body);
@@ -37,6 +38,13 @@ const patientRegister = async (req, res) => {
         const existing = await patientModel.findOne({ email: email.toLowerCase() });
         if (existing) {
             return res.status(400).json({ message: "Email already exists" });
+        }
+        // Check if Aadhar exists
+        const existingAadhar = await patientModel.findOne({ aadhar: String(aadhar) });
+        if (existingAadhar) {
+            return res
+                .status(400)
+                .json({ message: "Aadhar number already registered" });
         }
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -91,7 +99,9 @@ const patientLogin = async (req, res) => {
         const { email, password } = req.body;
         console.log("Login Email:", email);
         if (!email || !password) {
-            return res.status(400).json({ message: "Email and Password are required." });
+            return res
+                .status(400)
+                .json({ message: "Email and Password are required." });
         }
         const patient = await patientModel.findOne({ email: email.toLowerCase() });
         console.log("Found Patient:", patient);
@@ -105,7 +115,14 @@ const patientLogin = async (req, res) => {
             return res.status(400).json({ message: "Invalid Password." });
         }
         // JWT Token create
-        const token = jwt.sign({ id: patient._id, email: patient.email, name: patient.fullName, aadhar: patient.aadhar, mobileNumber: patient.mobileNumber, gender: patient.gender }, process.env.JWT_SECRET || "secret_key", { expiresIn: "1d" });
+        const token = jwt.sign({
+            id: patient._id,
+            email: patient.email,
+            name: patient.fullName,
+            aadhar: patient.aadhar,
+            mobileNumber: patient.mobileNumber,
+            gender: patient.gender,
+        }, process.env.JWT_SECRET || "secret_key", { expiresIn: "1d" });
         return res.status(200).json({
             message: "Login Successful",
             token,
@@ -130,7 +147,7 @@ const getPatientById = async (req, res) => {
         const user = await patientModel.findById(id);
         if (!user) {
             return res.status(404).json({
-                message: "User Not found."
+                message: "User Not found.",
             });
         }
         return res.status(200).json({
@@ -141,7 +158,7 @@ const getPatientById = async (req, res) => {
     catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: "Something went wrong."
+            message: "Something went wrong.",
         });
     }
 };
@@ -151,43 +168,53 @@ const deleteUser = async (req, res) => {
         const deleteUser = patientModel.findByIdAndDelete(id);
         if (!deleteUser) {
             return res.status(400).json({
-                message: "User Not Found."
+                message: "User Not Found.",
             });
         }
         return res.status(200).json({
-            message: "User Deleted."
+            message: "User Deleted.",
         });
     }
     catch (error) {
         console.log(error);
         return res.status(500).json({
-            message: "Something went wrong."
+            message: "Something went wrong.",
         });
     }
 };
+//--------------------------------------------Get Available Slots By Doctor Id-------------------------
 const getAvailableSlotsByDoctorId = async (req, res) => {
     try {
         const { doctorId } = req.params;
         if (!doctorId) {
-            return res.status(400).json({
-                message: "doctorId is required",
-            });
+            return res.status(400).json({ message: "doctorId is required" });
         }
-        // Find all slots for this doctor
-        const slots = await timeSlotsModel.find({ doctorId });
-        if (!slots || slots.length === 0) {
+        // Fetch only documents for this doctor
+        const timeSlotDocs = await timeSlotsModel.find({ doctorId });
+        if (!timeSlotDocs || timeSlotDocs.length === 0) {
             return res.status(200).json({
                 message: "No slots found for this doctor",
-                availableData: [],
+                availableMonths: [],
             });
         }
         const slotsByMonth = {};
-        slots.forEach(slot => {
-            const d = new Date(slot.date);
-            const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        timeSlotDocs.forEach(doc => {
+            // Skip if slots array is empty
+            if (!doc.slots || doc.slots.length === 0)
+                return;
+            const dateObj = new Date(doc.date);
+            const monthKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}`;
+            const dateKey = dateObj.toISOString().split("T")[0];
             if (!slotsByMonth[monthKey])
                 slotsByMonth[monthKey] = [];
-            slotsByMonth[monthKey].push(slot);
+            slotsByMonth[monthKey].push({
+                date: dateKey,
+                slots: doc.slots.map(s => ({
+                    _id: s._id,
+                    time: s.time,
+                    isActive: s.isActive,
+                })),
+            });
         });
         return res.status(200).json({
             message: "Available months and slots fetched successfully",
@@ -221,22 +248,6 @@ const updatePatient = async (req, res) => {
         return res.status(500).json({ message: "Something went wrong." });
     }
 };
-// const getBookedDoctor =async(req:Request,res:Response)=>{
-//     try {
-//         const {id} = req.params;
-//         const doctor = await Booking.find({userId:id}).populate('doctorId');
-//         console.log(doctor);
-//         return res.status(200).json({
-//             message:"Doctors fetched successfully",
-//             doctor
-//         })
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({ 
-//             message: "Something went wrong." 
-//         });
-//     }
-// }
 const getBookedDoctor = async (req, res) => {
     try {
         const { id } = req.params;
@@ -387,7 +398,7 @@ const getUserPrescription = async (req, res) => {
     const { aadhar } = req.params;
     try {
         const prescriptions = await PrescriptionModel.find({
-            patientAadhar: aadhar
+            patientAadhar: aadhar,
         })
             .populate("doctorId", "fullName MobileNo") // doctor name
             .populate("bookingId", "dateTime"); // appointment date
@@ -401,5 +412,38 @@ const getUserPrescription = async (req, res) => {
         res.status(500).json("Something went wrong");
     }
 };
-export default { patientRegister, patientLogin, getPatientById, deleteUser, getAvailableSlotsByDoctorId, updatePatient, getBookedDoctor, addFavouriteDoctor, isFavouriteDoctor, addfavouriteClinic, isFavouriteClinic, getUserPrescription };
+export const getUserLabTest = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const labTests = await LabTestBookingModel.find({ userId: id })
+            .populate("labId", "name city address")
+            .sort({ bookedAt: -1 });
+        return res.status(200).json({
+            success: true,
+            labTests,
+        });
+    }
+    catch (err) {
+        console.log("Error fetching lab tests:", err);
+        res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
+    }
+};
+export default {
+    patientRegister,
+    patientLogin,
+    getPatientById,
+    deleteUser,
+    getAvailableSlotsByDoctorId,
+    updatePatient,
+    getBookedDoctor,
+    addFavouriteDoctor,
+    isFavouriteDoctor,
+    addfavouriteClinic,
+    isFavouriteClinic,
+    getUserPrescription,
+    getUserLabTest,
+};
 //# sourceMappingURL=patient.controller.js.map

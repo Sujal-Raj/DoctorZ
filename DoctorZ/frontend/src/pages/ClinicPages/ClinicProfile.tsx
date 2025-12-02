@@ -129,7 +129,7 @@ export default function ClinicProfile() {
       <Toaster
         position="top-right"
         toastOptions={{
-          duration: 2400,
+          duration: 3400,
           style: { borderRadius: "10px", background: "#333", color: "#fff" },
         }}
       />
