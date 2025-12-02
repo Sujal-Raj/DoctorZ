@@ -4,6 +4,7 @@ import api from "../../Services/mainApi";
 import Swal from "sweetalert2";
 // import userIcon from "../../assets/UserIcon.png";
 import { Mail, Phone, MapPin, CreditCard, User, Calendar, Users } from "lucide-react";
+import toast from "react-hot-toast";
 
 // Strong Types
 interface Address {
@@ -249,13 +250,13 @@ function UserProfile() {
         }
       }
 
-      Swal.fire({ icon: "success", title: "Profile Updated Successfully" });
+     toast.success("Profile updated successfully");
       setUser(updatedUser);
       setIsEditing(false);
       setSelectedFile(null);
     } catch (err) {
       console.error("Update error:", err);
-      Swal.fire({ icon: "error", title: "Update failed" });
+      toast.error("Failed to update profile. Please try again.");
     }
   };
 

@@ -18,6 +18,7 @@ import {
   Pill,
   TestTube,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 // --- Types ---
 interface Test {
@@ -110,7 +111,7 @@ export const PackageDetails: React.FC = () => {
         ?.split("=")[1];
 
       if (!token) {
-        alert("Please login to book test");
+        toast.error("Please login to book the package.");
         setLoading(false);
         return;
       }
@@ -121,7 +122,7 @@ export const PackageDetails: React.FC = () => {
         const payload = JSON.parse(atob(base64Payload));
         patientId = payload.id;
       } catch {
-        alert("Invalid login token");
+        toast.error("Invalid session. Please login again.");
         setLoading(false);
         return;
       }
@@ -132,10 +133,10 @@ export const PackageDetails: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert("Package booked successfully!");
+    toast.success("Package booked successfully!");
     } catch (error) {
       console.error("Error booking package:", error);
-      alert("Failed to book package. Please try again later.");
+    toast.error("Failed to book package. Please try again." );
     }
   };
 

@@ -100,12 +100,6 @@ export default function DoctorDashboard() {
       path: "time-slots",
       icon: <ClockIcon className="w-5 h-5" />,
     },
-
-    {
-      name: "Edit ID & Password",
-      path: "editDoctorIdPassword",
-      icon: <KeyIcon className="w-5 h-5" />,
-    },
     {
       name: "My Patients",
       path: "patients",
@@ -246,7 +240,7 @@ export default function DoctorDashboard() {
           
         "
       >
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-full mx-auto">
           <Outlet />
         </div>
       </main>
