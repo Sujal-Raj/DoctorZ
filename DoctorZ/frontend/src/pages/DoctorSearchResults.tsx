@@ -429,20 +429,20 @@ const DoctorSearchResults: React.FC = () => {
     </main>
 
     {/* Right side Help Card */}
-    <aside className="lg:col-span-3 hidden lg:block sticky top-24 self-start">
-      <div className="bg-[#08263a] text-white rounded-lg p-5 shadow-md border border-gray-200">
-        <h3 className="text-base font-semibold">Need help consulting the right doctor?</h3>
-        <p className="text-sm mt-2 leading-relaxed">
-          Call <span className="font-semibold">+91-8040245807</span> to book instantly
-        </p>
-        <a
-          href="tel:+918040245807"
-          className="inline-block mt-4 bg-white text-[#08263a] font-semibold px-4 py-2 rounded-md hover:bg-gray-200 transition"
-        >
-          Call Now
-        </a>
-      </div>
-    </aside>
+    <aside className="lg:col-span-2 hidden lg:block">
+          <div className="bg-[#08263a] text-white rounded-lg p-4 shadow-md border border-gray-200">
+            <h3 className="font-semibold text-base">Need help finding the right clinic?</h3>
+            <p className="text-sm mt-2 leading-snug">
+              Call <span className="font-medium">+91-8040245807</span> to book instantly
+            </p>
+            <a
+              href="tel:+918040245807"
+              className="inline-block mt-3 bg-white text-[#08263a] font-medium px-3 py-1.5 rounded text-sm hover:bg-gray-100 transition-colors"
+            >
+              Call Now
+            </a>
+          </div>
+        </aside>
   </div>
 
   {/* Mobile Filter Drawer */}

@@ -231,7 +231,6 @@ export const rejectClinic = async (req, res) => {
     }
 };
 // admin login controllers
-//  Admin Login (using DB model)
 export const adminLogin = async (req, res) => {
     try {
         const { adminId, password } = req.body;
@@ -247,8 +246,7 @@ export const adminLogin = async (req, res) => {
             return res.status(401).json({ message: "Invalid admin credentials" });
         }
         // ✅ Generate JWT token
-        const token = jwt.sign({ adminId: admin.adminId, id: admin._id }, process.env.JWT_SECRET, // Add a secret in your .env
-        { expiresIn: "1d" } // Token valid for 1 day
+        const token = jwt.sign({ adminId: admin.adminId, id: admin._id }, process.env.JWT_SECRET, { expiresIn: "1d" } // Token valid for 1 day
         );
         return res.status(200).json({
             message: "Login successful",
