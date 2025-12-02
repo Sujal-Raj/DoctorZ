@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Eye, EyeOff } from "lucide-react";
 import { loginLab } from "../../Services/labApi";
-import Swal from "sweetalert2";
+
 
 export default function LoginLab() {
   const [labId, setLabId] = useState("");
@@ -29,13 +29,6 @@ export default function LoginLab() {
         localStorage.setItem("labId", response.data.lab._id);
         localStorage.setItem("labName", response.data.lab.name);
 
-        Swal.fire({
-          title: "Login Successful!",
-          text: `Welcome ${response.data.lab.name}! Redirecting...`,
-          icon: "success",
-          timer: 1500,
-          showConfirmButton: false,
-        });
 
         setTimeout(() => {
           window.location.href = "/lab-dashboard/patients";
