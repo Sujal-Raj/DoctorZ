@@ -13,7 +13,8 @@ import Liver from "../../assets/Liver.png";
 import kidney from "../../assets/kidney.png";
 import Heart from "../../assets/Heart.png";
 import Imaging from "../../assets/Imaging.png";
-import Swal from "sweetalert2";
+
+import toast from "react-hot-toast";
 
 interface Test {
   _id: string;
@@ -87,7 +88,7 @@ export default function LabTestDetails() {
         ?.split("=")[1];
 
       if (!token) {
-        alert("Please login to book test");
+       toast.error("Please login to book the test.");
         setLoading(false);
         return;
       }
@@ -98,7 +99,7 @@ export default function LabTestDetails() {
         const payload = JSON.parse(atob(base64Payload));
         patientId = payload.id;
       } catch {
-        alert("Invalid login token");
+      toast.error("Invalid session. Please login again.");
         setLoading(false);
         return;
       }
@@ -118,12 +119,12 @@ export default function LabTestDetails() {
       });
 
       console.log("✅ Booking response:", res.data);
-      Swal.fire({ icon: "success", title: "Booking successful!" });
+     toast.success("Test booked successfully!");
       // setBookingStatus("Booking successful!");
 
     } catch (error) {
       console.error("❌ Booking error:", error);
-      Swal.fire({ icon: "error", title: "Booking failed. Try again." });
+     toast.error("Booking failed. Try again.");
       // setBookingStatus("Booking failed. Try again.");
     } finally {
       setLoading(false);

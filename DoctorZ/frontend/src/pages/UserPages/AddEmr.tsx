@@ -3,6 +3,7 @@ import { FileText, Pill, Stethoscope, AlertCircle, Calendar, User, Plus, Eye } f
 import { createEMR } from "../../Services/emrApi";
 import { AuthContext } from "../../Context/AuthContext";
 import api from "../../Services/mainApi";
+import toast from "react-hot-toast";
 
 type EMRInputs = {
   allergies: string;
@@ -80,7 +81,7 @@ const AddEmr: React.FC = () => {
     e.preventDefault();
     
     if (!patientId) {
-      alert("Session expired. Please login again.");
+     toast.error("Session expired. Please login again.");
       return;
     }
     
@@ -111,7 +112,7 @@ const AddEmr: React.FC = () => {
 
     try {
       await createEMR(formDataToSend);
-      alert("✅ EMR Added Successfully!");
+      toast.success("EMR added successfully");
       
       // Reset form
       setFormData({

@@ -46,8 +46,12 @@ const PatientAppointments: React.FC = () => {
           bookingDate: item.bookingDate,
           roomId:item.roomId
         }));
-
+        console.log("here",extractedDoctors) 
+        
         setDoctors(extractedDoctors);
+        // setDoctors(res.data.data);
+
+        console.log(doctors)
       } catch (err) {
         console.error("Error fetching doctors:", err);
       }
