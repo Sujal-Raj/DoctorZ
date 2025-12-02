@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../Services/mainApi";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 // import userIcon from "../../assets/UserIcon.png";
 import { Mail, Phone, MapPin, CreditCard, User, Calendar, Users } from "lucide-react";
 import toast from "react-hot-toast";
