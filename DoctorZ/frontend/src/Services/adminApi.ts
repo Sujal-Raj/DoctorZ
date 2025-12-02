@@ -1,7 +1,7 @@
 import api from "./mainApi"; 
 
 export interface AdminLoginPayload {
-  email: string;
+ adminId: string;
   password: string;
 }
 
@@ -9,7 +9,7 @@ export interface AdminLoginResponse {
   message: string;
   token: string;
   user: {
-    email: string;
+    adminId: string;
    
   };
 }

@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  adminLogin,
+
   getPendingDoctors,
   approveDoctor,
   rejectDoctor,
@@ -10,6 +10,7 @@ import {
   getPendingClinics,
   approveClinic,
   rejectClinic,
+  adminLogin,
 } from "../controllers/admin.controller.js";
 // import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
 

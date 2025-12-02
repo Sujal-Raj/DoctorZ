@@ -4,7 +4,7 @@ import type { AdminLoginPayload } from "../../Services/adminApi";
 import { useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
-  const [email, setEmail] = useState<string>("");
+  const [adminId, setAdminId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,11 +16,11 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const payload: AdminLoginPayload = { email, password };
+      const payload: AdminLoginPayload = { adminId, password };
       const data = await adminLogin(payload);
 
       localStorage.setItem("adminToken", data.token);
-
+    
       // Redirect to admin dashboard immediately
       navigate("/adminDashboard");
     } catch (err: any) {
@@ -67,7 +67,7 @@ const AdminLogin = () => {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Email Address
+                Admin Id
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -86,13 +86,13 @@ const AdminLogin = () => {
                   </svg>
                 </div>
                 <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  id="adminId"
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
                   required
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                  placeholder="Enter your email"
+                  placeholder="Enter your Id"
                 />
               </div>
             </div>

@@ -2,6 +2,12 @@ import { Outlet } from "react-router-dom";
 import AdminSidebar from "../../components/AdminSidebar";
 
 export default function AdminDashboard() {
+  const adminToken = localStorage.getItem("adminToken");
+  console.log("Admin Token:", adminToken);
+ 
+  if (!adminToken) {
+    window.location.href = "/admin/login";
+  }
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Sidebar */}

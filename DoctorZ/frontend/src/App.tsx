@@ -177,6 +177,7 @@ const App: React.FC = () => {
 
           {/* Admin Dashboard */}
           <Route path="/adminDashboard" element={<AdminDashboard />}>
+          <Route index element={<AdminLab/>} />
             <Route path="admin-lab" element={<AdminLab />} />
             <Route path="admin-doctor" element={<AdminDoctor />} />
 

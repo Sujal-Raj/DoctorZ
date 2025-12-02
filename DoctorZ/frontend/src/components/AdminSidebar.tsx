@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Home, User, UserPlus, LogOut, Menu, X } from "lucide-react";
+import { User, UserPlus, LogOut, Menu, X } from "lucide-react";
 
 const AdminSidebar = () => {
   const navigate = useNavigate();
@@ -17,7 +17,8 @@ const AdminSidebar = () => {
   };
 
   const menuItems = [
-    { name: "Home", path: "/", icon: <Home size={18} /> },
+    { name: "Home", path: "/", icon: <UserPlus size={18} /> },
+
     { name: "Labs", path: "admin-lab", icon: <User size={18} /> },
     { name: "Doctors", path: "admin-doctor", icon: <UserPlus size={18} /> },
     { name: "Clinics", path: "admin-clinic", icon: <UserPlus size={18} /> },
@@ -26,8 +27,10 @@ const AdminSidebar = () => {
   return (
     <>
       {/* ---------- MOBILE TOP BAR ---------- */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white 
-        flex items-center justify-between px-4 py-3 z-50 shadow-lg">
+      <div
+        className="lg:hidden fixed top-0 left-0 right-0 bg-[#0c213e] text-white 
+        flex items-center justify-between px-4 py-3 z-50 shadow-lg"
+      >
         <h1 className="text-lg font-semibold tracking-wide">Admin Dashboard</h1>
 
         <button
@@ -47,7 +50,6 @@ const AdminSidebar = () => {
       >
         {/* Sidebar Content */}
         <div className="flex-1 flex flex-col px-6 py-6 mt-12 lg:mt-0 overflow-y-auto">
-
           {/* Desktop Title */}
           <div className="hidden lg:flex items-center justify-center mb-10">
             <h2 className="text-2xl font-bold">Admin Dashboard</h2>
@@ -56,7 +58,23 @@ const AdminSidebar = () => {
           {/* ---------- MENU ---------- */}
           <nav className="space-y-3">
             {menuItems.map((item) => {
-              const isActive = location.pathname.includes(item.path);
+              let isActive = false;
+
+              // HOME ACTIVE ONLY ON EXACT HOME ROUTES
+              if (item.path === "/") {
+                isActive =
+                  location.pathname === "/" || location.pathname === "/admin";
+              }
+              // LABS ACTIVE ON LAB ROUTES + DEFAULT DASHBOARD
+              else if (item.path === "admin-lab") {
+                isActive =
+                  location.pathname.includes("admin-lab") ||
+                  location.pathname === "/adminDashboard";
+              }
+              // OTHER ITEMS NORMAL INCLUDE CHECK
+              else {
+                isActive = location.pathname.includes(item.path);
+              }
 
               return (
                 <Link
