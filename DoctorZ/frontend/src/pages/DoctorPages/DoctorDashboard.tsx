@@ -3,7 +3,7 @@ import {
   Link,
   Outlet,
   // useLocation,
-  useMatch,
+
   useNavigate,
 } from "react-router-dom";
 import {
@@ -12,7 +12,7 @@ import {
   ClockIcon,
   CalendarIcon,
   UsersIcon,
-  KeyIcon,
+ 
   Bars3Icon,
   ArrowRightOnRectangleIcon,
   BellIcon,
@@ -170,12 +170,7 @@ export default function DoctorDashboard() {
           <nav className="space-y-2">
             {menuItems.map((item) => {
               const dashboardPath = `/doctordashboard/${doctorId}`;
-              // const to = item.path === "" ? dashboardPath : item.path;
-
-              // const isActive =
-              //   item.path === ""
-              //     ? !!useMatch(`/doctorDashboard/${doctorId}`)
-              //     : !!useMatch(`/doctorDashboard/${doctorId}/${item.path}`);
+             
               const basePath = `/doctorDashboard/${doctorId}`;
 
               const isActive =
@@ -184,9 +179,7 @@ export default function DoctorDashboard() {
                     location.pathname.startsWith(`${basePath}/appointments`)
                   : location.pathname.startsWith(`${basePath}/${item.path}`);
 
-              // const handleMenuClick = () => {
-              //   if (!isDesktop) setSidebarOpen(false);
-              // };
+            
 
               return (
                 <Link

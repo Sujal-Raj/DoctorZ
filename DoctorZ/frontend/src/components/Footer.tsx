@@ -56,7 +56,7 @@ function Footer() {
           For Patients
         </h3>
         <ul className="space-y-2">
-          <li><a href="#" className=" font-semibold text-white hover:text-blue-900">Search for Doctors</a></li>
+          <li><a href="/search-results" className=" font-semibold text-white hover:text-blue-900">Search for Doctors</a></li>
           <li><a href="#" className=" font-semibold text-white hover:text-blue-900">Search for Clinics</a></li>
           <li><a href="#" className=" font-semibold text-white hover:text-blue-900">Book Appointments</a></li>
           <li><a href="#" className=" font-semibold text-white hover:text-blue-900">Health Articles</a></li>

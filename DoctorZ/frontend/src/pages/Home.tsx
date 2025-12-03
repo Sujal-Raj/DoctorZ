@@ -1,7 +1,6 @@
 import  { useState } from "react";
 import {
-  Search,
-  MapPin,
+ 
   Video,
   Calendar,
   Pill,
@@ -26,12 +25,13 @@ import {
   Zap,
   UserCheck 
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import HealthcareHero from "../components/HeroSection";
 // import { CheckCircle } from "lucide-react";
 
 export default function HealthcareHomepage() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
 
@@ -43,6 +43,7 @@ export default function HealthcareHomepage() {
       desc: "Connect with doctors instantly from anywhere in India",
       color: "from-blue-500 to-blue-600",
       cta: "Consult Now",
+      link:"/search-results"
     },
     {
       icon: Calendar,
@@ -50,6 +51,7 @@ export default function HealthcareHomepage() {
       desc: "Find nearby doctors and clinics based on your location",
       color: "from-green-500 to-green-600",
       cta: "Find Doctors",
+      link:"/search-results"
     },
     {
       icon: Microscope,
@@ -57,6 +59,7 @@ export default function HealthcareHomepage() {
       desc: "Book diagnostic tests at home or nearby labs",
       color: "from-purple-500 to-purple-600",
       cta: "Book Test",
+      link:"/all-lab-test"
     },
     {
       icon: Pill,
@@ -64,6 +67,7 @@ export default function HealthcareHomepage() {
       desc: "Get medicines delivered from nearby pharmacies",
       color: "from-orange-500 to-orange-600",
       cta: "Order Now",
+      link:"/search-results"
     },
   ];
 
@@ -160,7 +164,7 @@ export default function HealthcareHomepage() {
                   <p className="text-gray-600 mb-6 leading-relaxed">
                     {service.desc}
                   </p>
-                  <button className="w-full bg-[#0c213e] hover:bg-[#1a3557] text-white py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 group-hover:gap-3">
+                  <button onClick={()=>navigate(service.link)} className="w-full bg-[#0c213e] hover:bg-[#1a3557] text-white py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 group-hover:gap-3">
                     {service.cta}
                     <ChevronRight className="w-5 h-5" />
                   </button>
@@ -205,7 +209,7 @@ export default function HealthcareHomepage() {
           </div>
 
           <div className="text-center">
-            <button className="bg-white border-2 border-[#0c213e] text-[#0c213e] hover:bg-[#0c213e] hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all inline-flex items-center gap-2">
+            <button onClick={()=>(navigate("/search-results"))} className="bg-white border-2 border-[#0c213e] text-[#0c213e] hover:bg-[#0c213e] hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all inline-flex items-center gap-2">
               View All Specialties
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -454,7 +458,7 @@ export default function HealthcareHomepage() {
               Get started in less than 2 minutes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-[#0c213e] hover:bg-gray-100 px-10 py-5 rounded-xl font-bold text-lg transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 group">
+              <button onClick={()=>navigate("/search-results")} className=" cursor-pointer bg-white text-[#0c213e] hover:bg-gray-100 px-10 py-5 rounded-xl font-bold text-lg transition-all shadow-xl hover:shadow-2xl flex items-center justify-center gap-3 group">
                 <Video className="w-6 h-6" />
                 Consult Doctor Now
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -505,22 +509,22 @@ export default function HealthcareHomepage() {
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/search-results" className="hover:text-white transition-colors">
                     Find Doctors
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/search-results" className="hover:text-white transition-colors">
                     Video Consultation
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/all-lab-test" className="hover:text-white transition-colors">
                     Book Lab Tests
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/search-results" className="hover:text-white transition-colors">
                     Order Medicine
                   </a>
                 </li>
@@ -530,17 +534,17 @@ export default function HealthcareHomepage() {
               <h4 className="text-white font-semibold mb-4">For Doctors</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/doctor-register" className="hover:text-white transition-colors">
                     Register as Doctor
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/doctor-login" className="hover:text-white transition-colors">
                     Doctor Login
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="/all-clinics" className="hover:text-white transition-colors">
                     List Your Clinic
                   </a>
                 </li>
