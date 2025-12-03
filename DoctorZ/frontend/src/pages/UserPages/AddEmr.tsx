@@ -131,7 +131,7 @@ const AddEmr: React.FC = () => {
       fetchEMRRecords();
     } catch (error) {
       console.error("Error adding EMR:", error);
-      alert("❌ Failed to add EMR");
+     toast.error("Failed to add EMR. Please try again.");
     }
   };
 

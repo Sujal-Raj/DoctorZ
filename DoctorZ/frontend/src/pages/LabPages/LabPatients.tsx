@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState, memo } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet";
+import api from "../../Services/mainApi";
 
 interface PatientBooking {
   _id: string;
@@ -62,8 +63,8 @@ const Patients: React.FC = memo(() => {
     let active = true;
     (async () => {
       try {
-        const res = await axios.get<{ labPatients: PatientBooking[] }>(
-          `http://localhost:3000/api/lab/getLabPatients/${labId}`
+        const res = await api.get<{ labPatients: PatientBooking[] }>(
+          `/api/lab/getLabPatients/${labId}`
         );
         if (active) setPatients(res.data.labPatients || []);
       } catch (err) {
@@ -104,25 +105,6 @@ const Patients: React.FC = memo(() => {
     return filtered.slice(start, start + pageSize);
   }, [filtered, page, pageSize]);
 
-  // Export CSV
-    // const exportCSV = () => {
-    //   // Build CSV manually to avoid an external dependency and missing types
-    //   const headers = ["Patient Name", "Test Name", "Booking Date"];
-    //   const rows = filtered.map((p) => [
-    //     // Quote and escape values to ensure CSV is valid
-    //     `"${safeFullName(p.userId).replace(/"/g, '""')}"`,
-    //     `"${(p.testName || "").replace(/"/g, '""')}"`,
-    //     `"${p.bookingDate ? new Date(p.bookingDate).toISOString() : ""}"`,
-    //   ]);
-    //   const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    //   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    //   const url = URL.createObjectURL(blob);
-    //   const a = document.createElement("a");
-    //   a.href = url;
-    //   a.download = `lab_patients_${new Date().toISOString().slice(0, 10)}.csv`;
-    //   a.click();
-    //   URL.revokeObjectURL(url);
-    // };
 
   if (loading)
     return (

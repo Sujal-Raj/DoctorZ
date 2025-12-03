@@ -3,7 +3,8 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import api from "../Services/mainApi";
 import { useParams } from "react-router-dom";
-import Swal from "sweetalert2";
+
+import toast, { Toaster } from "react-hot-toast";
 
 type SelectionType = "single" | "multiple" | "month";
 
@@ -120,19 +121,11 @@ const TimeSlots: React.FC = () => {
         : selectedMultipleDates.map((d) => d.toLocaleDateString("en-CA"));
 
     if (!dates.length) {
-      Swal.fire({
-        icon: "warning",
-        title: "Oops...",
-        text: "Please select at least one date",
-      });
+     toast.error("Please select at least one date");
       return;
     }
     if (!workingHours.start || !workingHours.end) {
-      Swal.fire({
-        icon: "warning",
-        title: "Oops...",
-        text: "Please enter working hours",
-      });
+     toast.error("Please specify working hours");
       return;
     }
 
@@ -148,11 +141,9 @@ const TimeSlots: React.FC = () => {
         };
 
         const res = await api.put("/api/availability/editTimeSlot", payload);
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: res.data.message,
-        });
+       // Success message
+toast.success(res.data.message || "Success");
+
 
         setEditingSlotId(null); // reset editing state
       } else {
@@ -165,23 +156,17 @@ const TimeSlots: React.FC = () => {
         const data = res.data;
 
         if (data.createdDates.length > 0) {
-          Swal.fire({
-            icon: "success",
-            title: "Slots Created",
-            html: `Slots created for: <strong>${data.createdDates.join(
-              ", "
-            )}</strong>`,
-          });
+          toast.success(
+  `Slots created for: ${data.createdDates.join(", ")}`
+);
+
         }
 
         if (data.alreadyExistDates.length > 0) {
-          Swal.fire({
-            icon: "info",
-            title: "Already Exist",
-            html: `Slots already exist for: <strong>${data.alreadyExistDates.join(
-              ", "
-            )}</strong>`,
-          });
+         toast(
+  `Slots already exist for: ${data.alreadyExistDates.join(", ")}`
+);
+
         }
       }
 
@@ -195,11 +180,7 @@ const TimeSlots: React.FC = () => {
       fetchSavedSlots(); // refresh calendar & slots
     } catch (err: unknown) {
       console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Server Error",
-        text: "Something went wrong. Please try again later.",
-      });
+     toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -250,6 +231,17 @@ const TimeSlots: React.FC = () => {
 
   return (
     <div className="max-w-6xl mx-auto mt-8 p-6">
+       <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3400,
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          }}
+        />
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">

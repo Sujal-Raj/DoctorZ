@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { X } from "lucide-react";
 import api from "../../Services/mainApi";
-import Swal from "sweetalert2";
+
 
 // JSON Files
 import medicineData from "../../assets/indian_medicine_data.json";
 import diseaseData from "../../assets/Disease_symptom_dataset.json";
 import symptomData from "../../assets/symptoms.json";
+import toast from "react-hot-toast";
 
 interface Medicine {
   name: string;
@@ -212,12 +213,7 @@ const PrescriptionForm = () => {
     try {
       await api.post(`/api/prescription/addPrescription/${bookingId}`, payload);
 
-      Swal.fire({
-        title: "Prescription Saved Successfully!",
-        icon: "success",
-        showConfirmButton: true,
-      });
-
+      toast.success("Prescription Saved Successfully");
       // Reset all
       setDiagnosisInput("");
       setSymptoms([]);
@@ -226,10 +222,7 @@ const PrescriptionForm = () => {
       setNotes("");
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        title: "Error Saving Prescription",
-        icon: "error",
-      });
+      toast.error("Failed to save prescription. Please try again.");
     }
 
     setLoading(false);
